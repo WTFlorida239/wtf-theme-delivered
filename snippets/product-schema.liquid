@@ -172,8 +172,8 @@
     }
   ],
   "isRelatedTo": [
-    {% assign related_products = collections[product.collections.first.handle].products | where: 'available', true | limit: 3 %}
-    {% for related in related_products %}
+    {% assign related_products = collections[product.collections.first.handle].products | where: 'available', true %}
+    {% for related in related_products limit: 3 %}
       {% unless related.id == product.id %}
         {
           "@type": "Product",
