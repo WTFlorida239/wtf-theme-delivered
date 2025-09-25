@@ -1,0 +1,228 @@
+{{ 'wtf_flavor_system.css' | asset_url | stylesheet_tag }}
+
+<div class="home-category-grid color-background-1 gradient">
+  <div class="page-width">
+    {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+      <div class="home-category-grid__header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="home-category-grid__title">{{ section.settings.title | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="home-category-grid__subtitle">{{ section.settings.subtitle | escape }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="home-category-grid__container">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'category' -%}
+            <div class="home-category-grid__item" {{ block.shopify_attributes }}>
+              <a href="{{ block.settings.link | default: '#' }}" class="home-category-grid__link">
+                <div class="home-category-grid__card">
+                  <div class="home-category-grid__icon">
+                    {{ block.settings.fallback_emoji | default: '🍃' }}
+                  </div>
+                  <div class="home-category-grid__content">
+                    <h3 class="home-category-grid__item-title">{{ block.settings.title | escape }}</h3>
+                    {%- if block.settings.description != blank -%}
+                      <p class="home-category-grid__description">{{ block.settings.description | escape }}</p>
+                    {%- endif -%}
+                    {%- if block.settings.meta != blank -%}
+                      <span class="home-category-grid__meta">{{ block.settings.meta | escape }}</span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </a>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .home-category-grid {
+    padding: var(--spacing-sections-mobile) 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .home-category-grid {
+      padding: var(--spacing-sections-desktop) 0;
+    }
+  }
+
+  .home-category-grid__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .home-category-grid__title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: rgb(var(--color-base-text));
+  }
+
+  .home-category-grid__subtitle {
+    font-size: 1.8rem;
+    color: rgba(var(--color-base-text), 0.7);
+    margin: 0;
+  }
+
+  .home-category-grid__container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media screen and (min-width: 550px) {
+    .home-category-grid__container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .home-category-grid__container {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .home-category-grid__link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+  }
+
+  .home-category-grid__card {
+    background: rgba(var(--color-base-background-2), 0.8);
+    border-radius: 1.6rem;
+    padding: 2.4rem;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--color-base-text), 0.1);
+  }
+
+  .home-category-grid__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(var(--color-shadow), 0.15);
+  }
+
+  .home-category-grid__icon {
+    font-size: 4rem;
+    margin-bottom: 1.6rem;
+    line-height: 1;
+  }
+
+  .home-category-grid__item-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: rgb(var(--color-base-text));
+  }
+
+  .home-category-grid__description {
+    font-size: 1.4rem;
+    color: rgba(var(--color-base-text), 0.7);
+    margin-bottom: 1.2rem;
+    line-height: 1.4;
+  }
+
+  .home-category-grid__meta {
+    font-size: 1.2rem;
+    color: rgb(var(--color-base-accent-1));
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Home Category Grid",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Order your favorites"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Premium quality botanical products, edibles, beverages and more."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Category Name"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Category description"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "Meta text",
+          "default": "Additional info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "fallback_emoji",
+          "label": "Emoji",
+          "default": "🍃"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Category Grid",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "Kratom teas",
+            "description": "Green, red, white & yellow strains with premium flavorings.",
+            "meta": "4 strains • 25 flavors",
+            "fallback_emoji": "🍵"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Kava drinks",
+            "description": "Traditional relaxation brews in rotating flavors.",
+            "meta": "M • L • Gallons",
+            "fallback_emoji": "🥥"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

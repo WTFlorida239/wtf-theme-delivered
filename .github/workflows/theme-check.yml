@@ -1,0 +1,161 @@
+name: Theme Check
+
+on:
+  push:
+    branches: [ main, develop, fix/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  theme-check:
+    runs-on: ubuntu-latest
+    name: Theme Check
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+        bundler-cache: true
+        
+    - name: Install theme-check
+      run: gem install theme-check
+      
+    - name: Run theme-check
+      run: theme-check --fail-level error
+      
+  json-validation:
+    runs-on: ubuntu-latest
+    name: JSON Validation
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Validate JSON files
+      run: |
+        # Install jq for JSON validation
+        sudo apt-get update && sudo apt-get install -y jq
+        
+        # Find and validate all JSON files
+        echo "Validating JSON files..."
+        find . -name "*.json" -type f | while read -r file; do
+          echo "Checking: $file"
+          if ! jq empty "$file" 2>/dev/null; then
+            echo "❌ Invalid JSON: $file"
+            exit 1
+          else
+            echo "✅ Valid JSON: $file"
+          fi
+        done
+        echo "All JSON files are valid!"
+        
+  liquid-syntax:
+    runs-on: ubuntu-latest
+    name: Liquid Syntax Check
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+        
+    - name: Install liquid gem
+      run: gem install liquid
+      
+    - name: Basic Liquid syntax check
+      run: |
+        echo "Checking Liquid files for basic syntax errors..."
+        find . -name "*.liquid" -type f | while read -r file; do
+          echo "Checking: $file"
+          # Basic check for unclosed tags
+          if grep -q '{%[^}]*$' "$file"; then
+            echo "❌ Potential unclosed Liquid tag in: $file"
+            exit 1
+          fi
+          if grep -q '{{[^}]*$' "$file"; then
+            echo "❌ Potential unclosed Liquid output in: $file"
+            exit 1
+          fi
+        done
+        echo "Basic Liquid syntax check passed!"
+        
+  file-structure:
+    runs-on: ubuntu-latest
+    name: File Structure Check
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Check required theme files
+      run: |
+        echo "Checking required Shopify theme structure..."
+        
+        # Check for required directories
+        required_dirs=("assets" "config" "layout" "locales" "sections" "snippets" "templates")
+        for dir in "${required_dirs[@]}"; do
+          if [ ! -d "$dir" ]; then
+            echo "❌ Missing required directory: $dir"
+            exit 1
+          else
+            echo "✅ Found directory: $dir"
+          fi
+        done
+        
+        # Check for required files
+        required_files=("layout/theme.liquid" "config/settings_schema.json" "locales/en.default.json")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Missing required file: $file"
+            exit 1
+          else
+            echo "✅ Found file: $file"
+          fi
+        done
+        
+        # Check theme.liquid for required content
+        if ! grep -q "{{ content_for_header }}" layout/theme.liquid; then
+          echo "❌ Missing {{ content_for_header }} in layout/theme.liquid"
+          exit 1
+        fi
+        
+        if ! grep -q "{{ content_for_layout }}" layout/theme.liquid; then
+          echo "❌ Missing {{ content_for_layout }} in layout/theme.liquid"
+          exit 1
+        fi
+        
+        echo "✅ All required theme structure checks passed!"
+        
+  naming-convention:
+    runs-on: ubuntu-latest
+    name: Naming Convention Check
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Check file naming conventions
+      run: |
+        echo "Checking file naming conventions..."
+        
+        # Check for kebab-case in template files
+        find templates sections snippets -name "*.liquid" -o -name "*.json" | while read -r file; do
+          filename=$(basename "$file")
+          # Remove extension for checking
+          name_without_ext="${filename%.*}"
+          
+          # Check if filename follows kebab-case (lowercase with hyphens)
+          if [[ ! "$name_without_ext" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+            echo "❌ File does not follow kebab-case convention: $file"
+            exit 1
+          fi
+        done
+        
+        echo "✅ All files follow naming conventions!"
