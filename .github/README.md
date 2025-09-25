@@ -175,6 +175,20 @@ NODE_VERSION: 20
 - **Storage Usage**: 2.3 GB / 500 MB limit
 - **Artifact Retention**: 30-90 days based on type
 
+## Competitors
+
+| Name | Address | Website | Status |
+|---|---|---|---|
+| **Kava Culture Kava Bar** | 843 Miramar St, Cape Coral, FL 33904 (HQ) | https://kavaculture.com | Open; multiple FL locations including Fort Myers, Cape Coral, Tampa, etc. |
+| **Elevation Kava** | — | — | Appears not active in Florida under this exact name; likely confused with **Elevate Kava** (Maitland/Fort Myers). |
+| **High Tide Kava Bar** | 512 Northwood Rd, West Palm Beach, FL 33407 | — | Open in WPB; no official site found (listings active). |
+| **Bula Kava Bar & Coffeehouse** | 124 N Orlando Ave, Cocoa Beach, FL 32931 | https://bulacocoabeach.com | Open (Cocoa Beach). |
+| **Shangri-La Botanical** | — | — | No verified FL kava/kratom lounge by this name; appears not a local venue (often confused with TX botanical gardens). |
+| **Purple Lotus Kava Bar** | 255 Evernia St #MU-4, West Palm Beach, FL 33401 | https://www.purplelotuskava.com | Open (WPB + other SoFL locations). |
+| **Roots House Of Kava** | 1242 SW Pine Island Rd, Ste 19-20, Cape Coral, FL 33991 | — | Open (Cape Coral); new venue; listings active. |
+| **Southern Roots Kava Bar** | 16339 S Tamiami Trl, Fort Myers, FL 33908 | — | Appears **coming soon / not yet open** in Fort Myers. |
+
+
 ---
 
 *Last updated: Automatically via GitHub Actions*
