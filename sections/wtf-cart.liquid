@@ -27,7 +27,9 @@
                 {% if item.image %}
                   <img src="{{ item.image | image_url: width: 150 }}" 
                        alt="{{ item.product.title | escape }}"
-                       loading="lazy">
+                       loading="lazy"
+                       width="150"
+                       height="150">
                 {% else %}
                   <div class="cart-item__image-placeholder">
                     <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor">

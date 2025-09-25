@@ -32,7 +32,9 @@
                   {% if product.featured_image %}
                     <img src="{{ product.featured_image | image_url: width: 100 }}" 
                          alt="{{ product.title }}" 
-                         class="drink-option__image">
+                         class="drink-option__image"
+                         width="100" 
+                         height="100">
                   {% endif %}
                   <span class="drink-option__name">{{ product.title }}</span>
                   <span class="drink-option__price">${{ product.price | money_without_currency }}</span>

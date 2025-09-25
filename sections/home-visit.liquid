@@ -1,0 +1,192 @@
+<div class="home-visit color-background-2 gradient">
+  <div class="page-width">
+    <div class="home-visit__container">
+      <div class="home-visit__content">
+        {%- if section.settings.title != blank -%}
+          <h2 class="home-visit__title">{{ section.settings.title | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="home-visit__subtitle">{{ section.settings.subtitle | escape }}</p>
+        {%- endif -%}
+        
+        <div class="home-visit__details">
+          {%- if section.settings.address != blank -%}
+            <div class="home-visit__detail">
+              {{ section.settings.address }}
+            </div>
+          {%- endif -%}
+          {%- if section.settings.phone != blank -%}
+            <div class="home-visit__detail">
+              <a href="tel:{{ section.settings.phone | replace: ' ', '' | replace: '(', '' | replace: ')', '' | replace: '-', '' }}">
+                {{ section.settings.phone }}
+              </a>
+            </div>
+          {%- endif -%}
+          {%- if section.settings.hours != blank -%}
+            <div class="home-visit__detail">
+              {{ section.settings.hours }}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+      
+      <div class="home-visit__map">
+        <div class="home-visit__map-placeholder">
+          <span class="home-visit__map-icon">📍</span>
+          <p>Cape Coral Location</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .home-visit {
+    padding: var(--spacing-sections-mobile) 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .home-visit {
+      padding: var(--spacing-sections-desktop) 0;
+    }
+  }
+
+  .home-visit__container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  @media screen and (min-width: 990px) {
+    .home-visit__container {
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+    }
+  }
+
+  .home-visit__content {
+    text-align: center;
+  }
+
+  @media screen and (min-width: 990px) {
+    .home-visit__content {
+      text-align: left;
+    }
+  }
+
+  .home-visit__title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 1.6rem;
+    color: rgb(var(--color-base-text));
+  }
+
+  @media screen and (min-width: 750px) {
+    .home-visit__title {
+      font-size: 4rem;
+    }
+  }
+
+  .home-visit__subtitle {
+    font-size: 1.8rem;
+    color: rgba(var(--color-base-text), 0.7);
+    margin-bottom: 3rem;
+    line-height: 1.4;
+  }
+
+  .home-visit__details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .home-visit__detail {
+    font-size: 1.6rem;
+    color: rgb(var(--color-base-text));
+    line-height: 1.4;
+  }
+
+  .home-visit__detail a {
+    color: rgb(var(--color-base-accent-1));
+    text-decoration: none;
+  }
+
+  .home-visit__detail a:hover {
+    text-decoration: underline;
+  }
+
+  .home-visit__map {
+    background: rgba(var(--color-base-background-1), 0.5);
+    border-radius: 1.6rem;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border: 1px solid rgba(var(--color-base-text), 0.1);
+  }
+
+  .home-visit__map-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .home-visit__map-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .home-visit__map-placeholder p {
+    font-size: 1.6rem;
+    color: rgba(var(--color-base-text), 0.7);
+    margin: 0;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Home Visit",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Visit our Cape Coral lounge"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Relax in the heart of downtown with premium kava, kratom, and botanical experiences."
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "📍 1520 SE 46th Ln, Unit B, Cape Coral, FL 33904"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "☎️ (239) 955-0314"
+    },
+    {
+      "type": "text",
+      "id": "hours",
+      "label": "Hours",
+      "default": "Open daily • Late night pours"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Visit"
+    }
+  ]
+}
+{% endschema %}
