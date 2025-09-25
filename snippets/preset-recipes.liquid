@@ -106,13 +106,13 @@
           "recipeYield": "1 serving",
           "nutrition": {
             "@type": "NutritionInformation",
-            "servingSize": "{{ recipe_size }} ({{ recipe_size == 'Medium' ? '12 oz' : recipe_size == 'Large' ? '16 oz' : '1 gallon' }})"
+            "servingSize": "{{ recipe_size }} ({% if recipe_size == 'Medium' %}12 oz{% elsif recipe_size == 'Large' %}16 oz{% else %}1 gallon{% endif %})"
           },
           "recipeIngredient": [
             "{{ recipe_strain }} {{ product.product_type | default: 'Kratom' }}",
             {% if recipe_flavors != blank %}
               {% for flavor in recipe_flavors %}
-                "{{ flavor.name }}{% if flavor.pumps %} ({{ flavor.pumps }} pump{{ flavor.pumps != 1 ? 's' : '' }}){% endif %}"{% unless forloop.last %},{% endunless %}
+                "{{ flavor.name }}{% if flavor.pumps %} ({{ flavor.pumps }} pump{% if flavor.pumps != 1 %}s{% endif %}){% endif %}"{% unless forloop.last %},{% endunless %}
               {% endfor %}
             {% endif %}
           ],
@@ -129,7 +129,7 @@
               {% for flavor in recipe_flavors %}
                 {
                   "@type": "HowToStep",
-                  "text": "Add {{ flavor.pumps | default: 1 }} pump{{ flavor.pumps != 1 ? 's' : '' }} of {{ flavor.name }} flavor"
+                  "text": "Add {{ flavor.pumps | default: 1 }} pump{% if flavor.pumps != 1 %}s{% endif %} of {{ flavor.name }} flavor"
                 }{% unless forloop.last %},{% endunless %}
               {% endfor %}
             {% endif %}

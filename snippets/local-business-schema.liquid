@@ -41,16 +41,16 @@
     "https://www.instagram.com/wtfswagbrand/",
     "https://www.tiktok.com/@wtf.welcome.to.fl"
   ],
-  "logo": {% if business_logo != blank %}"{{ business_logo | image_url }}"{% else %}"{{ 'logo.png' | asset_url }}"{% endif %},
+  "logo": {% if business_logo != blank %}"{{ business_logo | image_url }}"{% else %}"{{ 'wtf-logo.png' | asset_url }}"{% endif %},
   "image": [
     {% if business_images != blank %}
       {% for image in business_images %}
         "{{ image | image_url }}"{% unless forloop.last %},{% endunless %}
       {% endfor %}
     {% else %}
-      "{{ 'storefront-exterior.jpg' | asset_url }}",
-      "{{ 'interior-lounge.jpg' | asset_url }}",
-      "{{ 'kava-bar-setup.jpg' | asset_url }}"
+      "{{ 'wtf_storefront_hero_800x400.png' | asset_url }}",
+      "{{ 'wtf-logo.png' | asset_url }}",
+      "{{ 'kava_drinks_150x150.png' | asset_url }}"
     {% endif %}
   ],
   "address": {

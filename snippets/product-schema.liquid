@@ -33,7 +33,7 @@
     "@type": "Brand",
     "name": "{{ business_name }}",
     "url": "{{ business_url }}",
-    "logo": "{{ 'logo.png' | asset_url }}"
+    "logo": "{{ 'wtf-logo.png' | asset_url }}"
   },
   "manufacturer": {
     "@type": "Organization",
@@ -59,7 +59,7 @@
         "{{ image | image_url }}"{% unless forloop.last %},{% endunless %}
       {% endfor %}
     {% else %}
-      "{{ 'product-placeholder.jpg' | asset_url }}"
+      "{{ 'wtf-logo.png' | asset_url }}"
     {% endif %}
   ],
   {% if product.available %}

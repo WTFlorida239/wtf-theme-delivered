@@ -12,7 +12,9 @@
             <img src="{{ media | image_url: width: 600 }}" 
                  alt="{{ media.alt | escape }}"
                  class="product__image"
-                 loading="lazy">
+                 loading="lazy"
+                 width="600"
+                 height="600">
           {% endif %}
         {% endfor %}
       </div>
