@@ -1,0 +1,472 @@
+{% comment %}
+  Main product section for WTF theme
+  Handles product display, variants, and add to cart functionality
+{% endcomment %}
+
+<div class="product" data-section-id="{{ section.id }}" data-section-type="product" data-product-id="{{ product.id }}">
+  <div class="product__container">
+    {% if product.media.size > 0 %}
+      <div class="product__media">
+        {% for media in product.media limit: 1 %}
+          {% if media.media_type == 'image' %}
+            <img src="{{ media | image_url: width: 600 }}" 
+                 alt="{{ media.alt | escape }}"
+                 class="product__image"
+                 loading="lazy">
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="product__info">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'title' %}
+            <h1 class="product__title">{{ product.title }}</h1>
+          
+          {% when 'price' %}
+            <div class="product__price">
+              {% if product.compare_at_price > product.price %}
+                <span class="product__price--compare">${{ product.compare_at_price | money_without_currency }}</span>
+              {% endif %}
+              <span class="product__price--current">${{ product.price | money_without_currency }}</span>
+            </div>
+          
+          {% when 'variant_picker' %}
+            {% unless product.has_only_default_variant %}
+              <div class="product__variants">
+                {% for option in product.options_with_values %}
+                  <div class="product__option">
+                    <label class="product__option-label">{{ option.name }}</label>
+                    <select name="options[{{ option.name | escape }}]" 
+                            id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                            class="product__option-select">
+                      {% for value in option.values %}
+                        <option value="{{ value | escape }}"
+                                {% if option.selected_value == value %}selected="selected"{% endif %}>
+                          {{ value }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endunless %}
+          
+          {% when 'quantity_selector' %}
+            <div class="product__quantity">
+              <label for="Quantity-{{ section.id }}" class="product__quantity-label">Quantity</label>
+              <input type="number" 
+                     id="Quantity-{{ section.id }}"
+                     name="quantity" 
+                     value="1" 
+                     min="1"
+                     class="product__quantity-input">
+            </div>
+          
+          {% when 'buy_buttons' %}
+            <div class="product__buttons">
+              <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="product__form">
+                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                
+                <button type="submit" 
+                        name="add"
+                        class="product__add-to-cart btn btn--primary"
+                        {% unless product.available %}disabled{% endunless %}>
+                  {% if product.available %}
+                    Add to Cart - ${{ product.price | money_without_currency }}
+                  {% else %}
+                    Sold Out
+                  {% endif %}
+                </button>
+                
+                {% if block.settings.show_dynamic_checkout and product.available %}
+                  {{ form | payment_button }}
+                {% endif %}
+              </form>
+            </div>
+          
+          {% when 'description' %}
+            {% if product.description != blank %}
+              <div class="product__description">
+                {{ product.description }}
+              </div>
+            {% endif %}
+          
+          {% when 'share' %}
+            <div class="product__share">
+              <span class="product__share-label">{{ block.settings.share_label | default: 'Share' }}</span>
+              <a href="https://www.facebook.com/sharer.php?u={{ shop.url }}{{ product.url }}" 
+                 target="_blank" 
+                 class="product__share-link">Facebook</a>
+              <a href="https://twitter.com/share?url={{ shop.url }}{{ product.url }}&text={{ product.title | escape }}" 
+                 target="_blank" 
+                 class="product__share-link">Twitter</a>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% comment %} Product schema for SEO {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | json }},
+  "image": [
+    {% for media in product.media %}
+      {% if media.media_type == 'image' %}
+        {{ media | image_url: width: 600 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
+      {% endif %}
+    {% endfor %}
+  ],
+  "offers": {
+    "@type": "Offer",
+    "url": {{ shop.url | append: product.url | json }},
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "price": {{ product.price | divided_by: 100.0 | json }},
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "seller": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }}
+    }
+  }
+}
+</script>
+
+<style>
+.product__container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.product__media {
+  position: sticky;
+  top: 2rem;
+}
+
+.product__image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.product__title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.product__price {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.product__price--compare {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 0.5rem;
+}
+
+.product__price--current {
+  color: #ff6600;
+  font-weight: bold;
+}
+
+.product__option {
+  margin-bottom: 1rem;
+}
+
+.product__option-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.product__option-select,
+.product__quantity-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.product__quantity {
+  margin-bottom: 1.5rem;
+}
+
+.product__quantity-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.product__add-to-cart {
+  width: 100%;
+  padding: 1rem;
+  background: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.product__add-to-cart:hover:not(:disabled) {
+  background: #e55a00;
+}
+
+.product__add-to-cart:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.product__description {
+  margin-top: 2rem;
+  line-height: 1.6;
+}
+
+.product__share {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.product__share-label {
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.product__share-link {
+  margin-right: 1rem;
+  color: #ff6600;
+  text-decoration: none;
+}
+
+.product__share-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .product__container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .product__media {
+    position: static;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const productForm = document.querySelector('.product__form');
+  const variantSelects = document.querySelectorAll('.product__option-select');
+  const quantityInput = document.querySelector('.product__quantity-input');
+  const addToCartButton = document.querySelector('.product__add-to-cart');
+  
+  // Handle variant selection
+  if (variantSelects.length > 0) {
+    variantSelects.forEach(select => {
+      select.addEventListener('change', updateVariant);
+    });
+  }
+  
+  function updateVariant() {
+    const selectedOptions = Array.from(variantSelects).map(select => select.value);
+    const variant = window.product.variants.find(v => {
+      return selectedOptions.every((option, index) => {
+        return v.options[index] === option;
+      });
+    });
+    
+    if (variant) {
+      document.querySelector('input[name="id"]').value = variant.id;
+      updatePrice(variant);
+      updateAvailability(variant);
+    }
+  }
+  
+  function updatePrice(variant) {
+    const priceElement = document.querySelector('.product__price--current');
+    if (priceElement) {
+      priceElement.textContent = '$' + (variant.price / 100).toFixed(2);
+    }
+    
+    const buttonPrice = addToCartButton.textContent.match(/\$[\d.]+/);
+    if (buttonPrice) {
+      addToCartButton.textContent = addToCartButton.textContent.replace(
+        /\$[\d.]+/, 
+        '$' + (variant.price / 100).toFixed(2)
+      );
+    }
+  }
+  
+  function updateAvailability(variant) {
+    if (variant.available) {
+      addToCartButton.disabled = false;
+      addToCartButton.textContent = addToCartButton.textContent.replace('Sold Out', 'Add to Cart');
+    } else {
+      addToCartButton.disabled = true;
+      addToCartButton.textContent = 'Sold Out';
+    }
+  }
+  
+  // Handle form submission
+  if (productForm) {
+    productForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(productForm);
+      
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show success message or update cart
+        alert('Added to cart!');
+        // You can add more sophisticated cart update logic here
+      })
+      .catch(error => {
+        console.error('Error adding to cart:', error);
+        alert('Error adding to cart. Please try again.');
+      });
+    });
+  }
+});
+
+// Make product data available to JavaScript
+window.product = {{ product | json }};
+</script>
+
+{% schema %}
+{
+  "name": "Product information",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "select",
+      "id": "media_size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "large",
+      "label": "Media size"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "options": [
+            {
+              "value": "dropdown",
+              "label": "Dropdown"
+            },
+            {
+              "value": "button",
+              "label": "Buttons"
+            }
+          ],
+          "default": "button",
+          "label": "Type"
+        }
+      ]
+    },
+    {
+      "type": "quantity_selector",
+      "name": "Quantity selector",
+      "limit": 1
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "default": true,
+          "label": "Show dynamic checkout buttons"
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1
+    },
+    {
+      "type": "share",
+      "name": "Share",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "share_label",
+          "default": "Share",
+          "label": "Share label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

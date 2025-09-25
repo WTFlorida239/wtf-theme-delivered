@@ -1,0 +1,654 @@
+{% comment %}
+  Enhanced Drink Builder Section for WTF Theme
+  Handles custom drink building with flavors, sizes, and add-ons
+{% endcomment %}
+
+<div class="drink-builder" data-section-id="{{ section.id }}">
+  <div class="drink-builder__container">
+    <div class="drink-builder__header">
+      <h1 class="drink-builder__title">{{ section.settings.title | default: 'Build Your Perfect Drink' }}</h1>
+      {% if section.settings.description != blank %}
+        <p class="drink-builder__description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="drink-builder__content">
+      <form class="drink-builder__form" data-product-form>
+        <input type="hidden" name="id" value="" data-variant-id>
+        
+        {% comment %} Base Drink Selection {% endcomment %}
+        <div class="drink-builder__step" data-step="base">
+          <h3 class="drink-builder__step-title">Choose Your Base</h3>
+          <div class="drink-builder__options" data-option-group="base">
+            {% for product in collections.kava-drinks.products limit: 6 %}
+              <div class="drink-option" data-product-id="{{ product.id }}">
+                <input type="radio" 
+                       name="base_drink" 
+                       value="{{ product.handle }}" 
+                       id="base-{{ product.id }}"
+                       data-price="{{ product.price }}"
+                       data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                <label for="base-{{ product.id }}" class="drink-option__label">
+                  {% if product.featured_image %}
+                    <img src="{{ product.featured_image | image_url: width: 100 }}" 
+                         alt="{{ product.title }}" 
+                         class="drink-option__image">
+                  {% endif %}
+                  <span class="drink-option__name">{{ product.title }}</span>
+                  <span class="drink-option__price">${{ product.price | money_without_currency }}</span>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% comment %} Size Selection {% endcomment %}
+        <div class="drink-builder__step" data-step="size">
+          <h3 class="drink-builder__step-title">Select Size</h3>
+          <div class="drink-builder__options" data-option-group="size">
+            <div class="drink-option">
+              <input type="radio" name="size" value="Small" id="size-small" data-price-modifier="0">
+              <label for="size-small" class="drink-option__label">
+                <span class="drink-option__name">Small (12oz)</span>
+                <span class="drink-option__price">+$0.00</span>
+              </label>
+            </div>
+            <div class="drink-option">
+              <input type="radio" name="size" value="Medium" id="size-medium" data-price-modifier="200" checked>
+              <label for="size-medium" class="drink-option__label">
+                <span class="drink-option__name">Medium (16oz)</span>
+                <span class="drink-option__price">+$2.00</span>
+              </label>
+            </div>
+            <div class="drink-option">
+              <input type="radio" name="size" value="Large" id="size-large" data-price-modifier="400">
+              <label for="size-large" class="drink-option__label">
+                <span class="drink-option__name">Large (20oz)</span>
+                <span class="drink-option__price">+$4.00</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Flavor Pumps {% endcomment %}
+        <div class="drink-builder__step" data-step="flavors">
+          <h3 class="drink-builder__step-title">Add Flavor Pumps</h3>
+          <div class="flavor-pumps">
+            {% assign flavors = 'Vanilla,Coconut,Mango,Pineapple,Strawberry,Chocolate' | split: ',' %}
+            {% for flavor in flavors %}
+              <div class="flavor-pump">
+                <label class="flavor-pump__label">{{ flavor }}</label>
+                <div class="flavor-pump__controls">
+                  <button type="button" class="flavor-pump__decrease" data-flavor="{{ flavor | downcase }}">-</button>
+                  <input type="number" 
+                         name="flavor_{{ flavor | downcase }}" 
+                         value="0" 
+                         min="0" 
+                         max="5" 
+                         class="flavor-pump__input"
+                         data-price-per-pump="50">
+                  <button type="button" class="flavor-pump__increase" data-flavor="{{ flavor | downcase }}">+</button>
+                </div>
+                <span class="flavor-pump__price">$0.50 each</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% comment %} Add-ons {% endcomment %}
+        <div class="drink-builder__step" data-step="addons">
+          <h3 class="drink-builder__step-title">Boost Your Drink</h3>
+          <div class="drink-builder__addons">
+            <div class="addon-option">
+              <input type="checkbox" name="addon_extra_shot" value="Extra Kava Shot" id="addon-extra-shot" data-price="300">
+              <label for="addon-extra-shot" class="addon-option__label">
+                <span class="addon-option__name">Extra Kava Shot</span>
+                <span class="addon-option__price">+$3.00</span>
+              </label>
+            </div>
+            <div class="addon-option">
+              <input type="checkbox" name="addon_coconut_milk" value="Coconut Milk" id="addon-coconut-milk" data-price="100">
+              <label for="addon-coconut-milk" class="addon-option__label">
+                <span class="addon-option__name">Coconut Milk</span>
+                <span class="addon-option__price">+$1.00</span>
+              </label>
+            </div>
+            <div class="addon-option">
+              <input type="checkbox" name="addon_honey" value="Organic Honey" id="addon-honey" data-price="75">
+              <label for="addon-honey" class="addon-option__label">
+                <span class="addon-option__name">Organic Honey</span>
+                <span class="addon-option__price">+$0.75</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Order Summary {% endcomment %}
+        <div class="drink-builder__summary">
+          <div class="order-summary">
+            <h3 class="order-summary__title">Your Drink</h3>
+            <div class="order-summary__details" data-order-details>
+              <p class="order-summary__placeholder">Select a base drink to get started</p>
+            </div>
+            <div class="order-summary__total">
+              <span class="order-summary__total-label">Total:</span>
+              <span class="order-summary__total-price" data-total-price>$0.00</span>
+            </div>
+            <button type="submit" class="order-summary__add-to-cart btn btn--primary" disabled>
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.drink-builder {
+  padding: 2rem 0;
+  background: #f8f8f8;
+}
+
+.drink-builder__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.drink-builder__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.drink-builder__title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.drink-builder__description {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.drink-builder__content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+}
+
+.drink-builder__step {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.drink-builder__step-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #ff6600;
+  padding-bottom: 0.5rem;
+}
+
+.drink-builder__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.drink-option {
+  position: relative;
+}
+
+.drink-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.drink-option__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.drink-option__label:hover {
+  border-color: #ff6600;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
+}
+
+.drink-option input:checked + .drink-option__label {
+  border-color: #ff6600;
+  background: #fff3e0;
+}
+
+.drink-option__image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.drink-option__name {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.drink-option__price {
+  color: #ff6600;
+  font-weight: bold;
+}
+
+.flavor-pumps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.flavor-pump {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+}
+
+.flavor-pump__label {
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.flavor-pump__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flavor-pump__decrease,
+.flavor-pump__increase {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.flavor-pump__decrease:hover,
+.flavor-pump__increase:hover {
+  background: #f0f0f0;
+}
+
+.flavor-pump__input {
+  width: 60px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.flavor-pump__price {
+  font-size: 0.9rem;
+  color: #666;
+  min-width: 80px;
+  text-align: right;
+}
+
+.drink-builder__addons {
+  display: grid;
+  gap: 1rem;
+}
+
+.addon-option {
+  display: flex;
+  align-items: center;
+}
+
+.addon-option input[type="checkbox"] {
+  margin-right: 1rem;
+  transform: scale(1.2);
+}
+
+.addon-option__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  padding: 1rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.addon-option__label:hover {
+  background: #f0f0f0;
+}
+
+.addon-option__name {
+  font-weight: bold;
+}
+
+.addon-option__price {
+  color: #ff6600;
+  font-weight: bold;
+}
+
+.drink-builder__summary {
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+}
+
+.order-summary {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.order-summary__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.order-summary__details {
+  margin-bottom: 2rem;
+  min-height: 200px;
+}
+
+.order-summary__placeholder {
+  color: #999;
+  text-align: center;
+  font-style: italic;
+}
+
+.order-summary__item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.order-summary__total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  padding-top: 1rem;
+  border-top: 2px solid #ff6600;
+}
+
+.order-summary__add-to-cart {
+  width: 100%;
+  padding: 1rem;
+  background: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.order-summary__add-to-cart:hover:not(:disabled) {
+  background: #e55a00;
+}
+
+.order-summary__add-to-cart:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .drink-builder__content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .drink-builder__options {
+    grid-template-columns: 1fr;
+  }
+  
+  .flavor-pumps {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-summary {
+    position: static;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('[data-product-form]');
+  const variantIdInput = document.querySelector('[data-variant-id]');
+  const totalPriceElement = document.querySelector('[data-total-price]');
+  const orderDetails = document.querySelector('[data-order-details]');
+  const addToCartButton = document.querySelector('.order-summary__add-to-cart');
+  
+  let currentTotal = 0;
+  let basePrice = 0;
+  let selectedBase = null;
+  
+  // Handle base drink selection
+  document.querySelectorAll('input[name="base_drink"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.checked) {
+        selectedBase = {
+          name: this.closest('.drink-option').querySelector('.drink-option__name').textContent,
+          price: parseInt(this.dataset.price),
+          variantId: this.dataset.variantId
+        };
+        basePrice = selectedBase.price;
+        variantIdInput.value = selectedBase.variantId;
+        updateOrder();
+      }
+    });
+  });
+  
+  // Handle size changes
+  document.querySelectorAll('input[name="size"]').forEach(radio => {
+    radio.addEventListener('change', updateOrder);
+  });
+  
+  // Handle flavor pump controls
+  document.querySelectorAll('.flavor-pump__decrease, .flavor-pump__increase').forEach(button => {
+    button.addEventListener('click', function() {
+      const flavor = this.dataset.flavor;
+      const input = document.querySelector(`input[name="flavor_${flavor}"]`);
+      const isIncrease = this.classList.contains('flavor-pump__increase');
+      
+      let currentValue = parseInt(input.value);
+      if (isIncrease && currentValue < 5) {
+        input.value = currentValue + 1;
+      } else if (!isIncrease && currentValue > 0) {
+        input.value = currentValue - 1;
+      }
+      
+      updateOrder();
+    });
+  });
+  
+  // Handle flavor pump input changes
+  document.querySelectorAll('.flavor-pump__input').forEach(input => {
+    input.addEventListener('change', updateOrder);
+  });
+  
+  // Handle addon changes
+  document.querySelectorAll('input[name^="addon_"]').forEach(checkbox => {
+    checkbox.addEventListener('change', updateOrder);
+  });
+  
+  function updateOrder() {
+    if (!selectedBase) {
+      orderDetails.innerHTML = '<p class="order-summary__placeholder">Select a base drink to get started</p>';
+      totalPriceElement.textContent = '$0.00';
+      addToCartButton.disabled = true;
+      return;
+    }
+    
+    let total = basePrice;
+    let orderHTML = '';
+    
+    // Add base drink
+    orderHTML += `<div class="order-summary__item">
+      <span>${selectedBase.name}</span>
+      <span>$${(selectedBase.price / 100).toFixed(2)}</span>
+    </div>`;
+    
+    // Add size modifier
+    const selectedSize = document.querySelector('input[name="size"]:checked');
+    if (selectedSize) {
+      const sizeModifier = parseInt(selectedSize.dataset.priceModifier);
+      if (sizeModifier > 0) {
+        total += sizeModifier;
+        orderHTML += `<div class="order-summary__item">
+          <span>${selectedSize.value} Size</span>
+          <span>+$${(sizeModifier / 100).toFixed(2)}</span>
+        </div>`;
+      }
+    }
+    
+    // Add flavor pumps
+    document.querySelectorAll('.flavor-pump__input').forEach(input => {
+      const quantity = parseInt(input.value);
+      if (quantity > 0) {
+        const flavorName = input.name.replace('flavor_', '').replace('_', ' ');
+        const pricePerPump = parseInt(input.dataset.pricePerPump);
+        const flavorTotal = quantity * pricePerPump;
+        total += flavorTotal;
+        
+        orderHTML += `<div class="order-summary__item">
+          <span>${flavorName.charAt(0).toUpperCase() + flavorName.slice(1)} (${quantity})</span>
+          <span>+$${(flavorTotal / 100).toFixed(2)}</span>
+        </div>`;
+      }
+    });
+    
+    // Add addons
+    document.querySelectorAll('input[name^="addon_"]:checked').forEach(checkbox => {
+      const addonPrice = parseInt(checkbox.dataset.price);
+      total += addonPrice;
+      
+      orderHTML += `<div class="order-summary__item">
+        <span>${checkbox.value}</span>
+        <span>+$${(addonPrice / 100).toFixed(2)}</span>
+      </div>`;
+    });
+    
+    orderDetails.innerHTML = orderHTML;
+    totalPriceElement.textContent = '$' + (total / 100).toFixed(2);
+    addToCartButton.disabled = false;
+    currentTotal = total;
+  }
+  
+  // Handle form submission
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (!selectedBase) {
+      alert('Please select a base drink');
+      return;
+    }
+    
+    // Collect all form data
+    const formData = new FormData();
+    formData.append('id', variantIdInput.value);
+    formData.append('quantity', '1');
+    
+    // Add custom properties
+    const selectedSize = document.querySelector('input[name="size"]:checked');
+    if (selectedSize) {
+      formData.append('properties[Size]', selectedSize.value);
+    }
+    
+    // Add flavor pumps
+    document.querySelectorAll('.flavor-pump__input').forEach(input => {
+      const quantity = parseInt(input.value);
+      if (quantity > 0) {
+        const flavorName = input.name.replace('flavor_', '').replace('_', ' ');
+        formData.append(`properties[wtf_${input.name}]`, quantity);
+      }
+    });
+    
+    // Add addons
+    document.querySelectorAll('input[name^="addon_"]:checked').forEach(checkbox => {
+      formData.append(`properties[${checkbox.name.replace('addon_', '')}]`, checkbox.value);
+    });
+    
+    // Add total price as property
+    formData.append('properties[wtf_custom_total]', '$' + (currentTotal / 100).toFixed(2));
+    
+    // Submit to cart
+    fetch('/cart/add.js', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('Added to cart!');
+      // Reset form or redirect to cart
+      window.location.href = '/cart';
+    })
+    .catch(error => {
+      console.error('Error adding to cart:', error);
+      alert('Error adding to cart. Please try again.');
+    });
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Enhanced Drink Builder",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Build Your Perfect Drink",
+      "label": "Section title"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section description"
+    },
+    {
+      "type": "collection",
+      "id": "base_drinks_collection",
+      "default": "kava-drinks",
+      "label": "Base drinks collection"
+    }
+  ]
+}
+{% endschema %}

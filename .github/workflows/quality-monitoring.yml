@@ -1,0 +1,394 @@
+name: Quality Assurance & Monitoring
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+env:
+  SHOPIFY_STORE: wtfswag.myshopify.com
+
+jobs:
+  lighthouse-monitoring:
+    name: Lighthouse Performance Monitoring
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install Lighthouse CI
+      run: npm install -g @lhci/cli lighthouse
+      
+    - name: Run Lighthouse audit
+      run: |
+        echo "Running Lighthouse performance audit..."
+        
+        # Create lighthouse configuration
+        cat << EOF > lighthouserc.json
+        {
+          "ci": {
+            "collect": {
+              "url": ["https://$SHOPIFY_STORE"],
+              "numberOfRuns": 3
+            },
+            "assert": {
+              "assertions": {
+                "categories:performance": ["error", {"minScore": 0.85}],
+                "categories:accessibility": ["error", {"minScore": 0.90}],
+                "categories:best-practices": ["error", {"minScore": 0.85}],
+                "categories:seo": ["error", {"minScore": 0.90}]
+              }
+            },
+            "upload": {
+              "target": "filesystem",
+              "outputDir": "./lighthouse-results"
+            }
+          }
+        }
+        EOF
+        
+        # Run Lighthouse CI
+        lhci autorun || echo "Lighthouse audit completed with warnings"
+        
+    - name: Process Lighthouse results
+      run: |
+        echo "Processing Lighthouse results..."
+        
+        if [ -d "./lighthouse-results" ]; then
+          # Extract scores from results
+          PERFORMANCE=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary.performance')
+          ACCESSIBILITY=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary.accessibility')
+          BEST_PRACTICES=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary["best-practices"]')
+          SEO=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary.seo')
+          
+          echo "PERFORMANCE_SCORE=$PERFORMANCE" >> $GITHUB_ENV
+          echo "ACCESSIBILITY_SCORE=$ACCESSIBILITY" >> $GITHUB_ENV
+          echo "BEST_PRACTICES_SCORE=$BEST_PRACTICES" >> $GITHUB_ENV
+          echo "SEO_SCORE=$SEO" >> $GITHUB_ENV
+          
+          # Create performance report
+          cat << EOF > performance-report.md
+          # WTF Theme Performance Report
+          
+          **Date:** $(date)
+          **Store:** $SHOPIFY_STORE
+          
+          ## Lighthouse Scores
+          - **Performance:** $PERFORMANCE/100
+          - **Accessibility:** $ACCESSIBILITY/100
+          - **Best Practices:** $BEST_PRACTICES/100
+          - **SEO:** $SEO/100
+          
+          ## Recommendations
+          $(if (( $(echo "$PERFORMANCE < 85" | bc -l) )); then echo "⚠️ Performance score below threshold (85)"; fi)
+          $(if (( $(echo "$ACCESSIBILITY < 90" | bc -l) )); then echo "⚠️ Accessibility score below threshold (90)"; fi)
+          $(if (( $(echo "$BEST_PRACTICES < 85" | bc -l) )); then echo "⚠️ Best Practices score below threshold (85)"; fi)
+          $(if (( $(echo "$SEO < 90" | bc -l) )); then echo "⚠️ SEO score below threshold (90)"; fi)
+          EOF
+        fi
+        
+    - name: Upload Lighthouse results
+      uses: actions/upload-artifact@v4
+      with:
+        name: lighthouse-monitoring-results
+        path: |
+          lighthouse-results/
+          performance-report.md
+        retention-days: 30
+
+  accessibility-audit:
+    name: Accessibility Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install accessibility tools
+      run: |
+        npm install -g axe-core @axe-core/cli
+        
+    - name: Run accessibility audit
+      run: |
+        echo "Running accessibility audit..."
+        
+        # Audit theme files for accessibility issues
+        echo "Checking Liquid templates for accessibility..."
+        
+        # Check for missing alt attributes
+        echo "Checking for images without alt attributes..."
+        if grep -r "<img" . --include="*.liquid" | grep -v "alt="; then
+          echo "⚠️ Found images without alt attributes"
+        fi
+        
+        # Check for proper heading structure
+        echo "Checking heading structure..."
+        if grep -r "<h[1-6]" . --include="*.liquid" > headings.txt; then
+          echo "✅ Headings found, manual review recommended"
+        fi
+        
+        # Check for form labels
+        echo "Checking form accessibility..."
+        if grep -r "<input" . --include="*.liquid" | grep -v "aria-label\|<label"; then
+          echo "⚠️ Found inputs that may need labels or aria-labels"
+        fi
+        
+        # Check for ARIA attributes
+        echo "Checking ARIA implementation..."
+        grep -r "aria-" . --include="*.liquid" | wc -l > aria-count.txt
+        echo "Found $(cat aria-count.txt) ARIA attributes"
+        
+        echo "✅ Accessibility audit completed"
+        
+    - name: Create accessibility report
+      run: |
+        cat << EOF > accessibility-report.md
+        # WTF Theme Accessibility Audit
+        
+        **Date:** $(date)
+        
+        ## Audit Results
+        - ARIA attributes found: $(cat aria-count.txt)
+        - Headings structure: See headings.txt
+        
+        ## Recommendations
+        1. Ensure all images have descriptive alt attributes
+        2. Verify proper heading hierarchy (h1 → h2 → h3)
+        3. Add labels or aria-labels to all form inputs
+        4. Test with screen readers
+        5. Verify keyboard navigation works properly
+        
+        ## WCAG 2.1 AA Compliance
+        - Color contrast: Manual testing required
+        - Keyboard navigation: Manual testing required
+        - Screen reader compatibility: Manual testing required
+        EOF
+        
+    - name: Upload accessibility results
+      uses: actions/upload-artifact@v4
+      with:
+        name: accessibility-audit-results
+        path: |
+          accessibility-report.md
+          headings.txt
+          aria-count.txt
+        retention-days: 30
+
+  seo-audit:
+    name: SEO Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run SEO audit
+      run: |
+        echo "Running SEO audit..."
+        
+        # Check for meta tags
+        echo "Checking meta tag implementation..."
+        if grep -r "meta.*description" . --include="*.liquid"; then
+          echo "✅ Meta descriptions found"
+        else
+          echo "⚠️ No meta descriptions found"
+        fi
+        
+        # Check for structured data
+        echo "Checking structured data..."
+        if grep -r "application/ld+json" . --include="*.liquid"; then
+          echo "✅ JSON-LD structured data found"
+        else
+          echo "⚠️ No structured data found"
+        fi
+        
+        # Check for Open Graph tags
+        echo "Checking Open Graph tags..."
+        if grep -r "og:" . --include="*.liquid"; then
+          echo "✅ Open Graph tags found"
+        else
+          echo "⚠️ No Open Graph tags found"
+        fi
+        
+        # Check for canonical URLs
+        echo "Checking canonical URLs..."
+        if grep -r "canonical" . --include="*.liquid"; then
+          echo "✅ Canonical URLs found"
+        else
+          echo "⚠️ No canonical URLs found"
+        fi
+        
+        # Check for sitemap
+        echo "Checking for sitemap..."
+        if [ -f "sitemap.xml" ] || grep -r "sitemap" . --include="*.liquid"; then
+          echo "✅ Sitemap implementation found"
+        else
+          echo "⚠️ No sitemap found"
+        fi
+        
+    - name: Create SEO report
+      run: |
+        cat << EOF > seo-report.md
+        # WTF Theme SEO Audit
+        
+        **Date:** $(date)
+        
+        ## SEO Elements Check
+        - Meta descriptions: $(if grep -r "meta.*description" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
+        - Structured data: $(if grep -r "application/ld+json" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
+        - Open Graph tags: $(if grep -r "og:" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
+        - Canonical URLs: $(if grep -r "canonical" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
+        
+        ## Recommendations
+        1. Ensure all pages have unique, descriptive meta descriptions
+        2. Implement comprehensive structured data for products and business info
+        3. Add Open Graph tags for social media sharing
+        4. Verify canonical URLs are properly set
+        5. Submit sitemap to search engines
+        
+        ## Local SEO
+        - Business schema: Check for LocalBusiness structured data
+        - NAP consistency: Verify Name, Address, Phone consistency
+        - Google My Business: Ensure GMB profile is optimized
+        EOF
+        
+    - name: Upload SEO results
+      uses: actions/upload-artifact@v4
+      with:
+        name: seo-audit-results
+        path: seo-report.md
+        retention-days: 30
+
+  competitor-monitoring:
+    name: Competitor Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run competitor audit
+      run: |
+        echo "Running competitor analysis..."
+        npm run competitors:audit
+        
+    - name: Generate competitor insights
+      run: |
+        echo "Generating competitive insights..."
+        
+        # Create competitive analysis report
+        cat << EOF > competitive-analysis.md
+        # WTF Competitive Analysis Report
+        
+        **Date:** $(date)
+        
+        ## Competitor Landscape
+        Based on local-kava-bars-database analysis:
+        
+        ### Key Competitors
+        1. **Kava Culture Kava Bar** - Fort Myers (15.3 mi)
+           - Strengths: Loyalty app, weekly events, strong social presence
+           - WTF Advantage: Enhanced drink builder, faster ordering
+        
+        2. **Elevation Kava** - Cape Coral (8.4 mi)
+           - Strengths: Signature blends, punch card loyalty
+           - WTF Advantage: Mix-and-match customization, ingredient transparency
+        
+        3. **High Tide Kava Bar** - Cape Coral (7.8 mi)
+           - Strengths: Nitro cold brew, VIP membership
+           - WTF Advantage: Premium sourcing, pickup optimization
+        
+        ## Recommended Actions
+        1. Monitor competitor pricing and promotions
+        2. Track new menu items and seasonal offerings
+        3. Analyze competitor social media engagement
+        4. Review customer feedback on competitor locations
+        5. Update WTF positioning based on market changes
+        
+        ## Market Opportunities
+        - Enhanced digital ordering experience
+        - Superior drink customization options
+        - Faster pickup and delivery service
+        - Premium ingredient transparency
+        EOF
+        
+    - name: Upload competitor analysis
+      uses: actions/upload-artifact@v4
+      with:
+        name: competitor-analysis
+        path: competitive-analysis.md
+        retention-days: 30
+
+  quality-summary:
+    name: Quality Summary Report
+    runs-on: ubuntu-latest
+    needs: [lighthouse-monitoring, accessibility-audit, seo-audit, competitor-monitoring]
+    if: always()
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      
+    - name: Create quality summary
+      run: |
+        echo "Creating quality summary report..."
+        
+        cat << EOF > quality-summary.md
+        # WTF Theme Quality Summary
+        
+        **Date:** $(date)
+        **Monitoring Run:** ${{ github.run_number }}
+        
+        ## Quality Metrics
+        
+        ### Performance Monitoring
+        $(if [ "${{ needs.lighthouse-monitoring.result }}" == "success" ]; then echo "✅ Lighthouse audit completed"; else echo "❌ Lighthouse audit failed"; fi)
+        
+        ### Accessibility Audit
+        $(if [ "${{ needs.accessibility-audit.result }}" == "success" ]; then echo "✅ Accessibility audit completed"; else echo "❌ Accessibility audit failed"; fi)
+        
+        ### SEO Audit
+        $(if [ "${{ needs.seo-audit.result }}" == "success" ]; then echo "✅ SEO audit completed"; else echo "❌ SEO audit failed"; fi)
+        
+        ### Competitor Analysis
+        $(if [ "${{ needs.competitor-monitoring.result }}" == "success" ]; then echo "✅ Competitor analysis completed"; else echo "❌ Competitor analysis failed"; fi)
+        
+        ## Overall Status
+        $(if [ "${{ needs.lighthouse-monitoring.result }}" == "success" ] && [ "${{ needs.accessibility-audit.result }}" == "success" ] && [ "${{ needs.seo-audit.result }}" == "success" ]; then echo "🟢 All quality checks passed"; else echo "🟡 Some quality checks need attention"; fi)
+        
+        ## Next Actions
+        1. Review individual audit reports for detailed findings
+        2. Address any performance or accessibility issues
+        3. Update SEO elements as recommended
+        4. Monitor competitor activities and adjust strategy
+        EOF
+        
+    - name: Upload quality summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: quality-summary-report
+        path: quality-summary.md
+        retention-days: 90

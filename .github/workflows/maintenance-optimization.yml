@@ -1,0 +1,400 @@
+name: Theme Maintenance & Optimization
+
+on:
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      maintenance_type:
+        description: 'Type of maintenance to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - cleanup
+        - optimization
+        - backup
+
+env:
+  SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+  SHOPIFY_STORE: wtfswag.myshopify.com
+
+jobs:
+  theme-backup:
+    name: Theme Backup
+    runs-on: ubuntu-latest
+    if: ${{ inputs.maintenance_type == 'full' || inputs.maintenance_type == 'backup' || github.event_name == 'schedule' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Shopify CLI
+      run: npm install -g @shopify/cli @shopify/theme
+      
+    - name: Create theme backup
+      run: |
+        echo "Creating theme backup..."
+        
+        # Get current live theme
+        shopify theme list --json > themes.json
+        LIVE_THEME_ID=$(cat themes.json | jq -r '.[] | select(.role == "main") | .id')
+        BACKUP_DATE=$(date +%Y%m%d-%H%M%S)
+        BACKUP_DIR="backup-$BACKUP_DATE"
+        
+        echo "LIVE_THEME_ID=$LIVE_THEME_ID" >> $GITHUB_ENV
+        echo "BACKUP_DATE=$BACKUP_DATE" >> $GITHUB_ENV
+        echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
+        
+        # Pull live theme
+        mkdir -p "$BACKUP_DIR"
+        shopify theme pull --theme="$LIVE_THEME_ID" --path="$BACKUP_DIR"
+        
+        # Create backup archive
+        tar -czf "wtf-theme-backup-$BACKUP_DATE.tar.gz" "$BACKUP_DIR"
+        
+        echo "✅ Theme backup created: wtf-theme-backup-$BACKUP_DATE.tar.gz"
+        
+    - name: Upload backup
+      uses: actions/upload-artifact@v4
+      with:
+        name: theme-backup-${{ env.BACKUP_DATE }}
+        path: |
+          wtf-theme-backup-${{ env.BACKUP_DATE }}.tar.gz
+          ${{ env.BACKUP_DIR }}/
+        retention-days: 90
+
+  cleanup-old-files:
+    name: Cleanup Old Files
+    runs-on: ubuntu-latest
+    if: ${{ inputs.maintenance_type == 'full' || inputs.maintenance_type == 'cleanup' || github.event_name == 'schedule' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run cleanup script
+      run: |
+        echo "Running cleanup operations..."
+        
+        # Run existing cleanup script if available
+        if [ -f "cleanup.sh" ]; then
+          chmod +x cleanup.sh
+          ./cleanup.sh
+        fi
+        
+        # Additional cleanup operations
+        echo "Cleaning up temporary files..."
+        find . -name "*.tmp" -delete
+        find . -name "*.log" -mtime +30 -delete
+        find . -name ".DS_Store" -delete
+        
+        # Clean up old backup files
+        echo "Cleaning up old backup files..."
+        find . -name "backup_*" -mtime +30 -delete
+        find . -name "cleanup_log_*" -mtime +30 -delete
+        
+        # Optimize images (if any optimization tools are available)
+        echo "Checking for image optimization opportunities..."
+        find assets/ -name "*.jpg" -o -name "*.png" -o -name "*.gif" | while read img; do
+          if [ -f "$img" ]; then
+            echo "Image found: $img (manual optimization recommended)"
+          fi
+        done
+        
+        echo "✅ Cleanup completed"
+        
+    - name: Create cleanup report
+      run: |
+        cat << EOF > cleanup-report.md
+        # WTF Theme Cleanup Report
+        
+        **Date:** $(date)
+        **Cleanup Type:** ${{ inputs.maintenance_type || 'scheduled' }}
+        
+        ## Cleanup Operations Performed
+        - Removed temporary files (*.tmp)
+        - Cleaned old log files (>30 days)
+        - Removed system files (.DS_Store)
+        - Cleaned old backup files (>30 days)
+        
+        ## File Statistics
+        - Total files: $(find . -type f | wc -l)
+        - Liquid files: $(find . -name "*.liquid" | wc -l)
+        - CSS files: $(find . -name "*.css" | wc -l)
+        - JS files: $(find . -name "*.js" | wc -l)
+        - Image files: $(find . -name "*.jpg" -o -name "*.png" -o -name "*.gif" | wc -l)
+        
+        ## Recommendations
+        1. Consider optimizing large image files
+        2. Review and remove unused CSS/JS files
+        3. Compress assets for better performance
+        4. Update outdated dependencies
+        EOF
+        
+    - name: Upload cleanup report
+      uses: actions/upload-artifact@v4
+      with:
+        name: cleanup-report
+        path: cleanup-report.md
+        retention-days: 30
+
+  performance-optimization:
+    name: Performance Optimization
+    runs-on: ubuntu-latest
+    if: ${{ inputs.maintenance_type == 'full' || inputs.maintenance_type == 'optimization' || github.event_name == 'schedule' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install optimization tools
+      run: |
+        npm install -g csso-cli uglify-js imagemin-cli
+        
+    - name: Analyze CSS performance
+      run: |
+        echo "Analyzing CSS performance..."
+        
+        # Find large CSS files
+        echo "Large CSS files (>50KB):"
+        find assets/ -name "*.css" -size +50k -exec ls -lh {} \;
+        
+        # Check for unused CSS (basic check)
+        echo "Checking for potential CSS optimization..."
+        for css_file in assets/*.css; do
+          if [ -f "$css_file" ]; then
+            echo "Analyzing $css_file..."
+            wc -l "$css_file"
+          fi
+        done
+        
+    - name: Analyze JavaScript performance
+      run: |
+        echo "Analyzing JavaScript performance..."
+        
+        # Find large JS files
+        echo "Large JavaScript files (>50KB):"
+        find assets/ -name "*.js" -size +50k -exec ls -lh {} \;
+        
+        # Check for console.log statements
+        echo "Checking for debug statements..."
+        if grep -r "console\." assets/ --include="*.js"; then
+          echo "⚠️ Found console statements that should be removed for production"
+        fi
+        
+    - name: Analyze Liquid templates
+      run: |
+        echo "Analyzing Liquid templates..."
+        
+        # Check for large templates
+        echo "Large Liquid templates (>500 lines):"
+        find . -name "*.liquid" -exec wc -l {} \; | awk '$1 > 500 {print $0}'
+        
+        # Check for potential performance issues
+        echo "Checking for potential Liquid performance issues..."
+        
+        # Look for nested loops
+        if grep -r "for.*in.*for.*in" . --include="*.liquid"; then
+          echo "⚠️ Found nested loops that may impact performance"
+        fi
+        
+        # Look for expensive operations in loops
+        if grep -r "for.*in.*assign" . --include="*.liquid"; then
+          echo "⚠️ Found assignments inside loops"
+        fi
+        
+    - name: Generate optimization recommendations
+      run: |
+        cat << EOF > optimization-report.md
+        # WTF Theme Performance Optimization Report
+        
+        **Date:** $(date)
+        
+        ## Performance Analysis
+        
+        ### CSS Analysis
+        - Total CSS files: $(find assets/ -name "*.css" | wc -l)
+        - Large CSS files: $(find assets/ -name "*.css" -size +50k | wc -l)
+        
+        ### JavaScript Analysis
+        - Total JS files: $(find assets/ -name "*.js" | wc -l)
+        - Large JS files: $(find assets/ -name "*.js" -size +50k | wc -l)
+        
+        ### Liquid Templates Analysis
+        - Total templates: $(find . -name "*.liquid" | wc -l)
+        - Large templates: $(find . -name "*.liquid" -exec wc -l {} \; | awk '$1 > 500' | wc -l)
+        
+        ## Optimization Recommendations
+        
+        ### Immediate Actions
+        1. **Minify CSS and JavaScript** - Reduce file sizes by removing whitespace and comments
+        2. **Optimize Images** - Compress and resize images for web delivery
+        3. **Remove Debug Code** - Remove console.log statements and debug code
+        4. **Lazy Load Images** - Implement lazy loading for below-the-fold images
+        
+        ### Performance Improvements
+        1. **Critical CSS** - Inline critical CSS and defer non-critical styles
+        2. **JavaScript Optimization** - Bundle and minify JavaScript files
+        3. **Template Optimization** - Reduce complex Liquid operations in loops
+        4. **Caching Strategy** - Implement proper browser caching headers
+        
+        ### Monitoring
+        1. **Core Web Vitals** - Monitor LCP, FID, and CLS metrics
+        2. **Lighthouse Scores** - Maintain scores above 85 for all categories
+        3. **Real User Monitoring** - Track actual user experience metrics
+        
+        ## Next Steps
+        1. Implement recommended optimizations
+        2. Test performance improvements
+        3. Monitor impact on user experience
+        4. Schedule regular performance reviews
+        EOF
+        
+    - name: Upload optimization report
+      uses: actions/upload-artifact@v4
+      with:
+        name: optimization-report
+        path: optimization-report.md
+        retention-days: 30
+
+  dependency-updates:
+    name: Dependency Updates
+    runs-on: ubuntu-latest
+    if: ${{ inputs.maintenance_type == 'full' || github.event_name == 'schedule' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Check for dependency updates
+      run: |
+        echo "Checking for dependency updates..."
+        
+        if [ -f "package.json" ]; then
+          # Install npm-check-updates
+          npm install -g npm-check-updates
+          
+          # Check for updates
+          ncu > dependency-updates.txt
+          
+          echo "Dependency update check completed"
+          cat dependency-updates.txt
+        else
+          echo "No package.json found, skipping dependency updates"
+        fi
+        
+    - name: Check Shopify CLI version
+      run: |
+        echo "Checking Shopify CLI version..."
+        
+        # Get current version
+        CURRENT_VERSION=$(npm list -g @shopify/cli --depth=0 | grep @shopify/cli | cut -d@ -f3)
+        echo "Current Shopify CLI version: $CURRENT_VERSION"
+        
+        # Check for latest version
+        LATEST_VERSION=$(npm show @shopify/cli version)
+        echo "Latest Shopify CLI version: $LATEST_VERSION"
+        
+        if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+          echo "⚠️ Shopify CLI update available: $CURRENT_VERSION → $LATEST_VERSION"
+        else
+          echo "✅ Shopify CLI is up to date"
+        fi
+        
+    - name: Create dependency report
+      run: |
+        cat << EOF > dependency-report.md
+        # WTF Theme Dependency Report
+        
+        **Date:** $(date)
+        
+        ## Current Dependencies
+        $(if [ -f "package.json" ]; then echo "Package.json found"; cat package.json; else echo "No package.json found"; fi)
+        
+        ## Update Recommendations
+        $(if [ -f "dependency-updates.txt" ]; then cat dependency-updates.txt; else echo "No updates checked"; fi)
+        
+        ## Shopify CLI Status
+        - Current version: $(npm list -g @shopify/cli --depth=0 | grep @shopify/cli | cut -d@ -f3 || echo "Not installed")
+        - Latest version: $(npm show @shopify/cli version || echo "Unable to check")
+        
+        ## Maintenance Actions
+        1. Review and test dependency updates
+        2. Update Shopify CLI if needed
+        3. Test theme functionality after updates
+        4. Update documentation if dependencies change
+        EOF
+        
+    - name: Upload dependency report
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependency-report
+        path: |
+          dependency-report.md
+          dependency-updates.txt
+        retention-days: 30
+
+  maintenance-summary:
+    name: Maintenance Summary
+    runs-on: ubuntu-latest
+    needs: [theme-backup, cleanup-old-files, performance-optimization, dependency-updates]
+    if: always()
+    
+    steps:
+    - name: Create maintenance summary
+      run: |
+        cat << EOF > maintenance-summary.md
+        # WTF Theme Maintenance Summary
+        
+        **Date:** $(date)
+        **Maintenance Type:** ${{ inputs.maintenance_type || 'scheduled' }}
+        **Run Number:** ${{ github.run_number }}
+        
+        ## Maintenance Tasks Completed
+        
+        ### Theme Backup
+        $(if [ "${{ needs.theme-backup.result }}" == "success" ]; then echo "✅ Theme backup completed successfully"; elif [ "${{ needs.theme-backup.result }}" == "skipped" ]; then echo "⏭️ Theme backup skipped"; else echo "❌ Theme backup failed"; fi)
+        
+        ### Cleanup Operations
+        $(if [ "${{ needs.cleanup-old-files.result }}" == "success" ]; then echo "✅ Cleanup operations completed successfully"; elif [ "${{ needs.cleanup-old-files.result }}" == "skipped" ]; then echo "⏭️ Cleanup operations skipped"; else echo "❌ Cleanup operations failed"; fi)
+        
+        ### Performance Optimization
+        $(if [ "${{ needs.performance-optimization.result }}" == "success" ]; then echo "✅ Performance analysis completed successfully"; elif [ "${{ needs.performance-optimization.result }}" == "skipped" ]; then echo "⏭️ Performance analysis skipped"; else echo "❌ Performance analysis failed"; fi)
+        
+        ### Dependency Updates
+        $(if [ "${{ needs.dependency-updates.result }}" == "success" ]; then echo "✅ Dependency check completed successfully"; elif [ "${{ needs.dependency-updates.result }}" == "skipped" ]; then echo "⏭️ Dependency check skipped"; else echo "❌ Dependency check failed"; fi)
+        
+        ## Overall Status
+        $(if [ "${{ needs.theme-backup.result }}" != "failure" ] && [ "${{ needs.cleanup-old-files.result }}" != "failure" ] && [ "${{ needs.performance-optimization.result }}" != "failure" ] && [ "${{ needs.dependency-updates.result }}" != "failure" ]; then echo "🟢 Maintenance completed successfully"; else echo "🟡 Maintenance completed with some issues"; fi)
+        
+        ## Next Maintenance
+        - **Scheduled:** Weekly on Sundays at 2 AM UTC
+        - **Manual:** Run workflow_dispatch for specific maintenance tasks
+        
+        ## Action Items
+        1. Review individual maintenance reports
+        2. Implement recommended optimizations
+        3. Test any changes in staging environment
+        4. Monitor theme performance post-maintenance
+        EOF
+        
+    - name: Upload maintenance summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: maintenance-summary
+        path: maintenance-summary.md
+        retention-days: 90
