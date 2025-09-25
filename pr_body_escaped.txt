@@ -1,0 +1,12 @@
+This PR:
+- Expands auto-tracked builder pages to include THC Drinks and THC Shots in snippets/wtf-analytics.liquid.
+- Aligns THC Shots page flavor rotation mirroring with Theme Settings (shots_inherit_thc_flavors) and allows custom overrides when mirroring is off.
+
+Also verified:
+- Analytics & Pixels settings section exists in config/settings_schema.json.
+- Kratom/Kava legacy builders are guarded behind request.design_mode.
+
+Follow-ups (outside this PR):
+- Fill Theme Settings variant IDs for canned/draft/take-home pages.
+- Validate THC Drinks page Liquid numeric comparisons to avoid type errors.
+- Continue Admin API data wiring and navigation links once token scopes are confirmed.

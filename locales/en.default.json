@@ -1,0 +1,80 @@
+{
+  "general": {
+    "404": {
+      "title": "Page not found",
+      "subtext": "The page you requested does not exist."
+    },
+    "navigation": "Navigation",
+    "close": "Close",
+    "password_page": {
+      "login_form_heading": "Enter store using password:",
+      "login_password_button": "Enter using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password"
+    },
+    "share": {
+      "success_message": "Link copied. Ready to share the WTF vibes!",
+      "share_url": "Copy link",
+      "close": "Close share dialog",
+      "copy_to_clipboard": "Copy link to clipboard"
+    }
+  },
+  "accessibility": {
+    "skip_to_text": "Skip to content",
+    "refresh_page": "Page refreshed. Content is now up to date.",
+    "toggle_navigation": "Toggle navigation",
+    "link_messages": {
+      "new_window": "Opens in a new window"
+    }
+  },
+  "sections": {
+    "cart": {
+      "cart_error": "There was an issue updating your cart. Please try again.",
+      "cart_quantity_error_html": "You can only add {{ quantity }} of this item to your cart."
+    },
+    "header": {
+      "menu": "Menu"
+    },
+    "slideshow": {
+      "pause_slideshow": "Pause slideshow",
+      "play_slideshow": "Play slideshow"
+    },
+    "custom_kratom": {
+      "mix_first_label": "First strain",
+      "mix_second_label": "Second strain"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "value_unavailable": "{{ option_value }} is unavailable",
+      "media": {
+        "image_available": "Slide {{ index }} selected"
+      },
+      "quantity": {
+        "label": "Quantity",
+        "decrease": "Decrease quantity for {{ product }}",
+        "increase": "Increase quantity for {{ product }}"
+      },
+      "recommendations": {
+        "empty": "Add more WTF favorites to see curated recommendations."
+      },
+      "on_sale": "On sale",
+      "view_media": "View media {{ index }}"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Your WTF gift card",
+      "subtext": "Use the code below during checkout.",
+      "balance": "Remaining balance: {{ balance }}"
+    }
+  },
+  "blogs": {
+    "article": {
+      "comments": "Comments"
+    }
+  }
+}

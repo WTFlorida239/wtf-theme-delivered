@@ -1,0 +1,97 @@
+{%- comment -%} Customer addresses template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <section class="account-header">
+    <h1>Your addresses</h1>
+    <p><a href="{{ routes.account_url }}">Back to account</a></p>
+  </section>
+
+  <section class="address-list" role="list">
+    {%- for address in customer.addresses -%}
+      <article class="address-card" role="listitem">
+        <h2>
+          {{ address.first_name }} {{ address.last_name }}
+          {%- if address == customer.default_address -%}
+            <span class="tag">Default</span>
+          {%- endif -%}
+        </h2>
+        <p>{{ address | format_address }}</p>
+        <div class="address-actions">
+          <a href="{{ address.url }}">Edit</a>
+          <form method="post" action="{{ address.url }}" data-confirm-message="Delete this address?">
+            <input type="hidden" name="_method" value="delete">
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      </article>
+    {%- else -%}
+      <p>No addresses yet.</p>
+    {%- endfor -%}
+  </section>
+
+  <section class="address-form">
+    <h2>Add a new address</h2>
+    {% form 'customer_address', customer.new_address %}
+      {% if form.errors %}
+        <div class="form-errors">{{ form.errors | default_errors }}</div>
+      {% endif %}
+      <div class="field">
+        <label for="AddressFirstName">First name</label>
+        <input type="text" id="AddressFirstName" name="address[first_name]" value="{{ form.first_name }}" required>
+      </div>
+      <div class="field">
+        <label for="AddressLastName">Last name</label>
+        <input type="text" id="AddressLastName" name="address[last_name]" value="{{ form.last_name }}" required>
+      </div>
+      <div class="field">
+        <label for="AddressCompany">Company</label>
+        <input type="text" id="AddressCompany" name="address[company]" value="{{ form.company }}">
+      </div>
+      <div class="field">
+        <label for="AddressAddress1">Address</label>
+        <input type="text" id="AddressAddress1" name="address[address1]" value="{{ form.address1 }}" required>
+      </div>
+      <div class="field">
+        <label for="AddressAddress2">Apartment, suite, etc.</label>
+        <input type="text" id="AddressAddress2" name="address[address2]" value="{{ form.address2 }}">
+      </div>
+      <div class="field">
+        <label for="AddressCity">City</label>
+        <input type="text" id="AddressCity" name="address[city]" value="{{ form.city }}" required>
+      </div>
+      <div class="field">
+        <label for="AddressCountry">Country</label>
+        <select id="AddressCountry" name="address[country]" data-default="{{ form.country | default: customer.default_address.country }}" required>
+          {{ all_country_option_tags }}
+        </select>
+      </div>
+      <div class="field">
+        <label for="AddressProvince">State</label>
+        <select id="AddressProvince" name="address[province]" data-default="{{ form.province | default: customer.default_address.province }}">
+          <option value="">Select state</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="AddressZip">ZIP / Postal code</label>
+        <input type="text" id="AddressZip" name="address[zip]" value="{{ form.zip }}" required>
+      </div>
+      <div class="field">
+        <label for="AddressPhone">Phone</label>
+        <input type="tel" id="AddressPhone" name="address[phone]" value="{{ form.phone }}">
+      </div>
+      <div class="field field--checkbox">
+        <label for="AddressDefault">
+          <input type="checkbox" id="AddressDefault" name="address[default]">
+          Set as default address
+        </label>
+      </div>
+      <button type="submit" class="button">Save address</button>
+    {% endform %}
+  </section>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.Shopify && Shopify.CountryProvinceSelector) {
+        new Shopify.CountryProvinceSelector('AddressCountry', 'AddressProvince');
+      }
+    });
+  </script>
+</main>

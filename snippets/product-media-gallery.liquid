@@ -1,0 +1,140 @@
+{% comment %}
+  Product media gallery
+  Renders responsive gallery with thumbnails for product media.
+  Expected params:
+    - product: Product object
+{% endcomment %}
+{% liquid
+  assign gallery_product = product
+  if section and section.id
+    assign gallery_id = 'ProductGallery-' | append: section.id
+  else
+    assign gallery_id = 'ProductGallery'
+  endif
+  assign featured_media = gallery_product.selected_or_first_available_variant.featured_media | default: gallery_product.featured_media
+  if featured_media == blank
+    assign featured_media = gallery_product.media | first
+  endif
+  assign variant_media_entries = ''
+  if gallery_product and gallery_product.variants.size > 0
+    for gallery_variant in gallery_product.variants
+      if gallery_variant.featured_media
+        assign entry = '"' | append: gallery_variant.id | append: '": "' | append: gallery_id | append: '-' | append: gallery_variant.featured_media.id | append: '"'
+        if variant_media_entries != ''
+          assign variant_media_entries = variant_media_entries | append: ',' | append: entry
+        else
+          assign variant_media_entries = entry
+        endif
+      endif
+    endfor
+  endif
+  assign variant_media_json = '{' | append: variant_media_entries | append: '}'
+%}
+{% if gallery_product and gallery_product.media.size > 0 %}
+  <media-gallery id="{{ gallery_id }}" class="product-media" data-product-gallery>
+    <div class="product-media__viewer" role="list">
+      {% for media in gallery_product.media %}
+        {% assign media_id = gallery_id | append: '-' | append: media.id %}
+        {% assign loading_attr = 'lazy' %}
+        {% if forloop.first %}
+          {% assign loading_attr = 'eager' %}
+        {% endif %}
+        <figure
+          class="product-media__item{% unless media.id == featured_media.id %} is-hidden{% endunless %}"
+          data-media-id="{{ media_id }}"
+          role="listitem"
+        >
+          {% case media.media_type %}
+            {% when 'image' %}
+              {{ media | image_tag:
+                widths: '360,533,720,940,1200,1600',
+                sizes: '(min-width: 990px) 50vw, 100vw',
+                alt: media.alt | default: gallery_product.title,
+                loading: loading_attr,
+                class: 'product-media__image'
+              }}
+            {% when 'video' %}
+              {{ media | video_tag: controls: true, preload: 'metadata', class: 'product-media__video' }}
+            {% when 'external_video' %}
+              {{ media | external_video_tag: class: 'product-media__video', loading: 'lazy' }}
+            {% when 'model' %}
+              {{ media | model_viewer_tag:
+                image_size: '1200x',
+                reveal: 'interaction',
+                toggleable: true,
+                class: 'product-media__model'
+              }}
+            {% else %}
+              {{ media | media_tag }}
+          {% endcase %}
+        </figure>
+      {% endfor %}
+    </div>
+
+    {% if gallery_product.media.size > 1 %}
+      <div class="product-media__thumbnails" role="list">
+        {% for media in gallery_product.media %}
+          {% assign media_id = gallery_id | append: '-' | append: media.id %}
+          <button
+            type="button"
+            class="product-media__thumbnail{% if media.id == featured_media.id %} is-active{% endif %}"
+            data-media-target="{{ media_id }}"
+            role="listitem"
+            aria-label="{{ 'products.product.view_media' | t: index: forloop.index }}"
+          >
+            {% if media.preview_image %}
+              {{ media.preview_image | image_tag:
+                widths: '90,120,180',
+                sizes: '80px',
+                loading: 'lazy',
+                alt: media.alt | default: gallery_product.title,
+                class: 'product-media__thumbnail-image'
+              }}
+            {% else %}
+              <span class="product-media__thumbnail-fallback">{{ media.media_type | capitalize }}</span>
+            {% endif %}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </media-gallery>
+  <script>
+    (function() {
+      const gallery = document.getElementById('{{ gallery_id }}');
+      if (!gallery) return;
+      const items = gallery.querySelectorAll('[data-media-id]');
+      const thumbs = gallery.querySelectorAll('[data-media-target]');
+      if (!items.length || !thumbs.length) return;
+      const variantMediaMap = {{ variant_media_json | strip_newlines }};
+      function activate(targetId) {
+        items.forEach(function(item) {
+          item.classList.toggle('is-hidden', item.dataset.mediaId !== targetId);
+        });
+        thumbs.forEach(function(btn) {
+          btn.classList.toggle('is-active', btn.dataset.mediaTarget === targetId);
+        });
+      }
+      thumbs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activate(btn.dataset.mediaTarget);
+        });
+      });
+      document.addEventListener('wtf:variant:change', function(event) {
+        if (!event.detail || !event.detail.variant) return;
+        const variantId = String(event.detail.variant.id || '');
+        if (!variantId) return;
+        const mediaTarget = variantMediaMap[variantId];
+        if (mediaTarget) {
+          activate(mediaTarget);
+        }
+      });
+    })();
+  </script>
+{% else %}
+  <div class="product-media__placeholder">
+    <div class="product-media__placeholder-icon">
+      {% render 'icon-product' %}
+    </div>
+  </div>
+{% endif %}
+

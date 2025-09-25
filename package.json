@@ -1,0 +1,9 @@
+{
+  "name": "wtf-theme-ops",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "competitors:audit": "node scripts/competitors-audit.js",
+    "conflicts:scan": "node scripts/check-conflicts.js"
+  }
+}

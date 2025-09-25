@@ -1,0 +1,24 @@
+{%- comment -%} Basic blog template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <header class="section-header">
+    <h1 class="section-header__title">{{ blog.title | escape }}</h1>
+    {%- if blog.description != blank -%}
+      <p class="section-header__subtext">{{ blog.description }}</p>
+    {%- endif -%}
+  </header>
+  <div class="blog-grid" role="list">
+    {%- for article in blog.articles -%}
+      <article class="blog-grid__item" role="listitem">
+        <h2><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
+        <p class="blog-grid__meta">{{ article.published_at | time_tag: format: 'date' }}</p>
+        {%- if article.excerpt != blank -%}
+          <p>{{ article.excerpt }}</p>
+        {%- else -%}
+          <p>{{ article.content | strip_html | truncate: 160 }}</p>
+        {%- endif -%}
+      </article>
+    {%- else -%}
+      <p>No articles found.</p>
+    {%- endfor -%}
+  </div>
+</main>

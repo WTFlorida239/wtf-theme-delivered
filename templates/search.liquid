@@ -1,0 +1,27 @@
+{%- comment -%} Search template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <header class="section-header">
+    <h1 class="section-header__title">Search results</h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+      <label for="SearchInput">Search</label>
+      <input type="search" id="SearchInput" name="q" value="{{ search.terms | escape }}" placeholder="Search WTF">
+      <button type="submit">Search</button>
+    </form>
+  </header>
+  <div class="search-grid" role="list">
+    {%- if search.performed -%}
+      {%- for item in search.results -%}
+        <article role="listitem" class="search-grid__item">
+          <h2><a href="{{ item.url }}">{{ item.title | escape }}</a></h2>
+          {%- if item.object_type == 'product' -%}
+            <p>{{ item.price | money }}</p>
+          {%- else -%}
+            <p>{{ item.content | strip_html | truncate: 140 }}</p>
+          {%- endif -%}
+        </article>
+      {%- else -%}
+        <p>No results found.</p>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</main>

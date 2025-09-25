@@ -1,0 +1,22 @@
+{%- comment -%} Customer login template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <section class="customer-form">
+    <h1>Sign in</h1>
+    {% form 'customer_login' %}
+      {% if form.errors %}
+        <div class="form-errors">{{ form.errors | default_errors }}</div>
+      {% endif %}
+      <div class="field">
+        <label for="CustomerEmail">Email</label>
+        <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" value="{{ form.email }}" required>
+      </div>
+      <div class="field">
+        <label for="CustomerPassword">Password</label>
+        <input type="password" name="customer[password]" id="CustomerPassword" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="button">Sign in</button>
+    {% endform %}
+    <p><a href="{{ routes.account_reset_url }}">Forgot your password?</a></p>
+    <p><a href="{{ routes.account_register_url }}">Create account</a></p>
+  </section>
+</main>

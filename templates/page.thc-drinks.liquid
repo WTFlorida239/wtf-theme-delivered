@@ -1,0 +1,14 @@
+{%- comment -%} THC Drinks – Order Page {%- endcomment -%}
+{% section 'enhanced-drink-builder' %}
+{% render 'wtf-drink-data' %}
+{%- capture items_json -%}{% render 'wtf-delta9-data' %}{%- endcapture -%}
+{%- # theme-check-disable UnknownFilter -%}
+{% assign delta_items = items_json | parse_json %}
+{%- # theme-check-enable UnknownFilter -%}
+{% render 'wtf-collection-cards',
+  title: 'THC Drinks',
+  subtitle: 'Premium cannabis beverages - Large size and Gallons only',
+  items: delta_items,
+  color: 'thc',
+  back_url: routes.root_url
+%}

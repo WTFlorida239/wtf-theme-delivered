@@ -1,0 +1,21 @@
+{%- comment -%}
+  Returns JSON describing featured Delta-9 items for the WTF collection cards.
+{%- endcomment -%}
+[
+  {
+    "title": {{ 'Delta-9 THC Drinks' | json }},
+    "description": {{ 'House-made cannabis beverages with rotating flavors' | json }},
+    "meta": {{ '10mg THC • Premium quality' | json }},
+    "link": {{ '/pages/thc-drinks' | json }},
+    "image_asset": {{ 'delta9_drinks_150x150.png' | json }},
+    "fallback_emoji": {{ '✨' | json }}
+  },
+  {
+    "title": {{ 'THC Shots' | json }},
+    "description": {{ 'Concentrated cannabis shots for quick effects' | json }},
+    "meta": {{ '25mg THC • Fast acting' | json }},
+    "link": {{ '/pages/thc-shots' | json }},
+    "image_asset": {{ 'thc-shots_150x150.png' | json }},
+    "fallback_emoji": {{ '🥃' | json }}
+  }
+]

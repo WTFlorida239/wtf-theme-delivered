@@ -1,0 +1,52 @@
+{%- comment -%} Basic article template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <article class="article" itemscope itemtype="http://schema.org/Article">
+    <header class="section-header">
+      <h1 class="section-header__title" itemprop="headline">{{ article.title | escape }}</h1>
+      <p class="article__meta">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}" itemprop="datePublished">{{ article.published_at | date: format: 'date' }}</time>
+        {%- if article.author -%}
+          <span itemprop="author">&middot; {{ article.author }}</span>
+        {%- endif -%}
+      </p>
+    </header>
+    {%- if article.image -%}
+      {%- assign article_image_alt = article.image.alt | default: article.title -%}
+      {{ article.image | image_url: width: 1200 | image_tag: alt: article_image_alt, loading: 'lazy', class: 'article__image' }}
+    {%- endif -%}
+    <div class="article__content rte" itemprop="articleBody">
+      {{ article.content }}
+    </div>
+    {%- if blog.comments_enabled? -%}
+      <section class="article__comments" id="comments">
+        <h2>{{ 'blogs.article.comments' | t | default: 'Comments' }}</h2>
+        {%- for comment in article.comments -%}
+          <article class="comment" itemprop="comment" itemscope itemtype="http://schema.org/Comment">
+            <header>
+              <strong itemprop="author">{{ comment.author }}</strong>
+              <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}" itemprop="datePublished">{{ comment.created_at | date: format: 'date' }}</time>
+            </header>
+            <div itemprop="text">{{ comment.content }}</div>
+          </article>
+        {%- else -%}
+          <p>No comments yet.</p>
+        {%- endfor -%}
+        {% form 'new_comment', article %}
+          <div class="field">
+            <label for="CommentAuthor">Name</label>
+            <input type="text" id="CommentAuthor" name="comment[author]" value="{{ form.author }}" required>
+          </div>
+          <div class="field">
+            <label for="CommentEmail">Email</label>
+            <input type="email" id="CommentEmail" name="comment[email]" value="{{ form.email }}" required>
+          </div>
+          <div class="field">
+            <label for="CommentBody">Comment</label>
+            <textarea id="CommentBody" name="comment[body]" rows="5" required>{{ form.body }}</textarea>
+          </div>
+          <button type="submit">Post comment</button>
+        {% endform %}
+      </section>
+    {%- endif -%}
+  </article>
+</main>

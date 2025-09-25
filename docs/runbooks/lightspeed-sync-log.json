@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-09-24T23:38:38.480Z",
+  "dryRun": true,
+  "tests": [
+    {
+      "name": "Lightspeed Connection",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.483Z",
+      "details": {
+        "message": "Using demo credentials - configure real API keys for production",
+        "recommendation": "Set LIGHTSPEED_API_KEY and LIGHTSPEED_API_SECRET environment variables"
+      }
+    },
+    {
+      "name": "Shopify Connection",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.484Z",
+      "details": {
+        "message": "Using demo credentials - configure real access token for production",
+        "recommendation": "Set SHOPIFY_ACCESS_TOKEN environment variable"
+      }
+    },
+    {
+      "name": "Inventory Mapping",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.484Z",
+      "details": {
+        "message": "Successfully mapped 2 items",
+        "mappedItems": [
+          {
+            "sku": "KRATOM-MED",
+            "lightspeedQty": 25,
+            "shopifyQty": 20,
+            "syncNeeded": true
+          },
+          {
+            "sku": "KAVA-LRG",
+            "lightspeedQty": 18,
+            "shopifyQty": 15,
+            "syncNeeded": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Webhook Configuration",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.484Z",
+      "details": {
+        "message": "Cannot test webhooks with demo credentials",
+        "requiredWebhooks": [
+          "orders/create",
+          "orders/updated",
+          "orders/paid",
+          "inventory_levels/update"
+        ],
+        "recommendation": "Configure webhooks in Shopify admin for production"
+      }
+    },
+    {
+      "name": "Low Stock Detection",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.484Z",
+      "details": {
+        "message": "Detected 2 low stock items",
+        "lowStockItems": [
+          {
+            "sku": "KRATOM-MED",
+            "quantity": 5,
+            "threshold": 10
+          },
+          {
+            "sku": "THC-10MG",
+            "quantity": 2,
+            "threshold": 5
+          }
+        ],
+        "alertsGenerated": 2
+      }
+    },
+    {
+      "name": "Alert Formatting",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.484Z",
+      "details": {
+        "message": "Successfully formatted low stock alert",
+        "alertMessage": "🚨 Low Stock Alert - WTF Cape Coral\n\n• KRATOM-MED: 5 remaining (threshold: 10)\n• THC-10MG: 2 remaining (threshold: 5)\n\nPlease restock these items soon to avoid stockouts."
+      }
+    },
+    {
+      "name": "Sync Performance",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.585Z",
+      "details": {
+        "message": "Estimated sync time for 100 items: 101ms",
+        "itemsPerSecond": 990,
+        "recommendation": "Performance within acceptable limits"
+      }
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 4,
+    "failed": 0,
+    "warnings": 3
+  }
+}

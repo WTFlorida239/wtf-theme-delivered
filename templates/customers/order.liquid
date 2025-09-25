@@ -1,0 +1,49 @@
+{%- comment -%} Customer order detail template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <section class="order-header">
+    <h1>Order {{ order.name }}</h1>
+    <p>Placed on {{ order.created_at | date: format: 'date' }}</p>
+    <p><a href="{{ routes.account_url }}">Back to orders</a></p>
+  </section>
+
+  <section class="order-status">
+    <p>Payment status: {{ order.financial_status_label }}</p>
+    <p>Fulfillment status: {{ order.fulfillment_status_label }}</p>
+  </section>
+
+  <section class="order-line-items">
+    <h2>Items</h2>
+    <table class="responsive-table">
+      <thead>
+        <tr>
+          <th scope="col">Product</th>
+          <th scope="col">SKU</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%- for line_item in order.line_items -%}
+          <tr>
+            <td data-label="Product">{{ line_item.title }}</td>
+            <td data-label="SKU">{{ line_item.sku }}</td>
+            <td data-label="Quantity">{{ line_item.quantity }}</td>
+            <td data-label="Price">{{ line_item.final_line_price | money }}</td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="order-summary">
+    <h2>Summary</h2>
+    <p>Subtotal: {{ order.subtotal_price | money }}</p>
+    {%- for shipping_line in order.shipping_lines -%}
+      <p>Shipping ({{ shipping_line.title }}): {{ shipping_line.price | money }}</p>
+    {%- endfor -%}
+    {%- for tax_line in order.tax_lines -%}
+      <p>Tax ({{ tax_line.title }}): {{ tax_line.price | money }}</p>
+    {%- endfor -%}
+    <p><strong>Total: {{ order.total_price | money }}</strong></p>
+  </section>
+</main>

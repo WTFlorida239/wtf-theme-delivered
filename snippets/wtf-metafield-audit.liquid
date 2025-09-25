@@ -1,0 +1,354 @@
+{% comment %}
+  Snippet: wtf-metafield-audit.liquid
+  Quick status panel for WTF metafields and forthcoming metaobject work.
+  Usage example:
+    {% render 'wtf-metafield-audit', product_ref: product, page_ref: page %}
+{% endcomment %}
+{%- liquid
+  assign audit_product = product_ref | default: product
+  assign audit_page = page_ref | default: page
+  assign show_product = false
+  if audit_product != blank
+    assign show_product = true
+  endif
+  assign show_page = false
+  if audit_page != blank
+    assign show_page = true
+  endif
+
+  assign has_contact = false
+  if shop.metafields.contact.phone_primary != blank and shop.metafields.contact.email_primary != blank and shop.metafields.contact.address_full != blank
+    assign has_contact = true
+  endif
+
+  assign has_location_coords = false
+  if shop.metafields.location.latitude != blank and shop.metafields.location.longitude != blank
+    assign has_location_coords = true
+  endif
+
+  assign has_social_ig = false
+  if shop.metafields.social.instagram_token != blank and shop.metafields.social.instagram_user_id != blank
+    assign has_social_ig = true
+  endif
+
+  assign has_social_yt = false
+  if shop.metafields.social.youtube_api_key != blank and shop.metafields.social.youtube_channel_id != blank
+    assign has_social_yt = true
+  endif
+
+  assign has_social_tiktok = false
+  if shop.metafields.social.tiktok_username != blank
+    assign has_social_tiktok = true
+  endif
+-%}
+<style>
+  .wtf-meta-audit {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    margin: 1.5rem 0;
+  }
+  .wtf-meta-audit h2 { margin: 0 0 0.5rem; font-size: 1.35rem; font-weight: 700; color: #111827; }
+  .wtf-meta-note { margin: 0 0 1rem; color: #4b5563; font-size: 0.9rem; }
+  .wtf-meta-group { margin-top: 1.25rem; }
+  .wtf-meta-group h3 { margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 600; color: #1f2937; }
+  .wtf-meta-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+  .wtf-meta-item {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    gap: 0.6rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 0.75rem;
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+  }
+  .wtf-meta-status { font-size: 1.2rem; line-height: 1; }
+  .wtf-meta-item strong { display: block; font-weight: 600; color: #1f2937; }
+  .wtf-meta-item small { display: block; margin-top: 0.15rem; color: #4b5563; font-size: 0.85rem; line-height: 1.35; }
+</style>
+
+<div class="wtf-meta-audit" role="region" aria-label="Metafield checklist">
+  <h2>Metafield &amp; Metaobject Checklist</h2>
+  <p class="wtf-meta-note">
+    Render this helper on an internal-only page (wrap in {% raw %}{% if request.design_mode %}{% endraw %} … {% raw %}{% endif %}{% endraw %}) so guests never see it.
+    Pass <code>product_ref</code> / <code>page_ref</code> when auditing specific resources.
+  </p>
+
+  <section class="wtf-meta-group">
+    <h3>Shop-level requirements</h3>
+    <ul class="wtf-meta-list">
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if shop.metafields.business.name != blank %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>business.name</strong>
+          <small>Feeds LocalBusiness schema + OpenGraph/Twitter site titles.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if has_contact %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>contact.phone_primary / email_primary / address_full</strong>
+          <small>Populate LocalBusiness contact details + structured data.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if shop.metafields.business.location_name != blank and shop.metafields.business.location_address != blank %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>business.location_name &amp; business.location_address</strong>
+          <small>Surface location copy in the GBP hours card.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if shop.metafields.custom.business_hours != blank %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>custom.business_hours (JSON)</strong>
+          <small>Drives live operating hours with holiday fallback.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if shop.metafields.custom.contact_info != blank %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>custom.contact_info (JSON)</strong>
+          <small>Hydrates drink data scripts with staff contact details.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if shop.metafields.custom.location != blank %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>custom.location</strong>
+          <small>Shares geocoded address with front-end drink builder logic.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if has_location_coords %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>location.latitude &amp; location.longitude</strong>
+          <small>Needed for LocalBusiness geo coordinates.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if has_social_ig %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>social.instagram_token &amp; social.instagram_user_id</strong>
+          <small>Unlocks Instagram feed on the Social Wall page.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if has_social_yt %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>social.youtube_api_key &amp; social.youtube_channel_id</strong>
+          <small>Required for YouTube ingestion on the Social Wall.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">{% if has_social_tiktok %}✅{% else %}⚠️{% endif %}</span>
+        <div>
+          <strong>social.tiktok_username</strong>
+          <small>Used as a fallback handle for TikTok embeds.</small>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="wtf-meta-group">
+    <h3>Product-level checks</h3>
+    <ul class="wtf-meta-list">
+      {% unless show_product %}
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">ℹ️</span>
+          <div>
+            <strong>No product context detected</strong>
+            <small>Render with <code>product_ref</code> or drop this snippet on a product page to audit product metafields.</small>
+          </div>
+        </li>
+      {% else %}
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.included_pumps != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.included_pumps</strong>
+            <small>Default pump allotment for the enhanced drink builder.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.extra_pump_price != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.extra_pump_price</strong>
+            <small>Price ladder for add-on pumps in the builder UI.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.max_flavors != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.max_flavors</strong>
+            <small>Hard limit for simultaneous flavor selections.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.thc_variant_id != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.thc_variant_id</strong>
+            <small>Only needed when THC add-on variant should auto-inject.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.pump_limits != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.pump_limits (JSON)</strong>
+            <small>Size-specific pump caps for each serving.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.pump_cost != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.pump_cost</strong>
+            <small>Shared dollar value applied to paid pumps.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.available_flavors != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.available_flavors</strong>
+            <small>Supply flavor chips without relying on hardcoded fallbacks.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.variant_map != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.variant_map (JSON)</strong>
+            <small>Connects size labels to variant IDs; replaces temporary inline map.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.wtf.flavors != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>wtf.flavors (list)</strong>
+            <small>Populates flavor pickers for kava/kratom drink pages.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.modifiers.ice_levels != blank or audit_product.metafields.modifiers.boosters != blank or audit_product.metafields.modifiers.sweeteners != blank or audit_product.metafields.modifiers.creamers != blank or audit_product.metafields.modifiers.thc_levels != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>modifiers.* groups</strong>
+            <small>Controls advanced drink modifier chips (ice, boosters, sweeteners, creamers, THC levels).</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.reviews.rating != blank and audit_product.metafields.reviews.count != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>reviews.rating &amp; reviews.count</strong>
+            <small>Drives AggregateRating in product JSON-LD.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_product.metafields.custom.faq_json != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.faq_json (list)</strong>
+            <small>Optional FAQPage schema per product.</small>
+          </div>
+        </li>
+      {% endunless %}
+    </ul>
+  </section>
+
+  <section class="wtf-meta-group">
+    <h3>Page-level checks</h3>
+    <ul class="wtf-meta-list">
+      {% unless show_page %}
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">ℹ️</span>
+          <div>
+            <strong>No page context detected</strong>
+            <small>Pass <code>page_ref</code> if you’re auditing a specific landing page template.</small>
+          </div>
+        </li>
+      {% else %}
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.wtf.product_handle != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>wtf.product_handle</strong>
+            <small>Required on kava/kratom/enhanced builder pages to bind the correct product.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.custom.shots_variant_id != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.shots_variant_id</strong>
+            <small>THC Shots page: supplies the cart variant when overrides are needed.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.custom.thc_flavor_1 != blank or audit_page.metafields.custom.thc_flavor_2 != blank or audit_page.metafields.custom.thc_flavor_3 != blank or audit_page.metafields.custom.thc_flavor_4 != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.thc_flavor_1–4</strong>
+            <small>THC rotation flavors; consider moving into a metaobject later.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.custom.draft_variant_id != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.draft_variant_id</strong>
+            <small>Draft Pours page override for the default theme setting.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.custom.canned_variant_id != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.canned_variant_id</strong>
+            <small>Canned Drinks page: optional variant override to bypass theme setting.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.wtf.take_home_variant_id != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>wtf.take_home_variant_id</strong>
+            <small>Take-Home Items landing page variant mapping.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.wtf.variant_id != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>wtf.variant_id</strong>
+            <small>Fun Stuff page override; otherwise theme setting is used.</small>
+          </div>
+        </li>
+        <li class="wtf-meta-item">
+          <span class="wtf-meta-status">{% if audit_page.metafields.custom.faq_json != blank %}✅{% else %}⚠️{% endif %}</span>
+          <div>
+            <strong>custom.faq_json</strong>
+            <small>Enables custom FAQ schema on landing pages.</small>
+          </div>
+        </li>
+      {% endunless %}
+    </ul>
+  </section>
+
+  <section class="wtf-meta-group">
+    <h3>Metaobject opportunities</h3>
+    <ul class="wtf-meta-list">
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">💡</span>
+        <div>
+          <strong>Drink flavor rotations</strong>
+          <small>Replace individual THC flavor metafields with a “Flavor Rotation” metaobject to schedule seasonal lineups.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">💡</span>
+        <div>
+          <strong>Variant mapping library</strong>
+          <small>Promote the temporary size→variant JSON map into a reusable metaobject keyed by product handle.</small>
+        </div>
+      </li>
+      <li class="wtf-meta-item">
+        <span class="wtf-meta-status">💡</span>
+        <div>
+          <strong>Homepage collection cards</strong>
+          <small>Store Kava/Kratom card content in a “Menu Card” metaobject instead of inline JSON strings.</small>
+        </div>
+      </li>
+    </ul>
+  </section>
+</div>

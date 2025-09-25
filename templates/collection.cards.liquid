@@ -1,0 +1,49 @@
+{%- comment -%}
+  Generic collection template that renders a homepage-style card grid
+  for Kratom, Kava, and THC collections using centralized data.
+  Assign this template to these collections as needed.
+{%- endcomment -%}
+{% render 'wtf-drink-data' %}
+
+{% assign handle = collection.handle %}
+{% assign items = nil %}
+{% assign color = 'kratom' %}
+
+{% if handle == 'kratom-teas' or handle == 'kratom' %}
+  {%- capture items_json -%}{% render 'wtf-kratom-data' %}{%- endcapture -%}
+  {%- # theme-check-disable UnknownFilter -%}
+  {% assign items = items_json | parse_json %}
+  {%- # theme-check-enable UnknownFilter -%}
+  {% assign color = 'kratom' %}
+{% elsif handle == 'kava-drinks' or handle == 'kava' %}
+  {%- capture items_json -%}{% render 'wtf-kava-data' %}{%- endcapture -%}
+  {%- # theme-check-disable UnknownFilter -%}
+  {% assign items = items_json | parse_json %}
+  {%- # theme-check-enable UnknownFilter -%}
+  {% assign color = 'kava' %}
+{% elsif handle == 'delta-9' or handle == 'thc-drinks' or handle == 'thc' %}
+  {%- capture items_json -%}{% render 'wtf-delta9-data' %}{%- endcapture -%}
+  {%- # theme-check-disable UnknownFilter -%}
+  {% assign items = items_json | parse_json %}
+  {%- # theme-check-enable UnknownFilter -%}
+  {% assign color = 'thc' %}
+{% endif %}
+
+{% if items %}
+  {% render 'wtf-collection-cards',
+    title: collection.title,
+    subtitle: collection.description,
+    items: items,
+    color: color,
+    back_url: routes.root_url
+  %}
+{% else %}
+  {% comment %} Fallback to the default collection view if this isn't one of the three {% endcomment %}
+  {% render 'wtf-collection-cards',
+    title: collection.title,
+    subtitle: collection.description,
+    items: collection.products | map: 'title',
+    color: 'kratom',
+    back_url: routes.root_url
+  %}
+{% endif %}

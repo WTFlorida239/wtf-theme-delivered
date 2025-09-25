@@ -1,0 +1,510 @@
+{% comment %}
+  Loyalty Program Schema Markup
+  JSON-LD for WTF loyalty program to compete with competitor loyalty offerings
+  
+  Usage:
+  {% render 'loyalty-schema' %}
+{% endcomment %}
+
+{% liquid
+  assign loyalty_program = shop.metafields.wtf.loyalty_program.value | default: blank
+  assign loyalty_tiers = shop.metafields.wtf.loyalty_tiers.value | default: blank
+%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LoyaltyProgram",
+  "name": "WTF Rewards Program",
+  "description": "Earn points with every purchase and unlock exclusive benefits at WTF | Welcome To Florida",
+  "provider": {
+    "@type": "Organization",
+    "name": "WTF | Welcome To Florida",
+    "url": "{{ shop.secure_url }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "1520 SE 46th Ln, Unit B",
+      "addressLocality": "Cape Coral",
+      "addressRegion": "FL",
+      "postalCode": "33904",
+      "addressCountry": "US"
+    },
+    "telephone": "(239) 955-0314",
+    "email": "info@wtfswag.com"
+  },
+  "programMembershipUsed": {
+    "@type": "ProgramMembership",
+    "membershipNumber": "WTF-MEMBER",
+    "program": {
+      "@type": "LoyaltyProgram",
+      "name": "WTF Rewards"
+    }
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "WTF Rewards Benefits",
+    "itemListElement": [
+      {% if loyalty_tiers != blank %}
+        {% for tier in loyalty_tiers %}
+          {
+            "@type": "Offer",
+            "name": "{{ tier.name }} Tier",
+            "description": "{{ tier.description }}",
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": {{ tier.min_points | default: 0 }}
+            },
+            "priceSpecification": {
+              "@type": "PriceSpecification",
+              "price": "{{ tier.discount_percentage | default: 0 }}",
+              "priceCurrency": "USD"
+            }
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      {% else %}
+        {
+          "@type": "Offer",
+          "name": "Welcome Tier",
+          "description": "Earn 1 point for every $1 spent. Get a free drink after your first 10 visits.",
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "minValue": 0
+          },
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Regular Tier",
+          "description": "5% discount on all drinks, early access to new flavors, and birthday rewards.",
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "minValue": 100
+          },
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "5",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "VIP Tier",
+          "description": "10% discount on all drinks, free flavor upgrades, exclusive event invitations.",
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "minValue": 500
+          },
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "10",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Elite Tier",
+          "description": "15% discount, free monthly drink, priority ordering, and exclusive merchandise.",
+          "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "minValue": 1000
+          },
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "15",
+            "priceCurrency": "USD"
+          }
+        }
+      {% endif %}
+    ]
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Sign-Up Bonus",
+      "description": "Get 50 bonus points when you join WTF Rewards",
+      "priceSpecification": {
+        "@type": "PriceSpecification",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "eligibleCustomerType": {
+        "@type": "BusinessEntityType",
+        "name": "New Members"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Referral Bonus",
+      "description": "Earn 100 points for each friend you refer who makes their first purchase",
+      "priceSpecification": {
+        "@type": "PriceSpecification",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Birthday Reward",
+      "description": "Free drink of your choice during your birthday month",
+      "priceSpecification": {
+        "@type": "PriceSpecification",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  ],
+  "termsOfService": "{{ shop.secure_url }}/pages/loyalty-terms",
+  "url": "{{ shop.secure_url }}/pages/loyalty-program"
+}
+</script>
+
+{% comment %} Loyalty Program Display Section {% endcomment %}
+<div class="loyalty-section" id="wtf-rewards">
+  <div class="page-width">
+    <div class="loyalty-hero">
+      <h2 class="loyalty-hero__title">WTF Rewards Program</h2>
+      <p class="loyalty-hero__subtitle">Earn points with every sip and unlock exclusive benefits</p>
+      <div class="loyalty-hero__cta">
+        <button type="button" class="btn btn-primary loyalty-signup-btn" data-loyalty-signup>
+          Join WTF Rewards
+        </button>
+        <p class="loyalty-hero__bonus">Get 50 bonus points when you sign up!</p>
+      </div>
+    </div>
+    
+    <div class="loyalty-benefits">
+      <h3 class="loyalty-benefits__title">How It Works</h3>
+      <div class="loyalty-steps">
+        <div class="loyalty-step">
+          <div class="loyalty-step__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+          </div>
+          <h4 class="loyalty-step__title">Sign Up</h4>
+          <p class="loyalty-step__description">Join WTF Rewards and get 50 bonus points instantly</p>
+        </div>
+        
+        <div class="loyalty-step">
+          <div class="loyalty-step__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v6l4 2"></path>
+            </svg>
+          </div>
+          <h4 class="loyalty-step__title">Earn Points</h4>
+          <p class="loyalty-step__description">Get 1 point for every $1 spent on drinks and products</p>
+        </div>
+        
+        <div class="loyalty-step">
+          <div class="loyalty-step__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+          </div>
+          <h4 class="loyalty-step__title">Unlock Rewards</h4>
+          <p class="loyalty-step__description">Redeem points for free drinks, discounts, and exclusive perks</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="loyalty-tiers">
+      <h3 class="loyalty-tiers__title">Membership Tiers</h3>
+      <div class="loyalty-tiers-grid">
+        {% if loyalty_tiers != blank %}
+          {% for tier in loyalty_tiers %}
+            <div class="loyalty-tier-card">
+              <div class="loyalty-tier-card__header">
+                <h4 class="loyalty-tier-card__name">{{ tier.name }}</h4>
+                <div class="loyalty-tier-card__points">{{ tier.min_points | default: 0 }}+ points</div>
+              </div>
+              <div class="loyalty-tier-card__benefits">
+                <p>{{ tier.description }}</p>
+                {% if tier.benefits %}
+                  <ul>
+                    {% for benefit in tier.benefits %}
+                      <li>{{ benefit }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="loyalty-tier-card loyalty-tier-card--welcome">
+            <div class="loyalty-tier-card__header">
+              <h4 class="loyalty-tier-card__name">Welcome</h4>
+              <div class="loyalty-tier-card__points">0+ points</div>
+            </div>
+            <div class="loyalty-tier-card__benefits">
+              <ul>
+                <li>Earn 1 point per $1 spent</li>
+                <li>Free drink after 10 visits</li>
+                <li>Birthday month surprise</li>
+                <li>Member-only promotions</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="loyalty-tier-card loyalty-tier-card--regular">
+            <div class="loyalty-tier-card__header">
+              <h4 class="loyalty-tier-card__name">Regular</h4>
+              <div class="loyalty-tier-card__points">100+ points</div>
+            </div>
+            <div class="loyalty-tier-card__benefits">
+              <ul>
+                <li>5% discount on all drinks</li>
+                <li>Early access to new flavors</li>
+                <li>Birthday month free drink</li>
+                <li>Exclusive event invitations</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="loyalty-tier-card loyalty-tier-card--vip">
+            <div class="loyalty-tier-card__header">
+              <h4 class="loyalty-tier-card__name">VIP</h4>
+              <div class="loyalty-tier-card__points">500+ points</div>
+            </div>
+            <div class="loyalty-tier-card__benefits">
+              <ul>
+                <li>10% discount on all drinks</li>
+                <li>Free flavor upgrades</li>
+                <li>Priority event access</li>
+                <li>Quarterly bonus points</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="loyalty-tier-card loyalty-tier-card--elite">
+            <div class="loyalty-tier-card__header">
+              <h4 class="loyalty-tier-card__name">Elite</h4>
+              <div class="loyalty-tier-card__points">1000+ points</div>
+            </div>
+            <div class="loyalty-tier-card__benefits">
+              <ul>
+                <li>15% discount on all drinks</li>
+                <li>Free monthly drink</li>
+                <li>Priority ordering</li>
+                <li>Exclusive merchandise</li>
+                <li>VIP event experiences</li>
+              </ul>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .loyalty-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  .loyalty-hero {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  
+  .loyalty-hero__title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+  
+  .loyalty-hero__subtitle {
+    font-size: 1.25rem;
+    margin: 0 0 2rem 0;
+    opacity: 0.9;
+  }
+  
+  .loyalty-signup-btn {
+    background-color: #ffffff;
+    color: #667eea;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .loyalty-signup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  .loyalty-hero__bonus {
+    margin: 1rem 0 0 0;
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+  
+  .loyalty-benefits {
+    margin-bottom: 4rem;
+  }
+  
+  .loyalty-benefits__title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 2rem 0;
+  }
+  
+  .loyalty-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .loyalty-step {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .loyalty-step__icon {
+    color: #ffffff;
+    margin-bottom: 1rem;
+  }
+  
+  .loyalty-step__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .loyalty-step__description {
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+  
+  .loyalty-tiers__title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 2rem 0;
+  }
+  
+  .loyalty-tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .loyalty-tier-card {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1f2937;
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .loyalty-tier-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  .loyalty-tier-card--welcome {
+    border-top: 4px solid #10b981;
+  }
+  
+  .loyalty-tier-card--regular {
+    border-top: 4px solid #3b82f6;
+  }
+  
+  .loyalty-tier-card--vip {
+    border-top: 4px solid #8b5cf6;
+  }
+  
+  .loyalty-tier-card--elite {
+    border-top: 4px solid #f59e0b;
+  }
+  
+  .loyalty-tier-card__header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .loyalty-tier-card__name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .loyalty-tier-card__points {
+    background-color: #f3f4f6;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  .loyalty-tier-card__benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .loyalty-tier-card__benefits li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  
+  .loyalty-tier-card__benefits li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+  }
+  
+  .loyalty-tier-card__benefits li:last-child {
+    border-bottom: none;
+  }
+  
+  @media (max-width: 768px) {
+    .loyalty-hero__title {
+      font-size: 2rem;
+    }
+    
+    .loyalty-steps {
+      grid-template-columns: 1fr;
+    }
+    
+    .loyalty-tiers-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const signupBtn = document.querySelector('[data-loyalty-signup]');
+    
+    if (signupBtn) {
+      signupBtn.addEventListener('click', function() {
+        // Redirect to signup page or open modal
+        window.location.href = '/pages/loyalty-signup';
+      });
+    }
+  });
+</script>

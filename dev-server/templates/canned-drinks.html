@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canned Drinks | WTF Welcome To Florida</title>
+    <meta name="description" content="Premium canned beverages from top brands. Choose your favorite flavors for pickup or delivery.">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; line-height: 1.6; }
+        
+        .header { 
+            background: #ff6600; 
+            color: white; 
+            padding: 15px 0; 
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        
+        .back-link { 
+            display: inline-block; 
+            color: #ff6600; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 20px; 
+            padding: 10px 15px; 
+            border: 2px solid #ff6600; 
+            border-radius: 5px; 
+            transition: all 0.3s ease; 
+        }
+        
+        .back-link:hover { 
+            background: #ff6600; 
+            color: white; 
+        }
+        
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 40px; 
+            align-items: start; 
+        }
+        
+        .product-image { 
+            width: 100%; 
+            max-width: 400px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        
+        .product-details { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        
+        .product-title { 
+            font-size: 32px; 
+            color: #333; 
+            margin-bottom: 10px; 
+            font-weight: bold; 
+        }
+        
+        .product-price { 
+            font-size: 24px; 
+            color: #ff6600; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+        }
+        
+        .product-description { 
+            color: #666; 
+            margin-bottom: 30px; 
+            line-height: 1.6; 
+            font-size: 16px; 
+        }
+        
+        .selection-section { 
+            margin: 30px 0; 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 20px; 
+        }
+        
+        .selection-section:last-child { 
+            border-bottom: none; 
+        }
+        
+        .section-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #333; 
+            margin-bottom: 15px; 
+        }
+        
+        .brand-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+        
+        .brand-button { 
+            padding: 15px; 
+            border: 3px solid #ddd; 
+            border-radius: 8px; 
+            text-align: center; 
+            background: white; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            color: #333; 
+            font-size: 14px; 
+            font-family: inherit; 
+            min-height: 60px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+        }
+        
+        .brand-button:hover { 
+            border-color: #ff6600; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(255,102,0,0.2); 
+        }
+        
+        .brand-button.selected { 
+            background: #ff6600; 
+            color: white; 
+            border-color: #ff6600; 
+        }
+        
+        .flavor-section { 
+            display: none; 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-radius: 8px; 
+        }
+        
+        .flavor-section.show { 
+            display: block; 
+        }
+        
+        .flavor-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 8px; 
+        }
+        
+        .flavor-button { 
+            padding: 12px 8px; 
+            border: 2px solid #ddd; 
+            border-radius: 6px; 
+            text-align: center; 
+            background: white; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            font-size: 13px; 
+            color: #333; 
+            font-family: inherit; 
+            min-height: 50px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .flavor-button:hover { 
+            border-color: #28a745; 
+            transform: translateY(-1px); 
+        }
+        
+        .flavor-button.selected { 
+            background: #28a745; 
+            color: white; 
+            border-color: #28a745; 
+            font-weight: bold; 
+        }
+        
+        .quantity-controls { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        
+        .qty-btn { 
+            width: 40px; 
+            height: 40px; 
+            border: 2px solid #ff6600; 
+            background: white; 
+            color: #ff6600; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 18px; 
+            font-weight: bold; 
+            font-family: inherit; 
+            transition: all 0.3s ease; 
+        }
+        
+        .qty-btn:hover { 
+            background: #ff6600; 
+            color: white; 
+            transform: scale(1.1); 
+        }
+        
+        .qty-input { 
+            width: 80px; 
+            text-align: center; 
+            padding: 10px; 
+            border: 2px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 16px; 
+            font-family: inherit; 
+        }
+        
+        .comments-textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 5px; 
+            resize: vertical; 
+            font-family: inherit; 
+            font-size: 14px; 
+            line-height: 1.4; 
+        }
+        
+        .comments-textarea:focus { 
+            border-color: #ff6600; 
+            outline: none; 
+        }
+        
+        .add-to-cart-btn { 
+            width: 100%; 
+            padding: 18px; 
+            background: #ff6600; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            font-family: inherit; 
+            transition: all 0.3s ease; 
+        }
+        
+        .add-to-cart-btn:hover { 
+            background: #e55a00; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(255,102,0,0.3); 
+        }
+        
+        .add-to-cart-btn:disabled { 
+            background: #ccc; 
+            cursor: not-allowed; 
+            transform: none; 
+            box-shadow: none; 
+        }
+        
+        .info-box { 
+            background: #e7f3ff; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            color: #333; 
+            font-size: 14px; 
+            line-height: 1.4; 
+        }
+        
+        @media (max-width: 768px) { 
+            .product-grid { grid-template-columns: 1fr; } 
+            .brand-grid { grid-template-columns: repeat(2, 1fr); } 
+            .flavor-grid { grid-template-columns: repeat(2, 1fr); } 
+            .product-details { padding: 20px; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🥤 Canned Drinks</div>
+    
+    <div class="container">
+        <a href="/" class="back-link">← Back to Menu</a>
+        
+        <div class="product-grid">
+            <div>
+                <img src="/assets/delta9_drinks_150x150.png" alt="Canned Drinks" class="product-image" onerror="this.style.display='none'">
+            </div>
+            
+            <div class="product-details">
+                <h1 class="product-title">Canned Drinks</h1>
+                <div class="product-price" id="current-price">$5.00</div>
+                
+                <div class="info-box">
+                    🥤 Premium canned beverages from trusted brands<br>
+                    ❄️ Always served ice cold<br>
+                    📦 Perfect for on-the-go or in-store enjoyment
+                </div>
+                
+                <div class="product-description">
+                    Choose from our selection of premium canned beverages. Each can is carefully selected for quality and flavor, 
+                    perfect for pairing with your visit or taking home.
+                </div>
+                
+                <form id="canned-drinks-form">
+                    <!-- Brand Selection -->
+                    <div class="selection-section">
+                        <div class="section-title">Select Brand</div>
+                        <div class="brand-grid" id="brand-grid">
+                            <button type="button" class="brand-button" data-brand="redbull" data-flavors='["Original","Sugar-Free","Tropical","Watermelon","Blue Edition"]'>
+                                Red Bull
+                            </button>
+                            <button type="button" class="brand-button" data-brand="monster" data-flavors='["Original","Zero Ultra","Pipeline Punch","Mango Loco","Ultra Paradise"]'>
+                                Monster
+                            </button>
+                            <button type="button" class="brand-button" data-brand="celsius" data-flavors='["Sparkling Orange","Raspberry Acai Green Tea","Peach Mango Green Tea","Watermelon"]'>
+                                Celsius
+                            </button>
+                            <button type="button" class="brand-button" data-brand="bang" data-flavors='["Blue Razz","Rainbow Unicorn","Cotton Candy","Frose Rose","Miami Cola"]'>
+                                Bang Energy
+                            </button>
+                            <button type="button" class="brand-button" data-brand="prime" data-flavors='["KSI","Logan Paul","Blue Raspberry","Tropical Punch","Lemon Lime"]'>
+                                Prime
+                            </button>
+                            <button type="button" class="brand-button" data-brand="coconut-water" data-flavors='["Original","Pineapple","Mango","Chocolate"]'>
+                                Coconut Water
+                            </button>
+                        </div>
+                        
+                        <!-- Flavor Selection -->
+                        <div class="flavor-section" id="flavor-section">
+                            <div class="section-title">Choose Flavor</div>
+                            <div class="flavor-grid" id="flavor-grid">
+                                <!-- Flavors populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity Selection -->
+                    <div class="selection-section">
+                        <div class="section-title">Quantity</div>
+                        <div class="quantity-controls">
+                            <button type="button" class="qty-btn" id="qty-minus">−</button>
+                            <input type="number" class="qty-input" id="quantity" value="1" min="1" max="24">
+                            <button type="button" class="qty-btn" id="qty-plus">+</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Comments -->
+                    <div class="selection-section">
+                        <div class="section-title">Special Instructions (Optional)</div>
+                        <textarea class="comments-textarea" id="comments" 
+                                  placeholder="Any special requests or notes for your order..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="add-to-cart-btn" id="add-to-cart" disabled>
+                        Select Brand & Flavor to Continue
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Canned Drinks Builder JavaScript
+        let selectedBrand = null;
+        let selectedFlavor = null;
+        let quantity = 1;
+        const basePrice = 5.00;
+
+        const brandButtons = document.querySelectorAll('.brand-button');
+        const flavorSection = document.getElementById('flavor-section');
+        const flavorGrid = document.getElementById('flavor-grid');
+        const addToCartBtn = document.getElementById('add-to-cart');
+        const priceDisplay = document.getElementById('current-price');
+        const quantityInput = document.getElementById('quantity');
+
+        // Brand selection
+        brandButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove selection from all brands
+                brandButtons.forEach(btn => btn.classList.remove('selected'));
+                
+                // Select this brand
+                this.classList.add('selected');
+                selectedBrand = this.dataset.brand;
+                selectedFlavor = null; // Reset flavor selection
+                
+                // Show flavor section
+                flavorSection.classList.add('show');
+                
+                // Populate flavors
+                const flavors = JSON.parse(this.dataset.flavors);
+                flavorGrid.innerHTML = '';
+                
+                flavors.forEach(flavor => {
+                    const flavorBtn = document.createElement('button');
+                    flavorBtn.type = 'button';
+                    flavorBtn.className = 'flavor-button';
+                    flavorBtn.textContent = flavor;
+                    flavorBtn.dataset.flavor = flavor;
+                    
+                    flavorBtn.addEventListener('click', function() {
+                        document.querySelectorAll('.flavor-button').forEach(btn => 
+                            btn.classList.remove('selected')
+                        );
+                        this.classList.add('selected');
+                        selectedFlavor = flavor;
+                        updateAddToCartButton();
+                    });
+                    
+                    flavorGrid.appendChild(flavorBtn);
+                });
+                
+                updateAddToCartButton();
+            });
+        });
+
+        // Quantity controls
+        document.getElementById('qty-minus').addEventListener('click', function() {
+            if (quantity > 1) {
+                quantity--;
+                quantityInput.value = quantity;
+                updatePrice();
+            }
+        });
+
+        document.getElementById('qty-plus').addEventListener('click', function() {
+            if (quantity < 24) {
+                quantity++;
+                quantityInput.value = quantity;
+                updatePrice();
+            }
+        });
+
+        quantityInput.addEventListener('change', function() {
+            quantity = Math.max(1, Math.min(24, parseInt(this.value) || 1));
+            this.value = quantity;
+            updatePrice();
+        });
+
+        function updatePrice() {
+            const total = basePrice * quantity;
+            priceDisplay.textContent = '$' + total.toFixed(2);
+        }
+
+        function updateAddToCartButton() {
+            if (selectedBrand && selectedFlavor) {
+                addToCartBtn.disabled = false;
+                addToCartBtn.textContent = `Add to Cart - $${(basePrice * quantity).toFixed(2)}`;
+            } else {
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = 'Select Brand & Flavor to Continue';
+            }
+        }
+
+        // Form submission
+        document.getElementById('canned-drinks-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!selectedBrand || !selectedFlavor) {
+                alert('Please select a brand and flavor first.');
+                return;
+            }
+            
+            const comments = document.getElementById('comments').value;
+            const total = basePrice * quantity;
+            
+            alert(`Added to cart!\n\nCanned Drink\nBrand: ${selectedBrand}\nFlavor: ${selectedFlavor}\nQuantity: ${quantity}\nTotal: $${total.toFixed(2)}\n\nComments: ${comments || 'None'}`);
+        });
+
+        // Initialize
+        updatePrice();
+    </script>
+</body>
+</html>

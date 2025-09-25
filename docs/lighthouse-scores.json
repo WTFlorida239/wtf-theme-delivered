@@ -1,0 +1,101 @@
+{
+  "timestamp": "2025-09-24T19:17:51.850Z",
+  "url": "https://wtfswag.com",
+  "scores": {
+    "performance": 92,
+    "accessibility": 96,
+    "bestPractices": 88,
+    "seo": 94,
+    "audits": {
+      "first-contentful-paint": {
+        "score": 0.95,
+        "displayValue": "1.2 s"
+      },
+      "largest-contentful-paint": {
+        "score": 0.9,
+        "displayValue": "2.1 s"
+      },
+      "cumulative-layout-shift": {
+        "score": 0.98,
+        "displayValue": "0.02"
+      },
+      "total-blocking-time": {
+        "score": 0.85,
+        "displayValue": "150 ms"
+      },
+      "speed-index": {
+        "score": 0.88,
+        "displayValue": "2.8 s"
+      }
+    },
+    "fetchTime": "2025-09-24T19:17:51.992Z",
+    "userAgent": "Mock Lighthouse Monitor"
+  },
+  "alerts": [
+    {
+      "category": "bestPractices",
+      "score": 88,
+      "threshold": 90,
+      "severity": "warning",
+      "message": "bestPractices score (88) is below threshold (90)"
+    },
+    {
+      "category": "seo",
+      "score": 94,
+      "threshold": 95,
+      "severity": "warning",
+      "message": "seo score (94) is below threshold (95)"
+    }
+  ],
+  "historical": [
+    {
+      "timestamp": "2025-09-24T19:17:51.850Z",
+      "scores": {
+        "performance": 92,
+        "accessibility": 96,
+        "bestPractices": 88,
+        "seo": 94,
+        "audits": {
+          "first-contentful-paint": {
+            "score": 0.95,
+            "displayValue": "1.2 s"
+          },
+          "largest-contentful-paint": {
+            "score": 0.9,
+            "displayValue": "2.1 s"
+          },
+          "cumulative-layout-shift": {
+            "score": 0.98,
+            "displayValue": "0.02"
+          },
+          "total-blocking-time": {
+            "score": 0.85,
+            "displayValue": "150 ms"
+          },
+          "speed-index": {
+            "score": 0.88,
+            "displayValue": "2.8 s"
+          }
+        },
+        "fetchTime": "2025-09-24T19:17:51.992Z",
+        "userAgent": "Mock Lighthouse Monitor"
+      },
+      "alerts": [
+        {
+          "category": "bestPractices",
+          "score": 88,
+          "threshold": 90,
+          "severity": "warning",
+          "message": "bestPractices score (88) is below threshold (90)"
+        },
+        {
+          "category": "seo",
+          "score": 94,
+          "threshold": 95,
+          "severity": "warning",
+          "message": "seo score (94) is below threshold (95)"
+        }
+      ]
+    }
+  ]
+}

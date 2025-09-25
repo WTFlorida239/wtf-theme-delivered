@@ -1,0 +1,14 @@
+{%- comment -%} Gift card template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <section class="gift-card">
+    <header class="section-header">
+      <h1 class="section-header__title">{{ 'gift_cards.issued.title' | t | default: 'Your gift card' }}</h1>
+      <p>{{ 'gift_cards.issued.subtext' | t | default: 'Use the code below during checkout.' }}</p>
+    </header>
+    <div class="gift-card__code" role="status" aria-live="polite">
+      <code>{{ gift_card.code | format_code }}</code>
+    </div>
+    <p class="gift-card__balance">{{ 'gift_cards.issued.balance' | t: balance: gift_card.balance | default: gift_card.balance }}</p>
+    <a class="button" href="{{ shop.url }}">Start shopping</a>
+  </section>
+</main>

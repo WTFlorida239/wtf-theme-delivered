@@ -1,0 +1,66 @@
+[0;32mWTF Theme Advanced Cleanup Script[0m
+[0;32mStarted at: Wed Sep 24 19:51:02 EDT 2025[0m
+[0;32mWorking directory: /Users/brendan/Desktop/wtf-theme-delivered[0m
+[1;33m=== PREVIEW: Files and directories that will be removed ===[0m
+Directory: ./templates 2
+Directory: ./locales 2
+Directory: ./.git 2
+Directory: ./scripts 2
+Directory: ./assets 2
+Directory: ./.github 2
+Directory: ./dev-server 2
+Directory: .git
+Directory: .github
+Directory: .git 2
+Directory: .github 2
+[1;33m=== End of preview ===[0m
+[0;34mCreating backup in backup_20250924_195108...[0m
+[0;32mBackup created successfully in backup_20250924_195108[0m
+[0;34mStarting cleanup process...[0m
+[1;33mRemoving duplicate directories...[0m
+Removing directory: ./templates 2
+Removing directory: ./locales 2
+Removing directory: ./.git 2
+Removing directory: ./scripts 2
+Removing directory: ./assets 2
+Removing directory: ./.github 2
+Removing directory: ./dev-server 2
+[1;33mRemoving old .git directory...[0m
+[1;33mRemoving old .github directory...[0m
+[1;33mRemoving duplicate files...[0m
+[1;33mRemoving temporary and cache files...[0m
+[0;32mCleanup completed successfully![0m
+[0;34m=== Final directory structure ===[0m
+total 1928
+drwx------@  30 brendan  staff     960 Sep 24 19:51 .
+drwx------@ 393 brendan  staff   12576 Sep 24 19:51 ..
+-rw-rw-r--@   1 brendan  staff     187 Sep 24 14:48 .gitignore
+-rw-rw-r--@   1 brendan  staff     140 Sep 24 14:48 .theme-check.yml
+-rwxr-xr-x@   1 brendan  staff    5088 Sep 24 19:49 advanced_cleanup.sh
+-rw-rw-r--@   1 brendan  staff    5399 Sep 24 14:48 AGENTS.md
+drwxrwxr-x@  40 brendan  staff    1280 Sep 24 19:26 assets
+drwxr-xr-x@  11 brendan  staff     352 Sep 24 19:51 backup_20250924_195108
+-rw-r--r--@   1 brendan  staff     549 Sep 24 19:50 cleanup_log_20250924_195031.txt
+-rw-r--r--@   1 brendan  staff    1204 Sep 24 19:51 cleanup_log_20250924_195102.txt
+-rwxr-xr-x@   1 brendan  staff     600 Sep 24 19:38 cleanup.sh
+drwxrwxr-x@   4 brendan  staff     128 Sep 24 19:26 config
+drwxrwxr-x@   8 brendan  staff     256 Sep 24 19:26 dev-server
+drwx------    9 brendan  staff     288 Sep 24 19:38 docs
+-rw-r--r--@   1 brendan  staff    7036 Sep 24 15:21 FINAL_REPORT.md
+drwxrwxr-x@   3 brendan  staff      96 Sep 24 19:26 layout
+-rw-rw-r--@   1 brendan  staff    4989 Sep 24 14:48 local-kava-bars-database - Sheet1.csv
+drwxrwxr-x@   3 brendan  staff      96 Sep 24 19:26 locales
+-rw-rw-r--@   1 brendan  staff     209 Sep 24 14:48 package.json
+-rw-rw-r--@   1 brendan  staff  306401 Sep 24 14:48 pages.json
+-rw-rw-r--@   1 brendan  staff     690 Sep 24 14:48 pr_body_escaped.txt
+-rw-rw-r--@   1 brendan  staff  589804 Sep 24 14:48 products.json
+-rw-rw-r--@   1 brendan  staff    9113 Sep 24 14:48 README.md
+drwxrwxr-x@   9 brendan  staff     288 Sep 24 19:26 scripts
+drwxrwxr-x@   3 brendan  staff      96 Sep 24 19:26 sections
+drwxrwxr-x@  44 brendan  staff    1408 Sep 24 19:25 snippets
+-rw-rw-r--@   1 brendan  staff    3400 Sep 24 14:48 TASKS.md
+drwxrwxr-x@  32 brendan  staff    1024 Sep 24 19:26 templates
+-rw-rw-r--@   1 brendan  staff    1383 Sep 24 14:48 themes.json
+-rw-rw-r--@   1 brendan  staff    5156 Sep 24 14:48 WTF_Site_Config.md
+[0;34m=== End of directory structure ===[0m
+[0;32mCleanup completed! Log saved to: cleanup_log_20250924_195102.txt[0m

@@ -1,0 +1,124 @@
+{
+  "timestamp": "2025-09-24T19:20:43.460Z",
+  "url": "https://wtfswag.com",
+  "validations": [
+    {
+      "name": "GA4 Theme Integration",
+      "status": "passed",
+      "timestamp": "2025-09-24T19:20:43.463Z",
+      "details": {
+        "message": "Google Analytics 4 integration found in theme"
+      }
+    },
+    {
+      "name": "Meta Pixel Theme Integration",
+      "status": "passed",
+      "timestamp": "2025-09-24T19:20:43.463Z",
+      "details": {
+        "message": "Meta Pixel integration found in theme"
+      }
+    },
+    {
+      "name": "TikTok Pixel Theme Integration",
+      "status": "passed",
+      "timestamp": "2025-09-24T19:20:43.463Z",
+      "details": {
+        "message": "TikTok Pixel integration found in theme"
+      }
+    },
+    {
+      "name": "Analytics Snippet",
+      "status": "passed",
+      "timestamp": "2025-09-24T19:20:43.463Z",
+      "details": {
+        "message": "WTF analytics snippet found"
+      }
+    },
+    {
+      "name": "Drink Builder Event Tracking",
+      "status": "warning",
+      "timestamp": "2025-09-24T19:20:43.464Z",
+      "details": {
+        "message": "Only 1 drink builder events found, may need more comprehensive tracking",
+        "eventsFound": 1,
+        "totalEvents": 5
+      }
+    },
+    {
+      "name": "E-commerce Tracking",
+      "status": "passed",
+      "timestamp": "2025-09-24T19:20:43.464Z",
+      "details": {
+        "message": "E-commerce tracking found in analytics snippet"
+      }
+    },
+    {
+      "name": "Website Accessibility",
+      "status": "failed",
+      "timestamp": "2025-09-24T19:20:43.638Z",
+      "details": {
+        "message": "Website returned status 404",
+        "url": "https://wtfswag.com"
+      }
+    },
+    {
+      "name": "Drink Builder Event Implementation",
+      "status": "failed",
+      "timestamp": "2025-09-24T19:20:43.639Z",
+      "details": {
+        "message": "Only 0/5 drink builder events implemented",
+        "implementedEvents": 0,
+        "totalEvents": 5,
+        "missingEvents": [
+          "drink_builder_started",
+          "strain_selected",
+          "flavor_added",
+          "thc_upgrade_selected",
+          "add_to_cart"
+        ]
+      }
+    },
+    {
+      "name": "Event Parameters",
+      "status": "warning",
+      "timestamp": "2025-09-24T19:20:43.639Z",
+      "details": {
+        "message": "Event parameters may be missing or incomplete"
+      }
+    },
+    {
+      "name": "Conversion Tracking",
+      "status": "warning",
+      "timestamp": "2025-09-24T19:20:43.639Z",
+      "details": {
+        "message": "Conversion tracking not found in checkout templates"
+      }
+    },
+    {
+      "name": "Shopify Analytics Integration",
+      "status": "passed",
+      "timestamp": "2025-09-24T19:20:43.640Z",
+      "details": {
+        "message": "Shopify analytics integration point found"
+      }
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 6,
+    "failed": 2,
+    "warnings": 3
+  },
+  "recommendations": [
+    {
+      "priority": "medium",
+      "category": "Drink Builder Events",
+      "action": "Complete drink builder event tracking implementation for better conversion insights"
+    },
+    {
+      "priority": "high",
+      "category": "Conversion Tracking",
+      "action": "Implement proper conversion tracking for purchase events and revenue attribution"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{%- comment -%} Simple list collections template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <header class="section-header">
+    <h1 class="section-header__title">Collections</h1>
+  </header>
+  <div class="collection-list" role="list">
+    {%- for collection in collections -%}
+      {%- if collection != blank -%}
+        <article role="listitem" class="collection-list__item">
+          <h2><a href="{{ collection.url }}">{{ collection.title | escape }}</a></h2>
+          {%- if collection.description != blank -%}
+            <p>{{ collection.description | strip_html | truncate: 120 }}</p>
+          {%- endif -%}
+        </article>
+      {%- endif -%}
+    {%- else -%}
+      <p>No collections found.</p>
+    {%- endfor -%}
+  </div>
+</main>

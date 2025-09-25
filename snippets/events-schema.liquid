@@ -1,0 +1,382 @@
+{% comment %}
+  Events Schema Markup
+  JSON-LD for WTF events and programming to compete with competitor event visibility
+  
+  Usage:
+  {% render 'events-schema', events: events %}
+{% endcomment %}
+
+{% liquid
+  assign upcoming_events = shop.metafields.wtf.upcoming_events.value | default: blank
+  assign recurring_events = shop.metafields.wtf.recurring_events.value | default: blank
+  assign event_location = shop.metafields.wtf.address.value | default: '1520 SE 46th Ln, Unit B, Cape Coral, FL 33904'
+%}
+
+{% if upcoming_events != blank or recurring_events != blank %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "WTF | Welcome To Florida Events",
+  "description": "Upcoming events and regular programming at Cape Coral's premier kava and kratom lounge",
+  "itemListElement": [
+    {% assign event_index = 0 %}
+    
+    {% comment %} Upcoming Special Events {% endcomment %}
+    {% if upcoming_events != blank %}
+      {% for event in upcoming_events %}
+        {% assign event_index = event_index | plus: 1 %}
+        {
+          "@type": "Event",
+          "name": "{{ event.name | escape }}",
+          "description": "{{ event.description | escape | default: 'Join us for an exciting event at WTF | Welcome To Florida' }}",
+          "startDate": "{{ event.start_date | date: '%Y-%m-%dT%H:%M:%S' }}",
+          {% if event.end_date %}
+            "endDate": "{{ event.end_date | date: '%Y-%m-%dT%H:%M:%S' }}",
+          {% endif %}
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": "WTF | Welcome To Florida",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1520 SE 46th Ln, Unit B",
+              "addressLocality": "Cape Coral",
+              "addressRegion": "FL",
+              "postalCode": "33904",
+              "addressCountry": "US"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 26.5629,
+              "longitude": -81.9495
+            }
+          },
+          "organizer": {
+            "@type": "Organization",
+            "name": "WTF | Welcome To Florida",
+            "url": "{{ shop.secure_url }}",
+            "telephone": "(239) 955-0314",
+            "email": "info@wtfswag.com"
+          },
+          {% if event.image %}
+            "image": "{{ event.image | image_url }}",
+          {% endif %}
+          {% if event.price %}
+            "offers": {
+              "@type": "Offer",
+              "price": "{{ event.price }}",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock",
+              "validFrom": "{{ 'now' | date: '%Y-%m-%dT%H:%M:%S' }}"
+            },
+          {% else %}
+            "isAccessibleForFree": true,
+          {% endif %}
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Adults 21+"
+          },
+          "keywords": "{{ event.keywords | default: 'kava bar cape coral, kratom lounge, sober nightlife, botanical beverages, community events' }}"
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% endif %}
+    
+    {% comment %} Recurring Events {% endcomment %}
+    {% if recurring_events != blank %}
+      {% if upcoming_events != blank %},{% endif %}
+      {% for recurring in recurring_events %}
+        {% assign event_index = event_index | plus: 1 %}
+        {% assign next_occurrence = recurring.next_date | default: 'now' | date: '%s' | plus: 604800 | date: '%Y-%m-%dT%H:%M:%S' %}
+        {
+          "@type": "Event",
+          "name": "{{ recurring.name | escape }}",
+          "description": "{{ recurring.description | escape | default: 'Regular programming at WTF | Welcome To Florida' }}",
+          "startDate": "{{ next_occurrence }}",
+          "endDate": "{{ next_occurrence | date: '%s' | plus: 7200 | date: '%Y-%m-%dT%H:%M:%S' }}",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": "WTF | Welcome To Florida",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1520 SE 46th Ln, Unit B",
+              "addressLocality": "Cape Coral",
+              "addressRegion": "FL",
+              "postalCode": "33904",
+              "addressCountry": "US"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 26.5629,
+              "longitude": -81.9495
+            }
+          },
+          "organizer": {
+            "@type": "Organization",
+            "name": "WTF | Welcome To Florida",
+            "url": "{{ shop.secure_url }}",
+            "telephone": "(239) 955-0314",
+            "email": "info@wtfswag.com"
+          },
+          "isAccessibleForFree": true,
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Adults 21+"
+          },
+          "eventSchedule": {
+            "@type": "Schedule",
+            "repeatFrequency": "{{ recurring.frequency | default: 'P1W' }}",
+            "byDay": "{{ recurring.day_of_week | default: 'Friday' }}"
+          },
+          "keywords": "{{ recurring.keywords | default: 'weekly events cape coral, kava bar programming, kratom lounge activities, sober social events' }}"
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% endif %}
+    
+    {% comment %} Default Events if no metafields {% endcomment %}
+    {% if upcoming_events == blank and recurring_events == blank %}
+      {
+        "@type": "Event",
+        "name": "Kava & Chill Fridays",
+        "description": "Weekly social gathering featuring premium kava selections, live music, and community vibes in a sober-friendly environment",
+        "startDate": "{{ 'now' | date: '%s' | plus: 432000 | date: '%Y-%m-%dT19:00:00' }}",
+        "endDate": "{{ 'now' | date: '%s' | plus: 432000 | date: '%Y-%m-%dT22:00:00' }}",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+          "@type": "Place",
+          "name": "WTF | Welcome To Florida",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "1520 SE 46th Ln, Unit B",
+            "addressLocality": "Cape Coral",
+            "addressRegion": "FL",
+            "postalCode": "33904",
+            "addressCountry": "US"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 26.5629,
+            "longitude": -81.9495
+          }
+        },
+        "organizer": {
+          "@type": "Organization",
+          "name": "WTF | Welcome To Florida",
+          "url": "{{ shop.secure_url }}",
+          "telephone": "(239) 955-0314",
+          "email": "info@wtfswag.com"
+        },
+        "isAccessibleForFree": true,
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Adults 21+"
+        },
+        "eventSchedule": {
+          "@type": "Schedule",
+          "repeatFrequency": "P1W",
+          "byDay": "Friday"
+        },
+        "keywords": "kava friday cape coral, weekly kava events, sober nightlife southwest florida, botanical beverage social"
+      },
+      {
+        "@type": "Event",
+        "name": "Kratom Education Workshop",
+        "description": "Monthly educational session covering kratom strains, effects, and responsible use with expert guidance",
+        "startDate": "{{ 'now' | date: '%s' | plus: 1209600 | date: '%Y-%m-%dT18:00:00' }}",
+        "endDate": "{{ 'now' | date: '%s' | plus: 1209600 | date: '%Y-%m-%dT20:00:00' }}",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+          "@type": "Place",
+          "name": "WTF | Welcome To Florida",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "1520 SE 46th Ln, Unit B",
+            "addressLocality": "Cape Coral",
+            "addressRegion": "FL",
+            "postalCode": "33904",
+            "addressCountry": "US"
+          }
+        },
+        "organizer": {
+          "@type": "Organization",
+          "name": "WTF | Welcome To Florida",
+          "url": "{{ shop.secure_url }}"
+        },
+        "isAccessibleForFree": true,
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Adults 21+"
+        },
+        "eventSchedule": {
+          "@type": "Schedule",
+          "repeatFrequency": "P1M",
+          "byDay": "Saturday"
+        },
+        "keywords": "kratom education cape coral, botanical wellness workshop, responsible kratom use, southwest florida kratom"
+      },
+      {
+        "@type": "Event",
+        "name": "Community Game Night",
+        "description": "Weekly board game and social night featuring kava, kratom, and THC beverages in a relaxed community setting",
+        "startDate": "{{ 'now' | date: '%s' | plus: 259200 | date: '%Y-%m-%dT19:00:00' }}",
+        "endDate": "{{ 'now' | date: '%s' | plus: 259200 | date: '%Y-%m-%dT22:00:00' }}",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+          "@type": "Place",
+          "name": "WTF | Welcome To Florida",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "1520 SE 46th Ln, Unit B",
+            "addressLocality": "Cape Coral",
+            "addressRegion": "FL",
+            "postalCode": "33904",
+            "addressCountry": "US"
+          }
+        },
+        "organizer": {
+          "@type": "Organization",
+          "name": "WTF | Welcome To Florida",
+          "url": "{{ shop.secure_url }}"
+        },
+        "isAccessibleForFree": true,
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Adults 21+"
+        },
+        "eventSchedule": {
+          "@type": "Schedule",
+          "repeatFrequency": "P1W",
+          "byDay": "Wednesday"
+        },
+        "keywords": "game night cape coral, community events southwest florida, sober social activities, kava bar games"
+      }
+    {% endif %}
+  ]
+}
+</script>
+{% endif %}
+
+{% comment %} Event listing display (optional) {% endcomment %}
+{% if upcoming_events != blank %}
+<div class="events-section" id="upcoming-events">
+  <h3 class="events-section__title">Upcoming Events</h3>
+  <div class="events-grid">
+    {% for event in upcoming_events %}
+      <div class="event-card">
+        {% if event.image %}
+          <div class="event-card__image">
+            <img src="{{ event.image | image_url: width: 400 }}" 
+                 alt="{{ event.name }}" 
+                 loading="lazy"
+                 width="400" 
+                 height="200">
+          </div>
+        {% endif %}
+        
+        <div class="event-card__content">
+          <h4 class="event-card__name">{{ event.name }}</h4>
+          <div class="event-card__date">
+            <time datetime="{{ event.start_date | date: '%Y-%m-%d' }}">
+              {{ event.start_date | date: '%B %d, %Y at %I:%M %p' }}
+            </time>
+          </div>
+          {% if event.description %}
+            <p class="event-card__description">{{ event.description }}</p>
+          {% endif %}
+          {% if event.price %}
+            <div class="event-card__price">${{ event.price }}</div>
+          {% else %}
+            <div class="event-card__price">Free Event</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .events-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    border-radius: 0.75rem;
+  }
+  
+  .events-section__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+    color: #1f2937;
+  }
+  
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .event-card {
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .event-card__image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .event-card__content {
+    padding: 1.25rem;
+  }
+  
+  .event-card__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+  }
+  
+  .event-card__date {
+    color: #3b82f6;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+  
+  .event-card__description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  
+  .event-card__price {
+    background-color: #10b981;
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  @media (max-width: 640px) {
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endif %}

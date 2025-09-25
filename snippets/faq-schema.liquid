@@ -1,0 +1,402 @@
+{% comment %}
+  FAQ Schema Markup
+  JSON-LD for frequently asked questions to compete with competitor FAQ visibility
+  
+  Usage:
+  {% render 'faq-schema', faqs: faqs %}
+{% endcomment %}
+
+{% liquid
+  assign faq_list = shop.metafields.wtf.faq.value | default: blank
+  assign page_faqs = page.metafields.wtf.faq.value | default: blank
+  
+  if page_faqs != blank
+    assign faq_list = page_faqs
+  endif
+%}
+
+{% if faq_list != blank or faq_list == blank %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% if faq_list != blank %}
+      {% for faq in faq_list %}
+        {
+          "@type": "Question",
+          "name": "{{ faq.question | escape }}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "{{ faq.answer | escape }}"
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      {
+        "@type": "Question",
+        "name": "What is kava and what are its effects?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kava is a traditional Pacific Island beverage made from the root of the Piper methysticum plant. It's known for its relaxing and social effects, promoting a sense of calm and well-being without impairing mental clarity. At WTF, we serve premium kava in various flavors and strengths to suit your preferences."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What types of kratom do you offer?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We offer four main kratom strains: Green (balanced energy and relaxation), Red (relaxing and calming), White (energizing and uplifting), and Yellow (mild and smooth). You can also choose our Mix option for a custom blend of two strains. All our kratom is lab-tested for quality and purity."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you offer THC products?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we offer Delta-9 THC beverages in various concentrations (5mg, 10mg, 20mg) for customers 21 and older. These products are compliant with Florida state laws and are perfect for those seeking a controlled, enjoyable experience. Please consume responsibly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I order online for pickup?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely! Our online drink builder allows you to customize your kava, kratom, or THC beverages with your preferred size, strain, flavors, and add-ons. Simply place your order online and pick it up at our Cape Coral location at 1520 SE 46th Ln, Unit B."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are your hours of operation?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We're open daily from 8:00 AM to 10:00 PM, with extended hours until 10:00 PM on Fridays and Saturdays. We're located in Cape Coral, Florida, and serve the greater Southwest Florida area including Fort Myers, Lehigh Acres, and North Fort Myers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is WTF a sober-friendly environment?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! WTF | Welcome To Florida is designed as a sober-friendly nightlife destination. We provide a welcoming community space where you can enjoy botanical beverages, socialize, and participate in events without alcohol. Our atmosphere promotes wellness, community, and responsible enjoyment of natural products."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What flavors can I add to my drinks?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We offer over 25 flavor options including regular and sugar-free varieties. Popular choices include Caramel Apple Butter, Salted Chocolate Caramel, Hibiscus Passion Fruit, Coconut Caramel, Maple Bourbon Pecan, and many more. You can add multiple flavors with our pump system - Medium drinks include 4 pumps, Large includes 6 pumps, and Gallons include 12 pumps."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you offer delivery?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Currently, we offer pickup service at our Cape Coral location. Our online ordering system makes it easy to place your order ahead of time for quick pickup. We're exploring delivery options for the future to better serve our Southwest Florida community."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are your products lab-tested?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, all our kratom and THC products are third-party lab-tested for purity, potency, and safety. We believe in transparency and quality, which is why we source only premium ingredients and provide detailed information about our products' origins and testing results."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What makes WTF different from other kava bars?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "WTF stands out with our advanced online ordering system, extensive customization options, premium ingredient sourcing, and community-focused atmosphere. Unlike other kava bars, we offer a comprehensive drink builder, THC beverage options, and a welcoming space designed for both newcomers and experienced botanical beverage enthusiasts."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I host events at WTF?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We regularly host community events including game nights, educational workshops, and social gatherings. For private events or group bookings, please contact us at (239) 955-0314 or info@wtfswag.com to discuss availability and arrangements."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What payment methods do you accept?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We accept cash, credit cards, and debit cards both in-store and for online orders. Our payment processing is secure and compliant with all industry standards to protect your information."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is parking available?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we have convenient parking available at our Cape Coral location. Our facility is easily accessible and we're located in a shopping plaza with ample parking for our customers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you offer loyalty programs or discounts?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We offer various promotions and are developing a loyalty program for our regular customers. Follow us on social media (@wtfswagbrand on Instagram, @wtf.welcome.to.fl on TikTok) and sign up for our newsletter to stay updated on special offers and events."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are your products safe to consume with medications?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We recommend consulting with your healthcare provider before consuming kava, kratom, or THC products if you're taking medications or have health conditions. Our knowledgeable staff can provide general information, but we always encourage responsible use and professional medical advice."
+        }
+      }
+    {% endif %}
+  ]
+}
+</script>
+
+{% comment %} FAQ Display Section {% endcomment %}
+<div class="faq-section" id="frequently-asked-questions">
+  <div class="page-width">
+    <h2 class="faq-section__title">Frequently Asked Questions</h2>
+    <p class="faq-section__subtitle">Everything you need to know about WTF | Welcome To Florida</p>
+    
+    <div class="faq-accordion">
+      {% if faq_list != blank %}
+        {% for faq in faq_list %}
+          <div class="faq-item" data-faq-item>
+            <button class="faq-question" 
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="faq-answer-{{ forloop.index }}"
+                    data-faq-toggle>
+              <span>{{ faq.question }}</span>
+              <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </button>
+            <div class="faq-answer" 
+                 id="faq-answer-{{ forloop.index }}"
+                 aria-hidden="true"
+                 data-faq-content>
+              <div class="faq-answer-content">
+                {{ faq.answer | newline_to_br }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% comment %} Default FAQs {% endcomment %}
+        <div class="faq-item" data-faq-item>
+          <button class="faq-question" 
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-1"
+                  data-faq-toggle>
+            <span>What is kava and what are its effects?</span>
+            <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer" 
+               id="faq-answer-1"
+               aria-hidden="true"
+               data-faq-content>
+            <div class="faq-answer-content">
+              Kava is a traditional Pacific Island beverage made from the root of the Piper methysticum plant. It's known for its relaxing and social effects, promoting a sense of calm and well-being without impairing mental clarity. At WTF, we serve premium kava in various flavors and strengths to suit your preferences.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item" data-faq-item>
+          <button class="faq-question" 
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-2"
+                  data-faq-toggle>
+            <span>What types of kratom do you offer?</span>
+            <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer" 
+               id="faq-answer-2"
+               aria-hidden="true"
+               data-faq-content>
+            <div class="faq-answer-content">
+              We offer four main kratom strains: Green (balanced energy and relaxation), Red (relaxing and calming), White (energizing and uplifting), and Yellow (mild and smooth). You can also choose our Mix option for a custom blend of two strains. All our kratom is lab-tested for quality and purity.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item" data-faq-item>
+          <button class="faq-question" 
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-3"
+                  data-faq-toggle>
+            <span>Can I order online for pickup?</span>
+            <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer" 
+               id="faq-answer-3"
+               aria-hidden="true"
+               data-faq-content>
+            <div class="faq-answer-content">
+              Absolutely! Our online drink builder allows you to customize your kava, kratom, or THC beverages with your preferred size, strain, flavors, and add-ons. Simply place your order online and pick it up at our Cape Coral location at 1520 SE 46th Ln, Unit B.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item" data-faq-item>
+          <button class="faq-question" 
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-4"
+                  data-faq-toggle>
+            <span>What makes WTF different from other kava bars?</span>
+            <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer" 
+               id="faq-answer-4"
+               aria-hidden="true"
+               data-faq-content>
+            <div class="faq-answer-content">
+              WTF stands out with our advanced online ordering system, extensive customization options, premium ingredient sourcing, and community-focused atmosphere. Unlike other kava bars, we offer a comprehensive drink builder, THC beverage options, and a welcoming space designed for both newcomers and experienced botanical beverage enthusiasts.
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .faq-section {
+    padding: 3rem 0;
+    background-color: #ffffff;
+  }
+  
+  .faq-section__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 1rem 0;
+    color: #1f2937;
+  }
+  
+  .faq-section__subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1.125rem;
+    margin: 0 0 3rem 0;
+  }
+  
+  .faq-accordion {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .faq-item {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .faq-question {
+    width: 100%;
+    padding: 1.5rem 0;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.2s;
+  }
+  
+  .faq-question:hover {
+    color: #3b82f6;
+  }
+  
+  .faq-question:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  .faq-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  
+  .faq-question[aria-expanded="true"] .faq-icon {
+    transform: rotate(180deg);
+  }
+  
+  .faq-answer {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    max-height: 0;
+  }
+  
+  .faq-answer[aria-hidden="false"] {
+    max-height: 500px;
+  }
+  
+  .faq-answer-content {
+    padding: 0 0 1.5rem 0;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+  
+  @media (max-width: 640px) {
+    .faq-section__title {
+      font-size: 2rem;
+    }
+    
+    .faq-question {
+      font-size: 1rem;
+      padding: 1.25rem 0;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const faqToggles = document.querySelectorAll('[data-faq-toggle]');
+    
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const content = document.getElementById(this.getAttribute('aria-controls'));
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        
+        // Close all other FAQs
+        faqToggles.forEach(otherToggle => {
+          if (otherToggle !== this) {
+            otherToggle.setAttribute('aria-expanded', 'false');
+            const otherContent = document.getElementById(otherToggle.getAttribute('aria-controls'));
+            if (otherContent) {
+              otherContent.setAttribute('aria-hidden', 'true');
+            }
+          }
+        });
+        
+        // Toggle current FAQ
+        this.setAttribute('aria-expanded', !isExpanded);
+        if (content) {
+          content.setAttribute('aria-hidden', isExpanded);
+        }
+      });
+    });
+  });
+</script>
+{% endif %}

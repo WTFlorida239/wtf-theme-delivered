@@ -1,0 +1,37 @@
+{%- comment -%} Customer account overview template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <section class="account-header">
+    <h1>Welcome back, {{ customer.first_name | default: customer.email }}!</h1>
+    <p><a href="{{ routes.account_addresses_url }}">Manage addresses</a> &middot; <a href="{{ routes.account_logout_url }}">Sign out</a></p>
+  </section>
+
+  <section class="account-orders">
+    <h2>Your orders</h2>
+    {%- if customer.orders.size > 0 -%}
+      <table class="responsive-table">
+        <thead>
+          <tr>
+            <th scope="col">Order</th>
+            <th scope="col">Date</th>
+            <th scope="col">Payment</th>
+            <th scope="col">Fulfillment</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for order in customer.orders -%}
+            <tr>
+              <td data-label="Order"><a href="{{ order.customer_url }}">{{ order.name }}</a></td>
+              <td data-label="Date">{{ order.created_at | date: format: 'date' }}</td>
+              <td data-label="Payment">{{ order.financial_status_label }}</td>
+              <td data-label="Fulfillment">{{ order.fulfillment_status_label }}</td>
+              <td data-label="Total">{{ order.total_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    {%- else -%}
+      <p>You haven't placed any orders yet.</p>
+    {%- endif -%}
+  </section>
+</main>

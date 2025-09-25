@@ -1,0 +1,276 @@
+/* Enhanced Drink Builder - Deferred CSS */
+/* Non-critical styles loaded after initial render */
+
+.flavor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.flavor-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.flavor-chip span {
+  padding: 0 0.5rem;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.flavor-chip .pump-controls {
+  display: flex;
+  align-items: center;
+}
+
+.flavor-chip button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.flavor-chip button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.flavor-chip button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.flavor-chip .pump-count {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
+}
+
+.strain-mix-container {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.strain-mix-container.active {
+  display: block;
+}
+
+.strain-mix-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.strain-mix-row > div {
+  flex: 1;
+}
+
+.strain-mix-row label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.strain-mix-row select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  font-size: 0.875rem;
+}
+
+.add-to-cart-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.add-to-cart-button {
+  width: 100%;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-to-cart-button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.add-to-cart-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.add-to-cart-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.notes-section {
+  margin-top: 1.5rem;
+}
+
+.notes-section label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.notes-section textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.notes-section textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.pump-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #f1f5f9;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.pump-summary-text {
+  color: #475569;
+}
+
+.pump-summary-count {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.pump-summary.over-limit {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.pump-summary.over-limit .pump-summary-text,
+.pump-summary.over-limit .pump-summary-count {
+  color: #dc2626;
+}
+
+.thc-upgrade-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #fef7ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 0.5rem;
+}
+
+.thc-upgrade-section h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+.thc-upgrade-section p {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: #6b46c1;
+}
+
+/* Animation for smooth transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flavor-grid,
+.strain-mix-container.active,
+.thc-upgrade-section {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .chip {
+    border: 2px solid #000;
+  }
+  
+  .chip:has(input:checked) {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .flavor-chip {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .flavor-chip button,
+  .add-to-cart-button {
+    transition: none;
+  }
+  
+  .flavor-grid,
+  .strain-mix-container.active,
+  .thc-upgrade-section {
+    animation: none;
+  }
+}
+
+/* Mobile optimizations for deferred content */
+@media (max-width: 640px) {
+  .flavor-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .strain-mix-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .strain-mix-row > div {
+    width: 100%;
+  }
+  
+  .pump-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}

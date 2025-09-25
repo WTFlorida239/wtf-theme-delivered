@@ -1,0 +1,17 @@
+[0;32mWTF Theme Advanced Cleanup Script[0m
+[0;32mStarted at: Wed Sep 24 19:50:31 EDT 2025[0m
+[0;32mWorking directory: /Users/brendan/Desktop/wtf-theme-delivered[0m
+[1;33m=== PREVIEW: Files and directories that will be removed ===[0m
+Directory: ./templates 2
+Directory: ./locales 2
+Directory: ./.git 2
+Directory: ./scripts 2
+Directory: ./assets 2
+Directory: ./.github 2
+Directory: ./dev-server 2
+Directory: .git
+Directory: .github
+Directory: .git 2
+Directory: .github 2
+[1;33m=== End of preview ===[0m
+[1;33mCleanup cancelled by user.[0m

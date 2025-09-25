@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kava Drinks | WTF Welcome To Florida</title>
+    <meta name="description" content="Traditional kava drinks with premium flavoring. Choose your size and customize your perfect relaxation beverage.">
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        :root {
+            --color-primary: #ff6600;
+            --color-secondary: #ffffff;
+            --color-accent: #333333;
+        }
+
+        body {
+            background: linear-gradient(180deg, rgba(255, 102, 0, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .page-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+
+        .page-header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--color-accent);
+            margin: 0;
+        }
+
+        #kava-builder {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        #kava-builder h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+            color: var(--color-accent);
+            text-align: center;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .kava-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .kava-info h3 {
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .kava-info p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        fieldset {
+            border: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        legend {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            padding: 0;
+            display: block;
+            width: 100%;
+            color: var(--color-accent);
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .current-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-primary);
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            border: 2px solid #e5e7eb;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .chip:hover {
+            border-color: var(--color-primary);
+            background-color: rgba(255, 102, 0, 0.05);
+        }
+
+        .chip.active {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .chip input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .flavor-selection {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .flavor-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .flavor-option {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .flavor-option:hover {
+            border-color: var(--color-primary);
+        }
+
+        .flavor-option.active {
+            border-color: var(--color-primary);
+            background: rgba(255, 102, 0, 0.05);
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #e55a00;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            #kava-builder {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <a href="/" class="back-link">← Back to Menu</a>
+            <h1 class="page-title">Kava Drinks</h1>
+        </div>
+    </header>
+
+    <!-- Kava Builder -->
+    <main id="kava-builder">
+        <h2>🥥 Build Your Kava Drink</h2>
+        <img src="/assets/kava_drinks_150x150.png" alt="Kava Drink" class="product-image" onerror="this.style.display='none'">
+        
+        <div class="kava-info">
+            <h3>Traditional Relaxation Blend</h3>
+            <p>Authentic Vanuatu kava root prepared fresh daily. Known for its relaxing and social effects.</p>
+        </div>
+
+        <form id="kava-builder-form">
+            <!-- Price Display -->
+            <div class="price-row">
+                <span class="current-price" id="current-price">$9.00</span>
+                <div style="text-align: right; font-size: 0.875rem; color: #666;">
+                    <div>Premium kava root</div>
+                    <div>Traditional preparation</div>
+                </div>
+            </div>
+
+            <!-- Size Selection -->
+            <fieldset>
+                <legend>Choose Size</legend>
+                <div class="chip-row">
+                    <label class="chip active" data-size="medium" data-price="9.00">
+                        <input type="radio" name="size" value="medium" checked>
+                        Medium (16oz)
+                    </label>
+                    <label class="chip" data-size="large" data-price="15.00">
+                        <input type="radio" name="size" value="large">
+                        Large (24oz)
+                    </label>
+                    <label class="chip" data-size="gallon" data-price="100.00">
+                        <input type="radio" name="size" value="gallon">
+                        Gallon (128oz)
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- Flavor Selection -->
+            <fieldset>
+                <legend>Choose Flavor (Optional)</legend>
+                <div class="flavor-selection">
+                    <div class="flavor-options">
+                        <div class="flavor-option active" data-flavor="traditional">Traditional</div>
+                        <div class="flavor-option" data-flavor="coconut">Coconut</div>
+                        <div class="flavor-option" data-flavor="pineapple">Pineapple</div>
+                        <div class="flavor-option" data-flavor="mango">Mango</div>
+                        <div class="flavor-option" data-flavor="chocolate">Chocolate</div>
+                        <div class="flavor-option" data-flavor="vanilla">Vanilla</div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Special Instructions -->
+            <fieldset>
+                <legend>Special Instructions (Optional)</legend>
+                <div style="margin-bottom: 1rem;">
+                    <textarea name="notes" placeholder="Any special requests or notes..." 
+                              style="width: 100%; min-height: 80px; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.75rem; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+            </fieldset>
+
+            <!-- Add to Cart -->
+            <button type="submit" class="add-to-cart-btn" id="add-to-cart">
+                Add to Cart - <span id="final-price">$9.00</span>
+            </button>
+        </form>
+    </main>
+
+    <script>
+        // Kava Builder JavaScript
+        const form = document.getElementById('kava-builder-form');
+        const priceDisplay = document.getElementById('current-price');
+        const finalPriceDisplay = document.getElementById('final-price');
+        
+        let currentPrice = 9.00;
+        let currentSize = 'medium';
+        let currentFlavor = 'traditional';
+
+        const sizePricing = {
+            'medium': 9.00,
+            'large': 15.00,
+            'gallon': 100.00
+        };
+
+        // Size selection
+        document.querySelectorAll('input[name="size"]').forEach(input => {
+            input.addEventListener('change', function() {
+                // Remove active class from all chips
+                document.querySelectorAll('.chip[data-size]').forEach(chip => {
+                    chip.classList.remove('active');
+                });
+                
+                // Add active class to selected
+                this.parentElement.classList.add('active');
+                
+                currentSize = this.value;
+                currentPrice = sizePricing[currentSize];
+                
+                updateDisplay();
+            });
+        });
+
+        // Flavor selection
+        document.querySelectorAll('.flavor-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.flavor-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                currentFlavor = this.dataset.flavor;
+            });
+        });
+
+        function updateDisplay() {
+            priceDisplay.textContent = '$' + currentPrice.toFixed(2);
+            finalPriceDisplay.textContent = '$' + currentPrice.toFixed(2);
+        }
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('size', currentSize);
+            formData.append('flavor', currentFlavor);
+            formData.append('price', currentPrice);
+            formData.append('notes', document.querySelector('textarea[name="notes"]').value);
+            
+            // Simulate add to cart
+            alert(`Added to cart!\n\nKava Drink\nSize: ${currentSize}\nFlavor: ${currentFlavor}\nPrice: $${currentPrice.toFixed(2)}`);
+        });
+
+        // Initialize
+        updateDisplay();
+    </script>
+</body>
+</html>

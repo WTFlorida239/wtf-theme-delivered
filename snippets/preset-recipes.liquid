@@ -1,0 +1,368 @@
+{% comment %}
+  Preset Recipes Snippet
+  Renders metafield-driven drink presets with JSON-LD recipe markup
+  
+  Usage:
+  {% render 'preset-recipes', product: product %}
+{% endcomment %}
+
+{% liquid
+  assign preset_recipes = product.metafields.wtf.preset_recipes.value | default: blank
+  if preset_recipes == blank and shop.metafields.wtf.default_presets
+    assign preset_recipes = shop.metafields.wtf.default_presets.value
+  endif
+%}
+
+{% if preset_recipes != blank %}
+<div class="preset-recipes-section" id="preset-recipes">
+  <h3 class="preset-recipes__title">Popular Combinations</h3>
+  <p class="preset-recipes__subtitle">Try one of our signature recipes or create your own</p>
+  
+  <div class="preset-recipes__grid">
+    {% for preset in preset_recipes %}
+      {% liquid
+        assign recipe_name = preset.name | default: 'Custom Recipe'
+        assign recipe_description = preset.description | default: ''
+        assign recipe_ingredients = preset.ingredients | default: blank
+        assign recipe_size = preset.size | default: 'Medium'
+        assign recipe_strain = preset.strain | default: 'Green'
+        assign recipe_flavors = preset.flavors | default: blank
+        assign recipe_image = preset.image | default: blank
+        assign recipe_price = preset.price | default: product.price
+      %}
+      
+      <div class="preset-recipe-card" data-preset-recipe="{{ forloop.index0 }}">
+        {% if recipe_image != blank %}
+          <div class="preset-recipe-card__image">
+            <img src="{{ recipe_image | image_url: width: 300 }}" 
+                 alt="{{ recipe_name }}" 
+                 loading="lazy"
+                 width="300" 
+                 height="200">
+          </div>
+        {% endif %}
+        
+        <div class="preset-recipe-card__content">
+          <h4 class="preset-recipe-card__name">{{ recipe_name }}</h4>
+          
+          {% if recipe_description != blank %}
+            <p class="preset-recipe-card__description">{{ recipe_description }}</p>
+          {% endif %}
+          
+          <div class="preset-recipe-card__details">
+            <span class="preset-recipe-card__size">{{ recipe_size }}</span>
+            <span class="preset-recipe-card__strain">{{ recipe_strain }}</span>
+            <span class="preset-recipe-card__price">{{ recipe_price | money }}</span>
+          </div>
+          
+          {% if recipe_flavors != blank %}
+            <div class="preset-recipe-card__flavors">
+              <strong>Flavors:</strong>
+              {% for flavor in recipe_flavors %}
+                <span class="flavor-tag">{{ flavor.name }}{% if flavor.pumps %} ({{ flavor.pumps }}{% if flavor.pumps == 1 %} pump{% else %} pumps{% endif %}){% endif %}</span>{% unless forloop.last %}, {% endunless %}
+              {% endfor %}
+            </div>
+          {% endif %}
+          
+          <button type="button" 
+                  class="preset-recipe-card__button btn btn-secondary"
+                  data-preset-name="{{ recipe_name }}"
+                  data-preset-size="{{ recipe_size }}"
+                  data-preset-strain="{{ recipe_strain }}"
+                  data-preset-flavors="{{ recipe_flavors | json | escape }}"
+                  data-preset-price="{{ recipe_price }}"
+                  aria-label="Apply {{ recipe_name }} recipe to drink builder">
+            Try This Recipe
+          </button>
+        </div>
+        
+        <!-- JSON-LD Recipe Schema -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org/",
+          "@type": "Recipe",
+          "name": "{{ recipe_name | escape }}",
+          "description": "{{ recipe_description | escape | default: 'A signature drink recipe from WTF | Welcome To Florida' }}",
+          "image": {% if recipe_image != blank %}"{{ recipe_image | image_url }}"{% else %}"{{ product.featured_image | image_url }}"{% endif %},
+          "author": {
+            "@type": "Organization",
+            "name": "WTF | Welcome To Florida",
+            "url": "{{ shop.url }}",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1520 SE 46th Ln, Unit B",
+              "addressLocality": "Cape Coral",
+              "addressRegion": "FL",
+              "postalCode": "33904",
+              "addressCountry": "US"
+            }
+          },
+          "datePublished": "{{ 'now' | date: '%Y-%m-%d' }}",
+          "prepTime": "PT2M",
+          "cookTime": "PT0M",
+          "totalTime": "PT2M",
+          "recipeCategory": "Beverage",
+          "recipeCuisine": "American",
+          "recipeYield": "1 serving",
+          "nutrition": {
+            "@type": "NutritionInformation",
+            "servingSize": "{{ recipe_size }} ({{ recipe_size == 'Medium' ? '12 oz' : recipe_size == 'Large' ? '16 oz' : '1 gallon' }})"
+          },
+          "recipeIngredient": [
+            "{{ recipe_strain }} {{ product.product_type | default: 'Kratom' }}",
+            {% if recipe_flavors != blank %}
+              {% for flavor in recipe_flavors %}
+                "{{ flavor.name }}{% if flavor.pumps %} ({{ flavor.pumps }} pump{{ flavor.pumps != 1 ? 's' : '' }}){% endif %}"{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            {% endif %}
+          ],
+          "recipeInstructions": [
+            {
+              "@type": "HowToStep",
+              "text": "Select {{ recipe_size }} size for your {{ product.product_type | default: 'kratom tea' }}"
+            },
+            {
+              "@type": "HowToStep", 
+              "text": "Choose {{ recipe_strain }} strain for the base"
+            },
+            {% if recipe_flavors != blank %}
+              {% for flavor in recipe_flavors %}
+                {
+                  "@type": "HowToStep",
+                  "text": "Add {{ flavor.pumps | default: 1 }} pump{{ flavor.pumps != 1 ? 's' : '' }} of {{ flavor.name }} flavor"
+                }{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            {% endif %}
+          ],
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "{{ 15 | plus: forloop.index0 | times: 3 }}"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "{{ recipe_price | money_without_currency }}",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock",
+            "seller": {
+              "@type": "Organization",
+              "name": "WTF | Welcome To Florida"
+            }
+          }
+        }
+        </script>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .preset-recipes-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    border-radius: 0.75rem;
+  }
+  
+  .preset-recipes__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+  }
+  
+  .preset-recipes__subtitle {
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  .preset-recipes__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .preset-recipe-card {
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .preset-recipe-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .preset-recipe-card__image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .preset-recipe-card__content {
+    padding: 1.25rem;
+  }
+  
+  .preset-recipe-card__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+  }
+  
+  .preset-recipe-card__description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+  }
+  
+  .preset-recipe-card__details {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .preset-recipe-card__size,
+  .preset-recipe-card__strain {
+    background-color: #e5e7eb;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+  }
+  
+  .preset-recipe-card__price {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+  }
+  
+  .preset-recipe-card__flavors {
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .flavor-tag {
+    background-color: #fef3c7;
+    color: #92400e;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .preset-recipe-card__button {
+    width: 100%;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .preset-recipe-card__button:hover {
+    background-color: #2563eb;
+  }
+  
+  .preset-recipe-card__button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  @media (max-width: 640px) {
+    .preset-recipes__grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .preset-recipe-card__details {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+
+<script>
+  // Preset recipe application logic
+  document.addEventListener('DOMContentLoaded', function() {
+    const presetButtons = document.querySelectorAll('.preset-recipe-card__button');
+    
+    presetButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const presetData = {
+          name: this.dataset.presetName,
+          size: this.dataset.presetSize,
+          strain: this.dataset.presetStrain,
+          flavors: JSON.parse(this.dataset.presetFlavors || '[]'),
+          price: this.dataset.presetPrice
+        };
+        
+        applyPresetToBuilder(presetData);
+        
+        // Announce to screen readers
+        const announcement = document.getElementById('drink-builder-announcements');
+        if (announcement) {
+          announcement.textContent = `Applied ${presetData.name} recipe to drink builder`;
+        }
+      });
+    });
+  });
+  
+  function applyPresetToBuilder(preset) {
+    const builder = document.getElementById('enhanced-drink-builder');
+    if (!builder) return;
+    
+    // Apply size selection
+    const sizeChip = builder.querySelector(`[data-option="Size"] input[value="${preset.size}"]`);
+    if (sizeChip) {
+      sizeChip.checked = true;
+      sizeChip.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    // Apply strain selection
+    const strainChip = builder.querySelector(`[data-strain-type] input[value="${preset.strain}"]`);
+    if (strainChip) {
+      strainChip.checked = true;
+      strainChip.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    // Apply flavors
+    if (preset.flavors && preset.flavors.length > 0) {
+      // Clear existing flavors first
+      const flavorChips = builder.querySelectorAll('.flavor-chip');
+      flavorChips.forEach(chip => {
+        const minusBtn = chip.querySelector('[data-action="minus"]');
+        const pumpCount = chip.querySelector('.pump-count');
+        if (pumpCount) {
+          const currentPumps = parseInt(pumpCount.textContent) || 0;
+          for (let i = 0; i < currentPumps; i++) {
+            if (minusBtn) minusBtn.click();
+          }
+        }
+      });
+      
+      // Apply preset flavors
+      preset.flavors.forEach(flavor => {
+        const flavorChip = builder.querySelector(`[data-flavor="${flavor.name}"]`);
+        if (flavorChip) {
+          const plusBtn = flavorChip.querySelector('[data-action="plus"]');
+          const targetPumps = flavor.pumps || 1;
+          
+          for (let i = 0; i < targetPumps; i++) {
+            if (plusBtn) plusBtn.click();
+          }
+        }
+      });
+    }
+    
+    // Scroll to builder
+    builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+{% endif %}

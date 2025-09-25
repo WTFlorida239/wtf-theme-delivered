@@ -1,0 +1,8 @@
+# .theme-check.yml
+
+ignore:
+  - "config/settings_data.json"
+  - "locales/"
+  - "node_modules/"
+  - "dev-server/**"
+  - "**/node_modules/**"

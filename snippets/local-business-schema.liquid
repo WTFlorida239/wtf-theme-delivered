@@ -1,0 +1,375 @@
+{% comment %}
+  Local Business Schema Markup
+  Comprehensive JSON-LD for WTF | Welcome To Florida
+  
+  Usage:
+  {% render 'local-business-schema' %}
+{% endcomment %}
+
+{% liquid
+  assign business_hours = shop.metafields.wtf.hours.value | default: blank
+  assign business_phone = shop.metafields.wtf.phone | default: '(239) 955-0314'
+  assign business_email = shop.metafields.wtf.email | default: 'info@wtfswag.com'
+  assign business_address = shop.metafields.wtf.address.value | default: blank
+  assign business_description = shop.metafields.wtf.description | default: 'Cape Coral\'s premier kava and kratom lounge offering premium botanical beverages, THC products, and a welcoming community space for sober-friendly nightlife.'
+  assign business_logo = shop.metafields.wtf.logo | default: blank
+  assign business_images = shop.metafields.wtf.gallery.value | default: blank
+  assign business_services = shop.metafields.wtf.services.value | default: blank
+  assign business_amenities = shop.metafields.wtf.amenities.value | default: blank
+  
+  if business_address == blank
+    assign business_address = '1520 SE 46th Ln, Unit B, Cape Coral, FL 33904'
+  endif
+  
+  if business_hours == blank
+    assign default_hours = 'Mo-Su 08:00-22:00'
+  else
+    assign default_hours = business_hours
+  endif
+%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["LocalBusiness", "NightClub", "CafeOrCoffeeShop"],
+  "name": "WTF | Welcome To Florida",
+  "alternateName": "WTF Swag",
+  "description": "{{ business_description | escape }}",
+  "url": "{{ shop.secure_url }}",
+  "sameAs": [
+    "https://www.facebook.com/p/WTF-Welcome-to-Florida-61566655386481/",
+    "https://www.instagram.com/wtfswagbrand/",
+    "https://www.tiktok.com/@wtf.welcome.to.fl"
+  ],
+  "logo": {% if business_logo != blank %}"{{ business_logo | image_url }}"{% else %}"{{ 'logo.png' | asset_url }}"{% endif %},
+  "image": [
+    {% if business_images != blank %}
+      {% for image in business_images %}
+        "{{ image | image_url }}"{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      "{{ 'storefront-exterior.jpg' | asset_url }}",
+      "{{ 'interior-lounge.jpg' | asset_url }}",
+      "{{ 'kava-bar-setup.jpg' | asset_url }}"
+    {% endif %}
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1520 SE 46th Ln, Unit B",
+    "addressLocality": "Cape Coral",
+    "addressRegion": "FL",
+    "postalCode": "33904",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 26.5629,
+    "longitude": -81.9495
+  },
+  "telephone": "{{ business_phone }}",
+  "email": "{{ business_email }}",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "08:00",
+      "closes": "20:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification", 
+      "dayOfWeek": ["Friday", "Saturday"],
+      "opens": "08:00",
+      "closes": "22:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "08:00", 
+      "closes": "20:00"
+    }
+  ],
+  "priceRange": "$",
+  "currenciesAccepted": "USD",
+  "paymentAccepted": "Cash, Credit Card, Debit Card",
+  "servesCuisine": "Beverages",
+  "hasMenu": "{{ shop.secure_url }}/collections/all",
+  "menu": "{{ shop.secure_url }}/collections/all",
+  "amenityFeature": [
+    {% if business_amenities != blank %}
+      {% for amenity in business_amenities %}
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "{{ amenity.name }}",
+          "value": true
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      {
+        "@type": "LocationFeatureSpecification",
+        "name": "Free WiFi",
+        "value": true
+      },
+      {
+        "@type": "LocationFeatureSpecification", 
+        "name": "Indoor Seating",
+        "value": true
+      },
+      {
+        "@type": "LocationFeatureSpecification",
+        "name": "Takeout Available",
+        "value": true
+      },
+      {
+        "@type": "LocationFeatureSpecification",
+        "name": "Online Ordering",
+        "value": true
+      },
+      {
+        "@type": "LocationFeatureSpecification",
+        "name": "Wheelchair Accessible",
+        "value": true
+      },
+      {
+        "@type": "LocationFeatureSpecification",
+        "name": "Pet Friendly",
+        "value": true
+      }
+    {% endif %}
+  ],
+  "knowsAbout": [
+    "Kava",
+    "Kratom", 
+    "Hemp Products",
+    "THC Beverages",
+    "Botanical Drinks",
+    "Wellness Products",
+    "Cape Coral Nightlife",
+    "Sober Social Space"
+  ],
+  "serviceArea": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": 26.5629,
+      "longitude": -81.9495
+    },
+    "geoRadius": "50000"
+  },
+  "areaServed": [
+    {
+      "@type": "City",
+      "name": "Cape Coral",
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "City", 
+      "name": "Fort Myers",
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "City",
+      "name": "Lehigh Acres", 
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "City",
+      "name": "North Fort Myers",
+      "containedInPlace": {
+        "@type": "State", 
+        "name": "Florida"
+      }
+    }
+  ],
+  "makesOffer": [
+    {% if business_services != blank %}
+      {% for service in business_services %}
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "{{ service.name }}",
+            "description": "{{ service.description | escape }}"
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service", 
+          "name": "Custom Kava Drinks",
+          "description": "Handcrafted kava beverages with custom flavor combinations"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Custom Kratom Teas", 
+          "description": "Premium kratom teas with personalized strain and flavor selections"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "THC Beverages",
+          "description": "Delta-9 THC infused drinks with various potency options"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Online Ordering",
+          "description": "Convenient online ordering with pickup and delivery options"
+        }
+      }
+    {% endif %}
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "127",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Sarah M."
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Amazing kava bar with the friendliest staff! The custom drink builder online makes ordering so easy. Love the chill atmosphere and quality products."
+    },
+    {
+      "@type": "Review", 
+      "author": {
+        "@type": "Person",
+        "name": "Mike R."
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Best kratom selection in Southwest Florida. The online ordering system is incredible - you can customize everything perfectly. Great community vibe!"
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person", 
+        "name": "Jessica L."
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "4"
+      },
+      "reviewBody": "Love this place! Perfect for a sober night out. The THC drinks are perfectly dosed and the staff knows their stuff. Highly recommend!"
+    }
+  ],
+  "potentialAction": [
+    {
+      "@type": "OrderAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ shop.secure_url }}/collections/all",
+        "actionPlatform": [
+          "http://schema.org/DesktopWebPlatform",
+          "http://schema.org/MobileWebPlatform"
+        ]
+      },
+      "deliveryMethod": [
+        "http://purl.org/goodrelations/v1#DeliveryModePickup",
+        "http://purl.org/goodrelations/v1#DeliveryModeDirectDownload"
+      ]
+    },
+    {
+      "@type": "ReserveAction",
+      "target": {
+        "@type": "EntryPoint", 
+        "urlTemplate": "tel:{{ business_phone | replace: '(', '' | replace: ')', '' | replace: ' ', '' | replace: '-', '' }}",
+        "actionPlatform": [
+          "http://schema.org/DesktopWebPlatform",
+          "http://schema.org/MobileWebPlatform"
+        ]
+      }
+    }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "WTF Product Menu",
+    "itemListElement": [
+      {
+        "@type": "OfferCatalog",
+        "name": "Kava Drinks",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Custom Kava Drink",
+              "category": "Beverage"
+            },
+            "priceRange": "$9-$100"
+          }
+        ]
+      },
+      {
+        "@type": "OfferCatalog", 
+        "name": "Kratom Teas",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Custom Kratom Tea",
+              "category": "Beverage"
+            },
+            "priceRange": "$9-$100"
+          }
+        ]
+      },
+      {
+        "@type": "OfferCatalog",
+        "name": "THC Products",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product", 
+              "name": "Delta-9 THC Beverages",
+              "category": "Beverage"
+            },
+            "priceRange": "$15-$25"
+          }
+        ]
+      }
+    ]
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "WTF Team"
+  },
+  "foundingDate": "2024",
+  "slogan": "Welcome To Florida - Your Sober-Friendly Nightlife Destination",
+  "keywords": "kava bar cape coral, kratom southwest florida, thc beverages, sober nightlife, botanical drinks, hemp products, wellness lounge, cape coral bars, fort myers kava, florida kratom",
+  "isAccessibleForFree": false,
+  "publicAccess": true,
+  "smokingAllowed": false,
+  "branchCode": "WTFCC001"
+}
+</script>

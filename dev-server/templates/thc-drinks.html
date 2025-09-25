@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THC Drinks | WTF Welcome To Florida</title>
+    <meta name="description" content="House-made THC beverages and Delta-9 drinks. Premium cannabis beverages crafted fresh daily.">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(180deg, rgba(255, 102, 0, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
+            line-height: 1.6; 
+        }
+        
+        .header { 
+            background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%); 
+            color: white; 
+            padding: 20px 0; 
+            text-align: center; 
+            font-size: 28px; 
+            font-weight: bold; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        
+        .back-link { 
+            display: inline-block; 
+            color: #ff6600; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 30px; 
+            padding: 12px 18px; 
+            border: 2px solid #ff6600; 
+            border-radius: 8px; 
+            transition: all 0.3s ease; 
+        }
+        
+        .back-link:hover { 
+            background: #ff6600; 
+            color: white; 
+            transform: translateY(-1px);
+        }
+        
+        .age-warning {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .age-warning h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .drinks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .drink-category {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .drink-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .category-icon {
+            font-size: 40px;
+        }
+        
+        .category-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .category-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .drink-list {
+            space-y: 15px;
+        }
+        
+        .drink-item {
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .drink-item:hover {
+            border-color: #ff6600;
+            background: rgba(255, 102, 0, 0.02);
+        }
+        
+        .drink-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .drink-price {
+            font-size: 20px;
+            color: #ff6600;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .drink-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .drink-potency {
+            background: linear-gradient(135deg, #ffc107 0%, #ffca28 100%);
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .order-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .order-btn:hover {
+            background: linear-gradient(135deg, #e55a00 0%, #ff6600 100%);
+            transform: translateY(-1px);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f9ff 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 30px;
+        }
+        
+        .info-box h4 {
+            color: #0056b3;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .info-box p {
+            color: #0056b3;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .drinks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">✨ THC Beverages</div>
+    
+    <div class="container">
+        <a href="/" class="back-link">← Back to Menu</a>
+        
+        <!-- Age Warning -->
+        <div class="age-warning">
+            <h3>🔞 21+ Only - Valid ID Required</h3>
+            <p>All THC products are for adults 21 and over. Please consume responsibly, start low and go slow. Do not drive or operate machinery after consumption. Effects may take 30 minutes to 2 hours to fully manifest.</p>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="info-box">
+            <h4>🍹 House-Made THC Beverages</h4>
+            <p>All our THC drinks are crafted fresh in-house using premium cannabis extracts. We use precise dosing to ensure consistent, reliable effects every time. Perfect for both new and experienced cannabis users looking for a refreshing alternative to smoking.</p>
+        </div>
+        
+        <!-- Drinks Grid -->
+        <div class="drinks-grid">
+            <!-- Delta-9 Beverages -->
+            <div class="drink-category">
+                <div class="category-header">
+                    <div class="category-icon">🌟</div>
+                    <div>
+                        <div class="category-title">Delta-9 Beverages</div>
+                        <div class="category-subtitle">Premium cannabis drinks</div>
+                    </div>
+                </div>
+                
+                <div class="drink-list">
+                    <div class="drink-item">
+                        <div class="drink-name">WTF Citrus Bliss</div>
+                        <div class="drink-price">$15.00</div>
+                        <div class="drink-potency">10mg THC</div>
+                        <div class="drink-description">
+                            Refreshing citrus blend with orange, lemon, and lime. Our signature THC drink with a perfect balance of flavor and potency.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                    
+                    <div class="drink-item">
+                        <div class="drink-name">Tropical Paradise</div>
+                        <div class="drink-price">$15.00</div>
+                        <div class="drink-potency">10mg THC</div>
+                        <div class="drink-description">
+                            Pineapple, mango, and passion fruit with a hint of coconut. Transport yourself to a tropical paradise.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                    
+                    <div class="drink-item">
+                        <div class="drink-name">Berry Fusion</div>
+                        <div class="drink-price">$15.00</div>
+                        <div class="drink-potency">10mg THC</div>
+                        <div class="drink-description">
+                            Mixed berry medley with strawberry, blueberry, and raspberry. Naturally sweet and delicious.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Micro Dose Options -->
+            <div class="drink-category">
+                <div class="category-header">
+                    <div class="category-icon">🧪</div>
+                    <div>
+                        <div class="category-title">Micro Dose Selection</div>
+                        <div class="category-subtitle">Perfect for beginners</div>
+                    </div>
+                </div>
+                
+                <div class="drink-list">
+                    <div class="drink-item">
+                        <div class="drink-name">Gentle Glow Lemonade</div>
+                        <div class="drink-price">$12.00</div>
+                        <div class="drink-potency">2.5mg THC</div>
+                        <div class="drink-description">
+                            Perfect for first-time users or those who prefer lighter effects. Fresh lemonade with a gentle THC touch.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                    
+                    <div class="drink-item">
+                        <div class="drink-name">Calm Cucumber Mint</div>
+                        <div class="drink-price">$12.00</div>
+                        <div class="drink-potency">5mg THC</div>
+                        <div class="drink-description">
+                            Refreshing cucumber and mint with mild THC effects. Great for relaxation without overwhelming effects.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- High Potency Options -->
+            <div class="drink-category">
+                <div class="category-header">
+                    <div class="category-icon">🚀</div>
+                    <div>
+                        <div class="category-title">High Potency</div>
+                        <div class="category-subtitle">For experienced users</div>
+                    </div>
+                </div>
+                
+                <div class="drink-list">
+                    <div class="drink-item">
+                        <div class="drink-name">Maximum Mango</div>
+                        <div class="drink-price">$25.00</div>
+                        <div class="drink-potency">25mg THC</div>
+                        <div class="drink-description">
+                            High-potency mango drink for seasoned cannabis users. Rich mango flavor with powerful effects.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                    
+                    <div class="drink-item">
+                        <div class="drink-name">Electric Watermelon</div>
+                        <div class="drink-price">$30.00</div>
+                        <div class="drink-potency">50mg THC</div>
+                        <div class="drink-description">
+                            Our strongest offering. Fresh watermelon flavor with maximum THC content. Experienced users only.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CBD Wellness Drinks -->
+            <div class="drink-category">
+                <div class="category-header">
+                    <div class="category-icon">🌿</div>
+                    <div>
+                        <div class="category-title">CBD Wellness</div>
+                        <div class="category-subtitle">Non-psychoactive options</div>
+                    </div>
+                </div>
+                
+                <div class="drink-list">
+                    <div class="drink-item">
+                        <div class="drink-name">Zen Garden Green Tea</div>
+                        <div class="drink-price">$10.00</div>
+                        <div class="drink-potency">25mg CBD</div>
+                        <div class="drink-description">
+                            Calming green tea infused with premium CBD. All the wellness benefits without the psychoactive effects.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                    
+                    <div class="drink-item">
+                        <div class="drink-name">Lavender Dreams</div>
+                        <div class="drink-price">$12.00</div>
+                        <div class="drink-potency">30mg CBD + Lavender</div>
+                        <div class="drink-description">
+                            Relaxing lavender and chamomile blend with CBD. Perfect for evening relaxation and better sleep.
+                        </div>
+                        <button class="order-btn">Order for Pickup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Order functionality
+        document.querySelectorAll('.order-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const drinkItem = this.closest('.drink-item');
+                const drinkName = drinkItem.querySelector('.drink-name').textContent;
+                const drinkPrice = drinkItem.querySelector('.drink-price').textContent;
+                const potency = drinkItem.querySelector('.drink-potency').textContent;
+                
+                alert(`${drinkName}\nPotency: ${potency}\nPrice: ${drinkPrice}\n\nReady to order! Visit us at:\n1520 SE 46th Ln, Unit B\nCape Coral, FL 33904\n\nOr call: (239) 955-0314\n\n⚠️ Valid ID required (21+)`);
+            });
+        });
+    </script>
+</body>
+</html>

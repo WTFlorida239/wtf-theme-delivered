@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Home Items | WTF Welcome To Florida</title>
+    <meta name="description" content="Shop our full selection of botanical products, edibles, kratom, kava, and WTF merchandise for pickup or delivery.">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(180deg, rgba(255, 102, 0, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
+            line-height: 1.6; 
+        }
+        
+        .header { 
+            background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%); 
+            color: white; 
+            padding: 20px 0; 
+            text-align: center; 
+            font-size: 28px; 
+            font-weight: bold; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        
+        .back-link { 
+            display: inline-block; 
+            color: #ff6600; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 30px; 
+            padding: 12px 18px; 
+            border: 2px solid #ff6600; 
+            border-radius: 8px; 
+            transition: all 0.3s ease; 
+        }
+        
+        .back-link:hover { 
+            background: #ff6600; 
+            color: white; 
+            transform: translateY(-1px);
+        }
+        
+        .store-intro {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .store-intro h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .store-intro p {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        
+        .pickup-info {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f9ff 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            margin-top: 20px;
+        }
+        
+        .pickup-info h4 {
+            color: #0056b3;
+            margin-bottom: 8px;
+        }
+        
+        .pickup-info p {
+            color: #0056b3;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .category-section {
+            margin-bottom: 50px;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .category-icon {
+            font-size: 48px;
+        }
+        
+        .category-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .category-description {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            border-color: #ff6600;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            color: #ff6600;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .product-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .product-meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+        
+        .add-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background: linear-gradient(135deg, #e55a00 0%, #ff6600 100%);
+            transform: translateY(-1px);
+        }
+        
+        .coming-soon {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .coming-soon:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: none;
+        }
+        
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🛍️ Take Home Items</div>
+    
+    <div class="container">
+        <a href="/" class="back-link">← Back to Menu</a>
+        
+        <div class="store-intro">
+            <h2>WTF Complete Store</h2>
+            <p>
+                Shop our full selection of premium botanical products, edibles, kratom, kava, and exclusive WTF merchandise. 
+                All items available for pickup at our Cape Coral location.
+            </p>
+            
+            <div class="pickup-info">
+                <h4>🏪 Pickup & Ordering Info</h4>
+                <p><strong>Location:</strong> 1520 SE 46th Ln, Unit B, Cape Coral, FL 33904<br>
+                <strong>Phone:</strong> (239) 955-0314 • <strong>Online:</strong> Order here for pickup<br>
+                <strong>Hours:</strong> Open daily • Call for current hours</p>
+            </div>
+        </div>
+        
+        <!-- Kratom Products -->
+        <div class="category-section">
+            <div class="category-header">
+                <div class="category-icon">🍃</div>
+                <div>
+                    <div class="category-title">Kratom Products</div>
+                    <div class="category-description">Premium kratom powders, capsules, and extracts</div>
+                </div>
+            </div>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-name">Green Maeng Da Powder</div>
+                    <div class="product-price">$15.00 - $45.00</div>
+                    <div class="product-description">Premium green strain kratom powder. Energizing and mood-lifting properties.</div>
+                    <div class="product-meta">Available: 1oz, 2oz, 4oz</div>
+                    <button class="add-btn">Select Size & Add</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">Red Bali Powder</div>
+                    <div class="product-price">$15.00 - $45.00</div>
+                    <div class="product-description">Classic red strain for relaxation and evening use.</div>
+                    <div class="product-meta">Available: 1oz, 2oz, 4oz</div>
+                    <button class="add-btn">Select Size & Add</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">White Borneo Powder</div>
+                    <div class="product-price">$15.00 - $45.00</div>
+                    <div class="product-description">Energizing white strain for focus and productivity.</div>
+                    <div class="product-meta">Available: 1oz, 2oz, 4oz</div>
+                    <button class="add-btn">Select Size & Add</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">Kratom Capsules (Mixed)</div>
+                    <div class="product-price">$25.00</div>
+                    <div class="product-description">Convenient pre-measured kratom capsules. Perfect for on-the-go.</div>
+                    <div class="product-meta">60 capsules • 500mg each</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kava Products -->
+        <div class="category-section">
+            <div class="category-header">
+                <div class="category-icon">🥥</div>
+                <div>
+                    <div class="category-title">Kava Products</div>
+                    <div class="category-description">Traditional kava root and prepared blends</div>
+                </div>
+            </div>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-name">Vanuatu Kava Root</div>
+                    <div class="product-price">$35.00</div>
+                    <div class="product-description">Premium Noble kava root from Vanuatu. Traditional strain for relaxation.</div>
+                    <div class="product-meta">4oz bag • Noble variety</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">WTF House Kava Blend</div>
+                    <div class="product-price">$30.00</div>
+                    <div class="product-description">Our signature kava blend used in the lounge. Ready to prepare at home.</div>
+                    <div class="product-meta">3oz bag • House recipe</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">Instant Kava Mix</div>
+                    <div class="product-price">$20.00</div>
+                    <div class="product-description">Convenient instant kava powder. Just add water and enjoy.</div>
+                    <div class="product-meta">2oz bag • 10+ servings</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edibles & THC Products -->
+        <div class="category-section">
+            <div class="category-header">
+                <div class="category-icon">🍫</div>
+                <div>
+                    <div class="category-title">Edibles & THC Products (21+)</div>
+                    <div class="category-description">Premium cannabis edibles and Delta-9 products</div>
+                </div>
+            </div>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-name">Delta-9 Gummies</div>
+                    <div class="product-price">$25.00</div>
+                    <div class="product-description">Premium Delta-9 THC gummies. Various flavors and potencies available.</div>
+                    <div class="product-meta">10-pack • 5mg-10mg each • 21+ ID required</div>
+                    <button class="add-btn">Select Options</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">THC Chocolate Bars</div>
+                    <div class="product-price">$30.00</div>
+                    <div class="product-description">Artisan chocolate infused with premium THC. Break into precise doses.</div>
+                    <div class="product-meta">100mg total • Segmented dosing • 21+ ID required</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">CBD Products</div>
+                    <div class="product-price">$15.00 - $50.00</div>
+                    <div class="product-description">Full spectrum CBD oils, topicals, and wellness products.</div>
+                    <div class="product-meta">Various strengths • Lab tested</div>
+                    <button class="add-btn">Browse Options</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- WTF Merchandise -->
+        <div class="category-section">
+            <div class="category-header">
+                <div class="category-icon">👕</div>
+                <div>
+                    <div class="category-title">WTF Merchandise</div>
+                    <div class="category-description">Exclusive WTF branded apparel and accessories</div>
+                </div>
+            </div>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-name">WTF Logo T-Shirts</div>
+                    <div class="product-price">$25.00</div>
+                    <div class="product-description">Premium cotton tees with the iconic WTF logo. Rep Cape Coral's finest.</div>
+                    <div class="product-meta">S, M, L, XL, XXL • Multiple colors</div>
+                    <button class="add-btn">Select Size & Color</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">WTF Hoodies</div>
+                    <div class="product-price">$45.00</div>
+                    <div class="product-description">Cozy hoodies perfect for Florida evenings. Soft fleece interior.</div>
+                    <div class="product-meta">S, M, L, XL, XXL • Orange & Black</div>
+                    <button class="add-btn">Select Size & Color</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">WTF Stickers Pack</div>
+                    <div class="product-price">$5.00</div>
+                    <div class="product-description">Waterproof vinyl stickers featuring WTF designs. Perfect for laptops, cars, etc.</div>
+                    <div class="product-meta">5-pack • Waterproof vinyl</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">WTF Travel Mugs</div>
+                    <div class="product-price">$20.00</div>
+                    <div class="product-description">Insulated travel mugs for your kratom teas and kava drinks on-the-go.</div>
+                    <div class="product-meta">16oz • Spill-proof lid • Dishwasher safe</div>
+                    <button class="add-btn coming-soon">Coming Soon</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Accessories & Supplies -->
+        <div class="category-section">
+            <div class="category-header">
+                <div class="category-icon">🔧</div>
+                <div>
+                    <div class="category-title">Accessories & Supplies</div>
+                    <div class="category-description">Tools and accessories for botanical preparation</div>
+                </div>
+            </div>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-name">Kava Strainer Bags</div>
+                    <div class="product-price">$8.00</div>
+                    <div class="product-description">Traditional mesh bags for preparing kava at home. Authentic method.</div>
+                    <div class="product-meta">3-pack • Fine mesh • Reusable</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">Kratom Measuring Spoons</div>
+                    <div class="product-price">$5.00</div>
+                    <div class="product-description">Precise measuring spoons for consistent kratom dosing.</div>
+                    <div class="product-meta">Set of 3 • 1g, 2g, 5g</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-name">Digital Scale</div>
+                    <div class="product-price">$25.00</div>
+                    <div class="product-description">Precision digital scale for accurate botanical measurements.</div>
+                    <div class="product-meta">0.1g accuracy • Compact design</div>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add to cart functionality
+        document.querySelectorAll('.add-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.classList.contains('coming-soon')) {
+                    alert('This item is coming soon! Check back later or ask in-store for updates.');
+                    return;
+                }
+                
+                const productCard = this.closest('.product-card');
+                const productName = productCard.querySelector('.product-name').textContent;
+                const productPrice = productCard.querySelector('.product-price').textContent;
+                
+                if (this.textContent.includes('Select')) {
+                    alert(`${productName}\nPrice: ${productPrice}\n\nPlease visit our store or call (239) 955-0314 to select specific options and complete your order!`);
+                } else {
+                    alert(`${productName}\nPrice: ${productPrice}\n\nAdded to cart! Visit our store at 1520 SE 46th Ln, Unit B, Cape Coral to pickup your order.`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+{
+  "timestamp": "2025-09-24T23:38:38.632Z",
+  "testMode": true,
+  "sandboxMode": true,
+  "tests": [
+    {
+      "name": "2Accept Connection",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.635Z",
+      "details": {
+        "message": "Using demo credentials - configure real API keys for production",
+        "recommendation": "Set TWO_ACCEPT_API_KEY and TWO_ACCEPT_SECRET_KEY environment variables"
+      }
+    },
+    {
+      "name": "Payment Methods",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.636Z",
+      "details": {
+        "message": "Cannot test payment methods with demo credentials",
+        "expectedMethods": [
+          "credit_card",
+          "debit_card",
+          "ach_transfer",
+          "digital_wallet"
+        ],
+        "recommendation": "Configure real API credentials to test payment methods"
+      }
+    },
+    {
+      "name": "Payment Tokenization",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.636Z",
+      "details": {
+        "message": "Cannot test tokenization with demo credentials",
+        "testCard": "Visa ending in 1111",
+        "recommendation": "Use sandbox credentials to test tokenization"
+      }
+    },
+    {
+      "name": "Payment Processing",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.636Z",
+      "details": {
+        "message": "Cannot process test payment with demo credentials",
+        "testAmount": "$15.00",
+        "recommendation": "Use sandbox credentials to test payment processing"
+      }
+    },
+    {
+      "name": "Webhook Signature",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.636Z",
+      "details": {
+        "message": "Webhook signature generated successfully",
+        "signatureLength": 64,
+        "algorithm": "HMAC-SHA256"
+      }
+    },
+    {
+      "name": "Webhook Processing",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.636Z",
+      "details": {
+        "message": "Webhook processed successfully",
+        "eventType": "payment.succeeded",
+        "orderId": "WTF_TEST_ORDER",
+        "action": "mark_order_paid"
+      }
+    },
+    {
+      "name": "Shopify Integration",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "Cannot test Shopify integration with demo credentials",
+        "recommendation": "Set SHOPIFY_ACCESS_TOKEN environment variable"
+      }
+    },
+    {
+      "name": "Error Handling: Invalid Card",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "Properly handled card_declined error",
+        "errorCode": "card_declined",
+        "userMessage": "Your card was declined. Please try a different payment method."
+      }
+    },
+    {
+      "name": "Error Handling: Insufficient Funds",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "Properly handled insufficient_funds error",
+        "errorCode": "insufficient_funds",
+        "userMessage": "Insufficient funds. Please check your account balance or try a different card."
+      }
+    },
+    {
+      "name": "Error Handling: Expired Card",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "Properly handled expired_card error",
+        "errorCode": "expired_card",
+        "userMessage": "Your card has expired. Please update your payment information."
+      }
+    },
+    {
+      "name": "PCI DSS Compliance",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "PCI DSS compliance verified",
+        "recommendation": null
+      }
+    },
+    {
+      "name": "SSL/TLS Encryption",
+      "status": "passed",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "All API calls use HTTPS encryption",
+        "recommendation": null
+      }
+    },
+    {
+      "name": "API Key Security",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "API Key Security needs attention for production",
+        "recommendation": "Configure production security settings"
+      }
+    },
+    {
+      "name": "Webhook Signature Validation",
+      "status": "warning",
+      "timestamp": "2025-09-24T23:38:38.637Z",
+      "details": {
+        "message": "Webhook Signature Validation needs attention for production",
+        "recommendation": "Configure production security settings"
+      }
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "passed": 7,
+    "failed": 0,
+    "warnings": 7
+  }
+}

@@ -1,0 +1,20 @@
+{%- comment -%} Activate account template. {%- endcomment -%}
+<main id="MainContent" class="page-width" role="main">
+  <section class="customer-form">
+    <h1>Activate your account</h1>
+    {% form 'activate_customer_password' %}
+      {% if form.errors %}
+        <div class="form-errors">{{ form.errors | default_errors }}</div>
+      {% endif %}
+      <div class="field">
+        <label for="ActivatePassword">Password</label>
+        <input type="password" id="ActivatePassword" name="customer[password]" autocomplete="new-password" required>
+      </div>
+      <div class="field">
+        <label for="ActivatePasswordConfirmation">Confirm password</label>
+        <input type="password" id="ActivatePasswordConfirmation" name="customer[password_confirmation]" autocomplete="new-password" required>
+      </div>
+      <button type="submit" class="button">Activate account</button>
+    {% endform %}
+  </section>
+</main>

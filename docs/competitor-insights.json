@@ -1,0 +1,83 @@
+{
+  "generatedAt": "2025-09-24T23:38:38.394Z",
+  "totals": {
+    "localCompetitorCount": 8,
+    "loyaltyPrograms": 5,
+    "activeEvents": 8,
+    "socialStandouts": 4
+  },
+  "competitors": [
+    {
+      "name": "Kava Culture Kava Bar",
+      "city": "Fort Myers",
+      "distanceMiles": 15.3,
+      "uniqueDrinkOfferings": "Kava, Kratom, Elixirs, CBD mocktails",
+      "loyaltyProgram": "Yes - points via Kava Culture app",
+      "events": "Weekly live music, yoga, themed parties",
+      "socialPresence": "Strong on IG & TikTok, professional photography"
+    },
+    {
+      "name": "Elevation Kava",
+      "city": "Cape Coral",
+      "distanceMiles": 8.4,
+      "uniqueDrinkOfferings": "Kava, Kratom, tea lattes, kava cocktails",
+      "loyaltyProgram": "Punch card for free shell after 10",
+      "events": "Hosts karaoke, local bands, game nights",
+      "socialPresence": "Active on FB/IG, community-focused posts"
+    },
+    {
+      "name": "High Tide Kava Bar",
+      "city": "Cape Coral",
+      "distanceMiles": 7.8,
+      "uniqueDrinkOfferings": "Kava, Kratom, nitro cold brew, botanical mocktails",
+      "loyaltyProgram": "VIP membership for daily discounts",
+      "events": "Trivia, acoustic sets, vendor pop-ups",
+      "socialPresence": "Daily updates on IG, interactive stories"
+    },
+    {
+      "name": "Bula Kava Bar & Coffeehouse",
+      "city": "Cape Coral",
+      "distanceMiles": 8.1,
+      "uniqueDrinkOfferings": "Kava, Coffee, Espresso, Kava cocktails",
+      "loyaltyProgram": "Coffee punch card + kava member discounts",
+      "events": "Live music weekends, art shows, workshops",
+      "socialPresence": "Active FB events calendar, IG stories"
+    },
+    {
+      "name": "Shangri-La Botanical",
+      "city": "Cape Coral",
+      "distanceMiles": 6.7,
+      "uniqueDrinkOfferings": "Kava, Kratom, herbal elixirs, wellness shots",
+      "loyaltyProgram": "Membership tiers for nightly shell pricing",
+      "events": "Sound baths, drum circles, breathwork sessions",
+      "socialPresence": "Instagram + FB with wellness-focused content"
+    },
+    {
+      "name": "Purple Lotus Kava Bar",
+      "city": "Cape Coral",
+      "distanceMiles": 9.8,
+      "uniqueDrinkOfferings": "Kava, Kratom, CBD mocktails, kombucha",
+      "loyaltyProgram": "Rewards app for points per shell",
+      "events": "Weekly DJs, themed nights, open mic",
+      "socialPresence": "Active on IG, FB, TikTok; professional event reels"
+    },
+    {
+      "name": "Roots House Of Kava",
+      "city": "Cape Coral",
+      "distanceMiles": 6.2,
+      "uniqueDrinkOfferings": "Traditional kava shells, kratom teas, botanical mocktails, locally roasted cold brew",
+      "loyaltyProgram": "Soft-opening punch card and founders club perks in rollout",
+      "events": "Grand opening schedule teased vendor markets, acoustic sets, trivia nights",
+      "socialPresence": "Instagram & Facebook documenting build-out progress, community collaborations"
+    },
+    {
+      "name": "Southern Roots Kava Bar",
+      "city": "Fort Myers",
+      "distanceMiles": 6.9,
+      "uniqueDrinkOfferings": "Kava shells, kratom tea flights, bubble tea-inspired elixirs, vegan-friendly bites",
+      "loyaltyProgram": "Founders membership sign-up and loyalty tiers launching with opening",
+      "events": "Previewing weekly live music, community meetups, themed chill nights",
+      "socialPresence": "Active on Instagram & TikTok with behind-the-scenes buildout and menu reveals"
+    }
+  ]
+}

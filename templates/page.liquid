@@ -1,0 +1,7 @@
+{%- comment -%} Default page template for general content pages. {%- endcomment -%}
+<main id="MainContent" class="page-width page-content" role="main">
+  <header class="section-header">
+    <h1 class="section-header__title">{{ page.title | escape }}</h1>
+  </header>
+  <div class="rte">{{ page.content }}</div>
+</main>

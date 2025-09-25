@@ -1,0 +1,49 @@
+# macOS
+.DS_Store
+
+# Node / tooling
+node_modules/
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+dist/
+.build/
+.tmp/
+
+# Shopify CLI cache
+.shopify/
+.theme-cache/
+.env
+.env.*
+
+# VS Code
+.vscode/
+backup_*
+backup_*
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Node / build
+node_modules/
+dist/
+.cache/
+coverage/
+*.log
+
+# Env / local
+.env
+.env.*
+local_*
+*.local.*
+
+# Backups / artifacts
+backup_*
+*.zip
+*.tar.gz
+*.csv
+
+# Shopify CLI
+.shopify-cli/
+# (If this is a theme repo, keep .shopifyignore in the repo, but it only affects deploys, not Git.)
