@@ -98,3 +98,4 @@ Stay aligned with the launch criteria outlined in `AGENTS.md`: WCAG 2.1 AA acces
 | Purple Lotus Kava Bar | Cape Coral, FL | CBD mocktails and kombucha program | Spotlight lab-tested terpene data + deliver combos via builder upsell automation. |
 | Roots House Of Kava | Cape Coral, FL | Traditional shells and kratom flights | Promote premium ingredient sourcing + faster pickup to win habitual shell drinkers. |
 | Southern Roots Kava Bar | Fort Myers, FL | Vegan bites and curated flights | Automate tasting flight bundles via Shopify Functions + structured data. |
+# wtf-theme-delivered
