@@ -19,7 +19,6 @@
     assign close_minutes = close_time | replace: ':', '' | times: 1
     
     if current_minutes >= open_minutes and current_minutes < close_minutes
-      assign is_open = true
       assign status_class = 'open'
       assign status_text = 'Open now'
       assign next_change = 'Closes at ' | append: close_time | date: '%l:%M %P' | strip

@@ -1,0 +1,324 @@
+name: Theme Quality Check
+
+on:
+  push:
+    branches: [ main, develop, 'hardening/*' ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  theme-check:
+    name: Shopify Theme Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+        
+    - name: Install theme-check
+      run: gem install theme-check
+      
+    - name: Run theme-check with auto-correct
+      run: |
+        echo "Running theme-check with auto-corrections..."
+        theme-check --auto-correct .
+        
+    - name: Check for remaining errors
+      run: |
+        echo "Checking for remaining theme-check errors..."
+        theme-check . --fail-level=error
+        
+    - name: Upload corrected files
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: theme-check-corrections
+        path: |
+          **/*.liquid
+          **/*.json
+        retention-days: 7
+
+  json-validation:
+    name: JSON Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Validate JSON files
+      run: |
+        echo "Validating JSON files..."
+        
+        # Function to validate JSON
+        validate_json() {
+          local file="$1"
+          if ! python3 -m json.tool "$file" > /dev/null 2>&1; then
+            echo "❌ Invalid JSON: $file"
+            return 1
+          else
+            echo "✅ Valid JSON: $file"
+            return 0
+          fi
+        }
+        
+        # Validate key theme JSON files
+        json_files=(
+          "config/settings_schema.json"
+          "config/settings_data.json"
+          "templates/index.json"
+          "templates/product.json"
+          "locales/en.default.json"
+        )
+        
+        error_count=0
+        for file in "${json_files[@]}"; do
+          if [ -f "$file" ]; then
+            if ! validate_json "$file"; then
+              ((error_count++))
+            fi
+          else
+            echo "⚠️ File not found: $file"
+          fi
+        done
+        
+        # Validate all template JSON files
+        find templates/ -name "*.json" -type f | while read -r file; do
+          if ! validate_json "$file"; then
+            ((error_count++))
+          fi
+        done
+        
+        if [ $error_count -gt 0 ]; then
+          echo "❌ Found $error_count JSON validation errors"
+          exit 1
+        else
+          echo "✅ All JSON files are valid"
+        fi
+
+  liquid-validation:
+    name: Liquid Template Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        
+    - name: Install liquid gem
+      run: gem install liquid
+      
+    - name: Validate Liquid syntax
+      run: |
+        echo "Validating Liquid template syntax..."
+        
+        # Simple Liquid syntax check
+        find . -name "*.liquid" -type f | while read -r file; do
+          echo "Checking: $file"
+          
+          # Check for common Liquid syntax errors
+          if grep -n "{{[^}]*{" "$file"; then
+            echo "❌ Malformed Liquid tag in $file"
+            exit 1
+          fi
+          
+          if grep -n "}[^}]*}}" "$file"; then
+            echo "❌ Malformed Liquid tag in $file"
+            exit 1
+          fi
+          
+          # Check for unclosed tags
+          if grep -n "{%[^%]*{%" "$file"; then
+            echo "❌ Potentially unclosed Liquid tag in $file"
+          fi
+        done
+        
+        echo "✅ Liquid syntax validation completed"
+
+  asset-optimization:
+    name: Asset Optimization Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check asset optimization
+      run: |
+        echo "Checking asset optimization..."
+        
+        # Check for large images
+        echo "Checking for large image files..."
+        find assets/ -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" | while read -r file; do
+          if [ -f "$file" ]; then
+            size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+            if [ "$size" -gt 500000 ]; then  # 500KB
+              echo "⚠️ Large image file: $file ($(($size / 1024))KB)"
+            fi
+          fi
+        done
+        
+        # Check for unminified CSS/JS
+        echo "Checking for unminified assets..."
+        find assets/ -name "*.css" -o -name "*.js" | while read -r file; do
+          if [ -f "$file" ] && ! [[ "$file" =~ \.min\. ]]; then
+            lines=$(wc -l < "$file")
+            if [ "$lines" -gt 100 ]; then
+              echo "⚠️ Consider minifying: $file ($lines lines)"
+            fi
+          fi
+        done
+        
+        echo "✅ Asset optimization check completed"
+
+  accessibility-check:
+    name: Accessibility Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check accessibility patterns
+      run: |
+        echo "Checking accessibility patterns..."
+        
+        # Check for missing alt attributes
+        echo "Checking for images without alt attributes..."
+        if grep -r "<img[^>]*>" . --include="*.liquid" | grep -v "alt="; then
+          echo "⚠️ Found images without alt attributes"
+        fi
+        
+        # Check for proper heading structure
+        echo "Checking heading structure..."
+        find . -name "*.liquid" -exec grep -l "<h[1-6]" {} \; | while read -r file; do
+          echo "Headings in $file:"
+          grep -n "<h[1-6]" "$file" | head -5
+        done
+        
+        # Check for ARIA attributes
+        echo "Checking for ARIA attributes..."
+        aria_count=$(grep -r "aria-" . --include="*.liquid" | wc -l)
+        echo "Found $aria_count ARIA attributes"
+        
+        # Check for skip links
+        echo "Checking for skip links..."
+        if grep -r "skip.*content" . --include="*.liquid"; then
+          echo "✅ Skip links found"
+        else
+          echo "⚠️ No skip links found"
+        fi
+        
+        echo "✅ Accessibility check completed"
+
+  naming-convention-check:
+    name: Naming Convention Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check naming conventions
+      run: |
+        echo "Checking naming conventions..."
+        
+        # Check file naming (kebab-case)
+        echo "Checking file naming conventions..."
+        find sections/ snippets/ templates/ -name "*.liquid" | while read -r file; do
+          basename=$(basename "$file" .liquid)
+          if [[ ! "$basename" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] && [[ ! "$basename" =~ ^[a-z0-9]+(\.[a-z0-9-]+)*$ ]]; then
+            echo "⚠️ File name not in kebab-case: $file"
+          fi
+        done
+        
+        # Check CSS class naming (BEM-style)
+        echo "Checking CSS class naming..."
+        class_violations=$(grep -r "class=" . --include="*.liquid" | grep -E "(class=\"[^\"]*[A-Z]|class=\"[^\"]*_[^_])" | wc -l)
+        if [ "$class_violations" -gt 0 ]; then
+          echo "⚠️ Found $class_violations potential CSS class naming violations"
+          grep -r "class=" . --include="*.liquid" | grep -E "(class=\"[^\"]*[A-Z]|class=\"[^\"]*_[^_])" | head -5
+        fi
+        
+        # Check data attribute naming (kebab-case)
+        echo "Checking data attribute naming..."
+        data_violations=$(grep -r "data-" . --include="*.liquid" | grep -E "data-[^=]*[A-Z]" | wc -l)
+        if [ "$data_violations" -gt 0 ]; then
+          echo "⚠️ Found $data_violations potential data attribute naming violations"
+        fi
+        
+        echo "✅ Naming convention check completed"
+
+  summary:
+    name: Quality Check Summary
+    runs-on: ubuntu-latest
+    needs: [theme-check, json-validation, liquid-validation, asset-optimization, accessibility-check, naming-convention-check]
+    if: always()
+    
+    steps:
+    - name: Generate summary
+      run: |
+        echo "## WTF Theme Quality Check Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Check job results
+        if [ "${{ needs.theme-check.result }}" = "success" ]; then
+          echo "✅ Theme Check: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Theme Check: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.json-validation.result }}" = "success" ]; then
+          echo "✅ JSON Validation: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ JSON Validation: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.liquid-validation.result }}" = "success" ]; then
+          echo "✅ Liquid Validation: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Liquid Validation: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.asset-optimization.result }}" = "success" ]; then
+          echo "✅ Asset Optimization: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Asset Optimization: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.accessibility-check.result }}" = "success" ]; then
+          echo "✅ Accessibility Check: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Accessibility Check: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.naming-convention-check.result }}" = "success" ]; then
+          echo "✅ Naming Convention Check: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Naming Convention Check: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Repository:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY

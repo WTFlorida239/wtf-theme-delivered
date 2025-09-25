@@ -11,7 +11,6 @@
   assign business_name = shop.metafields.business.name | default: shop.name
   assign business_phone = shop.metafields.contact.phone_primary | default: '(239) 955-0314'
   assign business_email = shop.metafields.contact.email_primary | default: 'info@wtfswag.com'
-  assign business_address = shop.metafields.contact.address_full | default: '1520 SE 46th Ln. Unit B, Cape Coral, FL 33904'
   assign latitude = shop.metafields.location.latitude | default: '26.5628'
   assign longitude = shop.metafields.location.longitude | default: '-81.9495'
   assign local_business_rating = shop.metafields.gbp.aggregate_rating_json

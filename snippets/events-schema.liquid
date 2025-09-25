@@ -9,7 +9,6 @@
 {% liquid
   assign upcoming_events = shop.metafields.wtf.upcoming_events.value | default: blank
   assign recurring_events = shop.metafields.wtf.recurring_events.value | default: blank
-  assign event_location = shop.metafields.wtf.address.value | default: '1520 SE 46th Ln, Unit B, Cape Coral, FL 33904'
 %}
 
 {% if upcoming_events != blank or recurring_events != blank %}

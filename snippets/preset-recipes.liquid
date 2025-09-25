@@ -23,7 +23,6 @@
       {% liquid
         assign recipe_name = preset.name | default: 'Custom Recipe'
         assign recipe_description = preset.description | default: ''
-        assign recipe_ingredients = preset.ingredients | default: blank
         assign recipe_size = preset.size | default: 'Medium'
         assign recipe_strain = preset.strain | default: 'Green'
         assign recipe_flavors = preset.flavors | default: blank

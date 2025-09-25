@@ -465,14 +465,46 @@
   {
     "name": "Analytics & Pixels",
     "settings": [
-      { "type": "text", "id": "google_analytics_id", "label": "Google Analytics 4 Measurement ID (G-XXXX...)" },
-      { "type": "text", "id": "google_ads_id", "label": "Google Ads Conversion ID (AW-XXXX...)" },
-      { "type": "text", "id": "facebook_pixel_id", "label": "Meta Pixel ID" },
-      { "type": "text", "id": "tiktok_pixel_id", "label": "TikTok Pixel ID" },
-      { "type": "text", "id": "snapchat_pixel_id", "label": "Snapchat Pixel ID" },
-      { "type": "text", "id": "pinterest_tag_id", "label": "Pinterest Tag ID" },
-      { "type": "text", "id": "clarity_project_id", "label": "Microsoft Clarity Project ID" },
-      { "type": "text", "id": "hotjar_site_id", "label": "Hotjar Site ID" }
+      {
+        "type": "text",
+        "id": "google_analytics_id",
+        "label": "Google Analytics 4 Measurement ID (G-XXXX...)"
+      },
+      {
+        "type": "text",
+        "id": "google_ads_id",
+        "label": "Google Ads Conversion ID (AW-XXXX...)"
+      },
+      {
+        "type": "text",
+        "id": "facebook_pixel_id",
+        "label": "Meta Pixel ID"
+      },
+      {
+        "type": "text",
+        "id": "tiktok_pixel_id",
+        "label": "TikTok Pixel ID"
+      },
+      {
+        "type": "text",
+        "id": "snapchat_pixel_id",
+        "label": "Snapchat Pixel ID"
+      },
+      {
+        "type": "text",
+        "id": "pinterest_tag_id",
+        "label": "Pinterest Tag ID"
+      },
+      {
+        "type": "text",
+        "id": "clarity_project_id",
+        "label": "Microsoft Clarity Project ID"
+      },
+      {
+        "type": "text",
+        "id": "hotjar_site_id",
+        "label": "Hotjar Site ID"
+      }
     ]
   }
 ]

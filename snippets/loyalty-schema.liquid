@@ -7,7 +7,6 @@
 {% endcomment %}
 
 {% liquid
-  assign loyalty_program = shop.metafields.wtf.loyalty_program.value | default: blank
   assign loyalty_tiers = shop.metafields.wtf.loyalty_tiers.value | default: blank
 %}
 
