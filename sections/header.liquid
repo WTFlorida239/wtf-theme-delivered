@@ -3,7 +3,13 @@
   Main site navigation and branding
 {% endcomment %}
 
-<header class="header" data-section-id="{{ section.id }}">
+<!-- Skip Links for Accessibility -->
+<div class="skip-links">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#main-navigation" class="skip-link">Skip to navigation</a>
+</div>
+
+<header class="header" data-section-id="{{ section.id }}" role="banner">
   <div class="header__container">
     <div class="header__logo">
       {% if section.settings.logo != blank %}

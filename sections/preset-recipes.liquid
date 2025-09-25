@@ -1,0 +1,520 @@
+{% comment %}
+  Preset Recipes Section for WTF Theme
+  Quick-pick preset recipes like "Focus Flow", "Florida Chill", etc.
+  Includes accessibility features and schema markup
+{% endcomment %}
+
+<section class="preset-recipes" data-section-id="{{ section.id }}" aria-labelledby="preset-recipes-title">
+  <div class="preset-recipes__container">
+    <div class="preset-recipes__header">
+      <h2 id="preset-recipes-title" class="preset-recipes__title">
+        {{ section.settings.title | default: 'Signature Recipes' }}
+      </h2>
+      {% if section.settings.description != blank %}
+        <p class="preset-recipes__description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="preset-recipes__grid" role="list">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'recipe' %}
+            <article class="preset-recipe" 
+                     data-recipe-id="{{ block.id }}"
+                     role="listitem"
+                     aria-labelledby="recipe-{{ block.id }}-title">
+              
+              {% if block.settings.image != blank %}
+                <div class="preset-recipe__image-wrapper">
+                  <img src="{{ block.settings.image | image_url: width: 400 }}" 
+                       alt="{{ block.settings.name }} recipe"
+                       class="preset-recipe__image"
+                       width="400"
+                       height="300"
+                       loading="lazy">
+                </div>
+              {% endif %}
+
+              <div class="preset-recipe__content">
+                <h3 id="recipe-{{ block.id }}-title" class="preset-recipe__name">
+                  {{ block.settings.name | default: 'Custom Recipe' }}
+                </h3>
+                
+                {% if block.settings.description != blank %}
+                  <p class="preset-recipe__description">{{ block.settings.description }}</p>
+                {% endif %}
+
+                <div class="preset-recipe__details">
+                  {% if block.settings.base_drink != blank %}
+                    <span class="preset-recipe__base">
+                      <strong>Base:</strong> {{ block.settings.base_drink }}
+                    </span>
+                  {% endif %}
+                  
+                  {% if block.settings.flavors != blank %}
+                    <span class="preset-recipe__flavors">
+                      <strong>Flavors:</strong> {{ block.settings.flavors }}
+                    </span>
+                  {% endif %}
+                  
+                  {% if block.settings.effects != blank %}
+                    <span class="preset-recipe__effects">
+                      <strong>Effects:</strong> {{ block.settings.effects }}
+                    </span>
+                  {% endif %}
+                </div>
+
+                {% if block.settings.price != blank %}
+                  <div class="preset-recipe__price">
+                    <span class="preset-recipe__price-label">Starting at</span>
+                    <span class="preset-recipe__price-value">${{ block.settings.price }}</span>
+                  </div>
+                {% endif %}
+
+                <div class="preset-recipe__actions">
+                  <button type="button" 
+                          class="preset-recipe__select-btn"
+                          data-recipe-select
+                          data-recipe-data="{{ block.settings | json | escape }}"
+                          aria-describedby="recipe-{{ block.id }}-help">
+                    Select This Recipe
+                  </button>
+                  
+                  {% if block.settings.learn_more_url != blank %}
+                    <a href="{{ block.settings.learn_more_url }}" 
+                       class="preset-recipe__learn-more"
+                       aria-label="Learn more about {{ block.settings.name }}">
+                      Learn More
+                    </a>
+                  {% endif %}
+                </div>
+
+                <div id="recipe-{{ block.id }}-help" class="preset-recipe__help-text">
+                  Click to automatically configure the drink builder with this recipe
+                </div>
+              </div>
+
+              {% comment %} Recipe Schema Markup {% endcomment %}
+              {% render 'recipe-schema', recipe: block.settings %}
+            </article>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_custom_option %}
+      <div class="preset-recipes__custom">
+        <h3>Create Your Own</h3>
+        <p>Don't see what you're looking for? Use our drink builder to create your perfect custom blend.</p>
+        <a href="{{ section.settings.builder_url | default: '/pages/drink-builder' }}" 
+           class="preset-recipes__custom-btn"
+           aria-label="Go to custom drink builder">
+          Build Custom Drink
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .skip-links {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .skip-link {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+  }
+  
+  .skip-link:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    left: 0;
+    top: 0;
+  }
+
+  .preset-recipes {
+    padding: 3rem 0;
+    background: #f9fafb;
+  }
+
+  .preset-recipes__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .preset-recipes__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .preset-recipes__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  .preset-recipes__description {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .preset-recipes__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .preset-recipe {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .preset-recipe:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .preset-recipe__image-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preset-recipe__image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .preset-recipe__content {
+    padding: 1.5rem;
+  }
+
+  .preset-recipe__name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .preset-recipe__description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+  }
+
+  .preset-recipe__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .preset-recipe__details span {
+    color: #4b5563;
+  }
+
+  .preset-recipe__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .preset-recipe__price-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .preset-recipe__price-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #059669;
+  }
+
+  .preset-recipe__actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .preset-recipe__select-btn {
+    flex: 1;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .preset-recipe__select-btn:hover {
+    background: #2563eb;
+  }
+
+  .preset-recipe__select-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  .preset-recipe__learn-more {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+  }
+
+  .preset-recipe__learn-more:hover {
+    background: #eff6ff;
+  }
+
+  .preset-recipe__learn-more:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  .preset-recipe__help-text {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  .preset-recipes__custom {
+    text-align: center;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .preset-recipes__custom h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  .preset-recipes__custom p {
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .preset-recipes__custom-btn {
+    display: inline-block;
+    background: #059669;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+
+  .preset-recipes__custom-btn:hover {
+    background: #047857;
+  }
+
+  .preset-recipes__custom-btn:focus {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+  }
+
+  .drink-builder__help-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 640px) {
+    .preset-recipes__grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .preset-recipe__actions {
+      flex-direction: column;
+    }
+    
+    .preset-recipes__title {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const recipeButtons = document.querySelectorAll('[data-recipe-select]');
+    
+    recipeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const recipeData = JSON.parse(this.dataset.recipeData);
+        
+        // Dispatch custom event for drink builder integration
+        const event = new CustomEvent('recipe-selected', {
+          detail: recipeData,
+          bubbles: true
+        });
+        
+        document.dispatchEvent(event);
+        
+        // Provide user feedback
+        const originalText = this.textContent;
+        this.textContent = 'Recipe Selected!';
+        this.disabled = true;
+        
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.disabled = false;
+        }, 2000);
+        
+        // Announce to screen readers
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.style.position = 'absolute';
+        announcement.style.left = '-10000px';
+        announcement.textContent = `${recipeData.name} recipe selected and applied to drink builder`;
+        document.body.appendChild(announcement);
+        
+        setTimeout(() => {
+          document.body.removeChild(announcement);
+        }, 1000);
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Preset Recipes",
+  "tag": "section",
+  "class": "section-preset-recipes",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Signature Recipes"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_custom_option",
+      "label": "Show custom drink builder option",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "builder_url",
+      "label": "Custom builder URL",
+      "default": "/pages/drink-builder"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "recipe",
+      "name": "Recipe",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Recipe Name",
+          "default": "Focus Flow"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Recipe Description"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Recipe Image"
+        },
+        {
+          "type": "text",
+          "id": "base_drink",
+          "label": "Base Drink"
+        },
+        {
+          "type": "text",
+          "id": "flavors",
+          "label": "Flavors"
+        },
+        {
+          "type": "text",
+          "id": "effects",
+          "label": "Effects"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Starting Price"
+        },
+        {
+          "type": "url",
+          "id": "learn_more_url",
+          "label": "Learn More URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Preset Recipes",
+      "blocks": [
+        {
+          "type": "recipe",
+          "settings": {
+            "name": "Focus Flow",
+            "description": "A premium kava blend designed to enhance focus and mental clarity while promoting relaxation.",
+            "base_drink": "Premium Kava",
+            "flavors": "Vanilla, Coconut",
+            "effects": "Focus, Relaxation",
+            "price": "8.99"
+          }
+        },
+        {
+          "type": "recipe",
+          "settings": {
+            "name": "Florida Chill",
+            "description": "A tropical kratom tea blend perfect for unwinding after a long day in paradise.",
+            "base_drink": "Green Kratom",
+            "flavors": "Mango, Passion Fruit",
+            "effects": "Relaxation, Mood Enhancement",
+            "price": "7.99"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

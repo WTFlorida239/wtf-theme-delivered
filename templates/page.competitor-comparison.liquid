@@ -1,0 +1,623 @@
+{% comment %}
+  Competitor Comparison Landing Page
+  Highlights WTF advantages vs. Cape Coral competition
+  Includes FAQ schema for competitive differentiation
+{% endcomment %}
+
+<div class="competitor-comparison" data-page-type="competitor-comparison">
+  <div class="page-width">
+    
+    <!-- Hero Section -->
+    <section class="comparison-hero" aria-labelledby="comparison-hero-title">
+      <div class="comparison-hero__content">
+        <h1 id="comparison-hero-title" class="comparison-hero__title">
+          Why Choose WTF Over Other Cape Coral Kava Bars?
+        </h1>
+        <p class="comparison-hero__subtitle">
+          Discover what makes WTF | Welcome To Florida Southwest Florida's premier destination for kava, kratom, and botanical beverages.
+        </p>
+        <div class="comparison-hero__stats">
+          <div class="stat">
+            <span class="stat__number">25+</span>
+            <span class="stat__label">Flavor Options</span>
+          </div>
+          <div class="stat">
+            <span class="stat__number">4</span>
+            <span class="stat__label">Kratom Strains</span>
+          </div>
+          <div class="stat">
+            <span class="stat__number">100%</span>
+            <span class="stat__label">Lab Tested</span>
+          </div>
+        </div>
+      </div>
+      <div class="comparison-hero__image">
+        <img src="{{ 'wtf-storefront-hero.jpg' | asset_url }}" 
+             alt="WTF Welcome To Florida storefront in Cape Coral" 
+             width="600" 
+             height="400"
+             loading="eager">
+      </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="comparison-table-section" aria-labelledby="comparison-table-title">
+      <h2 id="comparison-table-title" class="comparison-table__title">
+        Head-to-Head Comparison
+      </h2>
+      <p class="comparison-table__subtitle">
+        See how WTF stacks up against other kava bars in Cape Coral and Southwest Florida.
+      </p>
+      
+      <div class="comparison-table-wrapper">
+        <table class="comparison-table" role="table" aria-label="Kava bar comparison">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col" class="wtf-column">
+                <div class="competitor-logo">
+                  <img src="{{ 'wtf-logo.png' | asset_url }}" alt="WTF Logo" width="60" height="40">
+                  <span>WTF</span>
+                </div>
+              </th>
+              <th scope="col">Other Cape Coral Venues</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Online Ordering</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Advanced drink builder</span>
+              </td>
+              <td>
+                <span class="feature-cross">❌</span>
+                <span>Limited or no online ordering</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Flavor Variety</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>25+ flavors, sugar-free options</span>
+              </td>
+              <td>
+                <span class="feature-partial">⚠️</span>
+                <span>Basic flavor selection</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">THC Beverages</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Delta-9 drinks, multiple strengths</span>
+              </td>
+              <td>
+                <span class="feature-cross">❌</span>
+                <span>Not available</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Kratom Strains</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Green, Red, White, Yellow + Mix</span>
+              </td>
+              <td>
+                <span class="feature-partial">⚠️</span>
+                <span>Limited strain variety</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Lab Testing</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Third-party lab tested</span>
+              </td>
+              <td>
+                <span class="feature-unknown">❓</span>
+                <span>Testing status unclear</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Hours</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>8AM-10PM (Fri-Sat), 8AM-8PM (Sun-Thu)</span>
+              </td>
+              <td>
+                <span class="feature-partial">⚠️</span>
+                <span>Limited evening hours</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Food & Snacks</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Full menu, take-home items</span>
+              </td>
+              <td>
+                <span class="feature-partial">⚠️</span>
+                <span>Limited food options</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Community Events</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Regular events, game nights</span>
+              </td>
+              <td>
+                <span class="feature-partial">⚠️</span>
+                <span>Occasional events</span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Atmosphere</th>
+              <td class="wtf-column">
+                <span class="feature-check">✅</span>
+                <span>Modern, welcoming, sober-friendly</span>
+              </td>
+              <td>
+                <span class="feature-partial">⚠️</span>
+                <span>Traditional kava bar feel</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Key Differentiators -->
+    <section class="differentiators" aria-labelledby="differentiators-title">
+      <h2 id="differentiators-title" class="differentiators__title">
+        What Makes WTF Different
+      </h2>
+      
+      <div class="differentiators__grid">
+        <article class="differentiator">
+          <div class="differentiator__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <h3 class="differentiator__title">Advanced Online Ordering</h3>
+          <p class="differentiator__description">
+            Our sophisticated drink builder lets you customize every aspect of your order online. Choose your base, size, flavors, boosters, and more - then pick up or have it ready when you arrive.
+          </p>
+        </article>
+
+        <article class="differentiator">
+          <div class="differentiator__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m6-6h4a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-4m-6 0V9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8z"></path>
+            </svg>
+          </div>
+          <h3 class="differentiator__title">Comprehensive Product Range</h3>
+          <p class="differentiator__description">
+            Beyond traditional kava and kratom, we offer THC beverages, edibles, take-home products, and a full selection of botanicals. One-stop shop for all your wellness needs.
+          </p>
+        </article>
+
+        <article class="differentiator">
+          <div class="differentiator__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 9V5a3 3 0 0 0-6 0v4"></path>
+              <rect x="2" y="9" width="20" height="11" rx="2" ry="2"></rect>
+            </svg>
+          </div>
+          <h3 class="differentiator__title">Quality & Safety First</h3>
+          <p class="differentiator__description">
+            All our kratom and THC products are third-party lab tested for purity and potency. We provide detailed information about origins, effects, and proper dosing.
+          </p>
+        </article>
+
+        <article class="differentiator">
+          <div class="differentiator__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+          </div>
+          <h3 class="differentiator__title">Community-Focused Atmosphere</h3>
+          <p class="differentiator__description">
+            We're more than a kava bar - we're a community hub. Regular events, game nights, educational workshops, and a welcoming space for sober-friendly socializing.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Customer Testimonials -->
+    <section class="testimonials" aria-labelledby="testimonials-title">
+      <h2 id="testimonials-title" class="testimonials__title">
+        What Our Customers Say
+      </h2>
+      
+      <div class="testimonials__grid">
+        <blockquote class="testimonial">
+          <div class="testimonial__content">
+            <p>"I've tried other kava places in Cape Coral, but WTF is on another level. The online ordering is so convenient, and the flavor selection is incredible. Plus, the staff actually knows their stuff!"</p>
+          </div>
+          <footer class="testimonial__author">
+            <cite>— Sarah M., Fort Myers</cite>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial">
+          <div class="testimonial__content">
+            <p>"The atmosphere at WTF is what sets them apart. It's modern, clean, and welcoming. Other places feel like you're drinking in someone's garage. This feels professional."</p>
+          </div>
+          <footer class="testimonial__author">
+            <cite>— Mike R., Cape Coral</cite>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial">
+          <div class="testimonial__content">
+            <p>"Love that they have THC drinks and such a huge variety of kratom strains. You can't get that anywhere else in Southwest Florida. The quality is consistently excellent."</p>
+          </div>
+          <footer class="testimonial__author">
+            <cite>— Jessica L., Lehigh Acres</cite>
+          </footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="comparison-cta" aria-labelledby="comparison-cta-title">
+      <div class="comparison-cta__content">
+        <h2 id="comparison-cta-title" class="comparison-cta__title">
+          Experience the WTF Difference
+        </h2>
+        <p class="comparison-cta__description">
+          Visit us in Cape Coral and discover why WTF is Southwest Florida's premier destination for kava, kratom, and botanical beverages.
+        </p>
+        <div class="comparison-cta__actions">
+          <a href="/pages/drink-builder" class="btn btn--primary">
+            Order Online Now
+          </a>
+          <a href="tel:2399550314" class="btn btn--secondary">
+            Call (239) 955-0314
+          </a>
+        </div>
+        <div class="comparison-cta__location">
+          <p>
+            <strong>Visit Us:</strong> 1520 SE 46th Ln, Unit B, Cape Coral, FL 33904<br>
+            <strong>Hours:</strong> Mon-Thu 8AM-8PM, Fri-Sat 8AM-10PM, Sun 8AM-8PM
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- FAQ Schema for Competitive Differentiation -->
+{% render 'faq-schema' %}
+
+<style>
+  .competitor-comparison {
+    padding: 2rem 0;
+  }
+
+  .comparison-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 4rem;
+  }
+
+  .comparison-hero__title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+  }
+
+  .comparison-hero__subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+  }
+
+  .comparison-hero__stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat__number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3b82f6;
+  }
+
+  .stat__label {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+  }
+
+  .comparison-hero__image img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .comparison-table-section {
+    margin-bottom: 4rem;
+  }
+
+  .comparison-table__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    margin: 0 0 1rem 0;
+  }
+
+  .comparison-table__subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    text-align: center;
+    margin: 0 0 3rem 0;
+  }
+
+  .comparison-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .comparison-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .wtf-column {
+    background: #eff6ff !important;
+    font-weight: 600;
+  }
+
+  .competitor-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .competitor-logo img {
+    width: 60px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .feature-check {
+    color: #059669;
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+  }
+
+  .feature-cross {
+    color: #dc2626;
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+  }
+
+  .feature-partial {
+    color: #d97706;
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+  }
+
+  .feature-unknown {
+    color: #6b7280;
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+  }
+
+  .differentiators {
+    margin-bottom: 4rem;
+  }
+
+  .differentiators__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    margin: 0 0 3rem 0;
+  }
+
+  .differentiators__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .differentiator {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .differentiator__icon {
+    color: #3b82f6;
+    margin-bottom: 1rem;
+  }
+
+  .differentiator__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  .differentiator__description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .testimonials {
+    margin-bottom: 4rem;
+  }
+
+  .testimonials__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    margin: 0 0 3rem 0;
+  }
+
+  .testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .testimonial {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #3b82f6;
+  }
+
+  .testimonial__content p {
+    font-style: italic;
+    color: #4b5563;
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+  }
+
+  .testimonial__author {
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .comparison-cta {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .comparison-cta__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+
+  .comparison-cta__description {
+    font-size: 1.25rem;
+    margin: 0 0 2rem 0;
+    opacity: 0.9;
+  }
+
+  .comparison-cta__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn--primary {
+    background: white;
+    color: #3b82f6;
+  }
+
+  .btn--primary:hover {
+    background: #f3f4f6;
+  }
+
+  .btn--secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+  }
+
+  .btn--secondary:hover {
+    background: white;
+    color: #3b82f6;
+  }
+
+  .comparison-cta__location {
+    opacity: 0.9;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 768px) {
+    .comparison-hero {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .comparison-hero__title {
+      font-size: 2rem;
+    }
+
+    .comparison-hero__stats {
+      justify-content: center;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .differentiators__grid,
+    .testimonials__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .comparison-cta__actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>
