@@ -188,6 +188,36 @@ NODE_VERSION: 20
 | **Roots House Of Kava** | 1242 SW Pine Island Rd, Ste 19-20, Cape Coral, FL 33991 | — | Open (Cape Coral); new venue; listings active. |
 | **Southern Roots Kava Bar** | 16339 S Tamiami Trl, Fort Myers, FL 33908 | — | Appears **coming soon / not yet open** in Fort Myers. |
 
+## Competitors (65-mile radius of Cape Coral, FL)
+
+| Name | Address | Website | Phone | Status | Notes |
+|---|---|---|---|---|---|
+| Kava Culture Kava Bar — Cape Coral (HQ) | 843 Miramar St, Cape Coral, FL 33904 | https://kavaculture.com | (239) 341-4384 | Open | Flagship/HQ in downtown Cape Coral. :contentReference[oaicite:0]{index=0} |
+| Botanical Brewing Taproom (Kava Culture) | 839 Miramar St, Cape Coral, FL 33904 | https://botanicalbrewingco.com/pages/taproom | (239) 341-4380 | Open | Non-alcoholic taproom; kava/kratom focused. :contentReference[oaicite:1]{index=1} |
+| Roots House of Kava | 1242 SW Pine Island Rd, Ste 19-20, Cape Coral, FL 33991 | — | — | Open | New north-Cape location; local independent. :contentReference[oaicite:2]{index=2} |
+| Kava Culture — Downtown Fort Myers | 1615 Hendry St, Fort Myers, FL 33901 | https://kavaculture.com/downtown-fort-myers/ | (239) 244-3220 | Open | Core downtown location. :contentReference[oaicite:3]{index=3} |
+| Kava Culture — North Fort Myers | 15201 N Cleveland Ave #611, North Fort Myers, FL 33903 | https://kavaculture.com/north-fort-myers/ | (239) 541-8154 | Open | In Merchants Crossing area. :contentReference[oaicite:4]{index=4} |
+| Island Vibes Kava Bar — North Fort Myers | 5781 Bayshore Rd #104, North Fort Myers, FL 33917 | https://islandvibesbar.com | — | Open | Independent; late hours. :contentReference[oaicite:5]{index=5} |
+| The Sound Garden Kava Bar | 15560 McGregor Blvd, Ste 1, Fort Myers, FL 33908 | https://www.thesoundgardenkava.com/ | (239) 851-8859 | Open | Live-music oriented kava lounge. :contentReference[oaicite:6]{index=6} |
+| Island Vibes Kava Bar — Fort Myers | 15250 S Tamiami Trl #113, Fort Myers, FL 33908 | https://islandvibesbar.com | (239) 689-5686 | Open | South Ft Myers; long hours. :contentReference[oaicite:7]{index=7} |
+| Burma Kava Company | 16964 Alico Mission Way #210, Fort Myers, FL 33908 | http://burmakava.com | — | Open | Independent; near Alico Rd. :contentReference[oaicite:8]{index=8} |
+| Kapua Kava Bar | 12951 Metro Pkwy, Ste 15, Fort Myers, FL 33966 | https://www.kapuakavabar.com/ | (239) 208-6603 | Open | Remodeled; events; Metropolis Plaza. :contentReference[oaicite:9]{index=9} |
+| Kava Nirvana Kava Bar | 12995 S Cleveland Ave #103A, Fort Myers, FL 33907 | https://www.kavanirvana.com/ | (239) 600-8699 | Open | Independent; late hours. :contentReference[oaicite:10]{index=10} |
+| Kava Culture — Fort Myers Beach | 17979 San Carlos Blvd, Fort Myers Beach, FL 33931 | https://kavaculture.com/florida/ | (239) 237-2879 | Open | Beach corridor location. :contentReference[oaicite:11]{index=11} |
+| Kava Culture — Summerlin (Fort Myers) | 16230 Summerlin Rd #209, Fort Myers, FL 33908 | https://kavaculture.com/florida/ | (239) 237-2068 | Open | Summerlin Rd corridor. :contentReference[oaicite:12]{index=12} |
+| Kava Culture — Estero (Miromar Outlets) | 10801 Corkscrew Rd, Ste 327, Estero, FL 33928 | https://kavaculture.com/estero/ | (239) 221-8143 | Open | Outlet/FGCU area; heavy student traffic. :contentReference[oaicite:13]{index=13} |
+| Kava Culture — Bonita Springs | 24850 S Tamiami Trl, Bonita Springs, FL 34134 | https://kavaculture.com/bonita-springs/ | (239) 405-8696 | Open | Bernwood Shoppes. :contentReference[oaicite:14]{index=14} |
+| Kava Culture — Naples (North Naples) | 8925 Tamiami Trl N, Naples, FL 34108 | https://kavaculture.com/naples/ | (239) 431-5931 | Open | North Naples corridor. :contentReference[oaicite:15]{index=15} |
+| Nectar Lab Kava Bar (North Naples) | 15495 Tamiami Trl N, Unit 106, Naples, FL 34110 | https://nectarlabkavabar.com | (239) 228-7966 | Open | Independent; “North Naples” site. :contentReference[oaicite:16]{index=16} |
+| Nectar Lab Kava Bar (Central Naples) | 2500 Tamiami Trl N, Ste 112, Naples, FL 34103 | https://nectarlabkavabar.com | — | Open | Second Naples site; late hours. :contentReference[oaicite:17]{index=17} |
+| Cosmic Kava (Naples) | 2359 Vanderbilt Beach Rd #406, Naples, FL 34109 | https://cosmickavanaples.com | — | Open | Independent; North Naples. :contentReference[oaicite:18]{index=18} |
+| Alchemist Kava Bar & Lounge (Naples) | 4121 Tamiami Trl E, Naples, FL 34112 | https://alchemistkava.com | (239) 900-1616 | Open | East Naples; nightly events. :contentReference[oaicite:19]{index=19} |
+| Kava Luv Social Lounge (Naples) | 7550 Mission Hills Dr #310, Naples, FL 34119 | https://www.kavaluv.com | (239) 963-9133 | Open | Independent; long hours. :contentReference[oaicite:20]{index=20} |
+| Kava Culture — Golden Gate (Naples) | 12975 Collier Blvd, Ste 100, Naples, FL 34116 | https://kavaculture.com/florida/ | (239) 300-0263 | Open | East Naples/Golden Gate. :contentReference[oaicite:21]{index=21} |
+| Kava Culture — Marco Island | 1069 N Collier Blvd #214, Marco Island, FL 34145 | https://kavaculture.com/marco-island/ | (239) 970-2087 | Open | Marco Island town center. :contentReference[oaicite:22]{index=22} |
+| Kava Culture — Port Charlotte | 3822 Tamiami Trl, Port Charlotte, FL 33952 | https://kavaculture.com/port-charlotte/ | (941) 889-7442 | Open | Charlotte County hub. :contentReference[oaicite:23]{index=23} |
+| Downtown Kava (Punta Gorda) | 1009 Taylor St, Punta Gorda, FL 33950 | https://downtownkava.com | — | Open | Sober speakeasy vibe at Train Depot district. :contentReference[oaicite:24]{index=24} |
+
 
 ---
 
