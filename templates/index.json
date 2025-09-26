@@ -146,9 +146,10 @@
         "quick-item-1": {
           "type": "quick_item",
           "settings": {
-            "title": "Medium Kava (16oz)",
+            "title": "Kava (16oz)",
             "description": "Traditional kava blend",
-            "price": "10.00",
+            "price": "9.00",
+            "item_image": "shopify://shop_images/kava_drinks_150x150_ed3c8ea3-4375-4e23-961e-232981840fdf.png",
             "fallback_emoji": "🍃",
             "product_id": ""
           }
@@ -158,7 +159,8 @@
           "settings": {
             "title": "Kratom Tea (Green)",
             "description": "Premium green kratom",
-            "price": "8.00",
+            "price": "9.00",
+            "item_image": "shopify://shop_images/IMG_5062.heic",
             "fallback_emoji": "🍃",
             "product_id": ""
           }
