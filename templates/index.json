@@ -188,7 +188,8 @@
           "settings": {
             "title": "Edible Gummy",
             "description": "10mg THC gummy",
-            "price": "5.00",
+            "price": "9.99",
+            "item_image": "shopify://shop_images/only-fire-gummies.jpg",
             "fallback_emoji": "🍃",
             "product_id": ""
           }
@@ -199,6 +200,7 @@
             "title": "THC Chocolate",
             "description": "Premium chocolate bar",
             "price": "20.00",
+            "item_image": "shopify://shop_images/zombi-chocolate-bar-dark-chocolate.jpg",
             "fallback_emoji": "🍃",
             "product_id": ""
           }
