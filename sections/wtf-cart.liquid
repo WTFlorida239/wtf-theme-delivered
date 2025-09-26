@@ -16,7 +16,14 @@
       </div>
     {% else %}
       <div class="cart-header">
-        <h1 class="cart-title">Your Cart ({{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %})</h1>
+        <div class="cart-header__branding">
+          <img src="{{ 'WTFLogo.png' | asset_url }}" 
+               alt="{{ shop.name }}"
+               class="cart-header__logo"
+               width="60"
+               height="60">
+          <h1 class="cart-title">Your Cart ({{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %})</h1>
+        </div>
       </div>
 
       <div class="cart-content">

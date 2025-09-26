@@ -5,5 +5,8 @@
   "scripts": {
     "competitors:audit": "node scripts/competitors-audit.js",
     "conflicts:scan": "node scripts/check-conflicts.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
   }
 }

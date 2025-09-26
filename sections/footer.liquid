@@ -6,9 +6,18 @@
 <footer class="footer">
   <div class="page-width">
     <div class="footer__content">
-      <div class="footer__section">
-        <h3 class="footer__heading">{{ section.settings.heading | default: 'WTF | Welcome To Florida' }}</h3>
-        <p class="footer__text">{{ section.settings.description | default: 'Cape Coral\'s Premier Kava Bar' }}</p>
+      <div class="footer__section footer__section--branding">
+        <div class="footer__branding">
+          <img src="{{ 'WTFLogo.png' | asset_url }}" 
+               alt="{{ shop.name }}"
+               class="footer__logo"
+               width="80"
+               height="80">
+          <div class="footer__brand-text">
+            <h3 class="footer__heading">{{ section.settings.heading | default: 'WTF | Welcome To Florida' }}</h3>
+            <p class="footer__text">{{ section.settings.description | default: 'Cape Coral\'s Premier Kava Bar' }}</p>
+          </div>
+        </div>
       </div>
 
       <div class="footer__section">

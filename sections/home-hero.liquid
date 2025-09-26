@@ -23,15 +23,7 @@
 
   <div class="page-width">
     <div class="home-hero__inner">
-      {% if section.settings.logo_image or section.settings.show_logo %}
-        <div class="home-hero__logo">
-          {% if section.settings.logo_image %}
-            {{ section.settings.logo_image | image_url: width: 200 | image_tag: alt: logo_alt, loading: 'eager', decoding: 'async' }}
-          {% else %}
-            <img src="{{ 'WTFLogo.png' | asset_url }}" alt="{{ logo_alt }}" width="200" height="200" loading="eager" decoding="async" />
-          {% endif %}
-        </div>
-      {% endif %}
+      {% comment %} Logo removed from hero center - now placed in header and other branding locations {% endcomment %}
 
       {% if section.settings.heading != blank %}
         <h1 class="home-hero__title">{{ section.settings.heading | escape }}</h1>

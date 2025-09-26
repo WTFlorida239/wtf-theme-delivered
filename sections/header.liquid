@@ -15,8 +15,12 @@
                height="auto">
         </a>
       {% else %}
-        <a href="{{ routes.root_url }}" class="header__logo-text">
-          {{ shop.name }}
+        <a href="{{ routes.root_url }}" class="header__logo-link">
+          <img src="{{ 'WTFLogo.png' | asset_url }}" 
+               alt="{{ shop.name }}"
+               class="header__logo-image"
+               width="120"
+               height="120">
         </a>
       {% endif %}
     </div>
