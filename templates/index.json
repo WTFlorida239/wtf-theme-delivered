@@ -37,7 +37,7 @@
         "category-1": {
           "type": "category",
           "settings": {
-            "title": "Kratom teas",
+            "title": "Kratom Teas",
             "description": "Green, red, white & yellow strains with premium flavorings.",
             "meta": "4 strains • 25 flavors",
             "link": "shopify://pages/kratom-teas",
@@ -47,7 +47,7 @@
         "category-2": {
           "type": "category",
           "settings": {
-            "title": "Kava drinks",
+            "title": "Kava Drinks",
             "description": "Traditional relaxation brews in rotating flavors.",
             "meta": "M • L • Gallons",
             "link": "shopify://pages/kava-drinks",
@@ -57,7 +57,7 @@
         "category-3": {
           "type": "category",
           "settings": {
-            "title": "THC beverages",
+            "title": "Delta-9 Drinks",
             "description": "House-made cannabis drinks and specialty shots.",
             "meta": "Delta-9 • Shots",
             "link": "shopify://pages/thc-drinks",
@@ -67,11 +67,51 @@
         "category-4": {
           "type": "category",
           "settings": {
-            "title": "Draft pours",
+            "title": "Draft Pours",
             "description": "16oz pours from our rotating taps.",
             "meta": "8 on tap",
             "link": "shopify://pages/draft-pours",
             "fallback_emoji": "🍺"
+          }
+        },
+        "category-5": {
+          "type": "category",
+          "settings": {
+            "title": "Edibles",
+            "description": "Premium gummies, chocolates, and baked goods.",
+            "meta": "Gummies • Chocolates",
+            "link": "shopify://pages/edibles",
+            "fallback_emoji": "🍬"
+          }
+        },
+        "category-6": {
+          "type": "category",
+          "settings": {
+            "title": "THC Shots",
+            "description": "Fast-acting liquid THC in various flavors.",
+            "meta": "2.5mg • 5mg • 10mg",
+            "link": "shopify://pages/thc-shots",
+            "fallback_emoji": "💉"
+          }
+        },
+        "category-7": {
+          "type": "category",
+          "settings": {
+            "title": "Take-Home Items",
+            "description": "Bulk kratom, kava, and botanical products.",
+            "meta": "Bulk • Retail",
+            "link": "shopify://pages/take-home-items",
+            "fallback_emoji": "📦"
+          }
+        },
+        "category-8": {
+          "type": "category",
+          "settings": {
+            "title": "Fun Stuff & Merch",
+            "description": "WTF branded merchandise and accessories.",
+            "meta": "Apparel • Accessories",
+            "link": "shopify://pages/merchandise",
+            "fallback_emoji": "🎽"
           }
         }
       },
@@ -79,11 +119,80 @@
         "category-1",
         "category-2",
         "category-3",
-        "category-4"
+        "category-4",
+        "category-5",
+        "category-6",
+        "category-7",
+        "category-8"
       ],
       "settings": {
         "title": "Order your favorites",
         "subtitle": "Premium quality botanical products, edibles, beverages and more."
+      }
+    },
+    "quick_order": {
+      "type": "quick-order",
+      "blocks": {
+        "quick-item-1": {
+          "type": "quick_item",
+          "settings": {
+            "title": "Medium Kava (16oz)",
+            "description": "Traditional kava blend",
+            "price": "10.00"
+          }
+        },
+        "quick-item-2": {
+          "type": "quick_item",
+          "settings": {
+            "title": "Kratom Tea (Green)",
+            "description": "Premium green kratom",
+            "price": "8.00"
+          }
+        },
+        "quick-item-3": {
+          "type": "quick_item",
+          "settings": {
+            "title": "Delta-9 Shot",
+            "description": "5mg THC shot",
+            "price": "15.00"
+          }
+        },
+        "quick-item-4": {
+          "type": "quick_item",
+          "settings": {
+            "title": "Draft Pour (16oz)",
+            "description": "Rotating tap selection",
+            "price": "12.00"
+          }
+        },
+        "quick-item-5": {
+          "type": "quick_item",
+          "settings": {
+            "title": "Edible Gummy",
+            "description": "10mg THC gummy",
+            "price": "5.00"
+          }
+        },
+        "quick-item-6": {
+          "type": "quick_item",
+          "settings": {
+            "title": "THC Chocolate",
+            "description": "Premium chocolate bar",
+            "price": "20.00"
+          }
+        }
+      },
+      "block_order": [
+        "quick-item-1",
+        "quick-item-2",
+        "quick-item-3",
+        "quick-item-4",
+        "quick-item-5",
+        "quick-item-6"
+      ],
+      "settings": {
+        "title": "Quick Order",
+        "subtitle": "Skip the wait - order ahead for pickup"
       }
     },
     "visit": {
@@ -110,6 +219,7 @@
   "order": [
     "hero",
     "categories",
+    "quick_order",
     "visit",
     "footer_blurb"
   ]

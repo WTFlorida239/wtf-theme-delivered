@@ -159,12 +159,11 @@
       }
     </style>
 
-    {%- comment %} Load non-critical CSS deferred for performance {%- endcomment %}
-    <link rel="stylesheet" href="{{ 'base.css' | asset_url }}" media="print" onload="this.media='all'">
+    {%- comment %} Load critical CSS immediately for proper styling {%- endcomment %}
+    <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
     <link rel="stylesheet" href="{{ 'wtf_flavor_system.css' | asset_url }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ 'accessibility.css' | asset_url }}" media="print" onload="this.media='all'">
     <noscript>
-      <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
       <link rel="stylesheet" href="{{ 'wtf_flavor_system.css' | asset_url }}">
       <link rel="stylesheet" href="{{ 'accessibility.css' | asset_url }}">
     </noscript>
