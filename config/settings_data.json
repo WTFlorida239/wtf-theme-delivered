@@ -18,6 +18,8 @@
     "store_state": "Florida",
     "store_zip": "33904",
     "enable_console_logs": true,
+    "google_analytics_id": "G-5TC3FGDNKK",
+    "facebook_pixel_id": "1418044596222679",
     "order": [],
     "settings": {
       "color_primary": "#ff6600",
