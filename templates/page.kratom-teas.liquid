@@ -1,274 +1,477 @@
-{% comment %}
-  Custom Kratom Teas Builder - Professional ordering interface
-  26 premium flavors, 4 strains, creamer options, ice options, comments section
-  FULLY WIRED with cart functionality and state persistence
-{% endcomment %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kratom Teas - WTF | Welcome To Florida</title>
 
-<div class="custom-drink-builder" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
-  <header style="text-align: center; margin-bottom: 4rem;">
-    <a href="{{ routes.root_url }}" style="display: inline-block; margin-bottom: 2rem; padding: 1rem 2rem; border-radius: 2.5rem; border: 2px solid #ff6600; color: #ff6600; text-decoration: none; font-weight: 700; transition: all 0.3s ease;">
-      ← Back to Menu
-    </a>
-    <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem;">Custom Kratom Teas</h1>
-    <p style="font-size: 1.8rem; color: #4a4a4a;">Green, Red, White & Yellow strains with premium flavorings</p>
-  </header>
+    <style>
+      /* ——— Base / Layout ——— */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; line-height: 1.6; color:#333; }
+      .header { background: #ff6600; color: #fff; padding: 15px 0; text-align: center; font-size: 24px; font-weight: 700; }
+      .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+      .back-link { display: inline-block; color: #ff6600; text-decoration: none; font-weight: 700; font-size: 16px; margin-bottom: 20px; padding: 10px 15px; border: 2px solid #ff6600; border-radius: 5px; transition: all .2s ease; }
+      .back-link:hover { background: #ff6600; color: #fff; }
+      .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+      .product-image { width: 100%; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,.1); height:auto; }
+      .product-details { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
+      .product-title { font-size: 32px; margin-bottom: 10px; font-weight: 800; }
+      .product-price { font-size: 24px; color: #ff6600; font-weight: 800; margin-bottom: 15px; }
+      .product-description { color: #666; margin-bottom: 30px; font-size: 16px; }
+      .selection-section { margin: 30px 0; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+      .selection-section:last-child { border-bottom: none; }
+      .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; }
+      .info-box { background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
 
-  <!-- WIRED CART FORM -->
-  <form class="drink-customizer" data-product-form data-wtf-ajax style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
-    
-    <!-- Hidden product variant ID (you'll need to set this to your kratom product variant) -->
-    <input type="hidden" name="id" value="{{ all_products['custom-kratom-tea'].selected_or_first_available_variant.id | default: '0' }}">
-    <input type="hidden" name="quantity" value="1">
-    
-    <!-- Kratom Strain Selection -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Kratom Strain</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr)); gap: 2rem;">
-        {% assign kratom_strains = 'Green Kratom,Red Kratom,White Kratom,Yellow Kratom' | split: ',' %}
-        {% assign strain_colors = '#4caf50,#f44336,#ffffff,#ffeb3b' | split: ',' %}
-        {% assign strain_descriptions = 'Energizing and mood-lifting strain,Relaxing and calming strain,Stimulating and focus-enhancing strain,Balanced and smooth strain' | split: ',' %}
-        
-        {% for strain in kratom_strains %}
-          <label class="strain-option" style="display: block; cursor: pointer;">
-            <input type="radio" name="properties[Kratom Strain]" value="{{ strain }}" {% if forloop.first %}checked{% endif %} style="display: none;">
-            <div style="background: linear-gradient(135deg, {{ strain_colors[forloop.index0] }} 0%, {{ strain_colors[forloop.index0] }}88 100%); {% if strain contains 'White' %}color: #333; border: 2px solid #ddd;{% else %}color: #fff;{% endif %} padding: 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-              <div style="font-size: 3rem; margin-bottom: 1rem;">🍃</div>
-              <h4 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">{{ strain }}</h4>
-              <p style="opacity: 0.9; font-size: 1.4rem;">{{ strain_descriptions[forloop.index0] }}</p>
+      /* ——— Options ——— */
+      .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; }
+      .option-button { padding: 15px; border: 3px solid #ddd; border-radius: 8px; text-align: center; background: #fff; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; color:#333; font-size: 14px; min-height: 60px; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+      .option-button:hover { border-color: #ff6600; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(255,102,0,0.2); }
+      .option-button.selected { background: #ff6600; color: #fff; border-color: #ff6600; font-weight: 800; }
+
+      /* Strain-specific colors */
+      .strain-green.selected { background: #4caf50; border-color: #4caf50; }
+      .strain-red.selected { background: #f44336; border-color: #f44336; }
+      .strain-white.selected { background: #9e9e9e; border-color: #9e9e9e; }
+      .strain-yellow.selected { background: #ffeb3b; border-color: #ffeb3b; color: #333; }
+
+      /* ——— Quantity ——— */
+      .quantity-controls { display:flex; align-items:center; gap: 15px; }
+      .qty-btn { width: 40px; height: 40px; border: 2px solid #ff6600; background:#fff; color:#ff6600; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: 700; transition: all .12s ease; }
+      .qty-btn:hover { background:#ff6600; color:#fff; transform: scale(1.08); }
+      .qty-input { width: 80px; text-align:center; padding:10px; border:2px solid #ddd; border-radius:5px; font-size:16px; }
+
+      /* ——— Comments ——— */
+      .comments-textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; resize: vertical; font-size: 14px; line-height: 1.4; }
+      .comments-textarea:focus { border-color: #ff6600; outline: none; }
+
+      /* ——— CTA / Status ——— */
+      .add-to-cart-btn { width: 100%; padding: 18px; background: #ff6600; color: #fff; border: none; border-radius: 8px; font-size: 18px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+      .add-to-cart-btn:hover { background:#e55a00; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,102,0,0.3); }
+      .add-to-cart-btn:disabled { background:#ccc; cursor:not-allowed; transform:none; box-shadow:none; }
+      .success-message { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 15px 0; border: 1px solid #c3e6cb; display: none; font-size: 14px; }
+      .success-message.show { display: block; }
+      .cart-status { position: fixed; top: 20px; right: 20px; background:#ff6600; color:#fff; padding:10px 15px; border-radius:25px; font-weight:700; z-index:1000; box-shadow:0 4px 12px rgba(255,102,0,0.3); }
+
+      /* ——— Motion preferences ——— */
+      @media (prefers-reduced-motion: reduce){
+        .back-link, .option-button, .qty-btn, .add-to-cart-btn { transition: none !important; }
+      }
+
+      /* ——— Responsive ——— */
+      @media (max-width: 768px){
+        .product-grid { grid-template-columns: 1fr; gap:24px; }
+        .option-grid { grid-template-columns: repeat(2,1fr); }
+        .product-details { padding: 20px; }
+      }
+
+      /* Focus visible outline */
+      :where(.back-link, .option-button, .qty-btn, .add-to-cart-btn):focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; border-radius: 8px; }
+      .sr-only { position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+    </style>
+
+    <script>
+      window.KRATOM_TEAS_VARIANT_ID = {{ page.metafields.custom.kratom_variant_id | default: settings.kratom_teas_variant_id | json }};
+    </script>
+  </head>
+
+  <body>
+    <div class="header">WTF | Welcome To Florida</div>
+    <div class="cart-status" id="cart-status" aria-live="polite">
+      Cart: <span id="cart-count">{{ cart.item_count }}</span> items
+    </div>
+
+    <div class="container">
+      <a href="/" class="back-link">← Back to Menu</a>
+
+      <div class="product-grid">
+        <div class="product-image-section">
+          <img
+            src="{{ 'kratom_teas_150x150.jpg' | asset_url }}"
+            alt="Kratom Teas"
+            class="product-image"
+            width="400"
+            height="400"
+            loading="eager"
+            fetchpriority="high"
+          >
+        </div>
+
+        <div class="product-details">
+          <h1 class="product-title">Kratom Teas</h1>
+          <div class="product-price" id="product-price">$9.00 - Medium • Large • Gallon</div>
+          <p class="product-description">
+            Premium kratom teas with your choice of strain, size, and 26 delicious flavors. Customize with creamer options and ice preferences.
+          </p>
+
+          <!-- Kratom Strain Selection -->
+          <div class="selection-section">
+            <h3 class="section-title">🍃 Choose Your Kratom Strain</h3>
+            <div class="info-box">
+              <strong>Strain Effects:</strong> Green (energizing), Red (relaxing), White (stimulating), Yellow (balanced)
             </div>
-          </label>
-        {% endfor %}
-      </div>
-    </div>
 
-    <!-- Size Selection -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Select Size</h3>
-      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-        {% assign sizes = 'Medium (16oz),Large (20oz),Gallon (128oz)' | split: ',' %}
-        {% assign prices = '$10.00,$13.00,$40.00' | split: ',' %}
-        
-        {% for size in sizes %}
-          <label class="size-option" style="cursor: pointer;">
-            <input type="radio" name="properties[Size]" value="{{ size }}" {% if forloop.first %}checked{% endif %} style="display: none;">
-            <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
-              <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">{{ size | split: ' ' | first }}</h4>
-              <p style="color: #666; margin-bottom: 1rem;">{{ size | split: '(' | last | split: ')' | first }}</p>
-              <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">{{ prices[forloop.index0] }}</p>
+            <div class="option-grid" id="strain-options" role="group" aria-label="Kratom strain options">
+              <button type="button" class="option-button strain-green" data-strain="Green Kratom" data-price="9.00">
+                <strong>Green Kratom</strong><br>
+                <small>Energizing & mood-lifting</small>
+              </button>
+              <button type="button" class="option-button strain-red" data-strain="Red Kratom" data-price="9.00">
+                <strong>Red Kratom</strong><br>
+                <small>Relaxing & calming</small>
+              </button>
+              <button type="button" class="option-button strain-white" data-strain="White Kratom" data-price="9.00">
+                <strong>White Kratom</strong><br>
+                <small>Stimulating & focus-enhancing</small>
+              </button>
+              <button type="button" class="option-button strain-yellow" data-strain="Yellow Kratom" data-price="9.00">
+                <strong>Yellow Kratom</strong><br>
+                <small>Balanced & smooth</small>
+              </button>
             </div>
-          </label>
-        {% endfor %}
-      </div>
-    </div>
+          </div>
 
-    <!-- 26 Premium Flavor Selection -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Flavors (Select up to 3)</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem;">
-        {% assign kratom_flavors = 'Mango,Strawberry,Blue Razz,Watermelon,Pineapple,Peach,Lemon,Lime,Orange,Grape,Cherry,Apple,Coconut,Vanilla,Chocolate,Caramel,Banana,Kiwi,Passion Fruit,Guava,Pomegranate,Raspberry,Blackberry,Green Apple,Tropical Punch,Cotton Candy' | split: ',' %}
-        {% for flavor in kratom_flavors %}
-          <label class="flavor-option" style="cursor: pointer;">
-            <input type="checkbox" name="properties[Flavors]" value="{{ flavor }}" style="display: none;" data-max-selections="3">
-            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
-              <span style="font-size: 1.5rem; font-weight: 600;">{{ flavor }}</span>
+          <!-- Size Selection -->
+          <div class="selection-section">
+            <h3 class="section-title">📏 Choose Your Size</h3>
+            <div class="option-grid" id="size-options" role="group" aria-label="Size options">
+              <button type="button" class="option-button" data-size="Medium" data-price="9.00">
+                <strong>Medium</strong><br>
+                <small>$9.00</small>
+              </button>
+              <button type="button" class="option-button" data-size="Large" data-price="12.00">
+                <strong>Large</strong><br>
+                <small>$12.00</small>
+              </button>
+              <button type="button" class="option-button" data-size="Gallon" data-price="35.00">
+                <strong>Gallon</strong><br>
+                <small>$35.00</small>
+              </button>
             </div>
-          </label>
-        {% endfor %}
-      </div>
-      <div id="flavor-counter" style="text-align: center; margin-top: 1rem; font-size: 1.4rem; color: #666;">
-        <span id="selected-count">0</span> of 3 flavors selected
-      </div>
-    </div>
+          </div>
 
-    <!-- Creamer Options -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Creamer Options</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.5rem;">
-        {% assign creamers = 'None,Coconut Milk,Almond Milk,Oat Milk,Whole Milk,Soy Milk,Cashew Milk,Macadamia Milk,Heavy Cream,Vanilla Creamer' | split: ',' %}
-        {% for creamer in creamers %}
-          <label class="creamer-option" style="cursor: pointer;">
-            <input type="radio" name="properties[Creamer]" value="{{ creamer }}" {% if creamer == 'None' %}checked{% endif %} style="display: none;">
-            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
-              <span style="font-size: 1.4rem; font-weight: 600;">{{ creamer }}</span>
+          <!-- Flavor Selection -->
+          <div class="selection-section">
+            <h3 class="section-title">🍓 Choose Your Flavor (26 Options)</h3>
+            <div class="option-grid" id="flavor-options" role="group" aria-label="Flavor options">
+              <button type="button" class="option-button" data-flavor="Mango">Mango</button>
+              <button type="button" class="option-button" data-flavor="Strawberry">Strawberry</button>
+              <button type="button" class="option-button" data-flavor="Blue Razz">Blue Razz</button>
+              <button type="button" class="option-button" data-flavor="Watermelon">Watermelon</button>
+              <button type="button" class="option-button" data-flavor="Pineapple">Pineapple</button>
+              <button type="button" class="option-button" data-flavor="Peach">Peach</button>
+              <button type="button" class="option-button" data-flavor="Lemon">Lemon</button>
+              <button type="button" class="option-button" data-flavor="Lime">Lime</button>
+              <button type="button" class="option-button" data-flavor="Orange">Orange</button>
+              <button type="button" class="option-button" data-flavor="Grape">Grape</button>
+              <button type="button" class="option-button" data-flavor="Cherry">Cherry</button>
+              <button type="button" class="option-button" data-flavor="Apple">Apple</button>
+              <button type="button" class="option-button" data-flavor="Coconut">Coconut</button>
+              <button type="button" class="option-button" data-flavor="Vanilla">Vanilla</button>
+              <button type="button" class="option-button" data-flavor="Chocolate">Chocolate</button>
+              <button type="button" class="option-button" data-flavor="Caramel">Caramel</button>
+              <button type="button" class="option-button" data-flavor="Banana">Banana</button>
+              <button type="button" class="option-button" data-flavor="Kiwi">Kiwi</button>
+              <button type="button" class="option-button" data-flavor="Passion Fruit">Passion Fruit</button>
+              <button type="button" class="option-button" data-flavor="Guava">Guava</button>
+              <button type="button" class="option-button" data-flavor="Pomegranate">Pomegranate</button>
+              <button type="button" class="option-button" data-flavor="Raspberry">Raspberry</button>
+              <button type="button" class="option-button" data-flavor="Blackberry">Blackberry</button>
+              <button type="button" class="option-button" data-flavor="Green Apple">Green Apple</button>
+              <button type="button" class="option-button" data-flavor="Tropical Punch">Tropical Punch</button>
+              <button type="button" class="option-button" data-flavor="Cotton Candy">Cotton Candy</button>
             </div>
-          </label>
-        {% endfor %}
-      </div>
-    </div>
+          </div>
 
-    <!-- Ice Options -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Ice Preference</h3>
-      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-        {% assign ice_options = 'Regular Ice,Light Ice,Extra Ice,No Ice' | split: ',' %}
-        {% for ice in ice_options %}
-          <label class="ice-option" style="cursor: pointer;">
-            <input type="radio" name="properties[Ice]" value="{{ ice }}" {% if ice == 'Regular Ice' %}checked{% endif %} style="display: none;">
-            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem 2.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
-              <span style="font-size: 1.5rem; font-weight: 600;">{{ ice }}</span>
+          <!-- Creamer Options -->
+          <div class="selection-section">
+            <h3 class="section-title">🥛 Creamer Options</h3>
+            <div class="option-grid" id="creamer-options" role="group" aria-label="Creamer options">
+              <button type="button" class="option-button" data-creamer="None">No Creamer</button>
+              <button type="button" class="option-button" data-creamer="Regular Cream">Regular Cream</button>
+              <button type="button" class="option-button" data-creamer="Half & Half">Half & Half</button>
+              <button type="button" class="option-button" data-creamer="Whole Milk">Whole Milk</button>
+              <button type="button" class="option-button" data-creamer="2% Milk">2% Milk</button>
+              <button type="button" class="option-button" data-creamer="Almond Milk">Almond Milk</button>
+              <button type="button" class="option-button" data-creamer="Oat Milk">Oat Milk</button>
+              <button type="button" class="option-button" data-creamer="Coconut Milk">Coconut Milk</button>
+              <button type="button" class="option-button" data-creamer="Soy Milk">Soy Milk</button>
+              <button type="button" class="option-button" data-creamer="Vanilla Creamer">Vanilla Creamer</button>
             </div>
-          </label>
-        {% endfor %}
+          </div>
+
+          <!-- Ice Options -->
+          <div class="selection-section">
+            <h3 class="section-title">🧊 Ice Preference</h3>
+            <div class="option-grid" id="ice-options" role="group" aria-label="Ice options">
+              <button type="button" class="option-button" data-ice="Regular Ice">Regular Ice</button>
+              <button type="button" class="option-button" data-ice="Light Ice">Light Ice</button>
+              <button type="button" class="option-button" data-ice="Extra Ice">Extra Ice</button>
+              <button type="button" class="option-button" data-ice="No Ice">No Ice</button>
+            </div>
+          </div>
+
+          <!-- Comments -->
+          <div class="selection-section">
+            <h3 class="section-title">💬 Special Requests & Comments</h3>
+            <label for="order-comments" class="sr-only">Order comments</label>
+            <textarea
+              id="order-comments"
+              class="comments-textarea"
+              placeholder="Any special requests, strength preferences, or modifications? We'll try to accommodate!"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Quantity -->
+          <div class="selection-section">
+            <h3 class="section-title">🔢 Quantity</h3>
+            <div class="quantity-controls">
+              <button type="button" class="qty-btn" aria-label="Decrease quantity" onclick="changeQuantity(-1)">
+                −
+              </button>
+              <input
+                type="number"
+                id="quantity"
+                value="1"
+                min="1"
+                max="50"
+                class="qty-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+              >
+              <button type="button" class="qty-btn" aria-label="Increase quantity" onclick="changeQuantity(1)">
+                +
+              </button>
+            </div>
+          </div>
+
+          <div id="success-message" class="success-message" role="status" aria-live="polite"></div>
+
+          <button type="button" id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()" disabled>
+            Select Strain, Size & Flavor
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Comments Section -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Special Instructions</h3>
-      <textarea name="properties[Special Instructions]" placeholder="Any special requests, strength preferences, or modifications..." style="width: 100%; min-height: 12rem; padding: 2rem; border: 2px solid #e9ecef; border-radius: 1.2rem; font-size: 1.5rem; resize: vertical; font-family: inherit;"></textarea>
-    </div>
+    <script>
+      // ——— Currency formatter ———
+      const moneyFmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
 
-    <!-- Order Summary & Submit -->
-    <div style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff;">
-      <h3 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 2rem;">Ready to Order Your Custom Kratom Tea?</h3>
-      <p style="font-size: 1.8rem; margin-bottom: 3rem; opacity: 0.95;">Add to cart or call us to place your order</p>
-      <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-        <button type="submit" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: #fff; color: #4caf50; border: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2); cursor: pointer;">
-          🛒 Add to Cart
-        </button>
-        <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: transparent; color: #fff; text-decoration: none; border: 2px solid #fff; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease;">
-          📞 Call (239) 955-0314
-        </a>
-      </div>
-    </div>
-  </form>
-</div>
+      // ——— State ———
+      let selectedStrain = null;
+      let selectedSize = null;
+      let selectedFlavor = null;
+      let selectedCreamer = 'None';
+      let selectedIce = 'Regular Ice';
+      let basePrice = 9.0;
 
-<style>
-  .strain-option input:checked + div,
-  .size-option input:checked + div,
-  .flavor-option input:checked + div,
-  .creamer-option input:checked + div,
-  .ice-option input:checked + div {
-    border-color: #4caf50 !important;
-    background: #e8f5e8 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
-  }
-
-  .strain-option:hover div,
-  .size-option:hover div,
-  .flavor-option:hover div,
-  .creamer-option:hover div,
-  .ice-option:hover div {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  }
-
-  .flavor-option input:checked + div {
-    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%) !important;
-    color: #fff !important;
-  }
-
-  .flavor-option input:disabled + div {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    .custom-drink-builder {
-      padding: 1rem !important;
-    }
-    
-    .drink-customizer {
-      padding: 2rem !important;
-    }
-    
-    h1 {
-      font-size: 3rem !important;
-    }
-    
-    .customizer-section h3 {
-      font-size: 2rem !important;
-    }
-  }
-</style>
-
-<script>
-// Flavor selection limit and state persistence
-document.addEventListener('DOMContentLoaded', function() {
-  const flavorCheckboxes = document.querySelectorAll('input[name="properties[Flavors]"]');
-  const selectedCountEl = document.getElementById('selected-count');
-  const maxSelections = 3;
-
-  // Load saved state from localStorage
-  const savedState = localStorage.getItem('wtf-kratom-builder-state');
-  if (savedState) {
-    try {
-      const state = JSON.parse(savedState);
-      // Restore form state
-      Object.keys(state).forEach(key => {
-        const input = document.querySelector(`[name="${key}"]`);
-        if (input) {
-          if (input.type === 'checkbox') {
-            input.checked = state[key].includes(input.value);
-          } else if (input.type === 'radio') {
-            if (input.value === state[key]) input.checked = true;
-          } else {
-            input.value = state[key];
-          }
-        }
+      // ——— Init ———
+      document.addEventListener('DOMContentLoaded', () => {
+        wireOptionButtons();
+        updateCartCount();
+        updateUI();
       });
-    } catch (e) {
-      console.warn('Could not restore kratom builder state:', e);
-    }
-  }
 
-  function updateFlavorCount() {
-    const selected = Array.from(flavorCheckboxes).filter(cb => cb.checked);
-    selectedCountEl.textContent = selected.length;
-    
-    // Disable unselected checkboxes if at limit
-    flavorCheckboxes.forEach(cb => {
-      if (!cb.checked && selected.length >= maxSelections) {
-        cb.disabled = true;
-        cb.parentElement.style.opacity = '0.5';
-      } else {
-        cb.disabled = false;
-        cb.parentElement.style.opacity = '1';
+      function wireOptionButtons() {
+        // Strain buttons
+        document.querySelectorAll('#strain-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#strain-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedStrain = btn.dataset.strain;
+            updateUI();
+          });
+        });
+
+        // Size buttons
+        document.querySelectorAll('#size-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#size-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedSize = btn.dataset.size;
+            const p = parseFloat(btn.dataset.price || '');
+            if (Number.isFinite(p)) basePrice = p;
+            updateUI();
+          });
+        });
+
+        // Flavor buttons
+        document.querySelectorAll('#flavor-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#flavor-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedFlavor = btn.dataset.flavor;
+            updateUI();
+          });
+        });
+
+        // Creamer buttons
+        document.querySelectorAll('#creamer-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#creamer-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedCreamer = btn.dataset.creamer;
+            updateUI();
+          });
+        });
+
+        // Ice buttons
+        document.querySelectorAll('#ice-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#ice-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedIce = btn.dataset.ice;
+            updateUI();
+          });
+        });
+
+        // Set defaults
+        document.querySelector('[data-creamer="None"]').classList.add('selected');
+        document.querySelector('[data-ice="Regular Ice"]').classList.add('selected');
       }
-    });
 
-    // Save state to localStorage
-    saveBuilderState();
-  }
+      function updateUI() {
+        const sizeText = selectedSize ? ` - ${selectedSize}` : ' - Medium • Large • Gallon';
+        document.getElementById('product-price').textContent = `${moneyFmt.format(basePrice)}${sizeText}`;
+        
+        const button = document.getElementById('add-to-cart-btn');
+        const qty = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
+        const total = basePrice * qty;
 
-  function saveBuilderState() {
-    const state = {};
-    const form = document.querySelector('.drink-customizer');
-    const formData = new FormData(form);
-    
-    for (const [key, value] of formData.entries()) {
-      if (key.startsWith('properties[')) {
-        if (state[key]) {
-          if (Array.isArray(state[key])) {
-            state[key].push(value);
-          } else {
-            state[key] = [state[key], value];
-          }
+        if (selectedStrain && selectedSize && selectedFlavor) {
+          button.textContent = `Add to Cart — ${moneyFmt.format(total)}`;
+          button.disabled = false;
         } else {
-          state[key] = value;
+          button.textContent = 'Select Strain, Size & Flavor';
+          button.disabled = true;
         }
       }
-    }
 
-    localStorage.setItem('wtf-kratom-builder-state', JSON.stringify(state));
-  }
+      function changeQuantity(delta) {
+        const input = document.getElementById('quantity');
+        const next = Math.max(1, Math.min(50, (parseInt(input.value, 10) || 1) + delta));
+        input.value = next;
+        updateUI();
+      }
 
-  // Attach event listeners
-  flavorCheckboxes.forEach(cb => {
-    cb.addEventListener('change', updateFlavorCount);
-  });
+      async function updateCartCount() {
+        try {
+          const res = await fetch('/cart.js', { credentials: 'same-origin' });
+          if (res.ok) {
+            const cart = await res.json();
+            const countEl = document.getElementById('cart-count');
+            countEl.textContent = cart.item_count || 0;
+            countEl.parentElement.setAttribute('aria-live', 'polite');
+          }
+        } catch (e) {}
+      }
 
-  // Save state on all form changes
-  document.querySelector('.drink-customizer').addEventListener('change', saveBuilderState);
+      function validateSelections() {
+        if (!selectedStrain) {
+          alert('❗ Please choose a kratom strain.');
+          return false;
+        }
+        if (!selectedSize) {
+          alert('❗ Please choose a size.');
+          return false;
+        }
+        if (!selectedFlavor) {
+          alert('❗ Please choose a flavor.');
+          return false;
+        }
+        return true;
+      }
 
-  // Initial count update
-  updateFlavorCount();
+      async function addToCart() {
+        if (!validateSelections()) return;
 
-  // Clear saved state after successful add to cart
-  document.addEventListener('cart:added', function() {
-    localStorage.removeItem('wtf-kratom-builder-state');
-  });
-});
-</script>
+        const btn = document.getElementById('add-to-cart-btn');
+        const original = btn.textContent;
+        btn.textContent = '⏳ Adding...';
+        btn.disabled = true;
+
+        const variantId = window.KRATOM_TEAS_VARIANT_ID;
+        const quantity = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
+        const comments = (document.getElementById('order-comments').value || '').trim();
+
+        const properties = { 
+          Strain: selectedStrain,
+          Size: selectedSize,
+          Flavor: selectedFlavor,
+          Creamer: selectedCreamer,
+          Ice: selectedIce
+        };
+        if (comments) properties.Comments = comments;
+
+        try {
+          if (variantId) {
+            const body = new URLSearchParams();
+            body.set('id', String(variantId));
+            body.set('quantity', String(quantity));
+            for (const k in properties) body.set(`properties[${k}]`, String(properties[k]));
+
+            const res = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                Accept: 'application/json',
+              },
+              credentials: 'same-origin',
+              body,
+            });
+
+            if (!res.ok) {
+              let msg = 'Add to cart failed';
+              try {
+                const data = await res.json();
+                msg = data.description || data.message || msg;
+              } catch {}
+              throw new Error(msg);
+            }
+          } else {
+            // Fallback: store cart locally for dev/preview modes
+            const order = {
+              id: 'kratom-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+              product: 'Kratom Teas',
+              ...properties,
+              quantity,
+              price: (basePrice * quantity).toFixed(2),
+              timestamp: new Date().toISOString(),
+            };
+            let cart = [];
+            try {
+              cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
+            } catch {}
+            cart.push(order);
+            localStorage.setItem('wtf-cart', JSON.stringify(cart));
+          }
+
+          await updateCartCount();
+
+          const success = document.getElementById('success-message');
+          success.innerHTML = `✅ <strong>Added to cart!</strong><br>
+             🍃 ${properties.Strain} — <strong>${properties.Size}</strong><br>
+             🍓 Flavor: ${properties.Flavor}<br>
+             🥛 Creamer: ${properties.Creamer} | 🧊 Ice: ${properties.Ice}<br>
+             🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
+          success.classList.add('show');
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          document.dispatchEvent(new CustomEvent('kratom:added', { detail: { variantId, ...properties, quantity } }));
+        } catch (err) {
+          console.error('Add to cart error:', err);
+          alert('❌ ' + (err && err.message ? err.message : 'Error adding to cart. Please try again.'));
+        } finally {
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.disabled = false;
+            document.getElementById('success-message').classList.remove('show');
+          }, 4000);
+        }
+      }
+    </script>
+  </body>
+</html>
