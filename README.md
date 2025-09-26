@@ -99,3 +99,32 @@ Stay aligned with the launch criteria outlined in `AGENTS.md`: WCAG 2.1 AA acces
 | Roots House Of Kava | Cape Coral, FL | Traditional shells and kratom flights | Promote premium ingredient sourcing + faster pickup to win habitual shell drinkers. |
 | Southern Roots Kava Bar | Fort Myers, FL | Vegan bites and curated flights | Automate tasting flight bundles via Shopify Functions + structured data. |
 # wtf-theme-delivered
+
+## Competitors (65-mile radius of Cape Coral, FL)
+
+- **Who are the competitors?**
+  - **Primary chains**
+    - **Kava Culture** (12 venues incl. NA taproom)
+      - Cape Coral (HQ); Downtown Fort Myers; North Fort Myers; Fort Myers Beach; Summerlin (Fort Myers); Estero (Miromar Outlets); Bonita Springs; Naples (North Naples); Golden Gate (Naples); Marco Island; Port Charlotte
+      - Botanical Brewing Taproom (Cape Coral) — non-alcoholic taproom concept under the Kava Culture umbrella
+    - **Island Vibes Kava Bar** — North Fort Myers; Fort Myers
+    - **Nectar Lab Kava Bar** — North Naples; Central Naples
+  - **Independents**
+    - Roots House of Kava (Cape Coral)
+    - The Sound Garden Kava Bar (Fort Myers)
+    - Burma Kava Company (Fort Myers)
+    - Kapua Kava Bar (Fort Myers)
+    - Kava Nirvana Kava Bar (Fort Myers)
+    - Cosmic Kava (Naples)
+    - Alchemist Kava Bar & Lounge (Naples)
+    - Kava Luv Social Lounge (Naples)
+    - Downtown Kava (Punta Gorda)
+
+- **What makes this product viable in relation?**
+  - **Clear positioning & vibe:** Welcoming, wellness-forward, daylight-friendly “alcohol-alternative” environment for soccer-mom & adjacent demographics (vs. late-night lounge focus).
+  - **Quality & safety leadership:** Visible COAs/lab testing, dosing guidance, and trained staff—builds trust with first-timers and wellness-seeking consumers.
+  - **Menu differentiation:** Culinary-grade botanical cocktails, functional add-ons, seasonal LTOs; tighter curation than chains and broader education than independents.
+  - **Consistency & speed:** Standardized recipes and SOPs, predictable hours, online ordering for pickup; reduces wait times and variability.
+  - **Community & loyalty engine:** Partnerships (schools, gyms, yoga, mom groups), referral rewards, tiered loyalty/VIP events that deepen repeat visits.
+  - **Content & SEO moat:** Education-led content (kava/kratom/cannabinoids 101), UGC program, and strong local listings to capture “cannabis-curious” searches.
+
