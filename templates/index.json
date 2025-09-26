@@ -76,6 +76,7 @@
             "description": "House-made cannabis drinks and specialty shots.",
             "meta": "Delta-9 • Shots",
             "link": "/pages/thc-drinks",
+            "category_image": "shopify://shop_images/delta9drinkBackgroundRemoved_7239b31d-218d-4a18-82b2-d34ea67d8b5f.png",
             "fallback_emoji": "✨"
           }
         },
@@ -86,6 +87,7 @@
             "description": "16oz pours from our rotating taps.",
             "meta": "8 on tap",
             "link": "/pages/draft-pours",
+            "category_image": "shopify://shop_images/white-rabbit-rootbeer.png",
             "fallback_emoji": "🍺"
           }
         },
@@ -96,6 +98,7 @@
             "description": "Fast-acting liquid THC in various flavors.",
             "meta": "2.5mg • 5mg • 10mg",
             "link": "/pages/thc-shots",
+            "category_image": "shopify://shop_images/other_merch_150x150_2ceefaf4-f00a-4606-ac06-fdf855a3243c.png",
             "fallback_emoji": "💉"
           }
         },
@@ -106,6 +109,7 @@
             "description": "Ready-to-drink canned beverages and energy drinks.",
             "meta": "Energy • Relaxation",
             "link": "/pages/canned-drinks",
+            "category_image": "shopify://shop_images/IMG_5396.heic",
             "fallback_emoji": "🥤"
           }
         },
@@ -116,6 +120,7 @@
             "description": "Bulk kratom, kava, and botanical products.",
             "meta": "Bulk • Retail",
             "link": "/pages/take-home-items",
+            "category_image": "shopify://shop_images/wtf-pint-glass-flamingo-logo.jpg",
             "fallback_emoji": "📦"
           }
         }
