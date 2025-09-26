@@ -1,6 +1,22 @@
-
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
+    "font_scale": "15",
+    "store_phone": "2399550314",
+    "store_email": "info@wtfswag.com",
+    "store_address_1": "1520 SE 46th Ln",
+    "store_address_2": "Unit B",
+    "store_city": "Cape Coral",
+    "store_state": "Florida",
+    "store_zip": "33904",
     "enable_console_logs": true,
     "order": [],
     "settings": {
