@@ -1,6 +1,7 @@
 {% comment %}
-  Custom Kratom Tea Builder - Professional ordering interface
-  24-26 flavors, creamer options, ice options, comments section
+  Custom Kratom Teas Builder - Professional ordering interface
+  26 premium flavors, 4 strains, creamer options, ice options, comments section
+  FULLY WIRED with cart functionality and state persistence
 {% endcomment %}
 
 <div class="custom-drink-builder" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
@@ -9,47 +10,34 @@
       ← Back to Menu
     </a>
     <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem;">Custom Kratom Teas</h1>
-    <p style="font-size: 1.8rem; color: #4a4a4a;">Build your perfect kratom tea with premium flavors and customizations</p>
+    <p style="font-size: 1.8rem; color: #4a4a4a;">Green, Red, White & Yellow strains with premium flavorings</p>
   </header>
 
-  <form class="drink-customizer" style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+  <!-- WIRED CART FORM -->
+  <form class="drink-customizer" data-product-form data-wtf-ajax style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+    
+    <!-- Hidden product variant ID (you'll need to set this to your kratom product variant) -->
+    <input type="hidden" name="id" value="{{ all_products['custom-kratom-tea'].selected_or_first_available_variant.id | default: '0' }}">
+    <input type="hidden" name="quantity" value="1">
     
     <!-- Kratom Strain Selection -->
     <div class="customizer-section" style="margin-bottom: 4rem;">
       <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Kratom Strain</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr)); gap: 2rem;">
-        <label class="strain-option" style="display: block; cursor: pointer;">
-          <input type="radio" name="strain" value="Green Kratom" style="display: none;" checked>
-          <div style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🍃</div>
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Green Kratom</h4>
-            <p style="opacity: 0.9;">Energizing & mood-lifting</p>
-          </div>
-        </label>
-        <label class="strain-option" style="display: block; cursor: pointer;">
-          <input type="radio" name="strain" value="Red Kratom" style="display: none;">
-          <div style="background: linear-gradient(135deg, #f44336 0%, #ef5350 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🌿</div>
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Red Kratom</h4>
-            <p style="opacity: 0.9;">Relaxing & calming</p>
-          </div>
-        </label>
-        <label class="strain-option" style="display: block; cursor: pointer;">
-          <input type="radio" name="strain" value="White Kratom" style="display: none;">
-          <div style="background: linear-gradient(135deg, #607d8b 0%, #78909c 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🍵</div>
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">White Kratom</h4>
-            <p style="opacity: 0.9;">Stimulating & focus-enhancing</p>
-          </div>
-        </label>
-        <label class="strain-option" style="display: block; cursor: pointer;">
-          <input type="radio" name="strain" value="Yellow Kratom" style="display: none;">
-          <div style="background: linear-gradient(135deg, #ffc107 0%, #ffca28 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">☀️</div>
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Yellow Kratom</h4>
-            <p style="opacity: 0.9;">Balanced & smooth</p>
-          </div>
-        </label>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr)); gap: 2rem;">
+        {% assign kratom_strains = 'Green Kratom,Red Kratom,White Kratom,Yellow Kratom' | split: ',' %}
+        {% assign strain_colors = '#4caf50,#f44336,#ffffff,#ffeb3b' | split: ',' %}
+        {% assign strain_descriptions = 'Energizing and mood-lifting strain,Relaxing and calming strain,Stimulating and focus-enhancing strain,Balanced and smooth strain' | split: ',' %}
+        
+        {% for strain in kratom_strains %}
+          <label class="strain-option" style="display: block; cursor: pointer;">
+            <input type="radio" name="properties[Kratom Strain]" value="{{ strain }}" {% if forloop.first %}checked{% endif %} style="display: none;">
+            <div style="background: linear-gradient(135deg, {{ strain_colors[forloop.index0] }} 0%, {{ strain_colors[forloop.index0] }}88 100%); {% if strain contains 'White' %}color: #333; border: 2px solid #ddd;{% else %}color: #fff;{% endif %} padding: 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🍃</div>
+              <h4 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">{{ strain }}</h4>
+              <p style="opacity: 0.9; font-size: 1.4rem;">{{ strain_descriptions[forloop.index0] }}</p>
+            </div>
+          </label>
+        {% endfor %}
       </div>
     </div>
 
@@ -57,46 +45,38 @@
     <div class="customizer-section" style="margin-bottom: 4rem;">
       <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Select Size</h3>
       <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-        <label class="size-option" style="cursor: pointer;">
-          <input type="radio" name="size" value="Medium (16oz)" style="display: none;" checked>
-          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Medium</h4>
-            <p style="color: #666; margin-bottom: 1rem;">16oz</p>
-            <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">$8.00</p>
-          </div>
-        </label>
-        <label class="size-option" style="cursor: pointer;">
-          <input type="radio" name="size" value="Large (20oz)" style="display: none;">
-          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Large</h4>
-            <p style="color: #666; margin-bottom: 1rem;">20oz</p>
-            <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">$10.00</p>
-          </div>
-        </label>
-        <label class="size-option" style="cursor: pointer;">
-          <input type="radio" name="size" value="Gallon" style="display: none;">
-          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
-            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Gallon</h4>
-            <p style="color: #666; margin-bottom: 1rem;">128oz</p>
-            <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">$35.00</p>
-          </div>
-        </label>
+        {% assign sizes = 'Medium (16oz),Large (20oz),Gallon (128oz)' | split: ',' %}
+        {% assign prices = '$10.00,$13.00,$40.00' | split: ',' %}
+        
+        {% for size in sizes %}
+          <label class="size-option" style="cursor: pointer;">
+            <input type="radio" name="properties[Size]" value="{{ size }}" {% if forloop.first %}checked{% endif %} style="display: none;">
+            <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
+              <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">{{ size | split: ' ' | first }}</h4>
+              <p style="color: #666; margin-bottom: 1rem;">{{ size | split: '(' | last | split: ')' | first }}</p>
+              <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">{{ prices[forloop.index0] }}</p>
+            </div>
+          </label>
+        {% endfor %}
       </div>
     </div>
 
-    <!-- 26 Flavor Selection -->
+    <!-- 26 Premium Flavor Selection -->
     <div class="customizer-section" style="margin-bottom: 4rem;">
       <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Flavors (Select up to 3)</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem;">
-        {% assign flavors = 'Mango,Strawberry,Blue Razz,Watermelon,Pineapple,Peach,Lemon,Lime,Orange,Grape,Cherry,Apple,Coconut,Vanilla,Chocolate,Caramel,Banana,Kiwi,Passion Fruit,Guava,Pomegranate,Raspberry,Blackberry,Green Apple,Tropical Punch,Cotton Candy' | split: ',' %}
-        {% for flavor in flavors %}
+        {% assign kratom_flavors = 'Mango,Strawberry,Blue Razz,Watermelon,Pineapple,Peach,Lemon,Lime,Orange,Grape,Cherry,Apple,Coconut,Vanilla,Chocolate,Caramel,Banana,Kiwi,Passion Fruit,Guava,Pomegranate,Raspberry,Blackberry,Green Apple,Tropical Punch,Cotton Candy' | split: ',' %}
+        {% for flavor in kratom_flavors %}
           <label class="flavor-option" style="cursor: pointer;">
-            <input type="checkbox" name="flavors" value="{{ flavor }}" style="display: none;">
+            <input type="checkbox" name="properties[Flavors]" value="{{ flavor }}" style="display: none;" data-max-selections="3">
             <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
               <span style="font-size: 1.5rem; font-weight: 600;">{{ flavor }}</span>
             </div>
           </label>
         {% endfor %}
+      </div>
+      <div id="flavor-counter" style="text-align: center; margin-top: 1rem; font-size: 1.4rem; color: #666;">
+        <span id="selected-count">0</span> of 3 flavors selected
       </div>
     </div>
 
@@ -104,10 +84,10 @@
     <div class="customizer-section" style="margin-bottom: 4rem;">
       <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Creamer Options</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.5rem;">
-        {% assign creamers = 'None,Whole Milk,Almond Milk,Coconut Milk,Oat Milk,Soy Milk,Heavy Cream,Half & Half,Vanilla Creamer,Caramel Creamer' | split: ',' %}
+        {% assign creamers = 'None,Coconut Milk,Almond Milk,Oat Milk,Whole Milk,Soy Milk,Cashew Milk,Macadamia Milk,Heavy Cream,Vanilla Creamer' | split: ',' %}
         {% for creamer in creamers %}
           <label class="creamer-option" style="cursor: pointer;">
-            <input type="radio" name="creamer" value="{{ creamer }}" {% if creamer == 'None' %}checked{% endif %} style="display: none;">
+            <input type="radio" name="properties[Creamer]" value="{{ creamer }}" {% if creamer == 'None' %}checked{% endif %} style="display: none;">
             <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
               <span style="font-size: 1.4rem; font-weight: 600;">{{ creamer }}</span>
             </div>
@@ -123,7 +103,7 @@
         {% assign ice_options = 'Regular Ice,Light Ice,Extra Ice,No Ice' | split: ',' %}
         {% for ice in ice_options %}
           <label class="ice-option" style="cursor: pointer;">
-            <input type="radio" name="ice" value="{{ ice }}" {% if ice == 'Regular Ice' %}checked{% endif %} style="display: none;">
+            <input type="radio" name="properties[Ice]" value="{{ ice }}" {% if ice == 'Regular Ice' %}checked{% endif %} style="display: none;">
             <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem 2.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
               <span style="font-size: 1.5rem; font-weight: 600;">{{ ice }}</span>
             </div>
@@ -135,20 +115,20 @@
     <!-- Comments Section -->
     <div class="customizer-section" style="margin-bottom: 4rem;">
       <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Special Instructions</h3>
-      <textarea name="comments" placeholder="Any special requests or modifications..." style="width: 100%; min-height: 12rem; padding: 2rem; border: 2px solid #e9ecef; border-radius: 1.2rem; font-size: 1.5rem; resize: vertical; font-family: inherit;"></textarea>
+      <textarea name="properties[Special Instructions]" placeholder="Any special requests, strength preferences, or modifications..." style="width: 100%; min-height: 12rem; padding: 2rem; border: 2px solid #e9ecef; border-radius: 1.2rem; font-size: 1.5rem; resize: vertical; font-family: inherit;"></textarea>
     </div>
 
     <!-- Order Summary & Submit -->
-    <div style="background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff;">
+    <div style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff;">
       <h3 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 2rem;">Ready to Order Your Custom Kratom Tea?</h3>
-      <p style="font-size: 1.8rem; margin-bottom: 3rem; opacity: 0.95;">Call us now to place your order with all your customizations</p>
+      <p style="font-size: 1.8rem; margin-bottom: 3rem; opacity: 0.95;">Add to cart or call us to place your order</p>
       <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-        <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: #fff; color: #ff6600; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
+        <button type="submit" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: #fff; color: #4caf50; border: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2); cursor: pointer;">
+          🛒 Add to Cart
+        </button>
+        <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: transparent; color: #fff; text-decoration: none; border: 2px solid #fff; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease;">
           📞 Call (239) 955-0314
         </a>
-        <button type="button" onclick="copyOrderDetails()" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: transparent; color: #fff; border: 2px solid #fff; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; cursor: pointer;">
-          📋 Copy Order Details
-        </button>
       </div>
     </div>
   </form>
@@ -160,10 +140,10 @@
   .flavor-option input:checked + div,
   .creamer-option input:checked + div,
   .ice-option input:checked + div {
-    border-color: #ff6600 !important;
-    background: #fff3e0 !important;
+    border-color: #4caf50 !important;
+    background: #e8f5e8 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(255, 102, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
   }
 
   .strain-option:hover div,
@@ -176,8 +156,13 @@
   }
 
   .flavor-option input:checked + div {
-    background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%) !important;
+    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%) !important;
     color: #fff !important;
+  }
+
+  .flavor-option input:disabled + div {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   @media (max-width: 768px) {
@@ -200,28 +185,90 @@
 </style>
 
 <script>
-function copyOrderDetails() {
-  const strain = document.querySelector('input[name="strain"]:checked')?.value || '';
-  const size = document.querySelector('input[name="size"]:checked')?.value || '';
-  const flavors = Array.from(document.querySelectorAll('input[name="flavors"]:checked')).map(el => el.value);
-  const creamer = document.querySelector('input[name="creamer"]:checked')?.value || '';
-  const ice = document.querySelector('input[name="ice"]:checked')?.value || '';
-  const comments = document.querySelector('textarea[name="comments"]')?.value || '';
+// Flavor selection limit and state persistence
+document.addEventListener('DOMContentLoaded', function() {
+  const flavorCheckboxes = document.querySelectorAll('input[name="properties[Flavors]"]');
+  const selectedCountEl = document.getElementById('selected-count');
+  const maxSelections = 3;
 
-  const orderDetails = `
-CUSTOM KRATOM TEA ORDER:
-Strain: ${strain}
-Size: ${size}
-Flavors: ${flavors.join(', ') || 'None selected'}
-Creamer: ${creamer}
-Ice: ${ice}
-Special Instructions: ${comments || 'None'}
+  // Load saved state from localStorage
+  const savedState = localStorage.getItem('wtf-kratom-builder-state');
+  if (savedState) {
+    try {
+      const state = JSON.parse(savedState);
+      // Restore form state
+      Object.keys(state).forEach(key => {
+        const input = document.querySelector(`[name="${key}"]`);
+        if (input) {
+          if (input.type === 'checkbox') {
+            input.checked = state[key].includes(input.value);
+          } else if (input.type === 'radio') {
+            if (input.value === state[key]) input.checked = true;
+          } else {
+            input.value = state[key];
+          }
+        }
+      });
+    } catch (e) {
+      console.warn('Could not restore kratom builder state:', e);
+    }
+  }
 
-Call (239) 955-0314 to place this order!
-  `.trim();
+  function updateFlavorCount() {
+    const selected = Array.from(flavorCheckboxes).filter(cb => cb.checked);
+    selectedCountEl.textContent = selected.length;
+    
+    // Disable unselected checkboxes if at limit
+    flavorCheckboxes.forEach(cb => {
+      if (!cb.checked && selected.length >= maxSelections) {
+        cb.disabled = true;
+        cb.parentElement.style.opacity = '0.5';
+      } else {
+        cb.disabled = false;
+        cb.parentElement.style.opacity = '1';
+      }
+    });
 
-  navigator.clipboard.writeText(orderDetails).then(() => {
-    alert('Order details copied to clipboard! Call (239) 955-0314 to place your order.');
+    // Save state to localStorage
+    saveBuilderState();
+  }
+
+  function saveBuilderState() {
+    const state = {};
+    const form = document.querySelector('.drink-customizer');
+    const formData = new FormData(form);
+    
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith('properties[')) {
+        if (state[key]) {
+          if (Array.isArray(state[key])) {
+            state[key].push(value);
+          } else {
+            state[key] = [state[key], value];
+          }
+        } else {
+          state[key] = value;
+        }
+      }
+    }
+
+    localStorage.setItem('wtf-kratom-builder-state', JSON.stringify(state));
+  }
+
+  // Attach event listeners
+  flavorCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateFlavorCount);
   });
-}
+
+  // Save state on all form changes
+  document.querySelector('.drink-customizer').addEventListener('change', saveBuilderState);
+
+  // Initial count update
+  updateFlavorCount();
+
+  // Clear saved state after successful add to cart
+  document.addEventListener('cart:added', function() {
+    localStorage.removeItem('wtf-kratom-builder-state');
+  });
+});
 </script>

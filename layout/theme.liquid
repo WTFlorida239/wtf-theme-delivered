@@ -52,208 +52,115 @@
 
     {{ content_for_header }}
 
-    {%- liquid
-      assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
-      assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
-      assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
-    -%}
+    {%- comment %} Load Google Fonts {%- endcomment %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    {% style %}
-      {{ settings.type_body_font | font_face: font_display: 'swap' }}
-      {{ body_font_bold | font_face: font_display: 'swap' }}
-      {{ body_font_italic | font_face: font_display: 'swap' }}
-      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+    {%- comment %} Load main CSS {%- endcomment %}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
 
-      :root {
-        --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
-        --font-body-style: {{ settings.type_body_font.style }};
-        --font-body-weight: {{ settings.type_body_font.weight }};
-        --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
-
-        --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
-        --font-heading-style: {{ settings.type_header_font.style }};
-        --font-heading-weight: {{ settings.type_header_font.weight }};
-
-        --font-body-scale: {{ settings.body_scale | divided_by: 100.0 }};
-        --font-heading-scale: {{ settings.heading_scale | times: 1.0 | divided_by: settings.body_scale }};
-
-        --color-base-text: {{ settings.colors_text.red }}, {{ settings.colors_text.green }}, {{ settings.colors_text.blue }};
-        --color-shadow: {{ settings.colors_text.red }}, {{ settings.colors_text.green }}, {{ settings.colors_text.blue }};
-        --color-base-background-1: {{ settings.colors_background_1.red }}, {{ settings.colors_background_1.green }}, {{ settings.colors_background_1.blue }};
-        --color-base-background-2: {{ settings.colors_background_2.red }}, {{ settings.colors_background_2.green }}, {{ settings.colors_background_2.blue }};
-        --color-base-solid-button-labels: {{ settings.colors_solid_button_labels.red }}, {{ settings.colors_solid_button_labels.green }}, {{ settings.colors_solid_button_labels.blue }};
-        --color-base-outline-button-labels: {{ settings.colors_outline_button_labels.red }}, {{ settings.colors_outline_button_labels.green }}, {{ settings.colors_outline_button_labels.blue }};
-        --color-base-accent-1: {{ settings.colors_accent_1.red }}, {{ settings.colors_accent_1.green }}, {{ settings.colors_accent_1.blue }};
-        --color-base-accent-2: {{ settings.colors_accent_2.red }}, {{ settings.colors_accent_2.green }}, {{ settings.colors_accent_2.blue }};
-        --payment-terms-background-color: {{ settings.colors_background_1 }};
-
-        --gradient-base-background-1: {% if settings.gradient_background_1 != blank %}{{ settings.gradient_background_1 }}{% else %}{{ settings.colors_background_1 }}{% endif %};
-        --gradient-base-background-2: {% if settings.gradient_background_2 != blank %}{{ settings.gradient_background_2 }}{% else %}{{ settings.colors_background_2 }}{% endif %};
-        --gradient-base-accent-1: {% if settings.gradient_accent_1 != blank %}{{ settings.gradient_accent_1 }}{% else %}{{ settings.colors_accent_1 }}{% endif %};
-        --gradient-base-accent-2: {% if settings.gradient_accent_2 != blank %}{{ settings.gradient_accent_2 }}{% else %}{{ settings.colors_accent_2 }}{% endif %};
-
-        --page-width: {{ settings.page_width | divided_by: 10 }}rem;
-        --page-width-margin: {% if settings.page_width == '1600' %}2{% else %}0{% endif %}rem;
-
-        --spacing-sections-desktop: {{ settings.spacing_sections }}px;
-        --spacing-sections-mobile: {% if settings.spacing_sections < 24 %}{{ settings.spacing_sections }}{% else %}{{ settings.spacing_sections | times: 0.7 | round | at_least: 20 }}{% endif %}px;
-      }
-
-      *,
-      *::before,
-      *::after {
-        box-sizing: inherit;
-      }
-
-      html {
-        box-sizing: border-box;
-        font-size: calc(var(--font-body-scale) * 62.5%);
-        height: 100%;
-      }
-
-      body {
-        display: grid;
-        grid-template-rows: auto auto 1fr auto;
-        grid-template-columns: 100%;
-        min-height: 100%;
-        margin: 0;
-        font-size: 1.5rem;
-        letter-spacing: 0.06rem;
-        line-height: calc(1 + 0.8 / var(--font-body-scale));
-        font-family: var(--font-body-family);
-        font-style: var(--font-body-style);
-        font-weight: var(--font-body-weight);
-        background-color: rgb(var(--color-base-background-1));
-        background-image: linear-gradient(rgba(12, 15, 23, 0.72), rgba(12, 15, 23, 0.72)),
-          url('{{ 'wtf_storefront_hero_800x400.png' | asset_url }}');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center top;
-      }
-
-      @media screen and (min-width: 750px) {
-        body {
-          font-size: 1.6rem;
-          background-attachment: fixed;
-        }
-      }
-    {% endstyle %}
-
-    {%- comment %} Minimal critical CSS (safe, small) {%- endcomment %}
-    <style>
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-      .wtf-add-to-cart-btn {
-        background: #ff6600;
-        color: #fff;
-        border: 0;
-        padding: 16px 24px;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        width: 100%;
-      }
-    </style>
-
-    {%- comment %} Load critical CSS immediately for proper styling {%- endcomment %}
-    <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
-    <link rel="stylesheet" href="{{ 'wtf_flavor_system.css' | asset_url }}" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="{{ 'accessibility.css' | asset_url }}" media="print" onload="this.media='all'">
-    <noscript>
-      <link rel="stylesheet" href="{{ 'wtf_flavor_system.css' | asset_url }}">
-      <link rel="stylesheet" href="{{ 'accessibility.css' | asset_url }}">
-    </noscript>
-
-    {%- unless settings.type_body_font.system? -%}
-      <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
-    {%- endunless -%}
-    {%- unless settings.type_header_font.system? -%}
-      <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
-    {%- endunless -%}
-
-    {%- if settings.predictive_search_enabled -%}
-      <link
-        rel="stylesheet"
-        href="{{ 'component-predictive-search.css' | asset_url }}"
-        media="print"
-        onload="this.media='all'"
-      >
-    {%- endif -%}
-
+    {%- comment %} Load WTF Configuration {%- endcomment %}
     <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
-      if (Shopify.designMode) {
-        document.documentElement.classList.add('shopify-design-mode');
-      }
+      // Environment variables and configuration
+      window.WTF_ENV = {
+        shopDomain: '{{ shop.permanent_domain }}',
+        cartToken: '{{ cart.token }}',
+        customerId: {% if customer %}{{ customer.id }}{% else %}null{% endif %},
+        customerEmail: {% if customer %}'{{ customer.email }}'{% else %}null{% endif %},
+        currency: '{{ cart.currency.iso_code }}',
+        locale: '{{ request.locale.iso_code }}',
+        routes: {
+          cart_add_url: '{{ routes.cart_add_url }}',
+          cart_change_url: '{{ routes.cart_change_url }}',
+          cart_update_url: '{{ routes.cart_update_url }}',
+          cart_url: '{{ routes.cart_url }}',
+          predictive_search_url: '{{ routes.predictive_search_url }}',
+          root_url: '{{ routes.root_url }}'
+        }
+      };
+
+      // Integration settings (these would come from your admin settings)
+      window.WTF_INTEGRATION_CONFIG = {
+        lightspeed: {
+          enabled: true,
+          accountId: '{{ settings.lightspeed_account_id }}',
+          // API key would be handled server-side for security
+          syncInterval: 30000,
+          enableRealTimeSync: true
+        },
+        twoaccept: {
+          enabled: true,
+          publicKey: '{{ settings.twoaccept_public_key }}',
+          merchantId: '{{ settings.twoaccept_merchant_id }}',
+          environment: '{{ settings.twoaccept_environment | default: "production" }}',
+          enableSavedCards: true,
+          enableApplePay: true,
+          enableGooglePay: true
+        },
+        analytics: {
+          googleAnalytics: {
+            enabled: {% if settings.google_analytics_id != blank %}true{% else %}false{% endif %},
+            measurementId: '{{ settings.google_analytics_id }}'
+          },
+          facebookPixel: {
+            enabled: {% if settings.facebook_pixel_id != blank %}true{% else %}false{% endif %},
+            pixelId: '{{ settings.facebook_pixel_id }}'
+          },
+          tiktokPixel: {
+            enabled: {% if settings.tiktok_pixel_id != blank %}true{% else %}false{% endif %},
+            pixelId: '{{ settings.tiktok_pixel_id }}'
+          }
+        }
+      };
     </script>
 
-    {%- comment %} Core global JS (loaded early and deferred) {%- endcomment %}
-    <script src="{{ 'global.js' | asset_url }}" defer></script>
-  </head>
+    {%- comment %} Load WTF Configuration Manager {%- endcomment %}
+    <script src="{{ 'wtf-config.js' | asset_url }}" defer></script>
 
-  <body class="gradient">
-    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
-      {{- 'accessibility.skip_to_text' | t -}}
-    </a>
-
-    {%- if settings.enable_cart_drawer -%}
-      {%- render 'wtf-cart-drawer' -%}
+    {%- if settings.predictive_search_enabled -%}
+      <link rel="stylesheet" href="{{ 'component-predictive-search.css' | asset_url }}" media="print" onload="this.media='all'">
+      <noscript>{{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}</noscript>
     {%- endif -%}
 
-    {% section 'header' %}
+    <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+  </head>
+
+  <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
+      {{ 'accessibility.skip_to_text' | t }}
+    </a>
+
+    {%- comment %} Page wrapper {%- endcomment %}
+    <div id="shopify-section-header">
+      {% section 'header' %}
+    </div>
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
-    {%- comment %} Footer content embedded directly {%- endcomment %}
-    <footer class="footer color-background-1 gradient section-footer">
-      <div class="footer__content-top page-width">
-        <div class="footer-block--newsletter">
-          <h2 class="footer__heading">Stay Connected</h2>
-          <p>Get updates on new flavors, events, and specials at WTF Cape Coral.</p>
-        </div>
-      </div>
-      <div class="footer__content-bottom">
-        <div class="footer__content-bottom-wrapper page-width">
-          <div class="footer__column footer__localization isolate">
-            <div class="footer__column-top">
-              <h2 class="footer__heading">Visit Us</h2>
-              <div class="footer__localization">
-                <p>📍 1520 SE 46th Ln, Unit B<br>Cape Coral, FL 33904</p>
-                <p>☎️ (239) 955-0314</p>
-                <p>🕒 Open Daily • Late Night Pours</p>
-              </div>
-            </div>
-          </div>
-          <div class="footer__column footer__column--info">
-            <div class="footer__column-top">
-              <h2 class="footer__heading">Quick Links</h2>
-              <ul class="footer__list-social list-unstyled" role="list">
-                <li><a href="/pages/about" class="link">About</a></li>
-                <li><a href="/pages/locations" class="link">Locations</a></li>
-                <li><a href="/pages/contact" class="link">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="footer__content-bottom-wrapper page-width">
-          <div class="footer__copyright caption">
-            <small class="copyright__content">&copy; {{ 'now' | date: "%Y" }} WTF | Welcome To Florida. All rights reserved.</small>
-          </div>
-        </div>
-      </div>
-    </footer>
+    {%- comment %} Footer {%- endcomment %}
+    <div id="shopify-section-footer">
+      {% section 'footer' %}
+    </div>
 
+    {%- comment %} Cart Drawer {%- endcomment %}
+    {%- render 'wtf-cart-drawer' -%}
+
+    {%- comment %} Modals and overlays {%- endcomment %}
+    <div id="wtf-modal-overlay" class="wtf-modal-overlay" style="display: none;"></div>
+    <div id="wtf-loading-overlay" class="wtf-loading-overlay" style="display: none;">
+      <div class="wtf-loading-spinner"></div>
+    </div>
+
+    {%- comment %} Accessibility announcements {%- endcomment %}
     <ul hidden>
       <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
       <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
     </ul>
 
+    {%- comment %} Global JavaScript variables {%- endcomment %}
     <script>
       window.shopUrl = '{{ request.origin }}';
       window.routes = {
@@ -317,15 +224,22 @@
 
     {%- comment %}
       -------------------------------------------------------------------------------------
-      CANONICAL THEME SCRIPTS
-      These scripts are included once, at the end of the body, and deferred for performance.
+      WTF INTEGRATION SCRIPTS
+      Core functionality for Shopify, Lightspeed POS, 2accept payments, and webhooks
       -------------------------------------------------------------------------------------
     {%- endcomment %}
+    
+    {%- comment %} Core WTF Scripts {%- endcomment %}
     <script src="{{ 'wtf-variants.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-ajax-cart.js' | asset_url }}" defer></script>
     <script src="{{ 'enhanced-drink-builder.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-upselling.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-analytics.js' | asset_url }}" defer></script>
+
+    {%- comment %} Integration Scripts {%- endcomment %}
+    <script src="{{ 'wtf-lightspeed-integration.js' | asset_url }}" defer></script>
+    <script src="{{ 'wtf-2accept-integration.js' | asset_url }}" defer></script>
+    <script src="{{ 'wtf-webhook-handler.js' | asset_url }}" defer></script>
 
     {%- comment %} Cart count hydrator (single source of truth) {%- endcomment %}
     <script>
@@ -354,5 +268,163 @@
         });
       })();
     </script>
+
+    {%- comment %} Initialize WTF System {%- endcomment %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize WTF system with configuration
+        if (window.WTFConfig) {
+          console.log('WTF System initialized with configuration:', window.WTFConfig.getStoreInfo());
+          
+          // Validate configuration
+          const validation = window.WTFConfig.validate();
+          if (!validation.isValid) {
+            console.warn('WTF Configuration issues:', validation.errors);
+          }
+
+          // Dispatch system ready event
+          document.dispatchEvent(new CustomEvent('wtf:system:ready', {
+            detail: {
+              config: window.WTFConfig,
+              integrations: {
+                lightspeed: window.WTFConfig.isIntegrationEnabled('lightspeed'),
+                twoaccept: window.WTFConfig.isIntegrationEnabled('twoaccept'),
+                shopify: window.WTFConfig.isIntegrationEnabled('shopify')
+              }
+            }
+          }));
+        }
+
+        // Initialize cart persistence
+        if (localStorage.getItem('wtf-cart-backup')) {
+          try {
+            const backupCart = JSON.parse(localStorage.getItem('wtf-cart-backup'));
+            // Restore cart if needed
+            console.log('Cart backup available:', backupCart);
+          } catch (e) {
+            localStorage.removeItem('wtf-cart-backup');
+          }
+        }
+
+        // Set up cart backup on changes
+        document.addEventListener('cart:updated', function(event) {
+          localStorage.setItem('wtf-cart-backup', JSON.stringify(event.detail));
+        });
+
+        // Age verification for THC products
+        if (window.WTFConfig && window.WTFConfig.get('customers.enableAgeVerification')) {
+          const thcPages = ['/pages/thc-drinks', '/pages/thc-shots'];
+          if (thcPages.some(page => window.location.pathname.includes(page))) {
+            // Check if age verification is needed
+            if (!sessionStorage.getItem('wtf-age-verified')) {
+              // Show age verification modal
+              setTimeout(() => {
+                showAgeVerificationModal();
+              }, 1000);
+            }
+          }
+        }
+      });
+
+      // Age verification modal
+      function showAgeVerificationModal() {
+        const modal = document.createElement('div');
+        modal.className = 'wtf-age-verification-modal';
+        modal.innerHTML = `
+          <div class="wtf-age-verification-content">
+            <h2>Age Verification Required</h2>
+            <p>You must be 21 or older to view THC products.</p>
+            <p>Are you 21 years of age or older?</p>
+            <div class="wtf-age-verification-buttons">
+              <button onclick="verifyAge(true)" class="wtf-btn-yes">Yes, I'm 21+</button>
+              <button onclick="verifyAge(false)" class="wtf-btn-no">No, I'm under 21</button>
+            </div>
+          </div>
+        `;
+        
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          color: white;
+          text-align: center;
+        `;
+
+        document.body.appendChild(modal);
+      }
+
+      function verifyAge(isOfAge) {
+        const modal = document.querySelector('.wtf-age-verification-modal');
+        if (isOfAge) {
+          sessionStorage.setItem('wtf-age-verified', 'true');
+          if (modal) modal.remove();
+        } else {
+          window.location.href = '/';
+        }
+      }
+
+      // Global error handler for integrations
+      window.addEventListener('error', function(event) {
+        if (window.WTFConfig && window.WTFConfig.get('development.enableConsoleLogging')) {
+          console.error('WTF System Error:', event.error);
+        }
+        
+        // Report critical errors
+        if (event.error && event.error.message && event.error.message.includes('WTF')) {
+          // This would integrate with error reporting service
+          console.warn('WTF Integration Error detected:', event.error.message);
+        }
+      });
+
+      // Service worker registration for offline functionality
+      if ('serviceWorker' in navigator && window.WTFConfig && window.WTFConfig.get('features.enableOfflineMode')) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => console.log('SW registered:', registration))
+          .catch(error => console.log('SW registration failed:', error));
+      }
+    </script>
+
+    {%- comment %} Custom checkout integration {%- endcomment %}
+    {% if template contains 'cart' or template contains 'checkout' %}
+      <script>
+        // Initialize custom checkout if enabled
+        if (window.WTF2Accept && window.WTFConfig.get('features.enableCustomCheckout')) {
+          document.addEventListener('wtf:system:ready', function() {
+            // Set up custom checkout flow
+            console.log('Custom checkout initialized');
+          });
+        }
+      </script>
+    {% endif %}
+
+    {%- comment %} Development tools {%- endcomment %}
+    {% if settings.enable_debug_mode %}
+      <script>
+        // Development debugging tools
+        window.WTF_DEBUG = {
+          config: () => console.table(window.WTF_CONFIG),
+          integrations: () => console.log('Integrations:', {
+            lightspeed: !!window.WTFLightspeed,
+            twoaccept: !!window.WTF2Accept,
+            webhooks: !!window.WTFWebhooks
+          }),
+          cart: () => fetch('/cart.js').then(r => r.json()).then(console.log),
+          clearStorage: () => {
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log('Storage cleared');
+          }
+        };
+        console.log('WTF Debug tools available: WTF_DEBUG');
+      </script>
+    {% endif %}
+
   </body>
 </html>
