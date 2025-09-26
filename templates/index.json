@@ -1,35 +1,48 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "home-hero",
-      "settings": {
-        "heading": "Welcome to WTF",
-        "subheading": "Cape Coral's premier kava bar",
-        "description": "Premium edibles, beverages, cannabis and botanicals crafted for Southwest Florida.",
-        "button_link": "tel:2399550314",
-        "button_label": "Call (239) 955-0314",
-        "hero_badge": "Premium botanicals"
-      },
       "blocks": {
         "hero-social-1": {
           "type": "social_link",
           "settings": {
             "label": "📘",
-            "url": "https://www.facebook.com/"
+            "url": "https://www.facebook.com/",
+            "open_in_new_tab": true
           }
         },
         "hero-social-2": {
           "type": "social_link",
           "settings": {
             "label": "📷",
-            "url": "https://www.instagram.com/"
+            "url": "https://www.instagram.com/",
+            "open_in_new_tab": true
           }
         }
       },
       "block_order": [
         "hero-social-1",
         "hero-social-2"
-      ]
+      ],
+      "settings": {
+        "hero_image_alt": "",
+        "hero_badge": "Premium botanicals",
+        "logo_alt_text": "",
+        "heading": "Welcome to WTF",
+        "subheading": "Cape Coral's premier kava bar",
+        "description": "Premium edibles, beverages, cannabis and botanicals crafted for Southwest Florida.",
+        "button_link": "tel:2399550314",
+        "button_label": "Call (239) 955-0314"
+      }
     },
     "categories": {
       "type": "home-category-grid",
@@ -41,6 +54,7 @@
             "description": "Green, red, white & yellow strains with premium flavorings.",
             "meta": "4 strains • 25 flavors",
             "link": "/pages/kratom-teas",
+            "category_image": "shopify://shop_images/IMG_5062.heic",
             "fallback_emoji": "🍵"
           }
         },
@@ -51,6 +65,7 @@
             "description": "Traditional relaxation brews in rotating flavors.",
             "meta": "M • L • Gallons",
             "link": "/pages/kava-drinks",
+            "category_image": "shopify://shop_images/kava-drinks-placeholder.webp",
             "fallback_emoji": "🥥"
           }
         },
@@ -127,7 +142,9 @@
           "settings": {
             "title": "Medium Kava (16oz)",
             "description": "Traditional kava blend",
-            "price": "10.00"
+            "price": "10.00",
+            "fallback_emoji": "🍃",
+            "product_id": ""
           }
         },
         "quick-item-2": {
@@ -135,7 +152,9 @@
           "settings": {
             "title": "Kratom Tea (Green)",
             "description": "Premium green kratom",
-            "price": "8.00"
+            "price": "8.00",
+            "fallback_emoji": "🍃",
+            "product_id": ""
           }
         },
         "quick-item-3": {
@@ -143,7 +162,9 @@
           "settings": {
             "title": "Delta-9 Shot",
             "description": "5mg THC shot",
-            "price": "15.00"
+            "price": "15.00",
+            "fallback_emoji": "🍃",
+            "product_id": ""
           }
         },
         "quick-item-4": {
@@ -151,7 +172,9 @@
           "settings": {
             "title": "Draft Pour (16oz)",
             "description": "Rotating tap selection",
-            "price": "12.00"
+            "price": "12.00",
+            "fallback_emoji": "🍃",
+            "product_id": ""
           }
         },
         "quick-item-5": {
@@ -159,7 +182,9 @@
           "settings": {
             "title": "Edible Gummy",
             "description": "10mg THC gummy",
-            "price": "5.00"
+            "price": "5.00",
+            "fallback_emoji": "🍃",
+            "product_id": ""
           }
         },
         "quick-item-6": {
@@ -167,7 +192,9 @@
           "settings": {
             "title": "THC Chocolate",
             "description": "Premium chocolate bar",
-            "price": "20.00"
+            "price": "20.00",
+            "fallback_emoji": "🍃",
+            "product_id": ""
           }
         }
       },
