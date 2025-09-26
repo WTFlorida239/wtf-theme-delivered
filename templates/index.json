@@ -34,7 +34,8 @@
         "hero-social-2"
       ],
       "settings": {
-        "hero_image_alt": "",
+        "hero_image": "shopify://shop_images/IMG_5074_2.heic",
+        "hero_image_alt": "The storefront of WTF in Florida, featuring a bright teal facade, a 'Welcome to Florida' flamingo sign in the window, and a mini-golf putting green out front.",
         "hero_badge": "Premium botanicals",
         "logo_alt_text": "",
         "heading": "Welcome to WTF",
