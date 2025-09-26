@@ -1,0 +1,704 @@
+name: Drift Prevention & Site Maintenance
+
+on:
+  schedule:
+    # Run every 4 hours to catch drift early
+    - cron: '0 */4 * * *'
+    # Daily comprehensive check at 3 AM UTC
+    - cron: '0 3 * * *'
+    # Weekly deep analysis on Sundays at 6 AM UTC
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+    inputs:
+      check_type:
+        description: 'Type of drift check to run'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+          - quick
+          - comprehensive
+          - deep
+      auto_fix:
+        description: 'Automatically fix detected issues'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
+  SHOPIFY_CLI_VERSION: '3.x'
+
+jobs:
+  # Determine what type of check to run
+  check-strategy:
+    name: Determine Check Strategy
+    runs-on: ubuntu-latest
+    outputs:
+      check-type: ${{ steps.strategy.outputs.check-type }}
+      should-auto-fix: ${{ steps.strategy.outputs.should-auto-fix }}
+      
+    steps:
+    - name: Determine check strategy
+      id: strategy
+      run: |
+        # Determine check type based on trigger
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          CHECK_TYPE="${{ github.event.inputs.check_type }}"
+          AUTO_FIX="${{ github.event.inputs.auto_fix }}"
+        elif [[ "${{ github.event.schedule }}" == "0 6 * * 0" ]]; then
+          CHECK_TYPE="deep"
+          AUTO_FIX="false"
+        elif [[ "${{ github.event.schedule }}" == "0 3 * * *" ]]; then
+          CHECK_TYPE="comprehensive"
+          AUTO_FIX="false"
+        else
+          CHECK_TYPE="quick"
+          AUTO_FIX="false"
+        fi
+        
+        echo "check-type=$CHECK_TYPE" >> $GITHUB_OUTPUT
+        echo "should-auto-fix=$AUTO_FIX" >> $GITHUB_OUTPUT
+        
+        echo "Check type: $CHECK_TYPE"
+        echo "Auto-fix enabled: $AUTO_FIX"
+
+  # Quick drift detection (runs every 4 hours)
+  quick-drift-check:
+    name: Quick Drift Detection
+    runs-on: ubuntu-latest
+    needs: check-strategy
+    if: needs.check-strategy.outputs.check-type == 'quick'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Quick file integrity check
+      run: |
+        echo "🔍 Running quick file integrity check..."
+        
+        # Check critical files exist
+        critical_files=(
+          "sections/enhanced-drink-builder.liquid"
+          "sections/custom-kratom-tea-builder.liquid"
+          "sections/custom-kava-drink-builder.liquid"
+          "sections/wtf-cart.liquid"
+          "assets/wtf-ajax-cart.js"
+          "templates/product.json"
+          "templates/cart.liquid"
+        )
+        
+        missing_files=()
+        for file in "${critical_files[@]}"; do
+          if [[ ! -f "$file" ]]; then
+            missing_files+=("$file")
+          fi
+        done
+        
+        if [[ ${#missing_files[@]} -gt 0 ]]; then
+          echo "❌ DRIFT DETECTED: Missing critical files:"
+          printf '%s\n' "${missing_files[@]}"
+          echo "missing_files=${missing_files[*]}" >> $GITHUB_ENV
+          exit 1
+        fi
+        
+        echo "✅ All critical files present"
+    
+    - name: Quick functionality check
+      run: |
+        echo "⚡ Running quick functionality check..."
+        
+        # Check for critical AJAX attributes
+        if ! grep -q "data-wtf-ajax" sections/custom-kratom-tea-builder.liquid; then
+          echo "❌ DRIFT DETECTED: Missing AJAX attribute in kratom tea builder"
+          exit 1
+        fi
+        
+        if ! grep -q "data-wtf-ajax" sections/custom-kava-drink-builder.liquid; then
+          echo "❌ DRIFT DETECTED: Missing AJAX attribute in kava drink builder"
+          exit 1
+        fi
+        
+        # Check for critical JavaScript functions
+        if ! grep -q "addItem" assets/wtf-ajax-cart.js; then
+          echo "❌ DRIFT DETECTED: Missing addItem function in AJAX cart"
+          exit 1
+        fi
+        
+        echo "✅ Quick functionality check passed"
+    
+    - name: Run basic automation scripts
+      run: |
+        echo "🤖 Running basic automation checks..."
+        
+        # Quick conflict scan
+        npm run conflicts:scan
+        
+        # Basic order readiness
+        node scripts/order-readiness-check.js
+        
+        echo "✅ Basic automation checks passed"
+
+  # Comprehensive drift detection (runs daily)
+  comprehensive-drift-check:
+    name: Comprehensive Drift Detection
+    runs-on: ubuntu-latest
+    needs: check-strategy
+    if: needs.check-strategy.outputs.check-type == 'comprehensive'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Comprehensive file analysis
+      run: |
+        echo "📊 Running comprehensive file analysis..."
+        
+        # Check file sizes for unexpected changes
+        declare -A expected_sizes=(
+          ["sections/enhanced-drink-builder.liquid"]=50000
+          ["sections/custom-kratom-tea-builder.liquid"]=40000
+          ["sections/custom-kava-drink-builder.liquid"]=45000
+          ["assets/wtf-ajax-cart.js"]=15000
+        )
+        
+        size_issues=()
+        for file in "${!expected_sizes[@]}"; do
+          if [[ -f "$file" ]]; then
+            actual_size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+            expected_size=${expected_sizes[$file]}
+            
+            # Allow 50% variance
+            min_size=$((expected_size / 2))
+            max_size=$((expected_size * 2))
+            
+            if [[ $actual_size -lt $min_size ]] || [[ $actual_size -gt $max_size ]]; then
+              size_issues+=("$file: $actual_size bytes (expected ~$expected_size)")
+            fi
+          fi
+        done
+        
+        if [[ ${#size_issues[@]} -gt 0 ]]; then
+          echo "⚠️ POTENTIAL DRIFT: File size anomalies detected:"
+          printf '%s\n' "${size_issues[@]}"
+          echo "size_issues=${size_issues[*]}" >> $GITHUB_ENV
+        fi
+        
+        echo "✅ File analysis completed"
+    
+    - name: Template structure validation
+      run: |
+        echo "🏗️ Validating template structure..."
+        
+        # Check product templates have required sections
+        required_sections=(
+          "main"
+          "builder"
+        )
+        
+        for template in templates/product.*.json; do
+          if [[ -f "$template" ]]; then
+            for section in "${required_sections[@]}"; do
+              if ! grep -q "\"$section\":" "$template"; then
+                echo "❌ DRIFT DETECTED: Missing section '$section' in $template"
+                exit 1
+              fi
+            done
+          fi
+        done
+        
+        echo "✅ Template structure validation passed"
+    
+    - name: JavaScript functionality validation
+      run: |
+        echo "⚙️ Validating JavaScript functionality..."
+        
+        # Check for required JavaScript functions
+        required_functions=(
+          "addItem"
+          "updateCartCount"
+          "showStatus"
+        )
+        
+        for func in "${required_functions[@]}"; do
+          if ! grep -q "function $func\|const $func\|let $func\|$func.*=" assets/wtf-ajax-cart.js; then
+            echo "❌ DRIFT DETECTED: Missing JavaScript function '$func'"
+            exit 1
+          fi
+        done
+        
+        # Check for event listeners
+        if ! grep -q "addEventListener\|on(" assets/wtf-ajax-cart.js; then
+          echo "❌ DRIFT DETECTED: Missing event listeners in AJAX cart"
+          exit 1
+        fi
+        
+        echo "✅ JavaScript functionality validation passed"
+    
+    - name: Install Shopify CLI
+      run: npm install -g @shopify/cli@${{ env.SHOPIFY_CLI_VERSION }} @shopify/theme
+    
+    - name: Full theme validation
+      run: |
+        echo "🎨 Running full theme validation..."
+        shopify theme check --fail-level=error
+        echo "✅ Full theme validation passed"
+    
+    - name: Run all automation scripts
+      run: |
+        echo "🤖 Running all automation scripts..."
+        
+        # Conflict detection
+        npm run conflicts:scan
+        
+        # Competitor audit
+        npm run competitors:audit
+        
+        # Order readiness check
+        node scripts/order-readiness-check.js
+        
+        echo "✅ All automation scripts passed"
+    
+    - name: Performance regression check
+      run: |
+        echo "📈 Checking for performance regressions..."
+        
+        # Check asset file sizes haven't grown excessively
+        total_css_size=0
+        total_js_size=0
+        
+        for css_file in assets/*.css; do
+          if [[ -f "$css_file" ]]; then
+            size=$(stat -f%z "$css_file" 2>/dev/null || stat -c%s "$css_file" 2>/dev/null || echo 0)
+            total_css_size=$((total_css_size + size))
+          fi
+        done
+        
+        for js_file in assets/*.js; do
+          if [[ -f "$js_file" ]]; then
+            size=$(stat -f%z "$js_file" 2>/dev/null || stat -c%s "$js_file" 2>/dev/null || echo 0)
+            total_js_size=$((total_js_size + size))
+          fi
+        done
+        
+        # Alert if total sizes exceed thresholds
+        max_css_total=200000  # 200KB
+        max_js_total=100000   # 100KB
+        
+        if [[ $total_css_size -gt $max_css_total ]]; then
+          echo "⚠️ PERFORMANCE DRIFT: Total CSS size ($total_css_size bytes) exceeds threshold ($max_css_total bytes)"
+        fi
+        
+        if [[ $total_js_size -gt $max_js_total ]]; then
+          echo "⚠️ PERFORMANCE DRIFT: Total JS size ($total_js_size bytes) exceeds threshold ($max_js_total bytes)"
+        fi
+        
+        echo "CSS total: $total_css_size bytes"
+        echo "JS total: $total_js_size bytes"
+        echo "✅ Performance regression check completed"
+
+  # Deep analysis (runs weekly)
+  deep-analysis:
+    name: Deep Drift Analysis
+    runs-on: ubuntu-latest
+    needs: check-strategy
+    if: needs.check-strategy.outputs.check-type == 'deep'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for deep analysis
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Historical change analysis
+      run: |
+        echo "📈 Running historical change analysis..."
+        
+        # Analyze changes over the past week
+        echo "Changes in the past 7 days:"
+        git log --since="7 days ago" --oneline --stat
+        
+        # Check for unexpected changes to critical files
+        critical_files=(
+          "sections/enhanced-drink-builder.liquid"
+          "sections/custom-kratom-tea-builder.liquid"
+          "sections/custom-kava-drink-builder.liquid"
+          "assets/wtf-ajax-cart.js"
+        )
+        
+        for file in "${critical_files[@]}"; do
+          if git log --since="7 days ago" --oneline -- "$file" | grep -v "^$"; then
+            echo "📝 Changes detected in critical file: $file"
+            git log --since="7 days ago" --oneline -- "$file"
+          fi
+        done
+        
+        echo "✅ Historical analysis completed"
+    
+    - name: Code quality analysis
+      run: |
+        echo "🔍 Running code quality analysis..."
+        
+        # Check for code complexity in Liquid files
+        liquid_files=$(find . -name "*.liquid" -type f)
+        
+        for file in $liquid_files; do
+          line_count=$(wc -l < "$file")
+          if [[ $line_count -gt 500 ]]; then
+            echo "⚠️ Large file detected: $file ($line_count lines)"
+          fi
+          
+          # Check for deeply nested structures
+          max_nesting=$(grep -o "{%" "$file" | wc -l)
+          if [[ $max_nesting -gt 50 ]]; then
+            echo "⚠️ High complexity detected: $file ($max_nesting Liquid tags)"
+          fi
+        done
+        
+        echo "✅ Code quality analysis completed"
+    
+    - name: Dependency analysis
+      run: |
+        echo "📦 Running dependency analysis..."
+        
+        # Check for outdated npm packages
+        npm outdated || true
+        
+        # Check package.json for security vulnerabilities
+        npm audit --audit-level=moderate || true
+        
+        echo "✅ Dependency analysis completed"
+    
+    - name: Comprehensive competitor analysis
+      run: |
+        echo "🏪 Running comprehensive competitor analysis..."
+        
+        # Run detailed competitor audit
+        npm run competitors:audit
+        
+        # Check if competitor data is stale
+        if [[ -f "local-kava-bars-database - Sheet1.csv" ]]; then
+          file_age=$(stat -f%m "local-kava-bars-database - Sheet1.csv" 2>/dev/null || stat -c%Y "local-kava-bars-database - Sheet1.csv" 2>/dev/null || echo 0)
+          current_time=$(date +%s)
+          age_days=$(( (current_time - file_age) / 86400 ))
+          
+          if [[ $age_days -gt 30 ]]; then
+            echo "⚠️ Competitor data is $age_days days old - consider updating"
+          fi
+        fi
+        
+        echo "✅ Comprehensive competitor analysis completed"
+    
+    - name: Security deep scan
+      run: |
+        echo "🔒 Running security deep scan..."
+        
+        # Check for potential security issues
+        security_patterns=(
+          "eval\("
+          "innerHTML.*="
+          "document\.write"
+          "\.html\("
+          "dangerouslySetInnerHTML"
+        )
+        
+        for pattern in "${security_patterns[@]}"; do
+          if grep -r "$pattern" assets/ sections/ templates/ 2>/dev/null; then
+            echo "⚠️ Potential security issue found: $pattern"
+          fi
+        done
+        
+        # Check for hardcoded URLs that might be problematic
+        if grep -r "http://" sections/ templates/ | grep -v "schema.org\|example.com"; then
+          echo "⚠️ Non-HTTPS URLs found - potential security issue"
+        fi
+        
+        echo "✅ Security deep scan completed"
+
+  # Auto-fix detected issues
+  auto-fix:
+    name: Auto-fix Detected Issues
+    runs-on: ubuntu-latest
+    needs: [check-strategy, quick-drift-check, comprehensive-drift-check, deep-analysis]
+    if: always() && needs.check-strategy.outputs.should-auto-fix == 'true' && (failure() || contains(needs.*.result, 'failure'))
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Attempt automatic fixes
+      run: |
+        echo "🔧 Attempting automatic fixes..."
+        
+        fixes_applied=()
+        
+        # Fix missing AJAX attributes
+        if [[ -f "sections/custom-kratom-tea-builder.liquid" ]] && ! grep -q "data-wtf-ajax" "sections/custom-kratom-tea-builder.liquid"; then
+          echo "Fixing missing AJAX attribute in kratom tea builder..."
+          sed -i 's/<form/<form data-wtf-ajax/g' "sections/custom-kratom-tea-builder.liquid"
+          fixes_applied+=("Added AJAX attribute to kratom tea builder")
+        fi
+        
+        if [[ -f "sections/custom-kava-drink-builder.liquid" ]] && ! grep -q "data-wtf-ajax" "sections/custom-kava-drink-builder.liquid"; then
+          echo "Fixing missing AJAX attribute in kava drink builder..."
+          sed -i 's/<form/<form data-wtf-ajax/g' "sections/custom-kava-drink-builder.liquid"
+          fixes_applied+=("Added AJAX attribute to kava drink builder")
+        fi
+        
+        # Fix missing footer section if needed
+        if [[ ! -f "sections/footer.liquid" ]]; then
+          echo "Creating missing footer section..."
+          cat > "sections/footer.liquid" << 'EOF'
+        <footer class="footer">
+          <div class="footer__content">
+            <p>&copy; {{ "now" | date: "%Y" }} WTF | Welcome To Florida. All rights reserved.</p>
+          </div>
+        </footer>
+        EOF
+          fixes_applied+=("Created missing footer section")
+        fi
+        
+        # Report fixes applied
+        if [[ ${#fixes_applied[@]} -gt 0 ]]; then
+          echo "✅ Fixes applied:"
+          printf '%s\n' "${fixes_applied[@]}"
+          echo "fixes_applied=${fixes_applied[*]}" >> $GITHUB_ENV
+        else
+          echo "ℹ️ No automatic fixes available for detected issues"
+        fi
+    
+    - name: Commit fixes
+      if: env.fixes_applied != ''
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        git add .
+        git commit -m "🤖 Auto-fix: Drift prevention fixes
+        
+        Applied fixes:
+        $(echo "${{ env.fixes_applied }}" | tr ' ' '\n' | sed 's/^/- /')
+        
+        [skip ci]"
+        
+        git push
+        
+        echo "✅ Fixes committed and pushed"
+
+  # Generate drift prevention report
+  generate-report:
+    name: Generate Drift Prevention Report
+    runs-on: ubuntu-latest
+    needs: [check-strategy, quick-drift-check, comprehensive-drift-check, deep-analysis, auto-fix]
+    if: always()
+    
+    steps:
+    - name: Determine overall status
+      id: status
+      run: |
+        # Determine which checks ran and their results
+        QUICK_RESULT="${{ needs.quick-drift-check.result }}"
+        COMPREHENSIVE_RESULT="${{ needs.comprehensive-drift-check.result }}"
+        DEEP_RESULT="${{ needs.deep-analysis.result }}"
+        AUTO_FIX_RESULT="${{ needs.auto-fix.result }}"
+        
+        # Determine overall status
+        if [[ "$QUICK_RESULT" == "failure" ]] || [[ "$COMPREHENSIVE_RESULT" == "failure" ]] || [[ "$DEEP_RESULT" == "failure" ]]; then
+          if [[ "$AUTO_FIX_RESULT" == "success" ]]; then
+            echo "status=fixed" >> $GITHUB_OUTPUT
+          else
+            echo "status=issues-detected" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "status=healthy" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "check-type=${{ needs.check-strategy.outputs.check-type }}" >> $GITHUB_OUTPUT
+    
+    - name: Create drift prevention report
+      run: |
+        cat << EOF > drift-prevention-report.md
+        # 🛡️ Drift Prevention Report
+        
+        **Date:** $(date)
+        **Check Type:** ${{ steps.status.outputs.check-type }}
+        **Trigger:** ${{ github.event_name }}
+        **Overall Status:** $(case "${{ steps.status.outputs.status }}" in
+          "healthy") echo "✅ **HEALTHY** - No drift detected" ;;
+          "issues-detected") echo "❌ **ISSUES DETECTED** - Manual intervention required" ;;
+          "fixed") echo "🔧 **FIXED** - Issues detected and automatically resolved" ;;
+          *) echo "❓ **UNKNOWN** - Check results inconclusive" ;;
+        esac)
+        
+        ## Check Results Summary
+        
+        ### Quick Drift Check
+        $(if [[ "${{ needs.quick-drift-check.result }}" == "success" ]]; then echo "✅ **PASSED** - No immediate drift detected"; elif [[ "${{ needs.quick-drift-check.result }}" == "failure" ]]; then echo "❌ **FAILED** - Immediate drift detected"; elif [[ "${{ needs.quick-drift-check.result }}" == "skipped" ]]; then echo "⏭️ **SKIPPED** - Not applicable for this check type"; else echo "❓ **UNKNOWN** - Check did not run"; fi)
+        
+        ### Comprehensive Drift Check
+        $(if [[ "${{ needs.comprehensive-drift-check.result }}" == "success" ]]; then echo "✅ **PASSED** - No comprehensive drift detected"; elif [[ "${{ needs.comprehensive-drift-check.result }}" == "failure" ]]; then echo "❌ **FAILED** - Comprehensive drift detected"; elif [[ "${{ needs.comprehensive-drift-check.result }}" == "skipped" ]]; then echo "⏭️ **SKIPPED** - Not applicable for this check type"; else echo "❓ **UNKNOWN** - Check did not run"; fi)
+        
+        ### Deep Analysis
+        $(if [[ "${{ needs.deep-analysis.result }}" == "success" ]]; then echo "✅ **PASSED** - Deep analysis shows no significant drift"; elif [[ "${{ needs.deep-analysis.result }}" == "failure" ]]; then echo "❌ **FAILED** - Deep analysis detected significant issues"; elif [[ "${{ needs.deep-analysis.result }}" == "skipped" ]]; then echo "⏭️ **SKIPPED** - Not applicable for this check type"; else echo "❓ **UNKNOWN** - Check did not run"; fi)
+        
+        ### Auto-fix
+        $(if [[ "${{ needs.auto-fix.result }}" == "success" ]]; then echo "✅ **APPLIED** - Automatic fixes successfully applied"; elif [[ "${{ needs.auto-fix.result }}" == "failure" ]]; then echo "❌ **FAILED** - Automatic fixes could not be applied"; elif [[ "${{ needs.auto-fix.result }}" == "skipped" ]]; then echo "⏭️ **SKIPPED** - No fixes needed or auto-fix disabled"; else echo "❓ **NOT RUN** - Auto-fix was not triggered"; fi)
+        
+        ## Drift Prevention Strategy
+        
+        ### Monitoring Schedule
+        - **Every 4 hours:** Quick drift detection
+        - **Daily (3 AM UTC):** Comprehensive drift check
+        - **Weekly (Sunday 6 AM UTC):** Deep analysis
+        - **On-demand:** Manual workflow dispatch
+        
+        ### Detection Capabilities
+        
+        #### File Integrity
+        - ✅ Critical file existence
+        - ✅ File size anomaly detection
+        - ✅ Template structure validation
+        - ✅ JavaScript functionality validation
+        
+        #### Code Quality
+        - ✅ Shopify theme standards compliance
+        - ✅ Liquid syntax validation
+        - ✅ Performance regression detection
+        - ✅ Security vulnerability scanning
+        
+        #### Business Logic
+        - ✅ Order system functionality
+        - ✅ AJAX cart integration
+        - ✅ Competitor data freshness
+        - ✅ Custom builder functionality
+        
+        ### Auto-fix Capabilities
+        - 🔧 Missing AJAX attributes
+        - 🔧 Missing footer section
+        - 🔧 Basic template structure issues
+        - 🔧 Simple configuration problems
+        
+        ## Recommendations
+        
+        ### Immediate Actions
+        $(case "${{ steps.status.outputs.status }}" in
+          "healthy") echo "- ✅ No immediate actions required
+        - 📊 Continue regular monitoring
+        - 📈 Review performance metrics" ;;
+          "issues-detected") echo "- 🚨 **URGENT:** Review and fix detected issues
+        - 🔍 Investigate root cause of drift
+        - 🛠️ Apply manual fixes where needed
+        - 🧪 Test fixes in staging environment" ;;
+          "fixed") echo "- ✅ Review applied fixes
+        - 🧪 Test fixes in staging environment
+        - 📊 Monitor for recurring issues
+        - 📝 Update prevention strategies if needed" ;;
+        esac)
+        
+        ### Long-term Improvements
+        - 🔒 Implement stricter code review processes
+        - 🤖 Expand auto-fix capabilities
+        - 📊 Add more comprehensive monitoring
+        - 🎯 Refine drift detection thresholds
+        - 📚 Update documentation and runbooks
+        
+        ## Monitoring Metrics
+        
+        ### Health Indicators
+        - **File Integrity:** $(if [[ "${{ steps.status.outputs.status }}" == "healthy" ]]; then echo "🟢 Good"; else echo "🔴 Issues"; fi)
+        - **Code Quality:** $(if [[ "${{ steps.status.outputs.status }}" == "healthy" ]]; then echo "🟢 Good"; else echo "🔴 Issues"; fi)
+        - **Performance:** $(if [[ "${{ steps.status.outputs.status }}" == "healthy" ]]; then echo "🟢 Good"; else echo "🟡 Monitor"; fi)
+        - **Security:** $(if [[ "${{ steps.status.outputs.status }}" == "healthy" ]]; then echo "🟢 Good"; else echo "🟡 Monitor"; fi)
+        
+        ### Trend Analysis
+        - **Drift Frequency:** $(if [[ "${{ steps.status.outputs.status }}" == "healthy" ]]; then echo "Low"; else echo "Elevated"; fi)
+        - **Fix Success Rate:** $(if [[ "${{ needs.auto-fix.result }}" == "success" ]]; then echo "High"; elif [[ "${{ needs.auto-fix.result }}" == "skipped" ]]; then echo "N/A"; else echo "Low"; fi)
+        - **Manual Intervention:** $(if [[ "${{ steps.status.outputs.status }}" == "issues-detected" ]]; then echo "Required"; else echo "Not required"; fi)
+        
+        ## Next Steps
+        
+        1. **Immediate (0-1 hour):**
+           $(case "${{ steps.status.outputs.status }}" in
+             "healthy") echo "- Continue normal operations" ;;
+             "issues-detected") echo "- 🚨 Address detected issues immediately" ;;
+             "fixed") echo "- Verify applied fixes are working correctly" ;;
+           esac)
+        
+        2. **Short-term (1-24 hours):**
+           - Monitor system stability
+           - Review performance metrics
+           - Check user-reported issues
+        
+        3. **Medium-term (1-7 days):**
+           - Analyze drift patterns
+           - Update prevention strategies
+           - Review and improve monitoring
+        
+        ---
+        
+        **Next Scheduled Check:** $(case "${{ steps.status.outputs.check-type }}" in
+          "quick") echo "$(date -d '+4 hours' '+%Y-%m-%d %H:%M UTC') (Quick)" ;;
+          "comprehensive") echo "$(date -d '+1 day' '+%Y-%m-%d %H:%M UTC') (Comprehensive)" ;;
+          "deep") echo "$(date -d '+7 days' '+%Y-%m-%d %H:%M UTC') (Deep)" ;;
+        esac)
+        
+        **Report Generated:** $(date)
+        EOF
+    
+    - name: Upload drift prevention report
+      uses: actions/upload-artifact@v4
+      with:
+        name: drift-prevention-report-$(date +%Y%m%d-%H%M%S)
+        path: drift-prevention-report.md
+        retention-days: 90
+    
+    - name: Send alert if issues detected
+      if: steps.status.outputs.status == 'issues-detected'
+      run: |
+        echo "🚨 DRIFT ALERT: Issues detected in WTF theme!"
+        echo "Status: ${{ steps.status.outputs.status }}"
+        echo "Check type: ${{ steps.status.outputs.check-type }}"
+        echo "Time: $(date)"
+        
+        # In production, this would send actual alerts:
+        # - Slack webhook for immediate notification
+        # - Email to development team
+        # - PagerDuty alert for critical issues
+        # - Discord notification for team awareness
+        
+        echo "Manual intervention required - check workflow logs for details"

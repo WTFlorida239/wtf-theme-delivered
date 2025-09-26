@@ -1,0 +1,998 @@
+{% comment %}
+  Custom Kratom Tea Builder Section
+  Handles custom kratom tea ordering with strains, flavors, and sizes
+{% endcomment %}
+
+{% liquid
+  assign product = all_products['custom-kratom-tea']
+  if product == blank
+    assign product = collections.kratom-teas.products.first
+  endif
+%}
+
+<div class="custom-builder" data-section-id="{{ section.id }}" data-product-id="{{ product.id }}">
+  <div class="custom-builder__container">
+    <div class="custom-builder__header">
+      <h1 class="custom-builder__title">{{ section.settings.heading | default: 'Custom Kratom Tea' }}</h1>
+      {% if section.settings.description != blank %}
+        <div class="custom-builder__description">{{ section.settings.description }}</div>
+      {% endif %}
+      
+      <div class="custom-builder__price">
+        <span class="price-prefix">{{ section.settings.price_prefix | default: 'Starting at' }}</span>
+        <span class="price-amount" data-price-display>${{ product.price | money_without_currency }}</span>
+      </div>
+    </div>
+
+    <form class="custom-builder__form" data-wtf-ajax data-product-form>
+      <!-- Hidden inputs for line item properties -->
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-variant-id>
+      <input type="hidden" name="properties[Strain]" value="" data-strain>
+      <input type="hidden" name="properties[Mix]" value="No" data-mix>
+      <input type="hidden" name="properties[Strain A]" value="" data-strain-a>
+      <input type="hidden" name="properties[Strain B]" value="" data-strain-b>
+      <input type="hidden" name="properties[Flavors & Pumps]" value="" data-flavors>
+      <input type="hidden" name="properties[Notes]" value="" data-notes>
+      <input type="hidden" name="properties[Ice]" value="Regular Ice" data-ice>
+
+      <!-- Size Selection -->
+      <div class="custom-builder__step" data-step="size">
+        <h3 class="custom-builder__step-title">{{ section.settings.size_heading | default: 'Choose your size' }}</h3>
+        <div class="chip-group" data-option-group="size">
+          {% assign size_options = section.settings.size_options | split: '\n' %}
+          {% for size_option in size_options %}
+            {% assign size_parts = size_option | split: '|' %}
+            {% if size_parts.size >= 4 %}
+              {% assign size_name = size_parts[0] %}
+              {% assign size_display = size_parts[1] %}
+              {% assign size_price = size_parts[2] %}
+              {% assign size_pumps = size_parts[3] %}
+              
+              {% assign variant_id = null %}
+              {% for variant in product.variants %}
+                {% if variant.option1 == size_name %}
+                  {% assign variant_id = variant.id %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              
+              <button type="button" 
+                      class="chip{% if section.settings.default_size == size_name %} chip--active{% endif %}"
+                      data-option="size"
+                      data-value="{{ size_name }}"
+                      data-variant-id="{{ variant_id }}"
+                      data-price="{{ size_price }}"
+                      data-pumps="{{ size_pumps }}"
+                      aria-pressed="{% if section.settings.default_size == size_name %}true{% else %}false{% endif %}">
+                <span class="chip__label">{{ size_display }}</span>
+              </button>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Strain Selection -->
+      <div class="custom-builder__step" data-step="strain">
+        <h3 class="custom-builder__step-title">{{ section.settings.strain_heading | default: 'Choose your strain' }}</h3>
+        <div class="chip-group" data-option-group="strain">
+          {% assign strain_options = section.settings.strain_options | split: '\n' %}
+          {% for strain_option in strain_options %}
+            {% assign strain_parts = strain_option | split: '|' %}
+            {% if strain_parts.size >= 2 %}
+              {% assign strain_display = strain_parts[0] %}
+              {% assign strain_value = strain_parts[1] %}
+              
+              <button type="button" 
+                      class="chip{% if section.settings.default_strain == strain_value %} chip--active{% endif %}"
+                      data-option="strain"
+                      data-value="{{ strain_value }}"
+                      aria-pressed="{% if section.settings.default_strain == strain_value %}true{% else %}false{% endif %}">
+                <span class="chip__label">{{ strain_display }}</span>
+              </button>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Mix Strain Selection (Hidden by default) -->
+      <div class="custom-builder__step custom-builder__step--hidden" data-step="mix">
+        <h3 class="custom-builder__step-title">{{ section.settings.mix_heading | default: 'Choose your combination' }}</h3>
+        <div class="mix-selection">
+          <div class="mix-strain">
+            <label class="mix-strain__label">Strain A (½)</label>
+            <div class="chip-group" data-option-group="strain-a">
+              {% for strain_option in strain_options %}
+                {% assign strain_parts = strain_option | split: '|' %}
+                {% if strain_parts.size >= 2 and strain_parts[1] != 'mix' %}
+                  {% assign strain_display = strain_parts[0] %}
+                  {% assign strain_value = strain_parts[1] %}
+                  
+                  <button type="button" 
+                          class="chip"
+                          data-option="strain-a"
+                          data-value="{{ strain_value }}"
+                          aria-pressed="false">
+                    <span class="chip__label">{{ strain_display }}</span>
+                  </button>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          
+          <div class="mix-strain">
+            <label class="mix-strain__label">Strain B (½)</label>
+            <div class="chip-group" data-option-group="strain-b">
+              {% for strain_option in strain_options %}
+                {% assign strain_parts = strain_option | split: '|' %}
+                {% if strain_parts.size >= 2 and strain_parts[1] != 'mix' %}
+                  {% assign strain_display = strain_parts[0] %}
+                  {% assign strain_value = strain_parts[1] %}
+                  
+                  <button type="button" 
+                          class="chip"
+                          data-option="strain-b"
+                          data-value="{{ strain_value }}"
+                          aria-pressed="false">
+                    <span class="chip__label">{{ strain_display }}</span>
+                  </button>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ice Selection -->
+      <div class="custom-builder__step" data-step="ice">
+        <h3 class="custom-builder__step-title">Ice Level</h3>
+        <div class="chip-group" data-option-group="ice">
+          <button type="button" class="chip chip--active" data-option="ice" data-value="Regular Ice" aria-pressed="true">
+            <span class="chip__label">Regular Ice</span>
+          </button>
+          <button type="button" class="chip" data-option="ice" data-value="Light Ice" aria-pressed="false">
+            <span class="chip__label">Light Ice</span>
+          </button>
+          <button type="button" class="chip" data-option="ice" data-value="No Ice" aria-pressed="false">
+            <span class="chip__label">No Ice</span>
+          </button>
+          <button type="button" class="chip" data-option="ice" data-value="Extra Ice" aria-pressed="false">
+            <span class="chip__label">Extra Ice</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Flavor Selection -->
+      <div class="custom-builder__step" data-step="flavors">
+        <h3 class="custom-builder__step-title">{{ section.settings.flavor_heading | default: 'Choose flavors & pumps' }}</h3>
+        {% if section.settings.pump_info != blank %}
+          <div class="pump-info">{{ section.settings.pump_info }}</div>
+        {% endif %}
+        
+        <div class="flavor-grid">
+          {% assign flavor_options = section.settings.flavor_options | split: '\n' %}
+          {% for flavor in flavor_options %}
+            {% unless flavor == blank %}
+              <div class="flavor-pump">
+                <label class="flavor-pump__label">{{ flavor }}</label>
+                <div class="flavor-pump__controls">
+                  <button type="button" class="flavor-pump__decrease" data-flavor="{{ flavor | handle }}" aria-label="Decrease {{ flavor }}">-</button>
+                  <input type="number" 
+                         name="flavor_{{ flavor | handle }}" 
+                         value="0" 
+                         min="0" 
+                         max="12" 
+                         class="flavor-pump__input"
+                         data-flavor="{{ flavor | handle }}"
+                         readonly>
+                  <button type="button" class="flavor-pump__increase" data-flavor="{{ flavor | handle }}" aria-label="Increase {{ flavor }}">+</button>
+                </div>
+              </div>
+            {% endunless %}
+          {% endfor %}
+        </div>
+        
+        <div class="pump-summary">
+          <div class="pump-counter">
+            <span class="pump-counter__label">Pumps used:</span>
+            <span class="pump-counter__current" data-pump-count>0</span>
+            <span class="pump-counter__divider">/</span>
+            <span class="pump-counter__max" data-pump-limit>4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Special Requests -->
+      <div class="custom-builder__step" data-step="notes">
+        <h3 class="custom-builder__step-title">{{ section.settings.comment_heading | default: 'Special requests' }}</h3>
+        <textarea name="notes" 
+                  class="custom-builder__textarea"
+                  placeholder="{{ section.settings.comment_placeholder | default: 'Any special requests or modifications? We\'ll do our best!' }}"
+                  rows="3"></textarea>
+      </div>
+
+      <!-- Order Summary & Add to Cart -->
+      <div class="custom-builder__summary">
+        <div class="order-summary">
+          <div class="order-summary__details" data-order-summary>
+            <div class="order-summary__item">
+              <span>Custom Kratom Tea</span>
+              <span data-item-price>${{ product.price | money_without_currency }}</span>
+            </div>
+          </div>
+          
+          <div class="order-summary__total">
+            <span class="order-summary__total-label">{{ section.settings.button_prefix | default: 'Your total:' }}</span>
+            <span class="order-summary__total-price" data-total-price>${{ product.price | money_without_currency }}</span>
+          </div>
+          
+          <button type="submit" class="order-summary__add-to-cart btn btn--primary btn--large">
+            <span data-button-text>{{ section.settings.button_label | default: 'Add to cart' }}</span>
+          </button>
+          
+          <div class="order-summary__status" data-status-message></div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .custom-builder {
+    padding: 2rem 0;
+  }
+
+  .custom-builder__container {
+    max-width: 120rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .custom-builder__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .custom-builder__title {
+    font-size: 3.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .custom-builder__description {
+    font-size: 1.6rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .custom-builder__price {
+    font-size: 2rem;
+    color: #ff6900;
+    font-weight: bold;
+  }
+
+  .custom-builder__step {
+    margin-bottom: 4rem;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 1rem;
+  }
+
+  .custom-builder__step--hidden {
+    display: none;
+  }
+
+  .custom-builder__step-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .chip {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 2.5rem;
+    padding: 1rem 2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .chip:hover {
+    border-color: #ff6900;
+    background: #fff5f0;
+  }
+
+  .chip--active {
+    background: #ff6900;
+    border-color: #ff6900;
+    color: white;
+  }
+
+  .mix-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .mix-strain__label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .flavor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .flavor-pump {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    border: 1px solid #ddd;
+  }
+
+  .flavor-pump__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .flavor-pump__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .flavor-pump__decrease,
+  .flavor-pump__increase {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.6rem;
+    font-weight: bold;
+  }
+
+  .flavor-pump__decrease:hover,
+  .flavor-pump__increase:hover {
+    background: #ff6900;
+    color: white;
+    border-color: #ff6900;
+  }
+
+  .flavor-pump__input {
+    width: 4rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 0.4rem;
+    padding: 0.5rem;
+    font-size: 1.4rem;
+  }
+
+  .pump-summary {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0.8rem;
+    border: 1px solid #ddd;
+  }
+
+  .pump-counter {
+    font-size: 1.6rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .pump-counter__current {
+    color: #ff6900;
+    font-weight: bold;
+  }
+
+  .custom-builder__textarea {
+    width: 100%;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 0.8rem;
+    font-size: 1.4rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .custom-builder__summary {
+    background: white;
+    padding: 3rem;
+    border-radius: 1rem;
+    border: 2px solid #ff6900;
+    margin-top: 4rem;
+  }
+
+  .order-summary__details {
+    margin-bottom: 2rem;
+  }
+
+  .order-summary__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .order-summary__total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 1.5rem 0;
+    border-top: 2px solid #ff6900;
+    margin-bottom: 2rem;
+  }
+
+  .order-summary__total-price {
+    color: #ff6900;
+  }
+
+  .order-summary__add-to-cart {
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+
+  .order-summary__status {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .order-summary__status--success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .order-summary__status--error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .pump-info {
+    background: #e8f4fd;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    margin-bottom: 2rem;
+    font-size: 1.4rem;
+    color: #0c5460;
+  }
+
+  @media (max-width: 768px) {
+    .custom-builder__container {
+      padding: 0 1rem;
+    }
+
+    .custom-builder__title {
+      font-size: 2.4rem;
+    }
+
+    .mix-selection {
+      grid-template-columns: 1fr;
+    }
+
+    .flavor-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .chip-group {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('[data-product-form]');
+  if (!form) return;
+
+  // Variant mapping for sizes
+  const variantIdBySize = {
+    {% for variant in product.variants %}
+      "{{ variant.option1 }}": {{ variant.id }},
+    {% endfor %}
+  };
+
+  // State management
+  let selectedSize = '{{ section.settings.default_size }}';
+  let selectedStrain = '{{ section.settings.default_strain }}';
+  let selectedStrainA = '';
+  let selectedStrainB = '';
+  let selectedIce = 'Regular Ice';
+  let isMix = false;
+  let pumpLimit = 4;
+  let currentPumps = 0;
+
+  // DOM elements
+  const variantIdInput = form.querySelector('[data-variant-id]');
+  const priceDisplay = form.querySelector('[data-price-display]');
+  const totalPriceDisplay = form.querySelector('[data-total-price]');
+  const itemPriceDisplay = form.querySelector('[data-item-price]');
+  const pumpCountDisplay = form.querySelector('[data-pump-count]');
+  const pumpLimitDisplay = form.querySelector('[data-pump-limit]');
+  const mixStep = form.querySelector('[data-step="mix"]');
+  const statusMessage = form.querySelector('[data-status-message]');
+  const buttonText = form.querySelector('[data-button-text]');
+
+  // Initialize
+  updateVariantAndPrice();
+  updateHiddenInputs();
+
+  // Chip selection handlers
+  form.addEventListener('click', function(e) {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+
+    const option = chip.dataset.option;
+    const value = chip.dataset.value;
+
+    // Handle different option types
+    switch (option) {
+      case 'size':
+        handleSizeSelection(chip, value);
+        break;
+      case 'strain':
+        handleStrainSelection(chip, value);
+        break;
+      case 'strain-a':
+        handleStrainASelection(chip, value);
+        break;
+      case 'strain-b':
+        handleStrainBSelection(chip, value);
+        break;
+      case 'ice':
+        handleIceSelection(chip, value);
+        break;
+    }
+  });
+
+  // Flavor pump handlers
+  form.addEventListener('click', function(e) {
+    if (e.target.matches('.flavor-pump__increase')) {
+      const flavor = e.target.dataset.flavor;
+      const input = form.querySelector(`[data-flavor="${flavor}"]`);
+      const currentValue = parseInt(input.value);
+      if (currentPumps < pumpLimit) {
+        input.value = currentValue + 1;
+        updatePumpCount();
+        updateHiddenInputs();
+      }
+    }
+
+    if (e.target.matches('.flavor-pump__decrease')) {
+      const flavor = e.target.dataset.flavor;
+      const input = form.querySelector(`[data-flavor="${flavor}"]`);
+      const currentValue = parseInt(input.value);
+      if (currentValue > 0) {
+        input.value = currentValue - 1;
+        updatePumpCount();
+        updateHiddenInputs();
+      }
+    }
+  });
+
+  // Notes handler
+  form.addEventListener('input', function(e) {
+    if (e.target.name === 'notes') {
+      updateHiddenInputs();
+    }
+  });
+
+  function handleSizeSelection(chip, value) {
+    // Update active state
+    form.querySelectorAll('[data-option="size"]').forEach(c => {
+      c.classList.remove('chip--active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    chip.classList.add('chip--active');
+    chip.setAttribute('aria-pressed', 'true');
+
+    selectedSize = value;
+    pumpLimit = parseInt(chip.dataset.pumps) || 4;
+    
+    updateVariantAndPrice();
+    updatePumpLimit();
+    updateHiddenInputs();
+  }
+
+  function handleStrainSelection(chip, value) {
+    // Update active state
+    form.querySelectorAll('[data-option="strain"]').forEach(c => {
+      c.classList.remove('chip--active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    chip.classList.add('chip--active');
+    chip.setAttribute('aria-pressed', 'true');
+
+    if (value === 'mix') {
+      isMix = true;
+      selectedStrain = '';
+      mixStep.classList.remove('custom-builder__step--hidden');
+    } else {
+      isMix = false;
+      selectedStrain = value;
+      selectedStrainA = '';
+      selectedStrainB = '';
+      mixStep.classList.add('custom-builder__step--hidden');
+      
+      // Clear mix selections
+      form.querySelectorAll('[data-option="strain-a"], [data-option="strain-b"]').forEach(c => {
+        c.classList.remove('chip--active');
+        c.setAttribute('aria-pressed', 'false');
+      });
+    }
+
+    updateHiddenInputs();
+  }
+
+  function handleStrainASelection(chip, value) {
+    // Update active state
+    form.querySelectorAll('[data-option="strain-a"]').forEach(c => {
+      c.classList.remove('chip--active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    chip.classList.add('chip--active');
+    chip.setAttribute('aria-pressed', 'true');
+
+    selectedStrainA = value;
+    updateHiddenInputs();
+  }
+
+  function handleStrainBSelection(chip, value) {
+    // Prevent same strain selection
+    if (value === selectedStrainA) {
+      showStatus('Please select different strains for A and B', 'error');
+      return;
+    }
+
+    // Update active state
+    form.querySelectorAll('[data-option="strain-b"]').forEach(c => {
+      c.classList.remove('chip--active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    chip.classList.add('chip--active');
+    chip.setAttribute('aria-pressed', 'true');
+
+    selectedStrainB = value;
+    updateHiddenInputs();
+  }
+
+  function handleIceSelection(chip, value) {
+    // Update active state
+    form.querySelectorAll('[data-option="ice"]').forEach(c => {
+      c.classList.remove('chip--active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    chip.classList.add('chip--active');
+    chip.setAttribute('aria-pressed', 'true');
+
+    selectedIce = value;
+    updateHiddenInputs();
+  }
+
+  function updateVariantAndPrice() {
+    const variantId = variantIdBySize[selectedSize];
+    if (variantId) {
+      variantIdInput.value = variantId;
+      
+      // Update price displays
+      const priceChip = form.querySelector(`[data-value="${selectedSize}"]`);
+      if (priceChip) {
+        const price = priceChip.dataset.price;
+        if (priceDisplay) priceDisplay.textContent = '$' + price;
+        if (totalPriceDisplay) totalPriceDisplay.textContent = '$' + price;
+        if (itemPriceDisplay) itemPriceDisplay.textContent = '$' + price;
+      }
+    }
+  }
+
+  function updatePumpLimit() {
+    if (pumpLimitDisplay) {
+      pumpLimitDisplay.textContent = pumpLimit;
+    }
+    
+    // Reset pumps if over limit
+    const flavorInputs = form.querySelectorAll('.flavor-pump__input');
+    let totalPumps = 0;
+    flavorInputs.forEach(input => {
+      totalPumps += parseInt(input.value);
+    });
+    
+    if (totalPumps > pumpLimit) {
+      flavorInputs.forEach(input => input.value = '0');
+      updatePumpCount();
+    }
+  }
+
+  function updatePumpCount() {
+    const flavorInputs = form.querySelectorAll('.flavor-pump__input');
+    currentPumps = 0;
+    flavorInputs.forEach(input => {
+      currentPumps += parseInt(input.value);
+    });
+    
+    if (pumpCountDisplay) {
+      pumpCountDisplay.textContent = currentPumps;
+    }
+  }
+
+  function updateHiddenInputs() {
+    // Update strain inputs
+    form.querySelector('[data-strain]').value = selectedStrain;
+    form.querySelector('[data-mix]').value = isMix ? 'Yes' : 'No';
+    form.querySelector('[data-strain-a]').value = selectedStrainA;
+    form.querySelector('[data-strain-b]').value = selectedStrainB;
+    form.querySelector('[data-ice]').value = selectedIce;
+
+    // Update flavors
+    const flavorInputs = form.querySelectorAll('.flavor-pump__input');
+    const flavors = [];
+    flavorInputs.forEach(input => {
+      const quantity = parseInt(input.value);
+      if (quantity > 0) {
+        const flavorName = input.dataset.flavor.replace(/-/g, ' ');
+        flavors.push(`${flavorName}:${quantity}`);
+      }
+    });
+    form.querySelector('[data-flavors]').value = flavors.join(' | ');
+
+    // Update notes
+    const notesTextarea = form.querySelector('[name="notes"]');
+    form.querySelector('[data-notes]').value = notesTextarea ? notesTextarea.value : '';
+  }
+
+  function showStatus(message, type) {
+    if (!statusMessage) return;
+    
+    statusMessage.textContent = message;
+    statusMessage.className = `order-summary__status order-summary__status--${type}`;
+    
+    setTimeout(() => {
+      statusMessage.textContent = '';
+      statusMessage.className = 'order-summary__status';
+    }, 5000);
+  }
+
+  function validateForm() {
+    // Check size selection
+    if (!selectedSize) {
+      showStatus('Please select a size', 'error');
+      return false;
+    }
+
+    // Check strain selection
+    if (!isMix && !selectedStrain) {
+      showStatus('Please select a strain', 'error');
+      return false;
+    }
+
+    if (isMix && (!selectedStrainA || !selectedStrainB)) {
+      showStatus('Please select both strains for your mix', 'error');
+      return false;
+    }
+
+    // Check pump limit for non-gallon sizes
+    if (selectedSize !== 'Gallon' && currentPumps > pumpLimit) {
+      showStatus(`Too many pumps! Maximum ${pumpLimit} for ${selectedSize}`, 'error');
+      return false;
+    }
+
+    return true;
+  }
+
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    // Update button state
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = buttonText.textContent;
+    buttonText.textContent = '{{ section.settings.button_loading | default: "Adding…" }}';
+    submitButton.disabled = true;
+
+    // Update hidden inputs one final time
+    updateHiddenInputs();
+
+    // The form will be submitted via AJAX by wtf-ajax-cart.js
+    // We just need to dispatch the event to trigger it
+    const formData = new FormData(form);
+    
+    fetch('/cart/add.js', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      buttonText.textContent = '{{ section.settings.button_success | default: "Added!" }}';
+      showStatus('Added to cart successfully!', 'success');
+      
+      // Reset button after delay
+      setTimeout(() => {
+        buttonText.textContent = originalText;
+        submitButton.disabled = false;
+      }, 2000);
+      
+      // Optionally redirect to cart
+      // window.location.href = '/cart';
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      buttonText.textContent = originalText;
+      submitButton.disabled = false;
+      showStatus('{{ section.settings.error_message | default: "Something went wrong. Please try again." }}', 'error');
+    });
+  });
+
+  // Initialize pump count
+  updatePumpCount();
+});
+</script>
+
+{% schema %}
+{
+  "name": "Custom Kratom Tea Builder",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Custom Kratom Tea"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "price_prefix",
+      "label": "Price Prefix",
+      "default": "Starting at"
+    },
+    {
+      "type": "text",
+      "id": "button_prefix",
+      "label": "Button Prefix",
+      "default": "Your total:"
+    },
+    {
+      "type": "textarea",
+      "id": "size_options",
+      "label": "Size Options",
+      "info": "Format: Name|Display|Price|Pumps (one per line)",
+      "default": "Medium|12 oz · $8.00|8.00|4\nLarge|16 oz · $12.00|12.00|6\nGallon|128 oz · $45.00|45.00|custom"
+    },
+    {
+      "type": "text",
+      "id": "default_size",
+      "label": "Default Size",
+      "default": "Medium"
+    },
+    {
+      "type": "textarea",
+      "id": "strain_options",
+      "label": "Strain Options",
+      "info": "Format: Display|Value (one per line)",
+      "default": "Green Strain|Green\nRed Strain|Red\nWhite Strain|White\nYellow Strain|Yellow\nMix Strains|mix"
+    },
+    {
+      "type": "text",
+      "id": "default_strain",
+      "label": "Default Strain",
+      "default": "Green"
+    },
+    {
+      "type": "textarea",
+      "id": "flavor_options",
+      "label": "Flavor Options",
+      "info": "One flavor per line",
+      "default": "Lemon\nLime\nOrange\nBlood orange\nStrawberry\nRaspberry\nBlueberry\nCoconut\nMango\nWatermelon\nSimple syrup\nSour apple\nDragon fruit\nBlackberry\nS'mores\nPumpkin spice\nCranberry\nGrenadine\nLavender\nChocolate\nCaramel\nMaple\nAgave\nHazelnut\nRose\nPassion fruit\nHibiscus"
+    },
+    {
+      "type": "text",
+      "id": "size_heading",
+      "label": "Size Heading",
+      "default": "Choose your size"
+    },
+    {
+      "type": "text",
+      "id": "strain_heading",
+      "label": "Strain Heading",
+      "default": "Choose your strain"
+    },
+    {
+      "type": "text",
+      "id": "mix_heading",
+      "label": "Mix Heading",
+      "default": "Choose your combination"
+    },
+    {
+      "type": "text",
+      "id": "flavor_heading",
+      "label": "Flavor Heading",
+      "default": "Choose flavors & pumps"
+    },
+    {
+      "type": "richtext",
+      "id": "pump_info",
+      "label": "Pump Information",
+      "default": "<p><strong>Pump system:</strong> Medium = 4 pumps, Large = 6 pumps, Gallon = Custom.<br><strong>How it works:</strong> Pumps divide evenly unless otherwise noted.</p>"
+    },
+    {
+      "type": "text",
+      "id": "comment_heading",
+      "label": "Comment Heading",
+      "default": "Special requests"
+    },
+    {
+      "type": "text",
+      "id": "comment_placeholder",
+      "label": "Comment Placeholder",
+      "default": "Any special requests or modifications? We'll do our best!"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "button_loading",
+      "label": "Button Loading Text",
+      "default": "Adding…"
+    },
+    {
+      "type": "text",
+      "id": "button_success",
+      "label": "Button Success Text",
+      "default": "Added!"
+    },
+    {
+      "type": "text",
+      "id": "error_message",
+      "label": "Error Message",
+      "default": "Something went wrong. Please try again."
+    }
+  ]
+}
+{% endschema %}

@@ -21,6 +21,8 @@
                     {% if block.settings.item_image %}
                       <img src="{{ block.settings.item_image | image_url: width: 80 }}" 
                            alt="{{ block.settings.title }}" 
+                           width="80"
+                           height="80"
                            loading="lazy" />
                     {% else %}
                       {{ block.settings.fallback_emoji | default: '🍃' }}

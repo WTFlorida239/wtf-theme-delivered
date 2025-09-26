@@ -27,6 +27,8 @@
                     {% if block.settings.category_image %}
                       <img src="{{ block.settings.category_image | image_url: width: 120 }}" 
                            alt="{{ block.settings.title }}" 
+                           width="120"
+                           height="120"
                            loading="lazy" />
                     {% else %}
                       {{ block.settings.fallback_emoji | default: '🍃' }}

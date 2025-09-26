@@ -67,7 +67,7 @@
                 <!-- Featured Image -->
                 {% if article.image %}
                   <div class="wtf-post-image" style="position: relative; height: 30rem; overflow: hidden;">
-                    <img src="{{ article.image | image_url: width: 800 }}" alt="{{ article.image.alt | escape }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                    <img src="{{ article.image | image_url: width: 800 }}" alt="{{ article.image.alt | escape }}" width="800" height="400" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                     
                     <!-- Category Badge -->
                     {% if article.tags.size > 0 %}
@@ -199,7 +199,7 @@
       </div>
 
       <!-- Recent Posts -->
-      {% assign recent_articles = blog.articles | limit: 5 %}
+      {% assign recent_articles = blog.articles | slice: 0, 5 %}
       {% if recent_articles.size > 0 %}
         <div class="wtf-recent-posts" style="background: #fff; padding: 3rem; border-radius: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 4rem;">
           <h3 style="font-size: 2rem; font-weight: 700; margin-bottom: 3rem; color: #1a1a1a;">Recent Articles</h3>
