@@ -167,8 +167,9 @@
           "type": "quick_item",
           "settings": {
             "title": "Delta-9 Shot",
-            "description": "5mg THC shot",
-            "price": "15.00",
+            "description": "50mg THC shot",
+            "price": "5.00",
+            "item_image": "shopify://shop_images/50mgD9TropicalPacket.jpg",
             "fallback_emoji": "🍃",
             "product_id": ""
           }
