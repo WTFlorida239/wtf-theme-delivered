@@ -18,6 +18,7 @@
     "store_state": "Florida",
     "store_zip": "33904",
     "store_hours": "{\n  \"heading\": \"WTF Store Hours\",\n  \"schedule\": [\n    {\n      \"day\": \"Sunday - Thursday\",\n      \"hours\": \"8:00 AM - 8:00 PM\"\n    },\n    {\n      \"day\": \"Friday & Saturday\",\n      \"hours\": \"8:00 AM - 10:00 PM\"\n    }\n  ],\n  \"note\": \"Please check our socials for the most up-to-date holiday or seasonal hours.\"\n}",
+    "thc_drinks_variant_id": -6,
     "enable_console_logs": true,
     "google_analytics_id": "G-5TC3FGDNKK",
     "facebook_pixel_id": "1418044596222679",
