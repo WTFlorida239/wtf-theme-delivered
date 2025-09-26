@@ -1,14 +1,84 @@
-{%- comment -%} THC Drinks – Order Page {%- endcomment -%}
-{% section 'enhanced-drink-builder' %}
-{% render 'wtf-drink-data' %}
-{%- capture items_json -%}{% render 'wtf-delta9-data' %}{%- endcapture -%}
-{%- # theme-check-disable UnknownFilter -%}
-{% assign delta_items = items_json | parse_json %}
-{%- # theme-check-enable UnknownFilter -%}
-{% render 'wtf-collection-cards',
-  title: 'THC Drinks',
-  subtitle: 'Premium cannabis beverages - Large size and Gallons only',
-  items: delta_items,
-  color: 'thc',
-  back_url: routes.root_url
-%}
+{% comment %}
+  THC Drinks Builder - 4 Rotating Flavors (Easily Editable)
+  Ice options, comments section, syncs with THC shots
+{% endcomment %}
+
+{% assign thc_flavors = 'Tropical Mango,Berry Blast,Citrus Punch,Grape Escape' | split: ',' %}
+
+<div class="thc-drink-builder" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+  <header style="text-align: center; margin-bottom: 4rem;">
+    <a href="{{ routes.root_url }}" style="display: inline-block; margin-bottom: 2rem; padding: 1rem 2rem; border-radius: 2.5rem; border: 2px solid #ff6600; color: #ff6600; text-decoration: none; font-weight: 700;">← Back to Menu</a>
+    <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem;">THC Drinks</h1>
+    <p style="font-size: 1.8rem; color: #4a4a4a;">Premium cannabis beverages with rotating flavors</p>
+  </header>
+
+  <form class="drink-customizer" style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+    
+    <!-- 4 Rotating Flavors -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Current Rotating Flavors</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr)); gap: 2rem;">
+        {% for flavor in thc_flavors %}
+          <label class="thc-flavor-option" style="cursor: pointer;">
+            <input type="radio" name="thc_flavor" value="{{ flavor }}" {% if forloop.first %}checked{% endif %} style="display: none;">
+            <div style="background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%); color: #fff; padding: 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+              <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">{{ flavor }}</h4>
+              <p style="opacity: 0.9; font-size: 1.3rem;">House-made cannabis beverage</p>
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Size Selection -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Select Size</h3>
+      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+        <label class="size-option" style="cursor: pointer;">
+          <input type="radio" name="size" value="Large (20oz)" style="display: none;" checked>
+          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center;">
+            <h4 style="font-size: 1.8rem; font-weight: 700;">Large</h4>
+            <p style="color: #666;">20oz - $25.00</p>
+          </div>
+        </label>
+        <label class="size-option" style="cursor: pointer;">
+          <input type="radio" name="size" value="Gallon" style="display: none;">
+          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center;">
+            <h4 style="font-size: 1.8rem; font-weight: 700;">Gallon</h4>
+            <p style="color: #666;">128oz - $85.00</p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Ice Options -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Ice Preference</h3>
+      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+        {% assign ice_options = 'Regular Ice,Light Ice,Extra Ice,No Ice' | split: ',' %}
+        {% for ice in ice_options %}
+          <label class="ice-option" style="cursor: pointer;">
+            <input type="radio" name="ice" value="{{ ice }}" {% if ice == 'Regular Ice' %}checked{% endif %} style="display: none;">
+            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem 2.5rem; border-radius: 1.2rem; text-align: center;">
+              <span style="font-size: 1.5rem; font-weight: 600;">{{ ice }}</span>
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Special Instructions</h3>
+      <textarea name="comments" placeholder="Any special requests or modifications..." style="width: 100%; min-height: 12rem; padding: 2rem; border: 2px solid #e9ecef; border-radius: 1.2rem; font-size: 1.5rem; resize: vertical; font-family: inherit;"></textarea>
+    </div>
+
+    <!-- Order Button -->
+    <div style="background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff;">
+      <h3 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 2rem;">Ready to Order?</h3>
+      <p style="font-size: 1.8rem; margin-bottom: 3rem;">Must be 21+ with valid ID</p>
+      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: #fff; color: #9c27b0; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem;">📞 Call (239) 955-0314</a>
+    </div>
+  </form>
+</div>

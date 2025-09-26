@@ -1,128 +1,227 @@
 {% comment %}
-  Kratom Teas Page - Professional Product Selection
-  Simplified template that works reliably
+  Custom Kratom Tea Builder - Professional ordering interface
+  24-26 flavors, creamer options, ice options, comments section
 {% endcomment %}
 
-<div class="page-width" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+<div class="custom-drink-builder" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
   <header style="text-align: center; margin-bottom: 4rem;">
     <a href="{{ routes.root_url }}" style="display: inline-block; margin-bottom: 2rem; padding: 1rem 2rem; border-radius: 2.5rem; border: 2px solid #ff6600; color: #ff6600; text-decoration: none; font-weight: 700; transition: all 0.3s ease;">
       ← Back to Menu
     </a>
-    <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Kratom Teas</h1>
-    <p style="font-size: 1.8rem; color: #4a4a4a; max-width: 60rem; margin: 0 auto;">Green, Red, White & Yellow strains with premium flavorings</p>
+    <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem;">Custom Kratom Teas</h1>
+    <p style="font-size: 1.8rem; color: #4a4a4a;">Build your perfect kratom tea with premium flavors and customizations</p>
   </header>
 
-  <div class="kratom-products-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr)); gap: 3rem; margin-bottom: 4rem;">
+  <form class="drink-customizer" style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
     
-    <!-- Green Kratom -->
-    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
-      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border-radius: 50%; color: #fff;">
-        🍃
+    <!-- Kratom Strain Selection -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Kratom Strain</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr)); gap: 2rem;">
+        <label class="strain-option" style="display: block; cursor: pointer;">
+          <input type="radio" name="strain" value="Green Kratom" style="display: none;" checked>
+          <div style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🍃</div>
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Green Kratom</h4>
+            <p style="opacity: 0.9;">Energizing & mood-lifting</p>
+          </div>
+        </label>
+        <label class="strain-option" style="display: block; cursor: pointer;">
+          <input type="radio" name="strain" value="Red Kratom" style="display: none;">
+          <div style="background: linear-gradient(135deg, #f44336 0%, #ef5350 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🌿</div>
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Red Kratom</h4>
+            <p style="opacity: 0.9;">Relaxing & calming</p>
+          </div>
+        </label>
+        <label class="strain-option" style="display: block; cursor: pointer;">
+          <input type="radio" name="strain" value="White Kratom" style="display: none;">
+          <div style="background: linear-gradient(135deg, #607d8b 0%, #78909c 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🍵</div>
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">White Kratom</h4>
+            <p style="opacity: 0.9;">Stimulating & focus-enhancing</p>
+          </div>
+        </label>
+        <label class="strain-option" style="display: block; cursor: pointer;">
+          <input type="radio" name="strain" value="Yellow Kratom" style="display: none;">
+          <div style="background: linear-gradient(135deg, #ffc107 0%, #ffca28 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">☀️</div>
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Yellow Kratom</h4>
+            <p style="opacity: 0.9;">Balanced & smooth</p>
+          </div>
+        </label>
       </div>
-      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">Green Kratom</h3>
-      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Energizing and mood-lifting strain</p>
-      <p style="font-size: 1.3rem; color: #4caf50; font-weight: 600; text-transform: uppercase; background: rgba(76, 175, 80, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
-      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
-        Order Now
-      </a>
     </div>
 
-    <!-- Red Kratom -->
-    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
-      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #f44336 0%, #ef5350 100%); border-radius: 50%; color: #fff;">
-        🌿
+    <!-- Size Selection -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Select Size</h3>
+      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+        <label class="size-option" style="cursor: pointer;">
+          <input type="radio" name="size" value="Medium (16oz)" style="display: none;" checked>
+          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Medium</h4>
+            <p style="color: #666; margin-bottom: 1rem;">16oz</p>
+            <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">$8.00</p>
+          </div>
+        </label>
+        <label class="size-option" style="cursor: pointer;">
+          <input type="radio" name="size" value="Large (20oz)" style="display: none;">
+          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Large</h4>
+            <p style="color: #666; margin-bottom: 1rem;">20oz</p>
+            <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">$10.00</p>
+          </div>
+        </label>
+        <label class="size-option" style="cursor: pointer;">
+          <input type="radio" name="size" value="Gallon" style="display: none;">
+          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease;">
+            <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">Gallon</h4>
+            <p style="color: #666; margin-bottom: 1rem;">128oz</p>
+            <p style="font-size: 1.6rem; font-weight: 700; color: #ff6600;">$35.00</p>
+          </div>
+        </label>
       </div>
-      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">Red Kratom</h3>
-      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Relaxing and calming strain</p>
-      <p style="font-size: 1.3rem; color: #f44336; font-weight: 600; text-transform: uppercase; background: rgba(244, 67, 54, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
-      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
-        Order Now
-      </a>
     </div>
 
-    <!-- White Kratom -->
-    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
-      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #607d8b 0%, #78909c 100%); border-radius: 50%; color: #fff;">
-        🍵
+    <!-- 26 Flavor Selection -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Flavors (Select up to 3)</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem;">
+        {% assign flavors = 'Mango,Strawberry,Blue Razz,Watermelon,Pineapple,Peach,Lemon,Lime,Orange,Grape,Cherry,Apple,Coconut,Vanilla,Chocolate,Caramel,Banana,Kiwi,Passion Fruit,Guava,Pomegranate,Raspberry,Blackberry,Green Apple,Tropical Punch,Cotton Candy' | split: ',' %}
+        {% for flavor in flavors %}
+          <label class="flavor-option" style="cursor: pointer;">
+            <input type="checkbox" name="flavors" value="{{ flavor }}" style="display: none;">
+            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
+              <span style="font-size: 1.5rem; font-weight: 600;">{{ flavor }}</span>
+            </div>
+          </label>
+        {% endfor %}
       </div>
-      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">White Kratom</h3>
-      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Stimulating and focus-enhancing strain</p>
-      <p style="font-size: 1.3rem; color: #607d8b; font-weight: 600; text-transform: uppercase; background: rgba(96, 125, 139, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
-      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
-        Order Now
-      </a>
     </div>
 
-    <!-- Yellow Kratom -->
-    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
-      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #ffc107 0%, #ffca28 100%); border-radius: 50%; color: #fff;">
-        ☀️
+    <!-- Creamer Options -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Creamer Options</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.5rem;">
+        {% assign creamers = 'None,Whole Milk,Almond Milk,Coconut Milk,Oat Milk,Soy Milk,Heavy Cream,Half & Half,Vanilla Creamer,Caramel Creamer' | split: ',' %}
+        {% for creamer in creamers %}
+          <label class="creamer-option" style="cursor: pointer;">
+            <input type="radio" name="creamer" value="{{ creamer }}" {% if creamer == 'None' %}checked{% endif %} style="display: none;">
+            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
+              <span style="font-size: 1.4rem; font-weight: 600;">{{ creamer }}</span>
+            </div>
+          </label>
+        {% endfor %}
       </div>
-      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">Yellow Kratom</h3>
-      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Balanced and smooth strain</p>
-      <p style="font-size: 1.3rem; color: #ffc107; font-weight: 600; text-transform: uppercase; background: rgba(255, 193, 7, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
-      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
-        Order Now
-      </a>
     </div>
-  </div>
 
-  <!-- Call to Action Section -->
-  <div style="background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff; margin-top: 4rem;">
-    <h2 style="font-size: 3.2rem; font-weight: 900; margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Ready to Order?</h2>
-    <p style="font-size: 1.8rem; margin-bottom: 2.5rem; opacity: 0.95;">Call us now or visit our Cape Coral location</p>
-    <div style="display: flex; gap: 2rem; justify-content: center; align-items: center; flex-wrap: wrap;">
-      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.8rem 3.6rem; background: #fff; color: #ff6600; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
-        📞 Call (239) 955-0314
-      </a>
-      <a href="{{ routes.root_url }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.8rem 3.6rem; background: transparent; color: #fff; text-decoration: none; border: 2px solid #fff; border-radius: 2.4rem; font-weight: 700; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease;">
-        🏠 Visit Location
-      </a>
+    <!-- Ice Options -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Ice Preference</h3>
+      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+        {% assign ice_options = 'Regular Ice,Light Ice,Extra Ice,No Ice' | split: ',' %}
+        {% for ice in ice_options %}
+          <label class="ice-option" style="cursor: pointer;">
+            <input type="radio" name="ice" value="{{ ice }}" {% if ice == 'Regular Ice' %}checked{% endif %} style="display: none;">
+            <div style="background: #f8f9fa; border: 2px solid #e9ecef; padding: 1.5rem 2.5rem; border-radius: 1.2rem; text-align: center; transition: all 0.3s ease;">
+              <span style="font-size: 1.5rem; font-weight: 600;">{{ ice }}</span>
+            </div>
+          </label>
+        {% endfor %}
+      </div>
     </div>
-  </div>
+
+    <!-- Comments Section -->
+    <div class="customizer-section" style="margin-bottom: 4rem;">
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Special Instructions</h3>
+      <textarea name="comments" placeholder="Any special requests or modifications..." style="width: 100%; min-height: 12rem; padding: 2rem; border: 2px solid #e9ecef; border-radius: 1.2rem; font-size: 1.5rem; resize: vertical; font-family: inherit;"></textarea>
+    </div>
+
+    <!-- Order Summary & Submit -->
+    <div style="background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff;">
+      <h3 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 2rem;">Ready to Order Your Custom Kratom Tea?</h3>
+      <p style="font-size: 1.8rem; margin-bottom: 3rem; opacity: 0.95;">Call us now to place your order with all your customizations</p>
+      <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+        <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: #fff; color: #ff6600; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
+          📞 Call (239) 955-0314
+        </a>
+        <button type="button" onclick="copyOrderDetails()" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: transparent; color: #fff; border: 2px solid #fff; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; cursor: pointer;">
+          📋 Copy Order Details
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
 
 <style>
-  .product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-    border-color: #ff6600;
+  .strain-option input:checked + div,
+  .size-option input:checked + div,
+  .flavor-option input:checked + div,
+  .creamer-option input:checked + div,
+  .ice-option input:checked + div {
+    border-color: #ff6600 !important;
+    background: #fff3e0 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(255, 102, 0, 0.2);
   }
 
-  .product-card a:hover {
+  .strain-option:hover div,
+  .size-option:hover div,
+  .flavor-option:hover div,
+  .creamer-option:hover div,
+  .ice-option:hover div {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 102, 0, 0.4);
-    background: linear-gradient(135deg, #e55a00 0%, #cc5200 100%);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+
+  .flavor-option input:checked + div {
+    background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%) !important;
+    color: #fff !important;
   }
 
   @media (max-width: 768px) {
-    .kratom-products-grid {
-      grid-template-columns: 1fr;
-      gap: 2rem;
+    .custom-drink-builder {
+      padding: 1rem !important;
+    }
+    
+    .drink-customizer {
+      padding: 2rem !important;
     }
     
     h1 {
       font-size: 3rem !important;
     }
     
-    .product-card {
-      padding: 2rem !important;
-    }
-    
-    .product-icon {
-      width: 6rem !important;
-      height: 6rem !important;
-      font-size: 3rem !important;
-    }
-    
-    div[style*="display: flex"] {
-      flex-direction: column !important;
-      gap: 1.5rem !important;
-    }
-    
-    div[style*="display: flex"] a {
-      width: 100% !important;
-      max-width: 30rem !important;
+    .customizer-section h3 {
+      font-size: 2rem !important;
     }
   }
 </style>
+
+<script>
+function copyOrderDetails() {
+  const strain = document.querySelector('input[name="strain"]:checked')?.value || '';
+  const size = document.querySelector('input[name="size"]:checked')?.value || '';
+  const flavors = Array.from(document.querySelectorAll('input[name="flavors"]:checked')).map(el => el.value);
+  const creamer = document.querySelector('input[name="creamer"]:checked')?.value || '';
+  const ice = document.querySelector('input[name="ice"]:checked')?.value || '';
+  const comments = document.querySelector('textarea[name="comments"]')?.value || '';
+
+  const orderDetails = `
+CUSTOM KRATOM TEA ORDER:
+Strain: ${strain}
+Size: ${size}
+Flavors: ${flavors.join(', ') || 'None selected'}
+Creamer: ${creamer}
+Ice: ${ice}
+Special Instructions: ${comments || 'None'}
+
+Call (239) 955-0314 to place this order!
+  `.trim();
+
+  navigator.clipboard.writeText(orderDetails).then(() => {
+    alert('Order details copied to clipboard! Call (239) 955-0314 to place your order.');
+  });
+}
+</script>
