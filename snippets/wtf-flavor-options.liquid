@@ -6,15 +6,15 @@
     - window.PUMP_LIMIT_BY_SIZE and current Size state (from the page/snippet)
 {%- endcomment -%}
 
-{%- assign _title = title | default: 'Choose Your Flavor(s)' -%}
-{%- assign _option_name = option_name | default: 'Flavor' -%}
-{%- assign _flavors = flavors | default: wtfKratomFlavors -%}
+{%- assign flavor_title = title | default: 'Choose Your Flavor(s)' -%}
+{%- assign flavor_option_name = option_name | default: 'Flavor' -%}
+{%- assign flavor_list = flavors | default: wtf_kratom_flavors -%}
 
 <div class="wtf-flavors">
-  <div class="wtf-label" style="font-weight:800;margin-bottom:8px">{{ _title }}</div>
+  <div class="wtf-label" style="font-weight:800;margin-bottom:8px">{{ flavor_title }}</div>
 
   <div class="wtf-row" style="display:flex;flex-wrap:wrap;gap:8px;">
-    {%- for f in _flavors -%}
+    {%- for f in flavor_list -%}
       <div
         class="wtf-flavor-pill"
         data-flavor="{{ f | escape }}"
@@ -23,7 +23,7 @@
         <button
           type="button"
           class="wtf-chip"
-          data-option="{{ _option_name }}"
+          data-option="{{ flavor_option_name }}"
           data-value="{{ f | escape }}"
           aria-pressed="false"
           style="background:#fff;border:0;padding:0 2px;cursor:pointer;font-weight:600;"

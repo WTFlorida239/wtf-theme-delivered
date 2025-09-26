@@ -38,7 +38,7 @@ Props:
           <img src="{{ image }}" alt="{{ title | default: product.title }}" width="320" height="320">
         {% elsif product.featured_image %}
           <!-- Otherwise use the product featured image -->
-          <img src="{{ product.featured_image | img_url: '600x' }}" alt="{{ title | default: product.title }}" width="320" height="320">
+          <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ title | default: product.title }}" width="320" height="320">
         {% endif %}
       </div>
 

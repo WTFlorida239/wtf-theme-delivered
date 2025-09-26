@@ -6,7 +6,9 @@ Renders a responsive card grid using centralized item data.
 {% render 'wtf-drink-data' %}
 {%- capture items_json -%}{% render 'wtf-kava-data' %}{%- endcapture -%}
 {%- # theme-check-disable UnknownFilter -%}
+{%- # theme-check-disable UnusedAssign -%}
 {% assign kava_items = items_json | parse_json %}
+{%- # theme-check-enable UnusedAssign -%}
 {%- # theme-check-enable UnknownFilter -%}
 {% render 'wtf-collection-cards',
   title: collection.title | default: 'Kava Drinks',
