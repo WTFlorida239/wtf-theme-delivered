@@ -141,25 +141,32 @@ Secrets: SHOPIFY_CLI_THEME_TOKEN set if deploying via CLI.
 #######################################################################
 # 7. Competitors (65-mile radius Cape Coral, FL)
 #######################################################################
-Primary chains:
-- Kava Culture (12 venues incl. NA taproom: Cape Coral HQ,
-  Downtown Fort Myers, North Fort Myers, Fort Myers Beach, Summerlin,
-  Estero, Bonita Springs, Naples North, Naples Golden Gate,
-  Marco Island, Port Charlotte)
+
+## Competitor | City Analysis
+
+| Competitor | City | Distance | Notes |
+| --- | --- | --- | --- |
+| Kava Culture Kava Bar | Fort Myers | 15.3 miles | Downtown location, app-based loyalty |
+| Elevation Kava | Cape Coral | 8.4 miles | South Cape Coral, signature blend |
+| High Tide Kava Bar | Cape Coral | 7.8 miles | Midtown location, beach theme |
+| Bula Kava Bar & Coffeehouse | Cape Coral | 8.1 miles | Downtown, hybrid coffee/kava |
+| Shangri-La Botanical | Cape Coral | 6.7 miles | SW Cape Coral, wellness focus |
+| Purple Lotus Kava Bar | Cape Coral | 9.8 miles | Surfside location, modern lounge |
+| Roots House Of Kava | Cape Coral | 6.2 miles | Pine Island Corridor, traditional |
+| Southern Roots Kava Bar | Fort Myers | 6.9 miles | San Carlos Park, vegan-friendly |
+
+Additional competitors:
 - Botanical Brewing Taproom (Cape Coral)
 - Island Vibes Kava Bar (North Fort Myers, Fort Myers)
 - Nectar Lab Kava Bar (North & Central Naples)
-
-Independents:
-Roots House of Kava (Cape Coral)
-The Sound Garden Kava Bar (Fort Myers)
-Burma Kava Company (Fort Myers)
-Kapua Kava Bar (Fort Myers)
-Kava Nirvana Kava Bar (Fort Myers)
-Cosmic Kava (Naples)
-Alchemist Kava Bar & Lounge (Naples)
-Kava Luv Social Lounge (Naples)
-Downtown Kava (Punta Gorda)
+- The Sound Garden Kava Bar (Fort Myers)
+- Burma Kava Company (Fort Myers)
+- Kapua Kava Bar (Fort Myers)
+- Kava Nirvana Kava Bar (Fort Myers)
+- Cosmic Kava (Naples)
+- Alchemist Kava Bar & Lounge (Naples)
+- Kava Luv Social Lounge (Naples)
+- Downtown Kava (Punta Gorda)
 
 #######################################################################
 # 8. Competitive Positioning

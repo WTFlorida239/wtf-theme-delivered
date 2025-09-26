@@ -4,7 +4,7 @@
 {% endcomment %}
 
 {% liquid
-  assign hero_image = section.settings.hero_image | default: 'wtf_people_gathering_hero.jpg' | asset_url
+  assign hero_image = section.settings.hero_image | default: 'wtf_storefront_hero_original.png' | asset_url
   assign logo_image = section.settings.logo_image | default: 'WTFLogo.png' | asset_url
   assign button_link = section.settings.button_link | default: 'tel:(239) 955-0314'
   assign button_label = section.settings.button_label | default: 'Order Now'
@@ -17,7 +17,7 @@
     {% if section.settings.hero_image %}
       {{ section.settings.hero_image | image_url: width: 1920 | image_tag: alt: hero_alt, loading: 'eager', decoding: 'async', fetchpriority: 'high' }}
     {% else %}
-      <img src="{{ 'wtf_people_gathering_hero.jpg' | asset_url }}" alt="{{ hero_alt }}" loading="eager" decoding="async" fetchpriority="high" />
+      <img src="{{ 'wtf_storefront_hero_original.png' | asset_url }}" alt="{{ hero_alt }}" width="800" height="400" loading="eager" decoding="async" fetchpriority="high" />
     {% endif %}
   </div>
 
@@ -28,7 +28,7 @@
           {% if section.settings.logo_image %}
             {{ section.settings.logo_image | image_url: width: 200 | image_tag: alt: logo_alt, loading: 'eager', decoding: 'async' }}
           {% else %}
-            <img src="{{ 'WTFLogo.png' | asset_url }}" alt="{{ logo_alt }}" width="200" loading="eager" decoding="async" />
+            <img src="{{ 'WTFLogo.png' | asset_url }}" alt="{{ logo_alt }}" width="200" height="200" loading="eager" decoding="async" />
           {% endif %}
         </div>
       {% endif %}
@@ -139,7 +139,7 @@
       "type": "text",
       "id": "hero_image_alt",
       "label": "Hero Image Alt Text",
-      "default": "WTF Welcome to Florida Kava Bar"
+      "default": "People socializing outside WTF Welcome to Florida storefront"
     },
     {
       "type": "image_picker",
