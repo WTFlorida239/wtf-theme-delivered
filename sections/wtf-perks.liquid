@@ -1,0 +1,747 @@
+{% comment %}
+  WTF Perks Loyalty Program Section
+  Countermeasures against competitor loyalty offerings
+  Includes structured data for search visibility
+{% endcomment %}
+
+<section class="wtf-perks" data-section-id="{{ section.id }}" aria-labelledby="perks-title">
+  <div class="wtf-perks__container">
+    <div class="wtf-perks__header">
+      <h2 id="perks-title" class="wtf-perks__title">
+        {{ section.settings.title | default: 'WTF Perks Loyalty Program' }}
+      </h2>
+      {% if section.settings.description != blank %}
+        <p class="wtf-perks__description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="wtf-perks__content">
+      <!-- Membership Tiers -->
+      <div class="perks-tiers">
+        <h3 class="perks-tiers__title">Membership Tiers</h3>
+        <div class="perks-tiers__grid">
+          
+          <!-- Welcome Tier -->
+          <article class="perk-tier perk-tier--welcome">
+            <div class="perk-tier__header">
+              <div class="perk-tier__icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <h4 class="perk-tier__name">Welcome</h4>
+              <p class="perk-tier__requirement">Join for free</p>
+            </div>
+            <ul class="perk-tier__benefits">
+              <li>10% off first purchase</li>
+              <li>Birthday month special</li>
+              <li>Event notifications</li>
+              <li>Member-only promotions</li>
+            </ul>
+          </article>
+
+          <!-- Regular Tier -->
+          <article class="perk-tier perk-tier--regular">
+            <div class="perk-tier__header">
+              <div class="perk-tier__icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9 8.91 8.26 12 2"></polygon>
+                </svg>
+              </div>
+              <h4 class="perk-tier__name">Regular</h4>
+              <p class="perk-tier__requirement">$100+ spent</p>
+            </div>
+            <ul class="perk-tier__benefits">
+              <li>All Welcome benefits</li>
+              <li>5% off all purchases</li>
+              <li>Free flavor upgrade</li>
+              <li>Priority seating</li>
+              <li>Monthly sample tastings</li>
+            </ul>
+          </article>
+
+          <!-- VIP Tier -->
+          <article class="perk-tier perk-tier--vip">
+            <div class="perk-tier__header">
+              <div class="perk-tier__icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55.47.98.97 1.21C12.04 18.75 13 20.24 13 22"></path>
+                  <path d="M14 14.66V17c0 .55-.47.98-.97 1.21C11.96 18.75 11 20.24 11 22"></path>
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                </svg>
+              </div>
+              <h4 class="perk-tier__name">VIP</h4>
+              <p class="perk-tier__requirement">$500+ spent</p>
+            </div>
+            <ul class="perk-tier__benefits">
+              <li>All Regular benefits</li>
+              <li>10% off all purchases</li>
+              <li>Free booster additions</li>
+              <li>VIP lounge access</li>
+              <li>Exclusive product previews</li>
+              <li>Personal consultation sessions</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <!-- Points System -->
+      <div class="perks-points">
+        <h3 class="perks-points__title">Earn Points, Get Rewards</h3>
+        <div class="perks-points__grid">
+          
+          <div class="points-earning">
+            <h4>How to Earn Points</h4>
+            <ul class="points-list">
+              <li>
+                <span class="points-amount">1 point</span>
+                <span class="points-action">per $1 spent</span>
+              </li>
+              <li>
+                <span class="points-amount">50 points</span>
+                <span class="points-action">for social media follow</span>
+              </li>
+              <li>
+                <span class="points-amount">100 points</span>
+                <span class="points-action">for referring a friend</span>
+              </li>
+              <li>
+                <span class="points-amount">200 points</span>
+                <span class="points-action">for writing a review</span>
+              </li>
+              <li>
+                <span class="points-amount">500 points</span>
+                <span class="points-action">birthday bonus</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="points-rewards">
+            <h4>Redeem Your Points</h4>
+            <ul class="rewards-list">
+              <li>
+                <span class="reward-cost">250 points</span>
+                <span class="reward-item">Free flavor shot</span>
+              </li>
+              <li>
+                <span class="reward-cost">500 points</span>
+                <span class="reward-item">Free booster addition</span>
+              </li>
+              <li>
+                <span class="reward-cost">1000 points</span>
+                <span class="reward-item">Free medium drink</span>
+              </li>
+              <li>
+                <span class="reward-cost">2000 points</span>
+                <span class="reward-item">Free large drink</span>
+              </li>
+              <li>
+                <span class="reward-cost">5000 points</span>
+                <span class="reward-item">VIP experience package</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Special Perks -->
+      <div class="perks-special">
+        <h3 class="perks-special__title">Exclusive Member Benefits</h3>
+        <div class="perks-special__grid">
+          
+          <div class="special-perk">
+            <div class="special-perk__icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+              </svg>
+            </div>
+            <h4>Early Access</h4>
+            <p>Be the first to try new products and flavors before they're available to the public.</p>
+          </div>
+
+          <div class="special-perk">
+            <div class="special-perk__icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+              </svg>
+            </div>
+            <h4>Member Events</h4>
+            <p>Exclusive access to member-only events, tastings, and educational workshops.</p>
+          </div>
+
+          <div class="special-perk">
+            <div class="special-perk__icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <h4>Personal Consultation</h4>
+            <p>One-on-one sessions with our experts to find your perfect botanical blend.</p>
+          </div>
+
+          <div class="special-perk">
+            <div class="special-perk__icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <path d="M20 8v6"></path>
+                <path d="M23 11h-6"></path>
+              </svg>
+            </div>
+            <h4>Referral Bonuses</h4>
+            <p>Earn extra points and special rewards for every friend you bring to WTF.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sign Up CTA -->
+      <div class="perks-signup">
+        <div class="perks-signup__content">
+          <h3 class="perks-signup__title">Ready to Join WTF Perks?</h3>
+          <p class="perks-signup__description">
+            Sign up today and start earning points on your very first purchase. It's free to join and you'll immediately get 10% off your first order.
+          </p>
+          <div class="perks-signup__actions">
+            <button type="button" 
+                    class="perks-signup__btn"
+                    data-perks-signup
+                    aria-describedby="perks-signup-help">
+              Join WTF Perks Free
+            </button>
+            <div id="perks-signup-help" class="perks-signup__help">
+              No fees, no commitments. Start earning rewards immediately.
+            </div>
+          </div>
+        </div>
+        <div class="perks-signup__visual">
+          <div class="perks-card">
+            <div class="perks-card__header">
+              <span class="perks-card__logo">WTF</span>
+              <span class="perks-card__tier">PERKS</span>
+            </div>
+            <div class="perks-card__member">
+              <span class="perks-card__name">Your Name Here</span>
+              <span class="perks-card__number">**** **** **** 1234</span>
+            </div>
+            <div class="perks-card__footer">
+              <span class="perks-card__points">0 Points</span>
+              <span class="perks-card__level">Welcome</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Loyalty Program Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LoyaltyProgram",
+  "name": "WTF Perks Loyalty Program",
+  "description": "Earn points and unlock exclusive benefits at WTF | Welcome To Florida, Cape Coral's premier kava and kratom lounge.",
+  "provider": {
+    "@type": "Organization",
+    "name": "WTF | Welcome To Florida",
+    "url": "{{ shop.secure_url }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "1520 SE 46th Ln, Unit B",
+      "addressLocality": "Cape Coral",
+      "addressRegion": "FL",
+      "postalCode": "33904",
+      "addressCountry": "US"
+    }
+  },
+  "programMembershipTier": [
+    {
+      "@type": "ProgramMembership",
+      "programName": "Welcome Tier",
+      "membershipNumber": "Free",
+      "benefits": [
+        "10% off first purchase",
+        "Birthday month special",
+        "Event notifications",
+        "Member-only promotions"
+      ]
+    },
+    {
+      "@type": "ProgramMembership", 
+      "programName": "Regular Tier",
+      "membershipNumber": "$100+ spent",
+      "benefits": [
+        "5% off all purchases",
+        "Free flavor upgrade",
+        "Priority seating",
+        "Monthly sample tastings"
+      ]
+    },
+    {
+      "@type": "ProgramMembership",
+      "programName": "VIP Tier", 
+      "membershipNumber": "$500+ spent",
+      "benefits": [
+        "10% off all purchases",
+        "Free booster additions",
+        "VIP lounge access",
+        "Exclusive product previews",
+        "Personal consultation sessions"
+      ]
+    }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "WTF Perks Rewards",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "name": "Free Flavor Shot",
+        "price": "250 points",
+        "description": "Add any flavor shot to your drink for free"
+      },
+      {
+        "@type": "Offer",
+        "name": "Free Booster Addition",
+        "price": "500 points", 
+        "description": "Add any booster to enhance your drink experience"
+      },
+      {
+        "@type": "Offer",
+        "name": "Free Medium Drink",
+        "price": "1000 points",
+        "description": "Any medium-sized drink of your choice"
+      },
+      {
+        "@type": "Offer",
+        "name": "Free Large Drink", 
+        "price": "2000 points",
+        "description": "Any large-sized drink with full customization"
+      },
+      {
+        "@type": "Offer",
+        "name": "VIP Experience Package",
+        "price": "5000 points",
+        "description": "Complete VIP treatment with premium products and consultation"
+      }
+    ]
+  },
+  "url": "{{ shop.secure_url }}/pages/wtf-perks"
+}
+</script>
+
+<style>
+  .wtf-perks {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+
+  .wtf-perks__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .wtf-perks__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .wtf-perks__title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  .wtf-perks__description {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .perks-tiers,
+  .perks-points,
+  .perks-special {
+    margin-bottom: 4rem;
+  }
+
+  .perks-tiers__title,
+  .perks-points__title,
+  .perks-special__title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+    margin: 0 0 2rem 0;
+  }
+
+  .perks-tiers__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .perk-tier {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .perk-tier:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .perk-tier--welcome {
+    border-top: 4px solid #10b981;
+  }
+
+  .perk-tier--regular {
+    border-top: 4px solid #3b82f6;
+  }
+
+  .perk-tier--vip {
+    border-top: 4px solid #8b5cf6;
+    position: relative;
+  }
+
+  .perk-tier--vip::before {
+    content: "MOST POPULAR";
+    position: absolute;
+    top: 1rem;
+    right: -2rem;
+    background: #8b5cf6;
+    color: white;
+    padding: 0.25rem 3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transform: rotate(45deg);
+  }
+
+  .perk-tier__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .perk-tier__icon {
+    color: #6b7280;
+    margin-bottom: 1rem;
+  }
+
+  .perk-tier--welcome .perk-tier__icon {
+    color: #10b981;
+  }
+
+  .perk-tier--regular .perk-tier__icon {
+    color: #3b82f6;
+  }
+
+  .perk-tier--vip .perk-tier__icon {
+    color: #8b5cf6;
+  }
+
+  .perk-tier__name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .perk-tier__requirement {
+    color: #6b7280;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .perk-tier__benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .perk-tier__benefits li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+  }
+
+  .perk-tier__benefits li:last-child {
+    border-bottom: none;
+  }
+
+  .perk-tier__benefits li::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: 600;
+    margin-right: 0.75rem;
+    font-size: 1.125rem;
+  }
+
+  .perks-points__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .points-earning h4,
+  .points-rewards h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .points-list,
+  .rewards-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .points-list li,
+  .rewards-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .points-amount,
+  .reward-cost {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  .points-action,
+  .reward-item {
+    color: #4b5563;
+  }
+
+  .perks-special__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .special-perk {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .special-perk__icon {
+    color: #3b82f6;
+    margin-bottom: 1rem;
+  }
+
+  .special-perk h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .special-perk p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .perks-signup {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .perks-signup__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+
+  .perks-signup__description {
+    font-size: 1.125rem;
+    margin: 0 0 2rem 0;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+
+  .perks-signup__btn {
+    background: white;
+    color: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .perks-signup__btn:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+  }
+
+  .perks-signup__help {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    margin-top: 0.75rem;
+  }
+
+  .perks-card {
+    background: linear-gradient(135deg, #1f2937, #374151);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .perks-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .perks-card__logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .perks-card__tier {
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  .perks-card__member {
+    margin-bottom: 2rem;
+  }
+
+  .perks-card__name {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .perks-card__number {
+    display: block;
+    font-size: 1rem;
+    opacity: 0.8;
+    letter-spacing: 2px;
+  }
+
+  .perks-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .perks-card__points {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .perks-card__level {
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .wtf-perks__title {
+      font-size: 2rem;
+    }
+
+    .perks-tiers__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .perks-points__grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .perks-signup {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const signupButton = document.querySelector('[data-perks-signup]');
+    
+    if (signupButton) {
+      signupButton.addEventListener('click', function() {
+        // Show signup modal or redirect to signup page
+        if (window.WTF && window.WTF.showPerksSignup) {
+          window.WTF.showPerksSignup();
+        } else {
+          // Fallback: redirect to contact page with perks signup intent
+          window.location.href = '/pages/contact?intent=perks-signup';
+        }
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "WTF Perks",
+  "tag": "section",
+  "class": "section-wtf-perks",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "WTF Perks Loyalty Program"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section Description",
+      "default": "Earn points, unlock exclusive benefits, and get rewarded for being part of the WTF community."
+    }
+  ],
+  "presets": [
+    {
+      "name": "WTF Perks"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,505 @@
+{% comment %}
+  Comprehensive Pixel Tracking Implementation
+  Includes Meta, TikTok, Google, Bing, Snapchat, and other platform pixels
+  Implements competitor targeting and comprehensive data collection
+{% endcomment %}
+
+<!-- Google Analytics 4 -->
+{% if settings.ga4_measurement_id != blank %}
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.ga4_measurement_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ settings.ga4_measurement_id }}', {
+      'send_page_view': true,
+      'enhanced_ecommerce': true,
+      'custom_map': {
+        'custom_parameter_1': 'kava_preference',
+        'custom_parameter_2': 'kratom_strain',
+        'custom_parameter_3': 'visit_frequency'
+      }
+    });
+
+    // Enhanced ecommerce tracking
+    gtag('config', '{{ settings.ga4_measurement_id }}', {
+      'currency': '{{ cart.currency.iso_code }}',
+      'country': 'US'
+    });
+  </script>
+{% endif %}
+
+<!-- Google Tag Manager -->
+{% if settings.gtm_container_id != blank %}
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ settings.gtm_container_id }}');</script>
+{% endif %}
+
+<!-- Meta Pixel (Facebook/Instagram) -->
+{% if settings.meta_pixel_id != blank %}
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    fbq('init', '{{ settings.meta_pixel_id }}');
+    fbq('track', 'PageView');
+
+    // Enhanced tracking for kava/kratom business
+    fbq('trackCustom', 'KavaBarVisit', {
+      location: 'Cape Coral',
+      business_type: 'kava_bar'
+    });
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none" 
+         src="https://www.facebook.com/tr?id={{ settings.meta_pixel_id }}&ev=PageView&noscript=1" />
+  </noscript>
+{% endif %}
+
+<!-- TikTok Pixel -->
+{% if settings.tiktok_pixel_id != blank %}
+  <script>
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+      ttq.load('{{ settings.tiktok_pixel_id }}');
+      ttq.page();
+    }(window, document, 'ttq');
+
+    // Custom TikTok events
+    ttq('track', 'ViewContent', {
+      content_type: 'kava_kratom_products',
+      content_name: '{{ page.title | default: 'WTF Homepage' }}'
+    });
+  </script>
+{% endif %}
+
+<!-- Google Ads Conversion Tracking -->
+{% if settings.google_ads_id != blank %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-{{ settings.google_ads_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-{{ settings.google_ads_id }}');
+  </script>
+{% endif %}
+
+<!-- Microsoft Bing UET -->
+{% if settings.bing_uet_id != blank %}
+  <script>
+    (function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"{{ settings.bing_uet_id }}"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");
+  </script>
+{% endif %}
+
+<!-- Snapchat Pixel -->
+{% if settings.snapchat_pixel_id != blank %}
+  <script type='text/javascript'>
+    (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+    {a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+    a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
+    r.src=n;var u=t.getElementsByTagName(s)[0];
+    u.parentNode.insertBefore(r,u);})(window,document,
+    'https://sc-static.net/scevent.min.js');
+    
+    snaptr('init', '{{ settings.snapchat_pixel_id }}', {
+      'user_email': '__INSERT_USER_EMAIL__'
+    });
+    snaptr('track', 'PAGE_VIEW');
+  </script>
+{% endif %}
+
+<!-- Pinterest Conversion API -->
+{% if settings.pinterest_tag_id != blank %}
+  <script>
+    !function(e){if(!window.pintrk){window.pintrk = function () {
+    window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var
+      n=window.pintrk;n.queue=[],n.version="3.0";var
+      t=document.createElement("script");t.async=!0,t.src=e;var
+      r=document.getElementsByTagName("script")[0];
+      r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
+    pintrk('load', '{{ settings.pinterest_tag_id }}', {em: '__INSERT_USER_EMAIL__'});
+    pintrk('page');
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none;" alt=""
+         src="https://ct.pinterest.com/v3/?event=init&tid={{ settings.pinterest_tag_id }}&pd[em]=__INSERT_USER_EMAIL__&noscript=1" />
+  </noscript>
+{% endif %}
+
+<!-- Reddit Pixel -->
+{% if settings.reddit_pixel_id != blank %}
+  <script>
+    !function(w,d){if(!w.rdt){var p=w.rdt=function(){p.sendEvent?p.sendEvent.apply(p,arguments):p.callQueue.push(arguments)};p.callQueue=[];var t=d.createElement("script");t.src="https://www.redditstatic.com/ads/pixel.js",t.async=!0;var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}}(window,document);
+    rdt('init','{{ settings.reddit_pixel_id }}', {
+      optOut: false,
+      useDecimalCurrencyValues: true
+    });
+    rdt('track', 'PageVisit');
+  </script>
+{% endif %}
+
+<!-- YouTube/Google Ads Remarketing -->
+{% if settings.youtube_remarketing_id != blank %}
+  <script type="text/javascript">
+    var google_conversion_id = {{ settings.youtube_remarketing_id }};
+    var google_custom_params = window.google_tag_params;
+    var google_remarketing_only = true;
+  </script>
+  <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+  <noscript>
+    <div style="display:inline;">
+      <img height="1" width="1" style="border-style:none;" alt="" 
+           src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/{{ settings.youtube_remarketing_id }}/?guid=ON&amp;script=0"/>
+    </div>
+  </noscript>
+{% endif %}
+
+<!-- Competitor Targeting Pixels -->
+<script>
+  // Enhanced competitor targeting and data collection
+  (function() {
+    'use strict';
+    
+    const WTFAnalytics = {
+      // Competitor locations for geo-targeting
+      competitorLocations: [
+        { name: 'Kava Culture', lat: 26.5628, lng: -81.9495 },
+        { name: 'Other Local Kava Bars', lat: 26.5629, lng: -81.9496 }
+      ],
+      
+      // Data collection object
+      userData: {
+        visitTime: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        referrer: document.referrer,
+        pageUrl: window.location.href,
+        screenResolution: screen.width + 'x' + screen.height,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language
+      },
+
+      init: function() {
+        this.trackPageView();
+        this.setupEventTracking();
+        this.checkGeolocation();
+        this.trackScrollDepth();
+        this.trackTimeOnPage();
+        this.setupCompetitorRetargeting();
+      },
+
+      trackPageView: function() {
+        // Send page view data to all configured pixels
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'page_view', {
+            page_title: document.title,
+            page_location: window.location.href,
+            custom_parameter_1: 'kava_bar_visit',
+            custom_parameter_2: 'cape_coral_location'
+          });
+        }
+
+        if (typeof fbq !== 'undefined') {
+          fbq('trackCustom', 'KavaBarPageView', {
+            page_type: '{{ template.name }}',
+            business_location: 'Cape Coral',
+            competitor_targeting: true
+          });
+        }
+
+        if (typeof ttq !== 'undefined') {
+          ttq('track', 'ViewContent', {
+            content_type: 'kava_kratom_business',
+            content_category: 'local_business',
+            value: 1,
+            currency: 'USD'
+          });
+        }
+      },
+
+      setupEventTracking: function() {
+        // Track drink builder interactions
+        document.addEventListener('click', (e) => {
+          if (e.target.matches('[data-drink-builder] *')) {
+            this.trackEvent('drink_builder_interaction', {
+              element: e.target.tagName,
+              action: 'click'
+            });
+          }
+          
+          // Track competitor comparison page visits
+          if (e.target.matches('[href*="competitor-comparison"]')) {
+            this.trackEvent('competitor_comparison_view', {
+              source: 'internal_link'
+            });
+          }
+        });
+
+        // Track form submissions
+        document.addEventListener('submit', (e) => {
+          if (e.target.matches('[data-newsletter-form]')) {
+            this.trackEvent('newsletter_signup', {
+              form_type: 'event_newsletter'
+            });
+          }
+        });
+      },
+
+      checkGeolocation: function() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            
+            // Check if user is near competitors
+            this.competitorLocations.forEach(competitor => {
+              const distance = this.calculateDistance(
+                userLat, userLng, 
+                competitor.lat, competitor.lng
+              );
+              
+              if (distance < 5) { // Within 5 miles
+                this.trackEvent('near_competitor', {
+                  competitor_name: competitor.name,
+                  distance_miles: distance.toFixed(2),
+                  targeting_opportunity: true
+                });
+                
+                // Enhanced retargeting for competitor proximity
+                if (typeof fbq !== 'undefined') {
+                  fbq('trackCustom', 'CompetitorProximity', {
+                    competitor: competitor.name,
+                    distance: distance,
+                    retarget_priority: 'high'
+                  });
+                }
+              }
+            });
+          });
+        }
+      },
+
+      calculateDistance: function(lat1, lng1, lat2, lng2) {
+        const R = 3959; // Earth's radius in miles
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLng/2) * Math.sin(dLng/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      },
+
+      trackScrollDepth: function() {
+        let maxScroll = 0;
+        const trackingPoints = [25, 50, 75, 90, 100];
+        
+        window.addEventListener('scroll', () => {
+          const scrollPercent = Math.round(
+            (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+          );
+          
+          trackingPoints.forEach(point => {
+            if (scrollPercent >= point && maxScroll < point) {
+              maxScroll = point;
+              this.trackEvent('scroll_depth', {
+                percent: point,
+                page_type: '{{ template.name }}'
+              });
+            }
+          });
+        });
+      },
+
+      trackTimeOnPage: function() {
+        const startTime = Date.now();
+        
+        // Track time milestones
+        [30, 60, 120, 300].forEach(seconds => {
+          setTimeout(() => {
+            this.trackEvent('time_on_page', {
+              seconds: seconds,
+              engagement_level: seconds > 120 ? 'high' : 'medium'
+            });
+          }, seconds * 1000);
+        });
+
+        // Track exit intent
+        document.addEventListener('mouseleave', (e) => {
+          if (e.clientY <= 0) {
+            const timeSpent = Math.round((Date.now() - startTime) / 1000);
+            this.trackEvent('exit_intent', {
+              time_spent: timeSpent,
+              page_type: '{{ template.name }}'
+            });
+          }
+        });
+      },
+
+      setupCompetitorRetargeting: function() {
+        // Create custom audiences for competitor targeting
+        const retargetingData = {
+          visited_wtf: true,
+          location: 'cape_coral',
+          business_type: 'kava_kratom',
+          timestamp: Date.now(),
+          competitor_targeting: true
+        };
+
+        // Store for retargeting campaigns
+        localStorage.setItem('wtf_retargeting_data', JSON.stringify(retargetingData));
+        
+        // Send to all pixels for audience building
+        if (typeof fbq !== 'undefined') {
+          fbq('trackCustom', 'CompetitorRetargeting', retargetingData);
+        }
+        
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'competitor_retargeting_setup', retargetingData);
+        }
+      },
+
+      trackEvent: function(eventName, parameters = {}) {
+        const eventData = {
+          ...parameters,
+          timestamp: new Date().toISOString(),
+          page_url: window.location.href,
+          user_agent: navigator.userAgent.substring(0, 100)
+        };
+
+        // Send to Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', eventName, eventData);
+        }
+
+        // Send to Meta Pixel
+        if (typeof fbq !== 'undefined') {
+          fbq('trackCustom', eventName, eventData);
+        }
+
+        // Send to TikTok
+        if (typeof ttq !== 'undefined') {
+          ttq('track', 'CustomEvent', {
+            event_name: eventName,
+            ...eventData
+          });
+        }
+
+        // Send to data collection endpoint
+        this.sendToDataCollection(eventName, eventData);
+      },
+
+      sendToDataCollection: function(eventName, eventData) {
+        // Send to Google Sheets via webhook or API
+        const dataPayload = {
+          event: eventName,
+          data: eventData,
+          user_data: this.userData,
+          collection_time: new Date().toISOString()
+        };
+
+        // This would integrate with your Google Sheets API or webhook
+        fetch('/api/collect-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataPayload)
+        }).catch(error => {
+          console.log('Data collection error:', error);
+          // Store locally as fallback
+          const storedData = JSON.parse(localStorage.getItem('wtf_analytics_queue') || '[]');
+          storedData.push(dataPayload);
+          localStorage.setItem('wtf_analytics_queue', JSON.stringify(storedData));
+        });
+      }
+    };
+
+    // Initialize analytics when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => WTFAnalytics.init());
+    } else {
+      WTFAnalytics.init();
+    }
+
+    // Expose to global scope
+    window.WTFAnalytics = WTFAnalytics;
+  })();
+</script>
+
+<!-- Enhanced Ecommerce Tracking -->
+{% if template.name == 'product' %}
+  <script>
+    // Product page tracking
+    const productData = {
+      item_id: '{{ product.id }}',
+      item_name: '{{ product.title | escape }}',
+      item_category: '{{ product.type }}',
+      item_variant: '{{ product.selected_or_first_available_variant.title }}',
+      price: {{ product.selected_or_first_available_variant.price | divided_by: 100.0 }},
+      currency: '{{ cart.currency.iso_code }}',
+      item_brand: 'WTF'
+    };
+
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'view_item', {
+        currency: 'USD',
+        value: productData.price,
+        items: [productData]
+      });
+    }
+
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'ViewContent', {
+        content_ids: [productData.item_id],
+        content_name: productData.item_name,
+        content_category: productData.item_category,
+        content_type: 'product',
+        value: productData.price,
+        currency: 'USD'
+      });
+    }
+  </script>
+{% endif %}
+
+<!-- Cart and Checkout Tracking -->
+{% if template.name == 'cart' %}
+  <script>
+    const cartItems = [
+      {% for item in cart.items %}
+        {
+          item_id: '{{ item.product.id }}',
+          item_name: '{{ item.product.title | escape }}',
+          item_category: '{{ item.product.type }}',
+          item_variant: '{{ item.variant.title }}',
+          price: {{ item.price | divided_by: 100.0 }},
+          quantity: {{ item.quantity }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ];
+
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'view_cart', {
+        currency: 'USD',
+        value: {{ cart.total_price | divided_by: 100.0 }},
+        items: cartItems
+      });
+    }
+
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'AddToCart', {
+        content_ids: cartItems.map(item => item.item_id),
+        content_type: 'product',
+        value: {{ cart.total_price | divided_by: 100.0 }},
+        currency: 'USD'
+      });
+    }
+  </script>
+{% endif %}

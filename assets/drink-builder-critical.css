@@ -1,0 +1,209 @@
+/**
+ * WTF Drink Builder - Critical CSS
+ * Above-the-fold styles for immediate rendering
+ */
+
+/* Critical layout styles */
+.drink-builder {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.drink-builder__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.drink-builder__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.drink-builder__description {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Critical form styles */
+.drink-builder__form {
+  display: grid;
+  gap: 2rem;
+}
+
+.drink-builder__step {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.drink-builder__step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+/* Critical base drink selection */
+.drink-builder__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.drink-option {
+  position: relative;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.drink-option:hover {
+  border-color: #3b82f6;
+}
+
+.drink-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.drink-option input[type="radio"]:checked + .drink-option__label {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.drink-option__label {
+  display: block;
+  cursor: pointer;
+}
+
+.drink-option__image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.drink-option__name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.drink-option__price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* Critical price display */
+.drink-builder__price-section {
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.drink-builder__total-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.drink-builder__add-to-cart {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.drink-builder__add-to-cart:hover {
+  background: #2563eb;
+}
+
+.drink-builder__add-to-cart:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+  .drink-builder {
+    padding: 0.5rem;
+  }
+  
+  .drink-builder__title {
+    font-size: 2rem;
+  }
+  
+  .drink-builder__options {
+    grid-template-columns: 1fr;
+  }
+  
+  .drink-builder__price-section {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .drink-builder__add-to-cart {
+    width: 100%;
+  }
+}
+
+/* Loading states */
+.drink-builder--loading .drink-option {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.drink-builder__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.drink-builder__spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus states for accessibility */
+.drink-option input[type="radio"]:focus + .drink-option__label {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.drink-builder__add-to-cart:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

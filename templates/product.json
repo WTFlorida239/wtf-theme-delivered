@@ -63,8 +63,11 @@
         "subheading": "Customers also love these house specials.",
         "button_label": "View product"
       },
-      "blocks": {},
-      "block_order": []
+      "blocks": {
+      },
+      "block_order": [
+
+      ]
     },
     "recommendations": {
       "type": "product-recommendations",

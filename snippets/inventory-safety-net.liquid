@@ -1,0 +1,298 @@
+{% comment %}
+  Inventory Safety Net for WTF Theme
+  Implements low-stock alerts and inventory management for drink builder
+  
+  Usage:
+  {% render 'inventory-safety-net', product: product, variant: variant %}
+{% endcomment %}
+
+{% liquid
+  assign low_stock_threshold = 10
+  assign out_of_stock_threshold = 0
+  assign show_stock_levels = true
+  
+  if variant
+    assign current_variant = variant
+  else
+    assign current_variant = product.selected_or_first_available_variant
+  endif
+  
+  assign inventory_quantity = current_variant.inventory_quantity | default: 0
+  assign inventory_policy = current_variant.inventory_policy | default: 'deny'
+  assign inventory_management = current_variant.inventory_management
+  
+  assign is_low_stock = false
+  assign is_out_of_stock = false
+  assign stock_status = 'in_stock'
+  
+  if inventory_management == 'shopify'
+    if inventory_quantity <= out_of_stock_threshold
+      assign is_out_of_stock = true
+      assign stock_status = 'out_of_stock'
+    elsif inventory_quantity <= low_stock_threshold
+      assign is_low_stock = true
+      assign stock_status = 'low_stock'
+    endif
+  endif
+%}
+
+<div class="inventory-safety-net" 
+     data-product-id="{{ product.id }}"
+     data-variant-id="{{ current_variant.id }}"
+     data-stock-status="{{ stock_status }}"
+     data-inventory-quantity="{{ inventory_quantity }}">
+
+  {% if is_out_of_stock %}
+    <div class="stock-alert stock-alert--out-of-stock" 
+         role="alert"
+         aria-live="polite">
+      <svg class="stock-alert__icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <div class="stock-alert__content">
+        <h4 class="stock-alert__title">Currently Unavailable</h4>
+        <p class="stock-alert__message">
+          {{ product.title }} is temporarily out of stock. 
+          {% if inventory_policy == 'continue' %}
+            You can still place an order and we'll fulfill it as soon as we restock.
+          {% else %}
+            Please check back soon or contact us for availability.
+          {% endif %}
+        </p>
+        <button type="button" 
+                class="stock-alert__notify-btn"
+                data-notify-restock
+                data-product-id="{{ product.id }}"
+                data-variant-id="{{ current_variant.id }}">
+          Notify When Available
+        </button>
+      </div>
+    </div>
+    
+  {% elsif is_low_stock %}
+    <div class="stock-alert stock-alert--low-stock" 
+         role="alert"
+         aria-live="polite">
+      <svg class="stock-alert__icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <div class="stock-alert__content">
+        <h4 class="stock-alert__title">Limited Stock</h4>
+        <p class="stock-alert__message">
+          Only {{ inventory_quantity }} left in stock! Order soon to avoid disappointment.
+        </p>
+      </div>
+    </div>
+    
+  {% else %}
+    <div class="stock-alert stock-alert--in-stock">
+      <svg class="stock-alert__icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <span class="stock-alert__message">In Stock</span>
+      {% if show_stock_levels and inventory_quantity > low_stock_threshold %}
+        <span class="stock-alert__quantity">({{ inventory_quantity }} available)</span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% comment %} Slack Webhook Integration for Low Stock Alerts {% endcomment %}
+  {% if is_low_stock or is_out_of_stock %}
+    <script>
+      (function() {
+        const alertData = {
+          product_id: {{ product.id | json }},
+          variant_id: {{ current_variant.id | json }},
+          product_title: {{ product.title | json }},
+          variant_title: {{ current_variant.title | json }},
+          inventory_quantity: {{ inventory_quantity | json }},
+          stock_status: {{ stock_status | json }},
+          shop_domain: {{ shop.domain | json }},
+          timestamp: new Date().toISOString()
+        };
+
+        // Send low stock alert to Slack webhook
+        if (window.WTF && window.WTF.sendStockAlert) {
+          window.WTF.sendStockAlert(alertData);
+        } else {
+          // Queue the alert if the function isn't loaded yet
+          window.WTF = window.WTF || {};
+          window.WTF.stockAlertQueue = window.WTF.stockAlertQueue || [];
+          window.WTF.stockAlertQueue.push(alertData);
+        }
+      })();
+    </script>
+  {% endif %}
+</div>
+
+<style>
+  .inventory-safety-net {
+    margin: 1rem 0;
+  }
+
+  .stock-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid;
+  }
+
+  .stock-alert--in-stock {
+    background: #f0fdf4;
+    border-color: #16a34a;
+    color: #15803d;
+  }
+
+  .stock-alert--low-stock {
+    background: #fffbeb;
+    border-color: #f59e0b;
+    color: #d97706;
+  }
+
+  .stock-alert--out-of-stock {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #dc2626;
+  }
+
+  .stock-alert__icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .stock-alert__content {
+    flex: 1;
+  }
+
+  .stock-alert__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .stock-alert__message {
+    font-size: 0.875rem;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+  }
+
+  .stock-alert__quantity {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-left: 0.5rem;
+  }
+
+  .stock-alert__notify-btn {
+    background: currentColor;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .stock-alert__notify-btn:hover {
+    opacity: 0.9;
+  }
+
+  .stock-alert__notify-btn:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* Hide stock alerts in drink builder when out of stock */
+  [data-stock-status="out_of_stock"] .drink-option {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  [data-stock-status="out_of_stock"] .drink-option input {
+    disabled: true;
+  }
+
+  /* Visual indicator for low stock items */
+  [data-stock-status="low_stock"] .drink-option {
+    position: relative;
+  }
+
+  [data-stock-status="low_stock"] .drink-option::after {
+    content: "Limited Stock";
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #f59e0b;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .stock-alert {
+      padding: 0.75rem;
+      gap: 0.5rem;
+    }
+    
+    .stock-alert__title {
+      font-size: 0.875rem;
+    }
+    
+    .stock-alert__message {
+      font-size: 0.8125rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle notify when available buttons
+    const notifyButtons = document.querySelectorAll('[data-notify-restock]');
+    
+    notifyButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        const variantId = this.dataset.variantId;
+        
+        // Show email collection modal or form
+        if (window.WTF && window.WTF.showRestockNotification) {
+          window.WTF.showRestockNotification(productId, variantId);
+        } else {
+          // Fallback: simple prompt
+          const email = prompt('Enter your email to be notified when this item is back in stock:');
+          if (email && email.includes('@')) {
+            // Store notification request
+            const notificationData = {
+              email: email,
+              product_id: productId,
+              variant_id: variantId,
+              timestamp: new Date().toISOString()
+            };
+            
+            // Send to your notification system
+            console.log('Restock notification requested:', notificationData);
+            
+            // Update button
+            this.textContent = 'Notification Requested';
+            this.disabled = true;
+          }
+        }
+      });
+    });
+
+    // Process queued stock alerts
+    if (window.WTF && window.WTF.stockAlertQueue) {
+      window.WTF.stockAlertQueue.forEach(alert => {
+        if (window.WTF.sendStockAlert) {
+          window.WTF.sendStockAlert(alert);
+        }
+      });
+      window.WTF.stockAlertQueue = [];
+    }
+  });
+</script>

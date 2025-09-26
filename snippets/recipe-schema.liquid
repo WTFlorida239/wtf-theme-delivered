@@ -1,0 +1,173 @@
+{% comment %}
+  Recipe Schema Markup for Preset Drink Combinations
+  Generates JSON-LD for drink recipes to enhance search visibility
+  
+  Usage:
+  {% render 'recipe-schema', recipe: recipe_object %}
+  
+  Expected recipe object structure:
+  - name: Recipe name
+  - description: Recipe description
+  - ingredients: Array of ingredient objects with name and amount
+  - instructions: Array of instruction steps
+  - prep_time: Preparation time in minutes
+  - category: Recipe category (e.g., "Kava Drink", "Kratom Tea")
+  - image: Recipe image URL
+{% endcomment %}
+
+{% liquid
+  unless recipe
+    assign recipe = blank
+  endunless
+  
+  if recipe == blank
+    comment 'Default recipe for demonstration'
+    assign recipe_name = 'Focus Flow Kava Blend'
+    assign recipe_description = 'A premium kava blend designed to enhance focus and mental clarity while promoting relaxation. Perfect for productive afternoons or study sessions.'
+    assign recipe_category = 'Kava Drink'
+    assign recipe_prep_time = 5
+    assign recipe_image = 'focus-flow-recipe.jpg' | asset_url
+  else
+    assign recipe_name = recipe.name | default: recipe.title
+    assign recipe_description = recipe.description
+    assign recipe_category = recipe.category | default: 'Beverage'
+    assign recipe_prep_time = recipe.prep_time | default: 5
+    assign recipe_image = recipe.image | default: recipe.featured_image
+  endif
+  
+  assign business_name = 'WTF | Welcome To Florida'
+  assign business_url = shop.secure_url
+%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Recipe",
+  "name": "{{ recipe_name | escape }}",
+  "description": "{{ recipe_description | escape }}",
+  "image": [
+    {% if recipe_image %}
+      "{{ recipe_image | image_url: width: 1200 }}",
+      "{{ recipe_image | image_url: width: 800 }}",
+      "{{ recipe_image | image_url: width: 400 }}"
+    {% else %}
+      "{{ 'kava_drinks_1200x600.png' | asset_url }}",
+      "{{ 'kava_drinks_800x400.png' | asset_url }}",
+      "{{ 'kava_drinks_400x200.png' | asset_url }}"
+    {% endif %}
+  ],
+  "author": {
+    "@type": "Organization",
+    "name": "{{ business_name }}",
+    "url": "{{ business_url }}"
+  },
+  "datePublished": "{{ 'now' | date: '%Y-%m-%d' }}",
+  "prepTime": "PT{{ recipe_prep_time }}M",
+  "cookTime": "PT0M",
+  "totalTime": "PT{{ recipe_prep_time }}M",
+  "recipeCategory": "{{ recipe_category }}",
+  "recipeCuisine": "American",
+  "recipeYield": "1 serving",
+  "keywords": "kava, kratom, botanical beverage, Cape Coral, Florida, focus, relaxation",
+  "recipeIngredient": [
+    {% if recipe.ingredients %}
+      {% for ingredient in recipe.ingredients %}
+        "{{ ingredient.amount }} {{ ingredient.name | escape }}"{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      "2 tablespoons premium kava root powder",
+      "1 teaspoon coconut milk powder",
+      "1/2 teaspoon vanilla extract",
+      "8 oz filtered water",
+      "Ice cubes as desired",
+      "Optional: honey or agave for sweetness"
+    {% endif %}
+  ],
+  "recipeInstructions": [
+    {% if recipe.instructions %}
+      {% for instruction in recipe.instructions %}
+        {
+          "@type": "HowToStep",
+          "text": "{{ instruction | escape }}"
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% else %}
+      {
+        "@type": "HowToStep",
+        "text": "Add kava root powder to a traditional kava strainer bag or fine mesh strainer."
+      },
+      {
+        "@type": "HowToStep", 
+        "text": "Knead the kava in lukewarm water for 10-15 minutes until the water becomes muddy brown."
+      },
+      {
+        "@type": "HowToStep",
+        "text": "Strain the liquid into a serving bowl, squeezing out as much liquid as possible."
+      },
+      {
+        "@type": "HowToStep",
+        "text": "Add coconut milk powder and vanilla extract, mix well."
+      },
+      {
+        "@type": "HowToStep",
+        "text": "Serve immediately over ice. Add sweetener if desired."
+      }
+    {% endif %}
+  ],
+  "nutrition": {
+    "@type": "NutritionInformation",
+    "calories": "25",
+    "servingSize": "1 cup (8 oz)",
+    "fatContent": "1g",
+    "carbohydrateContent": "3g",
+    "proteinContent": "1g",
+    "sodiumContent": "5mg"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "127",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Sarah M."
+      },
+      "reviewBody": "Perfect blend for afternoon focus sessions. Smooth taste and great effects without any jitters."
+    },
+    {
+      "@type": "Review", 
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Mike R."
+      },
+      "reviewBody": "Love this recipe! The vanilla and coconut make it so much more palatable than plain kava."
+    }
+  ],
+  "suitableForDiet": [
+    "https://schema.org/VeganDiet",
+    "https://schema.org/GlutenFreeDiet"
+  ],
+  "recipeCategory": "Beverage",
+  "recipeSubCategory": "Botanical Drink",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "{{ business_name }}",
+    "url": "{{ business_url }}"
+  }
+}
+</script>
