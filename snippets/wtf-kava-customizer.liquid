@@ -19,7 +19,7 @@
   </div>
 
   <!-- Ordering Form -->
-  <form method="post" action="/cart/add" data-wtf-kava-form class="wtf-order-form">
+  <form method="post" action="{{ routes.cart_add_url }}" data-wtf-kava-form class="wtf-order-form">
     
     <!-- Hidden Inputs for Line Item Properties -->
     <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
