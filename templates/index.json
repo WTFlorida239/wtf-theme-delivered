@@ -40,7 +40,7 @@
             "title": "Kratom Teas",
             "description": "Green, red, white & yellow strains with premium flavorings.",
             "meta": "4 strains • 25 flavors",
-            "link": "shopify://pages/kratom-teas",
+            "link": "/pages/kratom-teas",
             "fallback_emoji": "🍵"
           }
         },
@@ -50,17 +50,17 @@
             "title": "Kava Drinks",
             "description": "Traditional relaxation brews in rotating flavors.",
             "meta": "M • L • Gallons",
-            "link": "shopify://pages/kava-drinks",
+            "link": "/pages/kava-drinks",
             "fallback_emoji": "🥥"
           }
         },
         "category-3": {
           "type": "category",
           "settings": {
-            "title": "Delta-9 Drinks",
+            "title": "THC Drinks",
             "description": "House-made cannabis drinks and specialty shots.",
             "meta": "Delta-9 • Shots",
-            "link": "shopify://pages/thc-drinks",
+            "link": "/pages/thc-drinks",
             "fallback_emoji": "✨"
           }
         },
@@ -70,48 +70,38 @@
             "title": "Draft Pours",
             "description": "16oz pours from our rotating taps.",
             "meta": "8 on tap",
-            "link": "shopify://pages/draft-pours",
+            "link": "/pages/draft-pours",
             "fallback_emoji": "🍺"
           }
         },
         "category-5": {
           "type": "category",
           "settings": {
-            "title": "Edibles",
-            "description": "Premium gummies, chocolates, and baked goods.",
-            "meta": "Gummies • Chocolates",
-            "link": "shopify://pages/edibles",
-            "fallback_emoji": "🍬"
+            "title": "THC Shots",
+            "description": "Fast-acting liquid THC in various flavors.",
+            "meta": "2.5mg • 5mg • 10mg",
+            "link": "/pages/thc-shots",
+            "fallback_emoji": "💉"
           }
         },
         "category-6": {
           "type": "category",
           "settings": {
-            "title": "THC Shots",
-            "description": "Fast-acting liquid THC in various flavors.",
-            "meta": "2.5mg • 5mg • 10mg",
-            "link": "shopify://pages/thc-shots",
-            "fallback_emoji": "💉"
+            "title": "Canned Drinks",
+            "description": "Ready-to-drink canned beverages and energy drinks.",
+            "meta": "Energy • Relaxation",
+            "link": "/pages/canned-drinks",
+            "fallback_emoji": "🥤"
           }
         },
         "category-7": {
           "type": "category",
           "settings": {
-            "title": "Take-Home Items",
+            "title": "Take Home Items",
             "description": "Bulk kratom, kava, and botanical products.",
             "meta": "Bulk • Retail",
-            "link": "shopify://pages/take-home-items",
+            "link": "/pages/take-home-items",
             "fallback_emoji": "📦"
-          }
-        },
-        "category-8": {
-          "type": "category",
-          "settings": {
-            "title": "Fun Stuff & Merch",
-            "description": "WTF branded merchandise and accessories.",
-            "meta": "Apparel • Accessories",
-            "link": "shopify://pages/merchandise",
-            "fallback_emoji": "🎽"
           }
         }
       },
@@ -122,8 +112,7 @@
         "category-4",
         "category-5",
         "category-6",
-        "category-7",
-        "category-8"
+        "category-7"
       ],
       "settings": {
         "title": "Order your favorites",
