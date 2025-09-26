@@ -1,210 +1,128 @@
-{%- comment -%}
-  Kratom Teas — Size = variant; Flavor = line item property
-  Config:
-    - Set page metafield: namespace `wtf`, key `product_handle` → product handle to sell here.
-      If not set, defaults to 'custom-kratom-tea'.
-  Requirements:
-    - assets/wtf-variants.js (canonical variant resolver for Size chips)
-    - assets/wtf-ajax-cart.js (AJAX add-to-cart for [data-wtf-ajax] forms)
-    - layout/theme.liquid includes the cart count hydrator and the two assets once.
-{%- endcomment -%}
+{% comment %}
+  Kratom Teas Page - Professional Product Selection
+  Simplified template that works reliably
+{% endcomment %}
 
-{% section 'enhanced-drink-builder' %}
+<div class="page-width" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+  <header style="text-align: center; margin-bottom: 4rem;">
+    <a href="{{ routes.root_url }}" style="display: inline-block; margin-bottom: 2rem; padding: 1rem 2rem; border-radius: 2.5rem; border: 2px solid #ff6600; color: #ff6600; text-decoration: none; font-weight: 700; transition: all 0.3s ease;">
+      ← Back to Menu
+    </a>
+    <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Kratom Teas</h1>
+    <p style="font-size: 1.8rem; color: #4a4a4a; max-width: 60rem; margin: 0 auto;">Green, Red, White & Yellow strains with premium flavorings</p>
+  </header>
 
-{%- comment -%}
-  Styled flavor list (homepage card style)
-{%- endcomment -%}
-{% render 'wtf-drink-data' %}
-{%- capture items_json -%}{% render 'wtf-kratom-data' %}{%- endcapture -%}
-{%- # theme-check-disable UnknownFilter -%}
-{% assign kratom_items = items_json | parse_json %}
-{%- # theme-check-enable UnknownFilter -%}
-{% render 'wtf-collection-cards',
-  title: 'Kratom Teas',
-  subtitle: 'Green, Red, White & Yellow strains with premium flavorings',
-  items: kratom_items,
-  color: 'kratom',
-  back_url: routes.root_url
-%}
-
-{%- comment -%}
-  LEGACY builder UI below is now hidden from customers and only visible in Theme Editor for reference.
-  Remove entirely later if not needed.
-{%- endcomment -%}
-{% if request.design_mode %}
-{%- assign kratom_handle = page.metafields.wtf.product_handle | default: 'custom-kratom-tea' -%}
-{%- assign product = all_products[kratom_handle] -%}
-
-{%- if product == null -%}
-  <main id="MainContent" class="page-width" style="max-width:1100px;margin:0 auto;padding:16px;">
-    <h1>Kratom Teas</h1>
-    <p>
-      Product "<strong>{{ kratom_handle }}</strong>" not found. Set the page metafield
-      <code>wtf.product_handle</code> to a valid product handle and reload.
-    </p>
-  </main>
-{%- else -%}
-  <main id="MainContent" class="page-width" style="max-width:1100px;margin:0 auto;padding:16px;">
-    <header style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-      <img
-        src="{{ 'kratom_teas_150x150.jpg' | asset_url }}"
-        alt="Kratom Teas"
-        width="75"
-        height="75"
-        loading="eager"
-        decoding="async"
-        style="border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08);"
-      >
-      <div>
-        <h1 style="margin:0;font-weight:800;letter-spacing:.2px;">Kratom Teas</h1>
-        <div style="color:#666;">Choose a Size, pick a Flavor, add to cart.</div>
+  <div class="kratom-products-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr)); gap: 3rem; margin-bottom: 4rem;">
+    
+    <!-- Green Kratom -->
+    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
+      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border-radius: 50%; color: #fff;">
+        🍃
       </div>
-    </header>
+      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">Green Kratom</h3>
+      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Energizing and mood-lifting strain</p>
+      <p style="font-size: 1.3rem; color: #4caf50; font-weight: 600; text-transform: uppercase; background: rgba(76, 175, 80, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
+      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
+        Order Now
+      </a>
+    </div>
 
-    <form
-      action="{{ routes.cart_add_url }}"
-      method="post"
-      enctype="multipart/form-data"
-      data-wtf-ajax
-      style="display:block; background:#fff;border:1px solid #eee;border-radius:16px;padding:16px 16px 20px;box-shadow:0 6px 24px rgba(0,0,0,.06);"
-    >
-      {%- comment -%} Expose product JSON so wtf-variants.js doesn’t need to fetch {%- endcomment -%}
-      <script>
-        window.WTF_PRODUCT_JSON={{ product | json }};
-      </script>
+    <!-- Red Kratom -->
+    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
+      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #f44336 0%, #ef5350 100%); border-radius: 50%; color: #fff;">
+        🌿
+      </div>
+      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">Red Kratom</h3>
+      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Relaxing and calming strain</p>
+      <p style="font-size: 1.3rem; color: #f44336; font-weight: 600; text-transform: uppercase; background: rgba(244, 67, 54, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
+      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
+        Order Now
+      </a>
+    </div>
 
-      {%- comment -%} Size (variant option) — mapped by wtf-variants.js to hidden id {%- endcomment -%}
-      {%- assign size_option = '' -%}
-      {%- for opt in product.options_with_values -%}
-        {%- if opt.name == 'Size' or opt.name == 'size' -%}{%- assign size_option = opt -%}{%- endif -%}
-      {%- endfor -%}
+    <!-- White Kratom -->
+    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
+      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #607d8b 0%, #78909c 100%); border-radius: 50%; color: #fff;">
+        🍵
+      </div>
+      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">White Kratom</h3>
+      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Stimulating and focus-enhancing strain</p>
+      <p style="font-size: 1.3rem; color: #607d8b; font-weight: 600; text-transform: uppercase; background: rgba(96, 125, 139, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
+      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
+        Order Now
+      </a>
+    </div>
 
-      <section style="margin-bottom:14px;">
-        <label style="display:block;font-weight:700;margin-bottom:8px;">Size</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          {%- if size_option != blank -%}
-            {%- for val in size_option.values -%}
-              <button
-                type="button"
-                class="wtf-chip{% if forloop.first %} wtf-chip--active{% endif %}"
-                data-option="{{ size_option.name }}"
-                data-value="{{ val }}"
-                aria-label="Size {{ val }}"
-                aria-checked="{% if forloop.first %}true{% else %}false{% endif %}"
-                role="radio"
-              >
-                {{ val }}
-              </button>
-            {%- endfor -%}
-          {%- else -%}
-            <em>No Size option found on this product. Add a <strong>Size</strong> option to variants.</em>
-          {%- endif -%}
-        </div>
-      </section>
+    <!-- Yellow Kratom -->
+    <div class="product-card" style="background: #fff; border-radius: 2rem; padding: 3rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #e5e5e5;">
+      <div class="product-icon" style="width: 8rem; height: 8rem; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #ffc107 0%, #ffca28 100%); border-radius: 50%; color: #fff;">
+        ☀️
+      </div>
+      <h3 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem; text-transform: uppercase;">Yellow Kratom</h3>
+      <p style="font-size: 1.5rem; color: #4a4a4a; margin-bottom: 1.5rem; line-height: 1.6;">Balanced and smooth strain</p>
+      <p style="font-size: 1.3rem; color: #ffc107; font-weight: 600; text-transform: uppercase; background: rgba(255, 193, 7, 0.1); padding: 0.8rem 1.6rem; border-radius: 1.2rem; margin-bottom: 2rem;">Medium • Large • Gallon</p>
+      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.4rem 2.8rem; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(255, 102, 0, 0.3);">
+        Order Now
+      </a>
+    </div>
+  </div>
 
-      {%- comment -%} Flavor (Line Item Property) {%- endcomment -%}
-      {%- assign flavors = product.metafields.wtf.flavors -%}
-      {%- assign fallback_flavors = 'Mango,Strawberry,Blue Razz,Watermelon,Pineapple,Peach,Lemon,Lime,Orange,Grape'
-        | split: ','
-      -%}
+  <!-- Call to Action Section -->
+  <div style="background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff; margin-top: 4rem;">
+    <h2 style="font-size: 3.2rem; font-weight: 900; margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Ready to Order?</h2>
+    <p style="font-size: 1.8rem; margin-bottom: 2.5rem; opacity: 0.95;">Call us now or visit our Cape Coral location</p>
+    <div style="display: flex; gap: 2rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.8rem 3.6rem; background: #fff; color: #ff6600; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
+        📞 Call (239) 955-0314
+      </a>
+      <a href="{{ routes.root_url }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 1.8rem 3.6rem; background: transparent; color: #fff; text-decoration: none; border: 2px solid #fff; border-radius: 2.4rem; font-weight: 700; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease;">
+        🏠 Visit Location
+      </a>
+    </div>
+  </div>
+</div>
 
-      <section style="margin-bottom:14px;">
-        <label style="display:block;font-weight:700;margin-bottom:8px;">Flavor</label>
-        <input type="hidden" name="properties[Flavor]" id="kratomFlavor">
-        <div id="kratom-flavor-chips" style="display:flex;flex-wrap:wrap;gap:8px;">
-          {%- if flavors and flavors.size > 0 -%}
-            {%- for f in flavors -%}
-              <button
-                type="button"
-                class="wtf-chip{% if forloop.first %} wtf-chip--active{% endif %}"
-                data-flavor="{{ f | strip }}"
-              >
-                {{ f | strip }}
-              </button>
-            {%- endfor -%}
-          {%- else -%}
-            {%- for f in fallback_flavors -%}
-              <button
-                type="button"
-                class="wtf-chip{% if forloop.first %} wtf-chip--active{% endif %}"
-                data-flavor="{{ f | strip }}"
-              >
-                {{ f | strip }}
-              </button>
-            {%- endfor -%}
-          {%- endif -%}
-        </div>
-      </section>
+<style>
+  .product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    border-color: #ff6600;
+  }
 
-      {%- comment -%} Quantity {%- endcomment -%}
-      <section style="margin-bottom:14px;">
-        <label style="display:block;font-weight:700;margin-bottom:8px;">Quantity</label>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <button
-            type="button"
-            class="wtf-chip"
-            onclick="(function(i){i.value=Math.max(1,parseInt(i.value||'1',10)-1)})(document.getElementById('kratomQty'))"
-          >
-            −
-          </button>
-          <input
-            id="kratomQty"
-            type="number"
-            name="quantity"
-            value="1"
-            min="1"
-            style="width:90px;text-align:center;padding:10px;border:1px solid #ddd;border-radius:999px;"
-          >
-          <button
-            type="button"
-            class="wtf-chip"
-            onclick="(function(i){i.value=Math.max(1,parseInt(i.value||'1',10)+1)})(document.getElementById('kratomQty'))"
-          >
-            +
-          </button>
-        </div>
-      </section>
+  .product-card a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 102, 0, 0.4);
+    background: linear-gradient(135deg, #e55a00 0%, #cc5200 100%);
+  }
 
-      {%- comment -%} Variant target + submit {%- endcomment -%}
-      <input type="hidden" name="id" id="kratomVariantId" value="">
-      <button type="submit" class="wtf-add-to-cart-btn" style="margin-top:6px;">
-        Add to Cart — <span id="kratom-price">{{ product.selected_or_first_available_variant.price | money }}</span>
-      </button>
-    </form>
-  </main>
-
-  {%- comment -%} Tiny helper for LIP flavor chips + respond to variant updates (price/img) {%- endcomment -%}
-  <script>
-    (function () {
-      // Flavor chips → properties[Flavor]
-      const chipsWrap = document.getElementById('kratom-flavor-chips');
-      const input = document.getElementById('kratomFlavor');
-      function setFlavor(val) {
-        if (!input) return;
-        input.value = val;
-        chipsWrap.querySelectorAll('.wtf-chip[data-flavor]').forEach((b) => {
-          b.classList.toggle('wtf-chip--active', b.getAttribute('data-flavor') === val);
-          b.setAttribute('aria-checked', b.classList.contains('wtf-chip--active') ? 'true' : 'false');
-        });
-      }
-      if (chipsWrap) {
-        const first = chipsWrap.querySelector('.wtf-chip[data-flavor]');
-        if (first) setFlavor(first.getAttribute('data-flavor'));
-        chipsWrap.addEventListener('click', (e) => {
-          const b = e.target.closest('.wtf-chip[data-flavor]');
-          if (!b) return;
-          setFlavor(b.getAttribute('data-flavor'));
-        });
-      }
-      // Update UI on variant change (from wtf-variants.js)
-      document.addEventListener('wtf:variant:change', function (e) {
-        var v = e.detail && e.detail.variant;
-        if (!v) return;
-        var money = (v.price / 100).toLocaleString(undefined, { style: 'currency', currency: 'USD' });
-        var priceEl = document.getElementById('kratom-price');
-        if (priceEl) priceEl.textContent = money;
-      });
-    })();
-  </script>
-{%- endif -%}
-{%- endif -%}
+  @media (max-width: 768px) {
+    .kratom-products-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    
+    h1 {
+      font-size: 3rem !important;
+    }
+    
+    .product-card {
+      padding: 2rem !important;
+    }
+    
+    .product-icon {
+      width: 6rem !important;
+      height: 6rem !important;
+      font-size: 3rem !important;
+    }
+    
+    div[style*="display: flex"] {
+      flex-direction: column !important;
+      gap: 1.5rem !important;
+    }
+    
+    div[style*="display: flex"] a {
+      width: 100% !important;
+      max-width: 30rem !important;
+    }
+  }
+</style>
