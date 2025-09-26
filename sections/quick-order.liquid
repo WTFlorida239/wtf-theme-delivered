@@ -1,0 +1,507 @@
+{% comment %}
+  Quick Order Section for WTF Theme
+  Simplified ordering process for easy checkout
+{% endcomment %}
+
+<div class="quick-order color-background-1 gradient">
+  <div class="page-width">
+    <div class="quick-order__header">
+      <h2 class="quick-order__title">{{ section.settings.title | default: 'Quick Order' | escape }}</h2>
+      <p class="quick-order__subtitle">{{ section.settings.subtitle | default: 'Skip the wait - order ahead for pickup' | escape }}</p>
+    </div>
+
+    <div class="quick-order__container">
+      <div class="quick-order__options">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'quick_item' %}
+              <div class="quick-order__item" {{ block.shopify_attributes }}>
+                <div class="quick-order__item-content">
+                  {% if block.settings.item_image %}
+                    <div class="quick-order__item-image">
+                      <img src="{{ block.settings.item_image | image_url: width: 100 }}" 
+                           alt="{{ block.settings.title }}" 
+                           loading="lazy" />
+                    </div>
+                  {% endif %}
+                  <div class="quick-order__item-info">
+                    <h3 class="quick-order__item-title">{{ block.settings.title | escape }}</h3>
+                    {% if block.settings.description %}
+                      <p class="quick-order__item-description">{{ block.settings.description | escape }}</p>
+                    {% endif %}
+                    <span class="quick-order__item-price">${{ block.settings.price | default: '8.00' }}</span>
+                  </div>
+                  <div class="quick-order__item-actions">
+                    <button type="button" 
+                            class="quick-order__add-btn btn--primary"
+                            data-product-id="{{ block.settings.product_id }}"
+                            data-variant-id="{{ block.settings.variant_id }}"
+                            data-price="{{ block.settings.price }}">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+
+      <div class="quick-order__cart-summary">
+        <div class="quick-order__cart-content">
+          <h3 class="quick-order__cart-title">Your Order</h3>
+          <div class="quick-order__cart-items" id="quick-cart-items">
+            <p class="quick-order__empty-cart">Your cart is empty</p>
+          </div>
+          <div class="quick-order__cart-total">
+            <div class="quick-order__total-line">
+              <span>Subtotal:</span>
+              <span id="quick-cart-total">$0.00</span>
+            </div>
+          </div>
+          <div class="quick-order__cart-actions">
+            <button type="button" 
+                    class="quick-order__checkout-btn btn--primary"
+                    onclick="window.location.href='/cart'">
+              Proceed to Checkout
+            </button>
+            <button type="button" 
+                    class="quick-order__call-btn btn--secondary"
+                    onclick="window.location.href='tel:(239) 955-0314'">
+              Call to Order: (239) 955-0314
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quick-order {
+    padding: var(--spacing-sections-mobile) 0;
+    background: linear-gradient(135deg, #fff5f0 0%, #fff 100%);
+  }
+
+  @media screen and (min-width: 750px) {
+    .quick-order {
+      padding: var(--spacing-sections-desktop) 0;
+    }
+  }
+
+  .quick-order__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .quick-order__title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: rgb(var(--color-base-text));
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .quick-order__subtitle {
+    font-size: 1.8rem;
+    color: rgba(var(--color-base-text), 0.7);
+    margin: 0;
+  }
+
+  .quick-order__container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .quick-order__container {
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+    }
+  }
+
+  .quick-order__options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media screen and (min-width: 550px) {
+    .quick-order__options {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .quick-order__item {
+    background: white;
+    border-radius: 1.2rem;
+    padding: 2rem;
+    border: 1px solid rgba(var(--color-base-text), 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .quick-order__item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .quick-order__item-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .quick-order__item-image {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+
+  .quick-order__item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .quick-order__item-info {
+    flex: 1;
+  }
+
+  .quick-order__item-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: rgb(var(--color-base-text));
+  }
+
+  .quick-order__item-description {
+    font-size: 1.3rem;
+    color: rgba(var(--color-base-text), 0.7);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .quick-order__item-price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ff6600;
+  }
+
+  .quick-order__item-actions {
+    flex-shrink: 0;
+  }
+
+  .quick-order__add-btn {
+    padding: 1rem 1.5rem;
+    font-size: 1.4rem;
+    white-space: nowrap;
+  }
+
+  .quick-order__cart-summary {
+    background: white;
+    border-radius: 1.6rem;
+    padding: 2.4rem;
+    border: 1px solid rgba(var(--color-base-text), 0.1);
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+  }
+
+  .quick-order__cart-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: rgb(var(--color-base-text));
+  }
+
+  .quick-order__cart-items {
+    margin-bottom: 2rem;
+    min-height: 100px;
+  }
+
+  .quick-order__empty-cart {
+    text-align: center;
+    color: rgba(var(--color-base-text), 0.5);
+    font-style: italic;
+    margin: 2rem 0;
+  }
+
+  .quick-order__cart-total {
+    border-top: 2px solid #ff6600;
+    padding-top: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .quick-order__total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .quick-order__cart-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .quick-order__checkout-btn,
+  .quick-order__call-btn {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 550px) {
+    .quick-order__item-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .quick-order__item-actions {
+      width: 100%;
+    }
+
+    .quick-order__add-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const quickCart = {
+    items: [],
+    total: 0,
+    
+    addItem: function(id, title, price) {
+      const existingItem = this.items.find(item => item.id === id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        this.items.push({
+          id: id,
+          title: title,
+          price: parseFloat(price),
+          quantity: 1
+        });
+      }
+      this.updateDisplay();
+    },
+    
+    removeItem: function(id) {
+      this.items = this.items.filter(item => item.id !== id);
+      this.updateDisplay();
+    },
+    
+    updateDisplay: function() {
+      const cartItems = document.getElementById('quick-cart-items');
+      const cartTotal = document.getElementById('quick-cart-total');
+      
+      if (this.items.length === 0) {
+        cartItems.innerHTML = '<p class="quick-order__empty-cart">Your cart is empty</p>';
+        this.total = 0;
+      } else {
+        let itemsHTML = '';
+        this.total = 0;
+        
+        this.items.forEach(item => {
+          const itemTotal = item.price * item.quantity;
+          this.total += itemTotal;
+          
+          itemsHTML += `
+            <div class="quick-cart-item">
+              <div class="quick-cart-item__info">
+                <span class="quick-cart-item__title">${item.title}</span>
+                <span class="quick-cart-item__quantity">x${item.quantity}</span>
+              </div>
+              <div class="quick-cart-item__price">$${itemTotal.toFixed(2)}</div>
+              <button type="button" class="quick-cart-item__remove" onclick="quickCart.removeItem('${item.id}')">×</button>
+            </div>
+          `;
+        });
+        
+        cartItems.innerHTML = itemsHTML;
+      }
+      
+      cartTotal.textContent = `$${this.total.toFixed(2)}`;
+    }
+  };
+  
+  // Add event listeners to add buttons
+  document.querySelectorAll('.quick-order__add-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const title = this.closest('.quick-order__item').querySelector('.quick-order__item-title').textContent;
+      const price = this.dataset.price || '8.00';
+      const id = this.dataset.productId || Math.random().toString(36).substr(2, 9);
+      
+      quickCart.addItem(id, title, price);
+      
+      // Visual feedback
+      this.textContent = 'Added!';
+      setTimeout(() => {
+        this.textContent = 'Add to Cart';
+      }, 1000);
+    });
+  });
+  
+  // Make quickCart globally available
+  window.quickCart = quickCart;
+});
+</script>
+
+<style>
+  .quick-cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
+  }
+
+  .quick-cart-item:last-child {
+    border-bottom: none;
+  }
+
+  .quick-cart-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .quick-cart-item__title {
+    font-weight: 500;
+    font-size: 1.4rem;
+  }
+
+  .quick-cart-item__quantity {
+    font-size: 1.2rem;
+    color: rgba(var(--color-base-text), 0.6);
+  }
+
+  .quick-cart-item__price {
+    font-weight: 600;
+    color: #ff6600;
+    margin-right: 1rem;
+  }
+
+  .quick-cart-item__remove {
+    background: none;
+    border: none;
+    color: rgba(var(--color-base-text), 0.5);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+  }
+
+  .quick-cart-item__remove:hover {
+    color: #ff6600;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Quick Order",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Quick Order"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Skip the wait - order ahead for pickup"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quick_item",
+      "name": "Quick Order Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Item Name",
+          "default": "Popular Item"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Brief description"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "8.00"
+        },
+        {
+          "type": "image_picker",
+          "id": "item_image",
+          "label": "Item Image"
+        },
+        {
+          "type": "text",
+          "id": "product_id",
+          "label": "Product ID (optional)"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quick Order",
+      "blocks": [
+        {
+          "type": "quick_item",
+          "settings": {
+            "title": "Medium Kava (16oz)",
+            "description": "Traditional kava blend",
+            "price": "10.00"
+          }
+        },
+        {
+          "type": "quick_item",
+          "settings": {
+            "title": "Kratom Tea (Green)",
+            "description": "Premium green kratom",
+            "price": "8.00"
+          }
+        },
+        {
+          "type": "quick_item",
+          "settings": {
+            "title": "Delta-9 Shot",
+            "description": "5mg THC shot",
+            "price": "15.00"
+          }
+        },
+        {
+          "type": "quick_item",
+          "settings": {
+            "title": "Draft Pour (16oz)",
+            "description": "Rotating tap selection",
+            "price": "12.00"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
