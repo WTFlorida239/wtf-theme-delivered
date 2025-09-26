@@ -136,9 +136,9 @@
               <span class="order-summary__total-label">Total:</span>
               <span class="order-summary__total-price" data-total-price>$0.00</span>
             </div>
-            <button type="submit" class="order-summary__add-to-cart btn btn--primary" disabled>
-              Add to Cart
-            </button>
+        <button type="submit" class="order-summary__add-to-cart wtf-add-to-cart-btn" disabled>
+          Add to Cart
+        </button>
           </div>
         </div>
       </form>
@@ -428,22 +428,83 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 990px) {
   .drink-builder__content {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
   
+  .drink-builder__container {
+    padding: 0 1rem;
+  }
+  
+  .order-summary {
+    position: static;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .drink-builder__title {
+    font-size: 2rem;
+  }
+  
   .drink-builder__options {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .flavor-pumps {
     grid-template-columns: 1fr;
   }
   
+  .drink-builder__step {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .drink-option__label {
+    padding: 1rem;
+  }
+  
+  .flavor-pump {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .flavor-pump__controls {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .drink-builder__container {
+    padding: 0 0.5rem;
+  }
+  
+  .drink-builder__title {
+    font-size: 1.8rem;
+  }
+  
+  .drink-builder__step-title {
+    font-size: 1.3rem;
+  }
+  
   .order-summary {
-    position: static;
+    padding: 1.5rem;
+  }
+  
+  .flavor-pump__label {
+    font-size: 0.9rem;
+    min-width: auto;
+  }
+  
+  .addon-option__label {
+    padding: 0.75rem;
+    font-size: 0.9rem;
   }
 }
 </style>

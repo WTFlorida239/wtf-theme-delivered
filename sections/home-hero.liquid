@@ -1,6 +1,6 @@
 {% liquid
-  assign hero_image = section.settings.hero_image
-  assign logo_image = section.settings.logo_image
+  assign hero_image = section.settings.hero_image | default: 'wtf_storefront_hero_800x400.png' | asset_url
+  assign logo_image = section.settings.logo_image | default: 'wtf_logo_circular.png' | asset_url
   assign button_link = section.settings.button_link | default: 'tel:(239) 955-0314'
   assign button_label = section.settings.button_label | default: 'Call (239) 955-0314'
   assign hero_alt = section.settings.hero_image_alt | default: section.settings.heading | default: shop.name
@@ -135,19 +135,23 @@
 
 <section class="home-hero">
   <div class="home-hero__inner page-width">
-    {% if hero_image %}
-      <div class="home-hero__media">
-        {{ hero_image | image_url: width: 1600 | image_tag: alt: hero_alt, loading: 'eager', decoding: 'async', fetchpriority: 'high' }}
-        {% if section.settings.hero_badge != blank %}
-          <span class="home-hero__badge">{{ section.settings.hero_badge }}</span>
+    <div class="home-hero__media">
+      {% if section.settings.hero_image %}
+        {{ section.settings.hero_image | image_url: width: 1600 | image_tag: alt: hero_alt, loading: 'eager', decoding: 'async', fetchpriority: 'high' }}
+      {% else %}
+        <img src="{{ 'wtf_storefront_hero_800x400.png' | asset_url }}" alt="{{ hero_alt }}" loading="eager" decoding="async" fetchpriority="high" />
+      {% endif %}
+      {% if section.settings.hero_badge != blank %}
+        <span class="home-hero__badge">{{ section.settings.hero_badge }}</span>
+      {% endif %}
+      <span class="home-hero__logo">
+        {% if section.settings.logo_image %}
+          {{ section.settings.logo_image | image_url: width: 300 | image_tag: alt: logo_alt, loading: 'lazy', decoding: 'async' }}
+        {% else %}
+          <img src="{{ 'wtf_logo_circular.png' | asset_url }}" alt="{{ logo_alt }}" width="300" loading="lazy" decoding="async" />
         {% endif %}
-        {% if logo_image %}
-          <span class="home-hero__logo">
-            {{ logo_image | image_url: width: 300 | image_tag: alt: logo_alt, loading: 'lazy', decoding: 'async' }}
-          </span>
-        {% endif %}
-      </div>
-    {% endif %}
+      </span>
+    </div>
 
     {% if section.settings.heading != blank %}
       <h1 class="home-hero__heading">{{ section.settings.heading }}</h1>
@@ -162,7 +166,7 @@
     {% endif %}
 
     {% if button_link != blank %}
-      <a class="home-hero__cta" href="{{ button_link }}">{{ button_label }}</a>
+      <a class="home-hero__cta btn--primary" href="{{ button_link }}">{{ button_label }}</a>
     {% endif %}
 
     {% if section.blocks.size > 0 %}

@@ -297,21 +297,122 @@
   padding: 0.5rem;
 }
 
-@media (max-width: 768px) {
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 990px) {
   .header__container {
     padding: 1rem;
   }
   
+  .header__nav-list {
+    gap: 1rem;
+  }
+  
+  .header__logo-image {
+    max-height: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header__container {
+    padding: 1rem;
+    position: relative;
+  }
+  
   .header__nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #eee;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     display: none;
+    z-index: 1000;
+  }
+  
+  .header__nav.active {
+    display: block;
+  }
+  
+  .header__nav-list {
+    flex-direction: column;
+    gap: 0;
+    padding: 1rem 0;
+  }
+  
+  .header__nav-item {
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .header__nav-link {
+    display: block;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .header__dropdown {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    border: none;
+    background: #f8f8f8;
+    margin: 0;
+  }
+  
+  .header__dropdown-link {
+    padding: 0.75rem 3rem;
+    font-size: 0.95rem;
   }
   
   .header__mobile-toggle {
     display: flex;
   }
   
+  .header__mobile-toggle.active .header__mobile-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .header__mobile-toggle.active .header__mobile-line:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .header__mobile-toggle.active .header__mobile-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+  
   .header__actions {
     gap: 0.5rem;
+  }
+  
+  .header__search-drawer {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__container {
+    padding: 0.75rem;
+  }
+  
+  .header__logo-image {
+    max-height: 40px;
+  }
+  
+  .header__nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .header__dropdown-link {
+    padding: 0.5rem 2rem;
+    font-size: 0.9rem;
+  }
+  
+  .header__search-input {
+    padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+    font-size: 0.9rem;
   }
 }
 </style>
@@ -341,8 +442,24 @@ document.addEventListener('DOMContentLoaded', function() {
   // Handle mobile menu toggle
   if (mobileToggle && nav) {
     mobileToggle.addEventListener('click', function() {
-      nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+      nav.classList.toggle('active');
       this.classList.toggle('active');
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!nav.contains(event.target) && !mobileToggle.contains(event.target)) {
+        nav.classList.remove('active');
+        mobileToggle.classList.remove('active');
+      }
+    });
+    
+    // Close mobile menu when window is resized to desktop
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        nav.classList.remove('active');
+        mobileToggle.classList.remove('active');
+      }
     });
   }
   
