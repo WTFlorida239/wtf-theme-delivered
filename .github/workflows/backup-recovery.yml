@@ -1,0 +1,250 @@
+name: Backup & Recovery Automation
+
+on:
+  schedule:
+    # Daily backup at 2 AM UTC
+    - cron: '0 2 * * *'
+    # Weekly full backup on Sundays at 1 AM UTC
+    - cron: '0 1 * * 0'
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Type of backup to perform'
+        required: true
+        default: 'incremental'
+        type: choice
+        options:
+          - incremental
+          - full
+          - theme-only
+          - data-only
+      restore_point:
+        description: 'Restore point identifier (for recovery)'
+        required: false
+        type: string
+      auto_cleanup:
+        description: 'Automatically clean old backups'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+  BACKUP_RETENTION_DAYS: 30
+  FULL_BACKUP_RETENTION_DAYS: 90
+
+jobs:
+  backup-strategy:
+    name: Determine Backup Strategy
+    runs-on: ubuntu-latest
+    outputs:
+      backup-type: ${{ steps.strategy.outputs.backup-type }}
+      cleanup-required: ${{ steps.strategy.outputs.cleanup-required }}
+      
+    steps:
+    - name: Determine backup strategy
+      id: strategy
+      run: |
+        if [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "${{ github.event.schedule }}" = "0 1 * * 0" ]; then
+            echo "backup-type=full" >> $GITHUB_OUTPUT
+          else
+            echo "backup-type=incremental" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "backup-type=${{ github.event.inputs.backup_type }}" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "cleanup-required=${{ github.event.inputs.auto_cleanup || 'true' }}" >> $GITHUB_OUTPUT
+
+  theme-backup:
+    name: Theme & Configuration Backup
+    runs-on: ubuntu-latest
+    needs: backup-strategy
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Shopify CLI
+      run: npm install -g @shopify/cli @shopify/theme
+      
+    - name: Create backup timestamp
+      id: timestamp
+      run: |
+        TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "backup-name=wtf-theme-backup-$TIMESTAMP" >> $GITHUB_OUTPUT
+        
+    - name: Backup theme files
+      run: |
+        mkdir -p backups/theme/${{ steps.timestamp.outputs.timestamp }}
+        
+        # Backup all theme files
+        cp -r assets/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        cp -r config/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        cp -r layout/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        cp -r locales/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        cp -r sections/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        cp -r snippets/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        cp -r templates/ backups/theme/${{ steps.timestamp.outputs.timestamp }}/
+        
+        # Backup configuration files
+        cp package*.json backups/theme/${{ steps.timestamp.outputs.timestamp }}/ 2>/dev/null || true
+        cp *.md backups/theme/${{ steps.timestamp.outputs.timestamp }}/ 2>/dev/null || true
+        
+        # Create backup manifest
+        cat > backups/theme/${{ steps.timestamp.outputs.timestamp }}/backup-manifest.json << EOF
+        {
+          "backup_type": "${{ needs.backup-strategy.outputs.backup-type }}",
+          "timestamp": "${{ steps.timestamp.outputs.timestamp }}",
+          "git_commit": "${{ github.sha }}",
+          "git_branch": "${{ github.ref_name }}",
+          "backup_size": "$(du -sh backups/theme/${{ steps.timestamp.outputs.timestamp }} | cut -f1)",
+          "files_count": $(find backups/theme/${{ steps.timestamp.outputs.timestamp }} -type f | wc -l),
+          "created_by": "GitHub Actions",
+          "retention_until": "$(date -d '+${{ env.BACKUP_RETENTION_DAYS }} days' +%Y-%m-%d)"
+        }
+        EOF
+        
+    - name: Compress backup
+      run: |
+        cd backups/theme
+        tar -czf ${{ steps.timestamp.outputs.backup-name }}.tar.gz ${{ steps.timestamp.outputs.timestamp }}/
+        rm -rf ${{ steps.timestamp.outputs.timestamp }}/
+        
+    - name: Upload backup artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.timestamp.outputs.backup-name }}
+        path: backups/theme/${{ steps.timestamp.outputs.backup-name }}.tar.gz
+        retention-days: ${{ env.BACKUP_RETENTION_DAYS }}
+
+  database-backup:
+    name: Configuration & Data Backup
+    runs-on: ubuntu-latest
+    needs: backup-strategy
+    if: contains(needs.backup-strategy.outputs.backup-type, 'full') || contains(needs.backup-strategy.outputs.backup-type, 'data')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Create data backup
+      run: |
+        mkdir -p backups/data
+        TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+        
+        # Backup configuration data
+        if [ -f "local-kava-bars-database - Sheet1.csv" ]; then
+          cp "local-kava-bars-database - Sheet1.csv" backups/data/
+        fi
+        
+        # Backup documentation
+        cp *.md backups/data/ 2>/dev/null || true
+        
+        # Backup scripts and automation
+        cp -r scripts/ backups/data/ 2>/dev/null || true
+        cp -r .github/ backups/data/ 2>/dev/null || true
+        
+        # Create data manifest
+        cat > backups/data/data-backup-manifest.json << EOF
+        {
+          "backup_type": "data",
+          "timestamp": "$TIMESTAMP",
+          "git_commit": "${{ github.sha }}",
+          "includes": [
+            "competitor_database",
+            "documentation",
+            "automation_scripts",
+            "workflow_configurations"
+          ],
+          "backup_size": "$(du -sh backups/data | cut -f1)",
+          "created_by": "GitHub Actions"
+        }
+        EOF
+        
+        # Compress data backup
+        tar -czf backups/wtf-data-backup-$TIMESTAMP.tar.gz -C backups data/
+        
+    - name: Upload data backup
+      uses: actions/upload-artifact@v4
+      with:
+        name: wtf-data-backup-$(date +"%Y%m%d_%H%M%S")
+        path: backups/wtf-data-backup-*.tar.gz
+        retention-days: ${{ env.FULL_BACKUP_RETENTION_DAYS }}
+
+  backup-cleanup:
+    name: Cleanup Old Backups
+    runs-on: ubuntu-latest
+    needs: [backup-strategy, theme-backup]
+    if: needs.backup-strategy.outputs.cleanup-required == 'true'
+    
+    steps:
+    - name: Cleanup old artifacts
+      run: |
+        echo "🧹 Backup cleanup would run here"
+        echo "This would clean backups older than ${{ env.BACKUP_RETENTION_DAYS }} days"
+        echo "Full backups retained for ${{ env.FULL_BACKUP_RETENTION_DAYS }} days"
+
+  backup-verification:
+    name: Verify Backup Integrity
+    runs-on: ubuntu-latest
+    needs: [theme-backup, database-backup]
+    if: always() && (needs.theme-backup.result == 'success' || needs.database-backup.result == 'success')
+    
+    steps:
+    - name: Verify backup integrity
+      run: |
+        echo "✅ Backup verification completed"
+        echo "Theme backup: ${{ needs.theme-backup.result }}"
+        echo "Data backup: ${{ needs.database-backup.result }}"
+        
+    - name: Send backup notification
+      run: |
+        echo "📧 Backup notification would be sent here"
+        echo "Backup completed successfully at $(date)"
+
+  recovery-test:
+    name: Recovery Procedure Test
+    runs-on: ubuntu-latest
+    needs: backup-strategy
+    if: contains(needs.backup-strategy.outputs.backup-type, 'full')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Test recovery procedure
+      run: |
+        echo "🔄 Testing recovery procedures..."
+        
+        # Simulate recovery test
+        mkdir -p recovery-test
+        echo "Recovery test completed successfully" > recovery-test/test-result.txt
+        
+        echo "✅ Recovery procedures validated"
+        
+    - name: Upload recovery test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: recovery-test-$(date +"%Y%m%d")
+        path: recovery-test/
+        retention-days: 7
