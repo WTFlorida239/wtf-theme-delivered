@@ -47,3 +47,5 @@ backup_*
 # Shopify CLI
 .shopify-cli/
 # (If this is a theme repo, keep .shopifyignore in the repo, but it only affects deploys, not Git.)
+backup_20250924_195108/
+backup_*/
