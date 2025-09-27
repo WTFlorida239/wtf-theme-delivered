@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "competitors:audit": "node scripts/competitors-audit.js",
-    "conflicts:scan": "node scripts/check-conflicts.js"
+    "conflicts:scan": "node scripts/conflicts-scan.js",
+    "order:readiness": "node scripts/order-readiness-check.js",
+    "theme:check": "shopify theme check --fail-level=error",
+    "health:check": "node scripts/github-actions-health-check.js"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
-  }
+  },
+  "description": "WTF | Welcome To Florida Shopify Theme"
 }

@@ -1,100 +1,68 @@
 #!/usr/bin/env node
 
 /**
- * Conflicts Scan Script
- * Scans for merge conflict markers and other potential issues
+ * WTF Theme Conflicts Scanner
+ * Scans for merge conflicts and code issues
  */
 
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔍 WTF Conflicts Scan');
-console.log('=====================');
+console.log('🔍 Scanning for conflicts and issues...');
 
-let conflictsFound = 0;
-let filesScanned = 0;
+let issues = 0;
+let warnings = 0;
 
-// Conflict markers to look for
-const conflictMarkers = [
-  '<<<<<<< HEAD',
-  '=======',
-  '>>>>>>> ',
-  '<<<<<<< ',
-  '|||||||| '
-];
-
-// File extensions to scan
-const scanExtensions = ['.liquid', '.js', '.css', '.scss', '.json', '.md', '.yml', '.yaml'];
-
-// Directories to ignore
-const ignoreDirs = ['node_modules', '.git', '.cache', 'dist', 'build'];
-
-function shouldScanFile(filePath) {
-  const ext = path.extname(filePath);
-  return scanExtensions.includes(ext);
-}
-
-function shouldIgnoreDir(dirName) {
-  return ignoreDirs.includes(dirName);
-}
-
-function scanFile(filePath) {
-  try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    const lines = content.split('\n');
+// Check for merge conflict markers
+function scanForConflicts(dir) {
+  const files = fs.readdirSync(dir, { withFileTypes: true });
+  
+  for (const file of files) {
+    const fullPath = path.join(dir, file.name);
     
-    lines.forEach((line, index) => {
-      conflictMarkers.forEach(marker => {
-        if (line.includes(marker)) {
-          console.log(`❌ Conflict marker found in ${filePath}:${index + 1}`);
-          console.log(`   ${line.trim()}`);
-          conflictsFound++;
+    if (file.isDirectory() && !file.name.startsWith('.') && file.name !== 'node_modules') {
+      scanForConflicts(fullPath);
+    } else if (file.isFile() && (file.name.endsWith('.liquid') || file.name.endsWith('.js') || file.name.endsWith('.css'))) {
+      try {
+        const content = fs.readFileSync(fullPath, 'utf8');
+        
+        // Check for merge conflict markers
+        if (content.includes('<<<<<<<') || content.includes('>>>>>>>') || content.includes('=======')) {
+          console.log(`❌ Merge conflict found in: ${fullPath}`);
+          issues++;
         }
-      });
-    });
-    
-    filesScanned++;
-  } catch (error) {
-    console.log(`⚠️  Could not scan ${filePath}: ${error.message}`);
-  }
-}
-
-function scanDirectory(dirPath) {
-  try {
-    const items = fs.readdirSync(dirPath);
-    
-    items.forEach(item => {
-      const itemPath = path.join(dirPath, item);
-      const stat = fs.statSync(itemPath);
-      
-      if (stat.isDirectory()) {
-        if (!shouldIgnoreDir(item)) {
-          scanDirectory(itemPath);
+        
+        // Check for TODO/FIXME comments
+        const todoMatches = content.match(/TODO|FIXME|XXX/gi);
+        if (todoMatches) {
+          console.log(`⚠️  ${todoMatches.length} TODO/FIXME items in: ${file.name}`);
+          warnings += todoMatches.length;
         }
-      } else if (stat.isFile()) {
-        if (shouldScanFile(itemPath)) {
-          scanFile(itemPath);
-        }
+        
+      } catch (error) {
+        console.warn(`Warning: Could not read ${fullPath}`);
       }
-    });
-  } catch (error) {
-    console.log(`⚠️  Could not scan directory ${dirPath}: ${error.message}`);
+    }
   }
 }
 
-// Start scanning from current directory
-console.log('Scanning for merge conflict markers...\n');
-scanDirectory('.');
-
-console.log('\n📊 Scan Results:');
-console.log(`Files scanned: ${filesScanned}`);
-console.log(`Conflicts found: ${conflictsFound}`);
-
-if (conflictsFound === 0) {
-  console.log('✅ No merge conflict markers found!');
-  process.exit(0);
-} else {
-  console.log('❌ Merge conflict markers detected!');
-  console.log('Please resolve conflicts before proceeding.');
+// Run the scan
+try {
+  scanForConflicts('.');
+  
+  console.log(`\n📊 Conflicts scan complete:`);
+  console.log(`   Issues: ${issues}`);
+  console.log(`   Warnings: ${warnings}`);
+  
+  if (issues > 0) {
+    console.log('❌ Conflicts scan failed - merge conflicts detected');
+    process.exit(1);
+  } else {
+    console.log('✅ Conflicts scan passed - no merge conflicts detected');
+    process.exit(0);
+  }
+  
+} catch (error) {
+  console.error('❌ Conflicts scan failed:', error.message);
   process.exit(1);
 }
