@@ -2,7 +2,7 @@
   THC Shots Builder - Same 4 Rotating Flavors as THC Drinks
 {% endcomment %}
 
-{% assign thc_flavors = 'Tropical Mango,Berry Blast,Citrus Punch,Grape Escape' | split: ',' %}
+{% assign thc_flavors = 'Coconut,Pineapple,Mango,Passion Fruit,Vanilla,Chocolate,Strawberry,Blueberry,Lime,Lemon,Orange,Mint,Ginger,Cinnamon,Caramel,Tropical Mango,Berry Blast,Citrus Punch,Grape Escape,Peach,Watermelon,Cherry' | split: ',' %}
 
 <div class="thc-shots-builder" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
   <header style="text-align: center; margin-bottom: 4rem;">
@@ -13,23 +13,64 @@
 
   <form class="drink-customizer" style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
     
-    <!-- Same 4 Rotating Flavors as THC Drinks -->
+    <!-- Comprehensive Flavor Selection matching THC Drinks -->
     <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Current Rotating Flavors</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr)); gap: 2rem;">
-        {% for flavor in thc_flavors %}
-          <label class="thc-flavor-option" style="cursor: pointer;">
-            <input type="radio" name="thc_flavor" value="{{ flavor }}" {% if forloop.first %}checked{% endif %} style="display: none;">
-            <div style="background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); color: #fff; padding: 3rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-              <div style="font-size: 3rem; margin-bottom: 1rem;">💉</div>
-              <h4 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">{{ flavor }}</h4>
-              <p style="opacity: 0.9; font-size: 1.3rem;">25mg THC • Fast acting</p>
-            </div>
-          </label>
-        {% endfor %}
+      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Flavor</h3>
+      <div id="thc-shots-flavors">
+        <!-- Flavors will be populated by JavaScript with categorized display -->
       </div>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const flavorContainer = document.getElementById('thc-shots-flavors');
+          
+          // Same categorized flavor list as THC drinks
+          const flavorCategories = {
+            'Tropical': ['Coconut', 'Pineapple', 'Mango', 'Passion Fruit', 'Tropical Mango'],
+            'Citrus': ['Lime', 'Lemon', 'Orange', 'Citrus Punch'],
+            'Berry': ['Strawberry', 'Blueberry', 'Berry Blast', 'Cherry', 'Watermelon'],
+            'Classic': ['Vanilla', 'Chocolate', 'Caramel', 'Mint'],
+            'Specialty': ['Ginger', 'Cinnamon', 'Peach', 'Grape Escape']
+          };
+          
+          flavorContainer.innerHTML = '';
+          
+          Object.entries(flavorCategories).forEach(([category, flavors]) => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.style.marginBottom = '3rem';
+            categoryDiv.innerHTML = `<h4 style="font-size: 1.8rem; font-weight: 700; color: #333; margin-bottom: 1.5rem; text-align: center; padding: 1rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 1.5rem; border: 2px solid #dee2e6;">${category}</h4>`;
+            
+            const categoryGrid = document.createElement('div');
+            categoryGrid.style.display = 'grid';
+            categoryGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(20rem, 1fr))';
+            categoryGrid.style.gap = '1.5rem';
+            
+            flavors.forEach((flavor, index) => {
+              const label = document.createElement('label');
+              label.className = 'thc-flavor-option';
+              label.style.cursor = 'pointer';
+              
+              const isFirst = category === 'Tropical' && index === 0;
+              
+              label.innerHTML = `
+                <input type="radio" name="thc_flavor" value="${flavor}" ${isFirst ? 'checked' : ''} style="display: none;">
+                <div style="background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
+                  <div style="font-size: 2.5rem; margin-bottom: 1rem;">💉</div>
+                  <h4 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem;">${flavor}</h4>
+                  <p style="opacity: 0.9; font-size: 1.2rem;">25mg THC • Fast acting</p>
+                </div>
+              `;
+              
+              categoryGrid.appendChild(label);
+            });
+            
+            categoryDiv.appendChild(categoryGrid);
+            flavorContainer.appendChild(categoryDiv);
+          });
+        });
+      </script>
       <div style="text-align: center; margin-top: 2rem;">
-        <p style="font-size: 1.4rem; color: #666; font-style: italic;">Same flavors as our THC drinks - rotates weekly</p>
+        <p style="font-size: 1.4rem; color: #666; font-style: italic;">Same comprehensive flavor selection as our THC drinks and kava beverages</p>
       </div>
     </div>
 

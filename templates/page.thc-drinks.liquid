@@ -8,31 +8,183 @@
     <style>
       /* ——— Base / Layout ——— */
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; line-height: 1.6; color:#333; }
-      .header { background: #ff6600; color: #fff; padding: 15px 0; text-align: center; font-size: 24px; font-weight: 700; }
-      .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-      .back-link { display: inline-block; color: #ff6600; text-decoration: none; font-weight: 700; font-size: 16px; margin-bottom: 20px; padding: 10px 15px; border: 2px solid #ff6600; border-radius: 5px; transition: all .2s ease; }
-      .back-link:hover { background: #ff6600; color: #fff; }
-      .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
-      .product-image { width: 100%; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,.1); height:auto; }
-      .product-details { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
-      .product-title { font-size: 32px; margin-bottom: 10px; font-weight: 800; }
-      .product-price { font-size: 24px; color: #ff6600; font-weight: 800; margin-bottom: 15px; }
-      .product-description { color: #666; margin-bottom: 30px; font-size: 16px; }
-      .selection-section { margin: 30px 0; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+        line-height: 1.6; 
+        color:#333; 
+        min-height: 100vh;
+      }
+      .header { 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        padding: 20px 0; 
+        text-align: center; 
+        font-size: 28px; 
+        font-weight: 800; 
+        box-shadow: 0 4px 20px rgba(255,102,0,0.3);
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+      .back-link { 
+        display: inline-block; 
+        color: #ff6600; 
+        text-decoration: none; 
+        font-weight: 700; 
+        font-size: 16px; 
+        margin-bottom: 30px; 
+        padding: 12px 20px; 
+        border: 3px solid #ff6600; 
+        border-radius: 25px; 
+        transition: all .3s ease; 
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(255,102,0,0.2);
+      }
+      .back-link:hover { 
+        background: #ff6600; 
+        color: #fff; 
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4);
+      }
+      .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+      .product-image { 
+        width: 100%; 
+        max-width: 400px; 
+        border-radius: 20px; 
+        box-shadow: 0 8px 30px rgba(0,0,0,.15); 
+        height:auto; 
+        transition: transform .3s ease;
+      }
+      .product-image:hover { transform: scale(1.02); }
+      .product-details { 
+        background: #fff; 
+        padding: 40px; 
+        border-radius: 20px; 
+        box-shadow: 0 8px 30px rgba(0,0,0,.1); 
+        border: 1px solid #f0f0f0;
+      }
+      .product-title { 
+        font-size: 36px; 
+        margin-bottom: 15px; 
+        font-weight: 900; 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .product-price { 
+        font-size: 28px; 
+        color: #ff6600; 
+        font-weight: 800; 
+        margin-bottom: 20px; 
+        text-shadow: 0 2px 4px rgba(255,102,0,0.2);
+      }
+      .product-description { color: #666; margin-bottom: 35px; font-size: 17px; line-height: 1.7; }
+      .selection-section { 
+        margin: 35px 0; 
+        border-bottom: 2px solid #f0f0f0; 
+        padding-bottom: 25px; 
+        transition: all .3s ease;
+      }
       .selection-section:last-child { border-bottom: none; }
-      .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; }
-      .info-box { background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
-      .age-warning { background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; border: 1px solid #ffeaa7; }
+      .section-title { 
+        font-size: 20px; 
+        font-weight: 800; 
+        margin-bottom: 18px; 
+        color: #333;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+      .info-box { 
+        background: linear-gradient(135deg, #e7f3ff 0%, #d1ecf1 100%); 
+        padding: 18px; 
+        border-radius: 12px; 
+        margin-bottom: 18px; 
+        font-size: 15px; 
+        border: 1px solid #bee5eb;
+        box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+      }
+      .age-warning { 
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
+        color: #856404; 
+        padding: 18px; 
+        border-radius: 12px; 
+        margin-bottom: 18px; 
+        font-size: 15px; 
+        border: 2px solid #ffeaa7; 
+        box-shadow: 0 4px 15px rgba(255,193,7,0.2);
+        font-weight: 600;
+      }
 
       /* ——— Options ——— */
-      .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; }
-      .option-button { padding: 15px; border: 3px solid #ddd; border-radius: 8px; text-align: center; background: #fff; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; color:#333; font-size: 14px; min-height: 60px; display:flex; align-items:center; justify-content:center; flex-direction:column; }
-      .option-button:hover { border-color: #ff6600; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(255,102,0,0.2); }
-      .option-button.selected { background: #ff6600; color: #fff; border-color: #ff6600; font-weight: 800; }
+      .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; }
+      .option-button { 
+        padding: 18px; 
+        border: 3px solid #e0e0e0; 
+        border-radius: 15px; 
+        text-align: center; 
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); 
+        cursor: pointer; 
+        transition: all .3s ease; 
+        color:#333; 
+        font-size: 15px; 
+        font-weight: 600;
+        min-height: 70px; 
+        display:flex; 
+        align-items:center; 
+        justify-content:center; 
+        flex-direction:column; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+      }
+      .option-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left .5s ease;
+      }
+      .option-button:hover::before {
+        left: 100%;
+      }
+      .option-button:hover { 
+        border-color: #ff6600; 
+        transform: translateY(-3px); 
+        box-shadow: 0 8px 25px rgba(255,102,0,0.25); 
+        background: linear-gradient(135deg, #fff 0%, #fff5f0 100%);
+      }
+      .option-button.selected { 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        border-color: #ff6600; 
+        font-weight: 800; 
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,102,0,0.4);
+      }
 
       /* THC-specific colors */
       .thc-flavor.selected { background: #9c27b0; border-color: #9c27b0; }
+
+      /* Flavor Categories */
+      .flavor-category { margin-bottom: 25px; }
+      .flavor-category-title { 
+        font-size: 16px; 
+        font-weight: 700; 
+        color: #333; 
+        margin-bottom: 10px; 
+        text-align: center;
+        padding: 8px 15px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 20px;
+        border: 2px solid #dee2e6;
+      }
+      .flavor-category-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+        gap: 8px; 
+      }
 
       /* ——— Quantity ——— */
       .quantity-controls { display:flex; align-items:center; gap: 15px; }
@@ -45,9 +197,48 @@
       .comments-textarea:focus { border-color: #ff6600; outline: none; }
 
       /* ——— CTA / Status ——— */
-      .add-to-cart-btn { width: 100%; padding: 18px; background: #ff6600; color: #fff; border: none; border-radius: 8px; font-size: 18px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
-      .add-to-cart-btn:hover { background:#e55a00; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,102,0,0.3); }
-      .add-to-cart-btn:disabled { background:#ccc; cursor:not-allowed; transform:none; box-shadow:none; }
+      .add-to-cart-btn { 
+        width: 100%; 
+        padding: 22px; 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        border: none; 
+        border-radius: 25px; 
+        font-size: 20px; 
+        font-weight: 800; 
+        cursor: pointer; 
+        margin-top: 30px; 
+        transition: all .3s ease; 
+        box-shadow: 0 6px 20px rgba(255,102,0,0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+      }
+      .add-to-cart-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left .5s ease;
+      }
+      .add-to-cart-btn:hover::before {
+        left: 100%;
+      }
+      .add-to-cart-btn:hover { 
+        background: linear-gradient(135deg, #e55a00 0%, #d14900 100%); 
+        transform: translateY(-3px); 
+        box-shadow: 0 10px 30px rgba(255,102,0,0.4); 
+      }
+      .add-to-cart-btn:disabled { 
+        background: linear-gradient(135deg, #ccc 0%, #bbb 100%); 
+        cursor: not-allowed; 
+        transform: none; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+      }
       .success-message { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 15px 0; border: 1px solid #c3e6cb; display: none; font-size: 14px; }
       .success-message.show { display: block; }
       .cart-status { position: fixed; top: 20px; right: 20px; background:#ff6600; color:#fff; padding:10px 15px; border-radius:25px; font-weight:700; z-index:1000; box-shadow:0 4px 12px rgba(255,102,0,0.3); }
@@ -136,14 +327,28 @@
             </div>
           </div>
 
-          <!-- Rotating Flavor Selection -->
+          <!-- Comprehensive Flavor Selection -->
           <div class="selection-section">
-            <h3 class="section-title">🍹 Choose Your Flavor (4 Rotating Options)</h3>
+            <h3 class="section-title">🍹 Choose Your Flavor</h3>
             <div class="info-box">
-              <strong>Rotating Selection:</strong> We rotate our 4 featured flavors regularly for variety and freshness.
+              <strong>Full Selection:</strong> Choose from our complete flavor menu - same options as our kava drinks for consistency.
             </div>
             <div class="option-grid" id="flavor-options" role="group" aria-label="Flavor options">
               <!-- Flavors will be populated by JavaScript from the rotating array -->
+            </div>
+          </div>
+
+          <!-- THC Concentration (for Gallon size) -->
+          <div class="selection-section" id="thc-concentration-section" style="display: none;">
+            <h3 class="section-title">🧪 THC Concentration (Gallon Only)</h3>
+            <div class="info-box">
+              <strong>Gallon Special:</strong> Choose your preferred THC concentration for the full gallon.
+            </div>
+            <div class="option-grid" id="thc-concentration-options" role="group" aria-label="THC concentration options">
+              <button type="button" class="option-button" data-concentration="Low (5mg per serving)">Low<br><small>5mg per serving</small></button>
+              <button type="button" class="option-button" data-concentration="Medium (10mg per serving)">Medium<br><small>10mg per serving</small></button>
+              <button type="button" class="option-button" data-concentration="High (25mg per serving)">High<br><small>25mg per serving</small></button>
+              <button type="button" class="option-button" data-concentration="Custom">Custom<br><small>Specify in comments</small></button>
             </div>
           </div>
 
@@ -210,6 +415,7 @@
       let selectedSize = null;
       let selectedFlavor = null;
       let selectedIce = 'Regular Ice';
+      let selectedConcentration = null;
       let basePrice = 15.99;
 
       // ——— Init ———
@@ -222,16 +428,38 @@
 
       function populateRotatingFlavors() {
         const flavorContainer = document.getElementById('flavor-options');
-        const flavors = window.THC_ROTATING_FLAVORS || ['Tropical Mango', 'Berry Blast', 'Citrus Punch', 'Grape Escape'];
+        
+        // Categorized flavor list for better user experience
+        const flavorCategories = {
+          'Tropical': ['Coconut', 'Pineapple', 'Mango', 'Passion Fruit', 'Tropical Mango'],
+          'Citrus': ['Lime', 'Lemon', 'Orange', 'Citrus Punch'],
+          'Berry': ['Strawberry', 'Blueberry', 'Berry Blast', 'Cherry', 'Watermelon'],
+          'Classic': ['Vanilla', 'Chocolate', 'Caramel', 'Mint'],
+          'Specialty': ['Ginger', 'Cinnamon', 'Peach', 'Grape Escape']
+        };
         
         flavorContainer.innerHTML = '';
-        flavors.forEach(flavor => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'option-button thc-flavor';
-          button.dataset.flavor = flavor;
-          button.innerHTML = `<strong>${flavor}</strong>`;
-          flavorContainer.appendChild(button);
+        
+        // Create categorized display
+        Object.entries(flavorCategories).forEach(([category, flavors]) => {
+          const categoryDiv = document.createElement('div');
+          categoryDiv.className = 'flavor-category';
+          categoryDiv.innerHTML = `<h4 class="flavor-category-title">${category}</h4>`;
+          
+          const categoryGrid = document.createElement('div');
+          categoryGrid.className = 'flavor-category-grid';
+          
+          flavors.forEach(flavor => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'option-button thc-flavor';
+            button.dataset.flavor = flavor;
+            button.innerHTML = `<strong>${flavor}</strong>`;
+            categoryGrid.appendChild(button);
+          });
+          
+          categoryDiv.appendChild(categoryGrid);
+          flavorContainer.appendChild(categoryDiv);
         });
       }
 
@@ -244,6 +472,17 @@
             selectedSize = btn.dataset.size;
             const p = parseFloat(btn.dataset.price || '');
             if (Number.isFinite(p)) basePrice = p;
+            
+            // Show/hide THC concentration section for Gallon size
+            const concentrationSection = document.getElementById('thc-concentration-section');
+            if (selectedSize === 'Gallon') {
+              concentrationSection.style.display = 'block';
+            } else {
+              concentrationSection.style.display = 'none';
+              selectedConcentration = null;
+              document.querySelectorAll('#thc-concentration-options .option-button').forEach((b) => b.classList.remove('selected'));
+            }
+            
             updateUI();
           });
         });
@@ -256,6 +495,16 @@
             selectedFlavor = e.target.dataset.flavor;
             updateUI();
           }
+        });
+
+        // THC concentration buttons
+        document.querySelectorAll('#thc-concentration-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#thc-concentration-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedConcentration = btn.dataset.concentration;
+            updateUI();
+          });
         });
 
         // Ice buttons
@@ -280,9 +529,14 @@
         const qty = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
         const total = basePrice * qty;
 
-        if (selectedSize && selectedFlavor) {
+        const isGallonWithoutConcentration = selectedSize === 'Gallon' && !selectedConcentration;
+        
+        if (selectedSize && selectedFlavor && !isGallonWithoutConcentration) {
           button.textContent = `Add to Cart — ${moneyFmt.format(total)}`;
           button.disabled = false;
+        } else if (isGallonWithoutConcentration) {
+          button.textContent = 'Select THC Concentration';
+          button.disabled = true;
         } else {
           button.textContent = 'Select Size & Flavor';
           button.disabled = true;
@@ -317,6 +571,10 @@
           alert('❗ Please choose a flavor.');
           return false;
         }
+        if (selectedSize === 'Gallon' && !selectedConcentration) {
+          alert('❗ Please choose a THC concentration for gallon size.');
+          return false;
+        }
         return true;
       }
 
@@ -338,6 +596,7 @@
           Ice: selectedIce,
           'Product Type': 'THC Drinks'
         };
+        if (selectedConcentration) properties['THC Concentration'] = selectedConcentration;
         if (comments) properties.Comments = comments;
 
         try {
