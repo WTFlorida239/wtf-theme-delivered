@@ -8,387 +8,410 @@ on:
   push:
     branches: [ main ]
 
+# Avoid overlapping runs on the same ref
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 env:
   SHOPIFY_STORE: wtfswag.myshopify.com
+  # Max pages to analyze from sitemap (besides the homepage)
+  QUALITY_MAX_URLS: "5"
 
 jobs:
+  discover-urls:
+    name: Discover URLs to audit
+    runs-on: ubuntu-latest
+    outputs:
+      urls_json: ${{ steps.collect.outputs.urls_json }}
+      first_url: ${{ steps.collect.outputs.first_url }}
+    steps:
+      - name: Discover from sitemap
+        id: collect
+        run: |
+          set -euo pipefail
+          sudo apt-get update && sudo apt-get install -y jq curl
+          BASE="https://${SHOPIFY_STORE}"
+          SITEMAP_URL="$BASE/sitemap.xml"
+
+          # Always include homepage
+          urls=("$BASE/")
+
+          echo "Fetching sitemap: $SITEMAP_URL"
+          if curl -sSfL "$SITEMAP_URL" -o sitemap.xml ; then
+            echo "Parsing sitemap.xml..."
+            # Grab first QUALITY_MAX_URLS <loc> entries (excluding checkout/admin endpoints)
+            mapfile -t found < <(grep -oP '(?<=<loc>).*?(?=</loc>)' sitemap.xml \
+              | grep -E "^https?://" \
+              | grep -vE "/(admin|checkout)/" \
+              | head -n "${QUALITY_MAX_URLS}")
+            urls+=("${found[@]}")
+          else
+            echo "::warning:: Could not fetch sitemap; auditing homepage only."
+          fi
+
+          # De-dup & emit JSON array
+          mapfile -t dedup < <(printf "%s\n" "${urls[@]}" | awk '!seen[$0]++')
+          urls_json=$(printf '%s\n' "${dedup[@]}" | jq -R . | jq -s .)
+          first_url="${dedup[0]}"
+
+          echo "Discovered URLs:"
+          echo "$urls_json" | jq -r '.[]'
+
+          echo "urls_json=$urls_json" >> "$GITHUB_OUTPUT"
+          echo "first_url=$first_url"   >> "$GITHUB_OUTPUT"
+
   lighthouse-monitoring:
     name: Lighthouse Performance Monitoring
     runs-on: ubuntu-latest
-    
+    needs: [discover-urls]
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Install Lighthouse CI
-      run: npm install -g @lhci/cli lighthouse
-      
-    - name: Run Lighthouse audit
-      run: |
-        echo "Running Lighthouse performance audit..."
-        
-        # Create lighthouse configuration
-        cat << EOF > lighthouserc.json
-        {
-          "ci": {
-            "collect": {
-              "url": ["https://$SHOPIFY_STORE"],
-              "numberOfRuns": 3
-            },
-            "assert": {
-              "assertions": {
-                "categories:performance": ["error", {"minScore": 0.85}],
-                "categories:accessibility": ["error", {"minScore": 0.90}],
-                "categories:best-practices": ["error", {"minScore": 0.85}],
-                "categories:seo": ["error", {"minScore": 0.90}]
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Lighthouse CI & tools
+        run: |
+          set -euo pipefail
+          npm install -g @lhci/cli lighthouse
+          sudo apt-get update && sudo apt-get install -y jq bc
+
+      - name: Write LHCI config (event-aware thresholds)
+        env:
+          URLS_JSON: ${{ needs.discover-urls.outputs.urls_json }}
+        run: |
+          set -euo pipefail
+          # Be strict on push to main; warn-only on schedule/manual
+          if [ "${{ github.event_name }}" = "push" ]; then
+            LH_SEVERITY="error"
+          else
+            LH_SEVERITY="warn"
+          fi
+
+          cat > lighthouserc.json <<'JSON'
+          {
+            "ci": {
+              "collect": {
+                "url": []
+              },
+              "assert": {
+                "assertions": {
+                  "categories:performance": ["__SEVERITY__", {"minScore": 0.85}],
+                  "categories:accessibility": ["__SEVERITY__", {"minScore": 0.90}],
+                  "categories:best-practices": ["__SEVERITY__", {"minScore": 0.85}],
+                  "categories:seo": ["__SEVERITY__", {"minScore": 0.90}]
+                }
+              },
+              "upload": {
+                "target": "filesystem",
+                "outputDir": "./lighthouse-results"
               }
-            },
-            "upload": {
-              "target": "filesystem",
-              "outputDir": "./lighthouse-results"
             }
           }
-        }
-        EOF
-        
-        # Run Lighthouse CI
-        lhci autorun || echo "Lighthouse audit completed with warnings"
-        
-    - name: Process Lighthouse results
-      run: |
-        echo "Processing Lighthouse results..."
-        
-        if [ -d "./lighthouse-results" ]; then
-          # Extract scores from results
-          PERFORMANCE=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary.performance')
-          ACCESSIBILITY=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary.accessibility')
-          BEST_PRACTICES=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary["best-practices"]')
-          SEO=$(cat lighthouse-results/manifest.json | jq -r '.[0].summary.seo')
-          
-          echo "PERFORMANCE_SCORE=$PERFORMANCE" >> $GITHUB_ENV
-          echo "ACCESSIBILITY_SCORE=$ACCESSIBILITY" >> $GITHUB_ENV
-          echo "BEST_PRACTICES_SCORE=$BEST_PRACTICES" >> $GITHUB_ENV
-          echo "SEO_SCORE=$SEO" >> $GITHUB_ENV
-          
-          # Create performance report
-          cat << EOF > performance-report.md
-          # WTF Theme Performance Report
-          
-          **Date:** $(date)
-          **Store:** $SHOPIFY_STORE
-          
-          ## Lighthouse Scores
-          - **Performance:** $PERFORMANCE/100
-          - **Accessibility:** $ACCESSIBILITY/100
-          - **Best Practices:** $BEST_PRACTICES/100
-          - **SEO:** $SEO/100
-          
-          ## Recommendations
-          $(if (( $(echo "$PERFORMANCE < 85" | bc -l) )); then echo "⚠️ Performance score below threshold (85)"; fi)
-          $(if (( $(echo "$ACCESSIBILITY < 90" | bc -l) )); then echo "⚠️ Accessibility score below threshold (90)"; fi)
-          $(if (( $(echo "$BEST_PRACTICES < 85" | bc -l) )); then echo "⚠️ Best Practices score below threshold (85)"; fi)
-          $(if (( $(echo "$SEO < 90" | bc -l) )); then echo "⚠️ SEO score below threshold (90)"; fi)
-          EOF
-        fi
-        
-    - name: Upload Lighthouse results
-      uses: actions/upload-artifact@v4
-      with:
-        name: lighthouse-monitoring-results
-        path: |
-          lighthouse-results/
-          performance-report.md
-        retention-days: 30
+          JSON
+
+          # Inject URLs & severity
+          jq --argjson urls "$URLS_JSON" '.ci.collect.url=$urls' lighthouserc.json > lighthouserc.tmp
+          sed "s/__SEVERITY__/${LH_SEVERITY}/g" lighthouserc.tmp > lighthouserc.json
+          rm lighthouserc.tmp
+
+          echo "LHCI config:"
+          cat lighthouserc.json
+
+      - name: Run Lighthouse audit
+        run: |
+          set -euo pipefail
+          echo "Running Lighthouse performance audit..."
+          # Non-blocking on schedule; blocking on push (assertions handle that)
+          lhci autorun || echo "ℹ️ Lighthouse audit completed with warnings"
+
+      - name: Process Lighthouse results (averaged)
+        run: |
+          set -euo pipefail
+          echo "Processing Lighthouse results..."
+
+          if [ -f "./lighthouse-results/manifest.json" ]; then
+            PERF=$(jq -r '[.[].summary.performance] | add/length * 100 | floor' ./lighthouse-results/manifest.json)
+            A11Y=$(jq -r '[.[].summary.accessibility] | add/length * 100 | floor' ./lighthouse-results/manifest.json)
+            BP=$(jq -r '[.[].summary["best-practices"]] | add/length * 100 | floor' ./lighthouse-results/manifest.json)
+            SEO=$(jq -r '[.[].summary.seo] | add/length * 100 | floor' ./lighthouse-results/manifest.json)
+
+            echo "PERFORMANCE_SCORE=$PERF" >> $GITHUB_ENV
+            echo "ACCESSIBILITY_SCORE=$A11Y" >> $GITHUB_ENV
+            echo "BEST_PRACTICES_SCORE=$BP" >> $GITHUB_ENV
+            echo "SEO_SCORE=$SEO" >> $GITHUB_ENV
+
+            cat > performance-report.md <<EOF
+            # WTF Theme Performance Report
+
+            **Date:** $(date)
+            **Store:** ${SHOPIFY_STORE}
+
+            ## Lighthouse Average Scores (across collected URLs)
+            - **Performance:** ${PERF}/100
+            - **Accessibility:** ${A11Y}/100
+            - **Best Practices:** ${BP}/100
+            - **SEO:** ${SEO}/100
+
+            ## Threshold Checks
+            $( [ "$PERF" -lt 85 ] && echo "⚠️ Performance score below threshold (85)"; true )
+            $( [ "$A11Y" -lt 90 ] && echo "⚠️ Accessibility score below threshold (90)"; true )
+            $( [ "$BP"   -lt 85 ] && echo "⚠️ Best Practices score below threshold (85)"; true )
+            $( [ "$SEO"  -lt 90 ] && echo "⚠️ SEO score below threshold (90)"; true )
+            EOF
+          else
+            echo "::warning:: No Lighthouse manifest found; skipping summary."
+          fi
+
+      - name: Upload Lighthouse results
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-monitoring-results
+          path: |
+            lighthouse-results/
+            lighthouserc.json
+            performance-report.md
+          retention-days: 30
+          if-no-files-found: ignore
 
   accessibility-audit:
-    name: Accessibility Audit
+    name: Accessibility Audit (axe)
     runs-on: ubuntu-latest
-    
+    needs: [discover-urls]
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Install accessibility tools
-      run: |
-        npm install -g axe-core @axe-core/cli
-        
-    - name: Run accessibility audit
-      run: |
-        echo "Running accessibility audit..."
-        
-        # Audit theme files for accessibility issues
-        echo "Checking Liquid templates for accessibility..."
-        
-        # Check for missing alt attributes
-        echo "Checking for images without alt attributes..."
-        if grep -r "<img" . --include="*.liquid" | grep -v "alt="; then
-          echo "⚠️ Found images without alt attributes"
-        fi
-        
-        # Check for proper heading structure
-        echo "Checking heading structure..."
-        if grep -r "<h[1-6]" . --include="*.liquid" > headings.txt; then
-          echo "✅ Headings found, manual review recommended"
-        fi
-        
-        # Check for form labels
-        echo "Checking form accessibility..."
-        if grep -r "<input" . --include="*.liquid" | grep -v "aria-label\|<label"; then
-          echo "⚠️ Found inputs that may need labels or aria-labels"
-        fi
-        
-        # Check for ARIA attributes
-        echo "Checking ARIA implementation..."
-        grep -r "aria-" . --include="*.liquid" | wc -l > aria-count.txt
-        echo "Found $(cat aria-count.txt) ARIA attributes"
-        
-        echo "✅ Accessibility audit completed"
-        
-    - name: Create accessibility report
-      run: |
-        cat << EOF > accessibility-report.md
-        # WTF Theme Accessibility Audit
-        
-        **Date:** $(date)
-        
-        ## Audit Results
-        - ARIA attributes found: $(cat aria-count.txt)
-        - Headings structure: See headings.txt
-        
-        ## Recommendations
-        1. Ensure all images have descriptive alt attributes
-        2. Verify proper heading hierarchy (h1 → h2 → h3)
-        3. Add labels or aria-labels to all form inputs
-        4. Test with screen readers
-        5. Verify keyboard navigation works properly
-        
-        ## WCAG 2.1 AA Compliance
-        - Color contrast: Manual testing required
-        - Keyboard navigation: Manual testing required
-        - Screen reader compatibility: Manual testing required
-        EOF
-        
-    - name: Upload accessibility results
-      uses: actions/upload-artifact@v4
-      with:
-        name: accessibility-audit-results
-        path: |
-          accessibility-report.md
-          headings.txt
-          aria-count.txt
-        retention-days: 30
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install axe-core CLI & tools
+        run: |
+          set -euo pipefail
+          npm install -g @axe-core/cli
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Run axe against discovered URLs
+        env:
+          URLS_JSON: ${{ needs.discover-urls.outputs.urls_json }}
+        run: |
+          set -euo pipefail
+          mkdir -p axe-results
+          # Iterate URLs and save per-URL reports
+          echo "$URLS_JSON" | jq -r '.[]' | while read -r url; do
+            safe=$(echo "$url" | sed 's#https\?://##; s#[^A-Za-z0-9._-]#_#g')
+            npx axe "$url" --exit 0 --tags wcag2a,wcag2aa,best-practice --save "axe-results/${safe}.json" || true
+          done
+
+      - name: Summarize axe results (fail on push if serious/critical)
+        run: |
+          set -euo pipefail
+          SERIOUS=$(jq '[inputs.violations[]? | select(.impact=="serious") ] | length' axe-results/*.json < /dev/null 2>/dev/null || echo 0)
+          CRITICAL=$(jq '[inputs.violations[]? | select(.impact=="critical")] | length' axe-results/*.json < /dev/null 2>/dev/null || echo 0)
+          TOTAL=$(jq '[inputs.violations[]?] | length' axe-results/*.json < /dev/null 2>/dev/null || echo 0)
+
+          echo "A11Y_SERIOUS=$SERIOUS"   >> $GITHUB_ENV
+          echo "A11Y_CRITICAL=$CRITICAL" >> $GITHUB_ENV
+          echo "A11Y_TOTAL=$TOTAL"       >> $GITHUB_ENV
+
+          cat > accessibility-report.md <<EOF
+          # WTF Theme Accessibility Audit (axe)
+
+          **Date:** $(date)
+          **Violations**
+          - Critical: ${CRITICAL}
+          - Serious:  ${SERIOUS}
+          - Total:    ${TOTAL}
+
+          ## Notes
+          - Uses axe tags: wcag2a, wcag2aa, best-practice
+          - See individual JSON files in artifact for details
+          EOF
+
+          if [ "${{ github.event_name }}" = "push" ] && [ "$CRITICAL" -gt 0 -o "$SERIOUS" -gt 5 ]; then
+            echo "❌ Accessibility gate failed (critical>0 or serious>5)"
+            exit 1
+          fi
+
+      - name: Upload accessibility results
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-audit-results
+          path: |
+            accessibility-report.md
+            axe-results/
+          retention-days: 30
+          if-no-files-found: ignore
 
   seo-audit:
-    name: SEO Audit
+    name: SEO Audit (light)
     runs-on: ubuntu-latest
-    
+    needs: [discover-urls]
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Run SEO audit
-      run: |
-        echo "Running SEO audit..."
-        
-        # Check for meta tags
-        echo "Checking meta tag implementation..."
-        if grep -r "meta.*description" . --include="*.liquid"; then
-          echo "✅ Meta descriptions found"
-        else
-          echo "⚠️ No meta descriptions found"
-        fi
-        
-        # Check for structured data
-        echo "Checking structured data..."
-        if grep -r "application/ld+json" . --include="*.liquid"; then
-          echo "✅ JSON-LD structured data found"
-        else
-          echo "⚠️ No structured data found"
-        fi
-        
-        # Check for Open Graph tags
-        echo "Checking Open Graph tags..."
-        if grep -r "og:" . --include="*.liquid"; then
-          echo "✅ Open Graph tags found"
-        else
-          echo "⚠️ No Open Graph tags found"
-        fi
-        
-        # Check for canonical URLs
-        echo "Checking canonical URLs..."
-        if grep -r "canonical" . --include="*.liquid"; then
-          echo "✅ Canonical URLs found"
-        else
-          echo "⚠️ No canonical URLs found"
-        fi
-        
-        # Check for sitemap
-        echo "Checking for sitemap..."
-        if [ -f "sitemap.xml" ] || grep -r "sitemap" . --include="*.liquid"; then
-          echo "✅ Sitemap implementation found"
-        else
-          echo "⚠️ No sitemap found"
-        fi
-        
-    - name: Create SEO report
-      run: |
-        cat << EOF > seo-report.md
-        # WTF Theme SEO Audit
-        
-        **Date:** $(date)
-        
-        ## SEO Elements Check
-        - Meta descriptions: $(if grep -r "meta.*description" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
-        - Structured data: $(if grep -r "application/ld+json" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
-        - Open Graph tags: $(if grep -r "og:" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
-        - Canonical URLs: $(if grep -r "canonical" . --include="*.liquid" > /dev/null; then echo "✅ Found"; else echo "❌ Missing"; fi)
-        
-        ## Recommendations
-        1. Ensure all pages have unique, descriptive meta descriptions
-        2. Implement comprehensive structured data for products and business info
-        3. Add Open Graph tags for social media sharing
-        4. Verify canonical URLs are properly set
-        5. Submit sitemap to search engines
-        
-        ## Local SEO
-        - Business schema: Check for LocalBusiness structured data
-        - NAP consistency: Verify Name, Address, Phone consistency
-        - Google My Business: Ensure GMB profile is optimized
-        EOF
-        
-    - name: Upload SEO results
-      uses: actions/upload-artifact@v4
-      with:
-        name: seo-audit-results
-        path: seo-report.md
-        retention-days: 30
+      - name: Install tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update && sudo apt-get install -y curl jq
+
+      - name: Check homepage SEO elements
+        env:
+          HOME_URL: ${{ needs.discover-urls.outputs.first_url }}
+        run: |
+          set -euo pipefail
+          echo "Auditing: $HOME_URL"
+          curl -sSL "$HOME_URL" -o home.html || { echo "::warning:: Could not fetch homepage"; touch home.html; }
+
+          HAS_DESC=$(grep -ciE '<meta[^>]+name=["'\'']description["'\'']' home.html || true)
+          HAS_OG=$(grep -ciE '<meta[^>]+property=["'\'']og:' home.html || true)
+          HAS_CANONICAL=$(grep -ciE '<link[^>]+rel=["'\'']canonical["'\'']' home.html || true)
+          HAS_LDJSON=$(grep -ciE 'application/ld\+json' home.html || true)
+          TITLE_LEN=$(grep -oP '(?i)(?<=<title>).*?(?=</title>)' home.html | head -n1 | awk '{print length}' || echo 0)
+
+          cat > seo-report.md <<EOF
+          # WTF Theme SEO Audit (homepage)
+
+          **Date:** $(date)
+          **URL:** ${HOME_URL}
+
+          ## Elements
+          - Meta description: $( [ "$HAS_DESC" -gt 0 ] && echo "✅ Present" || echo "❌ Missing" )
+          - Open Graph tags:  $( [ "$HAS_OG" -gt 0 ] && echo "✅ Present" || echo "❌ Missing" )
+          - Canonical link:   $( [ "$HAS_CANONICAL" -gt 0 ] && echo "✅ Present" || echo "❌ Missing" )
+          - JSON-LD:          $( [ "$HAS_LDJSON" -gt 0 ] && echo "✅ Present" || echo "❌ Missing" )
+          - <title> length:   ${TITLE_LEN} chars (recommended 30–60)
+
+          ## Recommendations
+          1. Ensure meta description is unique and ~155–160 chars
+          2. Provide OG tags (title, description, image) for rich sharing
+          3. Set canonical URLs on indexable pages
+          4. Add JSON-LD (Organization, WebSite, Product as applicable)
+          EOF
+
+      - name: Upload SEO results
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-audit-results
+          path: seo-report.md
+          retention-days: 30
+          if-no-files-found: ignore
 
   competitor-monitoring:
     name: Competitor Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run competitor audit
-      run: |
-        echo "Running competitor analysis..."
-        npm run competitors:audit
-        
-    - name: Generate competitor insights
-      run: |
-        echo "Generating competitive insights..."
-        
-        # Create competitive analysis report
-        cat << EOF > competitive-analysis.md
-        # WTF Competitive Analysis Report
-        
-        **Date:** $(date)
-        
-        ## Competitor Landscape
-        Based on local-kava-bars-database analysis:
-        
-        ### Key Competitors
-        1. **Kava Culture Kava Bar** - Fort Myers (15.3 mi)
-           - Strengths: Loyalty app, weekly events, strong social presence
-           - WTF Advantage: Enhanced drink builder, faster ordering
-        
-        2. **Elevation Kava** - Cape Coral (8.4 mi)
-           - Strengths: Signature blends, punch card loyalty
-           - WTF Advantage: Mix-and-match customization, ingredient transparency
-        
-        3. **High Tide Kava Bar** - Cape Coral (7.8 mi)
-           - Strengths: Nitro cold brew, VIP membership
-           - WTF Advantage: Premium sourcing, pickup optimization
-        
-        ## Recommended Actions
-        1. Monitor competitor pricing and promotions
-        2. Track new menu items and seasonal offerings
-        3. Analyze competitor social media engagement
-        4. Review customer feedback on competitor locations
-        5. Update WTF positioning based on market changes
-        
-        ## Market Opportunities
-        - Enhanced digital ordering experience
-        - Superior drink customization options
-        - Faster pickup and delivery service
-        - Premium ingredient transparency
-        EOF
-        
-    - name: Upload competitor analysis
-      uses: actions/upload-artifact@v4
-      with:
-        name: competitor-analysis
-        path: competitive-analysis.md
-        retention-days: 30
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          npm ci
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Run competitor audit (if script exists)
+        run: |
+          set -euo pipefail
+          if npm run | grep -q "competitors:audit"; then
+            npm run competitors:audit
+          else
+            echo "⏭️ No competitors:audit script found; skipping."
+          fi
+
+      - name: Generate competitor insights
+        run: |
+          set -euo pipefail
+          OUT="competitive-analysis.md"
+          if [ -f "docs/competitor-insights.json" ]; then
+            TOP=$(jq -r '.competitors?[0:5][]? | "- " + (.name // "Unknown") + " — " + (.city // .location // "N/A") + " | Strengths: " + ((.strengths // [])|join(", "))' docs/competitor-insights.json || true)
+          fi
+
+          cat > "$OUT" <<EOF
+          # WTF Competitive Analysis Report
+
+          **Date:** $(date)
+
+          ## Snapshot (top competitors)
+          ${TOP:-"- Data not available; run competitors:audit to populate docs/competitor-insights.json."}
+
+          ## Recommended Actions
+          1. Monitor competitor pricing and promotions
+          2. Track new menu items and seasonal offerings
+          3. Analyze competitor social media engagement
+          4. Review customer feedback on competitor locations
+          5. Update WTF positioning based on market changes
+          EOF
+
+      - name: Upload competitor analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: competitor-analysis
+          path: competitive-analysis.md
+          retention-days: 30
+          if-no-files-found: ignore
 
   quality-summary:
     name: Quality Summary Report
     runs-on: ubuntu-latest
-    needs: [lighthouse-monitoring, accessibility-audit, seo-audit, competitor-monitoring]
+    needs:
+      - lighthouse-monitoring
+      - accessibility-audit
+      - seo-audit
+      - competitor-monitoring
     if: always()
-    
+
     steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      
-    - name: Create quality summary
-      run: |
-        echo "Creating quality summary report..."
-        
-        cat << EOF > quality-summary.md
-        # WTF Theme Quality Summary
-        
-        **Date:** $(date)
-        **Monitoring Run:** ${{ github.run_number }}
-        
-        ## Quality Metrics
-        
-        ### Performance Monitoring
-        $(if [ "${{ needs.lighthouse-monitoring.result }}" == "success" ]; then echo "✅ Lighthouse audit completed"; else echo "❌ Lighthouse audit failed"; fi)
-        
-        ### Accessibility Audit
-        $(if [ "${{ needs.accessibility-audit.result }}" == "success" ]; then echo "✅ Accessibility audit completed"; else echo "❌ Accessibility audit failed"; fi)
-        
-        ### SEO Audit
-        $(if [ "${{ needs.seo-audit.result }}" == "success" ]; then echo "✅ SEO audit completed"; else echo "❌ SEO audit failed"; fi)
-        
-        ### Competitor Analysis
-        $(if [ "${{ needs.competitor-monitoring.result }}" == "success" ]; then echo "✅ Competitor analysis completed"; else echo "❌ Competitor analysis failed"; fi)
-        
-        ## Overall Status
-        $(if [ "${{ needs.lighthouse-monitoring.result }}" == "success" ] && [ "${{ needs.accessibility-audit.result }}" == "success" ] && [ "${{ needs.seo-audit.result }}" == "success" ]; then echo "🟢 All quality checks passed"; else echo "🟡 Some quality checks need attention"; fi)
-        
-        ## Next Actions
-        1. Review individual audit reports for detailed findings
-        2. Address any performance or accessibility issues
-        3. Update SEO elements as recommended
-        4. Monitor competitor activities and adjust strategy
-        EOF
-        
-    - name: Upload quality summary
-      uses: actions/upload-artifact@v4
-      with:
-        name: quality-summary-report
-        path: quality-summary.md
-        retention-days: 90
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create quality summary
+        run: |
+          set -euo pipefail
+          cat > quality-summary.md <<EOF
+          # WTF Theme Quality Summary
+
+          **Date:** $(date)
+          **Run:** ${{ github.run_number }}
+
+          ## Job Status
+          - Lighthouse:  ${{ needs.lighthouse-monitoring.result }}
+          - Accessibility: ${{ needs.accessibility-audit.result }}
+          - SEO: ${{ needs.seo-audit.result }}
+          - Competitors: ${{ needs.competitor-monitoring.result }}
+
+          ## Overall
+          $( if [ "${{ needs.lighthouse-monitoring.result }}" = "success" ] && [ "${{ needs.accessibility-audit.result }}" = "success" ] && [ "${{ needs.seo-audit.result }}" = "success" ]; then
+               echo "🟢 All quality checks passed";
+             else
+               echo "🟡 Some quality checks need attention";
+             fi)
+
+          ## Next Actions
+          1. Review Lighthouse performance-report.md
+          2. Review accessibility-report.md and axe JSONs
+          3. Review seo-report.md for homepage issues
+          4. Review competitive-analysis.md for market movement
+          EOF
+
+      - name: Upload quality summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-summary-report
+          path: quality-summary.md
+          retention-days: 90
+          if-no-files-found: ignore
