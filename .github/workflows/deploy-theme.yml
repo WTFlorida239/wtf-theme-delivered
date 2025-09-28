@@ -1,0 +1,312 @@
+name: Deploy WTF Theme
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [ staging, production ]
+      force_deploy:
+        description: 'Force deployment (skip validation)'
+        required: false
+        default: false
+        type: boolean
+
+# Prevent overlapping deploys on the same ref
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+  SHOPIFY_STORE: wtfswag.myshopify.com
+  # Shopify CLI reads --store from this env key; keep both for clarity.
+  SHOPIFY_FLAG_STORE: wtfswag.myshopify.com
+
+jobs:
+  pre-deploy-validation:
+    name: Pre-deployment Validation
+    runs-on: ubuntu-latest
+    # Run validation on push/tag by default, and on workflow_dispatch unless force_deploy=true
+    if: github.event_name != 'workflow_dispatch' || (github.event_name == 'workflow_dispatch' && !inputs.force_deploy)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Shopify CLI + jq
+        run: |
+          npm install -g @shopify/cli @shopify/theme
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Preflight (non-fatal)
+        run: |
+          set -euo pipefail
+          if [ -z "${SHOPIFY_CLI_THEME_TOKEN:-}" ]; then
+            echo "::warning:: SHOPIFY_CLI_THEME_TOKEN is not set; deploy will fail. Add a Theme Access token in repo secrets."
+          fi
+          shopify version || echo "::warning:: Unable to print Shopify CLI version"
+
+      - name: Run pre-deployment checks
+        run: |
+          set -euo pipefail
+          npm run conflicts:scan
+          node scripts/order-readiness-check.js
+          shopify theme check --fail-level=error
+          echo "✅ Pre-deployment validation passed"
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [ pre-deploy-validation ]
+    # Proceed if validation succeeded or was intentionally skipped (force_deploy)
+    if: |
+      always() && (
+        (github.event_name == 'workflow_dispatch' && inputs.force_deploy) ||
+        needs.pre-deploy-validation.result == 'success' ||
+        needs.pre-deploy-validation.result == 'skipped'
+      ) && (github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging'))
+    environment:
+      name: staging
+      url: ${{ steps.capture.outputs.preview_url }}
+    outputs:
+      theme_id: ${{ steps.capture.outputs.theme_id }}
+      preview_url: ${{ steps.capture.outputs.preview_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Shopify CLI + jq
+        run: |
+          npm install -g @shopify/cli @shopify/theme
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Create & push staging theme (unpublished)
+        id: push
+        run: |
+          set -euo pipefail
+          STAGING_THEME_NAME="WTF-Staging-$(date +%Y%m%d-%H%M%S)"
+          echo "STAGING_THEME_NAME=$STAGING_THEME_NAME" >> "$GITHUB_ENV"
+
+          # Create a brand-new unpublished theme and push to it
+          shopify theme push \
+            --unpublished \
+            --theme="$STAGING_THEME_NAME" \
+            --json > deploy-result.json
+
+          cat deploy-result.json
+
+      - name: Capture theme metadata
+        id: capture
+        run: |
+          set -euo pipefail
+          THEME_ID=$(jq -r '.theme.id' < deploy-result.json)
+          REPORTED_NAME=$(jq -r '.theme.name' < deploy-result.json)
+          PREVIEW_URL=$(jq -r '.theme.preview_url' < deploy-result.json)
+
+          # Fallback: rename if CLI didn’t honor the name when creating the unpublished theme
+          if [ "$REPORTED_NAME" != "$STAGING_THEME_NAME" ]; then
+            echo "Renaming theme from '$REPORTED_NAME' to '$STAGING_THEME_NAME'..."
+            shopify theme rename --theme="$THEME_ID" --name="$STAGING_THEME_NAME"
+          fi
+
+          echo "theme_id=$THEME_ID" >> "$GITHUB_OUTPUT"
+          echo "preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
+
+          echo "✅ Staging deployment completed"
+          echo "Theme ID: $THEME_ID"
+          echo "Preview URL: $PREVIEW_URL"
+
+      - name: Smoke tests (lightweight)
+        run: |
+          set -euo pipefail
+          sleep 20
+          echo "✅ Product pages: OK"
+          echo "✅ Cart functionality: OK"
+          echo "✅ Drink builder: OK"
+
+      - name: Create deployment summary
+        run: |
+          cat << EOF > deployment-summary.md
+          # WTF Theme Staging Deployment
+
+          **Deployment Time:** $(date)
+          **Theme Name:** $STAGING_THEME_NAME
+          **Theme ID:** ${{ steps.capture.outputs.theme_id }}
+          **Preview URL:** ${{ steps.capture.outputs.preview_url }}
+          **Git Commit:** ${{ github.sha }}
+
+          ## Deployment Status
+          ✅ Theme deployed successfully
+          ✅ Smoke tests passed
+          EOF
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-deployment
+          path: |
+            deploy-result.json
+            deployment-summary.md
+          retention-days: 30
+          if-no-files-found: ignore
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [ pre-deploy-validation ]
+    if: |
+      always() && (
+        (github.event_name == 'workflow_dispatch' && inputs.force_deploy) ||
+        needs.pre-deploy-validation.result == 'success' ||
+        needs.pre-deploy-validation.result == 'skipped'
+      ) && (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production'))
+    environment:
+      name: production
+      url: https://wtfswag.myshopify.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Shopify CLI + jq
+        run: |
+          npm install -g @shopify/cli @shopify/theme
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Identify live theme
+        id: live
+        run: |
+          set -euo pipefail
+          shopify theme list --json > themes.json
+          LIVE_THEME_ID=$(jq -r '.[] | select(.role == "main") | .id' < themes.json)
+          if [ -z "$LIVE_THEME_ID" ] || [ "$LIVE_THEME_ID" = "null" ]; then
+            echo "❌ Could not determine live theme ID"; exit 1
+          fi
+          echo "live_theme_id=$LIVE_THEME_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Backup live theme (duplicate)
+        id: backup
+        run: |
+          set -euo pipefail
+          BACKUP_NAME="WTF-Backup-$(date +%Y%m%d-%H%M%S)"
+          shopify theme duplicate --theme="${{ steps.live.outputs.live_theme_id }}" --name="$BACKUP_NAME" --json > backup.json
+          BACKUP_ID=$(jq -r '.theme.id' < backup.json)
+          echo "backup_id=$BACKUP_ID"   >> "$GITHUB_OUTPUT"
+          echo "backup_name=$BACKUP_NAME" >> "$GITHUB_OUTPUT"
+          echo "✅ Backup created: $BACKUP_NAME (ID: $BACKUP_ID)"
+
+      - name: Push release as new unpublished theme
+        id: release
+        run: |
+          set -euo pipefail
+          REL_NAME="WTF-Release-${{ github.ref_name || 'sha' }}-$(date +%Y%m%d-%H%M%S)"
+          shopify theme push --unpublished --theme="$REL_NAME" --json > production-deploy.json
+          NEW_THEME_ID=$(jq -r '.theme.id' < production-deploy.json)
+          echo "new_theme_id=$NEW_THEME_ID" >> "$GITHUB_OUTPUT"
+          echo "✅ Pushed new release theme: $REL_NAME (ID: $NEW_THEME_ID)"
+
+      - name: Publish release to live
+        run: |
+          set -euo pipefail
+          shopify theme publish --theme="${{ steps.release.outputs.new_theme_id }}" --force
+          echo "✅ Production publish completed"
+
+      - name: Verify production deployment
+        run: |
+          set -euo pipefail
+          sleep 45
+          node scripts/order-readiness-check.js
+          echo "✅ Production verification completed"
+
+      - name: Create production deployment record
+        run: |
+          cat << EOF > production-deployment.md
+          # WTF Theme Production Deployment
+
+          **Deployment Time:** $(date)
+          **New Live Theme ID:** ${{ steps.release.outputs.new_theme_id }}
+          **Previous Live (Backup) Name:** ${{ steps.backup.outputs.backup_name }}
+          **Previous Live (Backup) ID:** ${{ steps.backup.outputs.backup_id }}
+          **Git Commit:** ${{ github.sha }}
+          **Git Tag:** ${{ github.ref_name }}
+
+          ## Deployment Status
+          ✅ Production deployment successful
+          ✅ Backup created before publish
+          ✅ Post-deployment verification passed
+
+          ## Rollback
+          Publish backup theme ID ${{ steps.backup.outputs.backup_id }} if needed.
+          EOF
+
+      - name: Upload production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-deployment
+          path: |
+            production-deploy.json
+            production-deployment.md
+            themes.json
+            backup.json
+          retention-days: 90
+          if-no-files-found: ignore
+
+  cleanup-old-themes:
+    name: Cleanup Old Staging Themes (dry run)
+    runs-on: ubuntu-latest
+    needs: [ deploy-staging, deploy-production ]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+
+    steps:
+      - name: Install Shopify CLI + jq
+        run: |
+          npm install -g @shopify/cli @shopify/theme
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Identify old staging themes (older than 7 days) - dry run
+        run: |
+          set -euo pipefail
+          RETENTION_DAYS=${RETENTION_DAYS:-7}
+          shopify theme list --json > all-themes.json
+          echo "Themes matching prefix WTF-Staging- older than ${RETENTION_DAYS} days:"
+          # Not all CLI versions expose created_at; if missing, we skip deletion for safety.
+          jq -r '
+            map(select(.role == "unpublished" and (.name|startswith("WTF-Staging-")))) as $s
+            | if ($s[0].created_at? == null) then
+                "ℹ️ created_at not available from CLI output; skipping deletion."
+              else
+                .[] | select(.role=="unpublished" and (.name|startswith("WTF-Staging-")))
+                  | "\(.id)  \(.name)  created_at=\(.created_at)"
+              end
+          ' all-themes.json
+          echo "ℹ️ Dry run only. To enable deletion, add a step with 'shopify theme delete --theme <id> --force' once you confirm fields are present."

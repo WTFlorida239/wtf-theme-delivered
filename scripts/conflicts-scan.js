@@ -26,8 +26,11 @@ function scanForConflicts(dir) {
       try {
         const content = fs.readFileSync(fullPath, 'utf8');
         
-        // Check for merge conflict markers
-        if (content.includes('<<<<<<<') || content.includes('>>>>>>>') || content.includes('=======')) {
+        // Check for merge conflict markers (avoid self-detection)
+        const hasConflictStart = content.includes('<<' + '<<<<< HEAD');
+        const hasConflictEnd = content.includes('>>>' + '>>> ');
+        const hasConflictSep = content.includes('===' + '====') && hasConflictStart;
+        if (hasConflictStart || hasConflictEnd || hasConflictSep) {
           console.log(`❌ Merge conflict found in: ${fullPath}`);
           issues++;
         }
