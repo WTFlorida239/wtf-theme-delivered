@@ -1,180 +1,55 @@
-#######################################################################
 # WTF Theme — Delivered
-#
-# Shopify Liquid theme for WTF | Welcome To Florida
-# Optimized for: high-converting drink builder, POS parity,
-# and competitor-beating SEO.
-#
-# Repository: wtf-theme-delivered
-#######################################################################
 
-#######################################################################
-# Manus.ai Handoff Prompt
-#######################################################################
-You are finalizing the WTF | Welcome To Florida Shopify theme in the
-`wtf-theme-delivered` repository.
+Shopify Liquid theme for WTF | Welcome To Florida, optimized for a high-converting drink builder, POS parity, and competitor-beating SEO.
 
-Core storefront features:
-- Enhanced drink builder (`sections/enhanced-drink-builder.liquid`)
-  driven by `wtf.settings` metafields.
-- Supporting CSS/JS: `assets/base.css`,
-  `assets/wtf_flavor_system.css`, `assets/wtf-ajax-cart.js`.
-- Operational scripts: `/scripts/`
-- QA, runbooks, references: `/docs/`
+This repository is the central source of truth for the `wtf-theme-delivered` Shopify theme. All development, updates, and deployments are managed through this repository and its associated GitHub Actions workflows.
 
-STRICT CONSTRAINTS:
-- Stack: Shopify Liquid sections/snippets, vanilla CSS/JS only.
-- Honor the existing metafield contract.
-- No external Shopify apps / heavy libraries.
-- Preserve performance defaults (lazy loading, minimized assets).
-- Maintain WCAG 2.1 AA accessibility.
-- Ensure JSON-LD coverage (Recipe, LocalBusiness, Events, Loyalty, FAQ).
+## Repository Structure
 
-DELIVERABLES:
-1) Performance & Accessibility
-   - Critical CSS/JS only, defer non-critical.
-   - Full keyboard/focus pass for builder, cart, checkout.
-   - Document in `/docs/TESTING_CHECKLIST.md`.
-
-2) Merchandising & Schema
-   - Add metafield-driven recipes (e.g. “Focus Flow”, “Florida Chill”).
-   - JSON-LD Recipe + refreshed LocalBusiness, Events, Loyalty, FAQ schema.
-   - Benchmark against `/docs/competitor-insights.json`.
-
-3) Operations & Integrations
-   - Lightspeed sync dry run + 2Accept payment QA → `/docs/runbooks/`.
-   - Low-stock alerts in builder UI → route Slack/webhook.
-
-4) Automation & Reporting
-   - Pre-commit hook: `npm run conflicts:scan` →
-     `npm run competitors:audit` →
-     `node scripts/order-readiness-check.js`.
-   - Extend schema regression tests.
-   - Configure Lighthouse alerts.
-   - Verify GA4 / Meta / TikTok pixels capture builder events.
-
-PROCESS:
-- Run before handoff:
-  shopify theme check
-  npm run conflicts:scan
-  npm run competitors:audit
-  node scripts/order-readiness-check.js
-
-- Keep `README.md`, `WTF_Site_Config.md`, `/docs`, and `TASKS.md`
-  synchronized with changes.
-
-#######################################################################
-# 1. Current Experience Snapshot
-#######################################################################
-- Drink builder: size-based pricing, pump counters, THC upgrade handling,
-  metafield notices.
-- Specialty templates for kava/kratom menus.
-- Lean global assets for styling + AJAX cart.
-- Automation scripts for conflicts, competitor insights, order readiness.
-
-#######################################################################
-# 2. Tech Stack & Tooling
-#######################################################################
-Platform: Shopify Online Store 2.0 (Liquid sections/snippets)
-CSS: assets/base.css, assets/wtf_flavor_system.css
-JS: assets/wtf-ajax-cart.js (+ minimal inline)
-Metafields: wtf.settings namespace (flavors, hours, FAQs, upsells)
-Automation:
-  - npm run competitors:audit
-  - npm run conflicts:scan
-  - node scripts/order-readiness-check.js
-  - shopify theme check
-
-#######################################################################
-# 3. Local Development
-#######################################################################
-Install: Node.js 20+, Shopify CLI 3.x, Theme Check
-Auth:    shopify login --store wtfswag.myshopify.com
-Dev:     shopify theme dev --theme-editor-sync
-CI:      run all automation + theme check before commit
-Docs:    update WTF_Site_Config.md, /docs, TASKS.md with changes
-
-#######################################################################
-# 4. Repository Map
-#######################################################################
+```
 wtf-theme-delivered/
-├── assets/                 # CSS/JS/media
-├── config/                 # settings_schema.json + defaults
-├── layout/                 # theme.liquid
-├── sections/               # Builder, events, hero, etc.
-├── snippets/               # Partials (schema, cards, analytics)
-├── templates/              # JSON templates
-├── docs/                   # Deployment guides, QA, runbooks
-├── scripts/                # Automation utilities
-├── dev-server/             # Optional mock renderer
-├── WTF_Site_Config.md      # Config + branding brief
-└── TASKS.md                # Launch backlog
+├── .github/              # GitHub Actions workflows and documentation
+├── assets/               # CSS, JS, and media files
+├── config/               # settings_schema.json and default configurations
+├── layout/               # theme.liquid - the main theme layout
+├── sections/             # Reusable theme sections (e.g., header, footer, drink builder)
+├── snippets/             # Reusable code snippets
+├── templates/            # Page and product templates (JSON format)
+├── docs/                 # Supporting documentation, runbooks, and QA checklists
+├── scripts/              # Automation and utility scripts
+└── ...                   # Other configuration and documentation files
+```
 
-#######################################################################
-# 5. Launch Checklist (all must be green)
-#######################################################################
-npm ci
+## Development Workflow
+
+1.  **Clone the repository:** `gh repo clone WTFlorida239/wtf-theme-delivered`
+2.  **Install dependencies:** `npm install`
+3.  **Connect to your Shopify store:** `shopify login --store wtfswag.myshopify.com`
+4.  **Start the development server:** `shopify theme dev --theme-editor-sync`
+
+Before committing any changes, please run the following checks to ensure code quality and prevent conflicts:
+
+```bash
+npm run theme:check
 npm run conflicts:scan
-npm run competitors:audit
-node scripts/order-readiness-check.js
-shopify theme check --fail-level=error
+```
 
-Verify files exist/valid:
-- layout/theme.liquid
-- config/settings_schema.json
-- sections/enhanced-drink-builder.liquid
-- sections/main-product.liquid
-- sections/wtf-cart.liquid
-- templates/product.json
-- templates/cart.liquid
+## Automation & Workflows
 
-Secrets: SHOPIFY_CLI_THEME_TOKEN set if deploying via CLI.
+This repository uses GitHub Actions to automate several key processes:
 
-#######################################################################
-# 6. Troubleshooting (fast fixes)
-#######################################################################
-- HTML nesting: ensure <div> closes before </fieldset>.
-- Parser-blocking: add defer/async to <script> tags.
-- Missing assets: guard with image_picker or add to /assets.
-- Stray submodules: clean .gitmodules and remove backups.
+-   **CI/CD Pipeline (`ci-cd-pipeline.yml`):** On every push to `main` or a pull request, this workflow validates the theme, runs tests, and ensures the code is ready for deployment.
+-   **Theme Deployment (`deploy-theme.yml`):** This workflow allows for manual or automated deployment of the theme to a specified Shopify environment (staging or production).
+-   **Automated Testing (`automated-testing.yml`):** Runs a suite of automated tests to catch regressions and ensure theme stability.
+-   **Quality Monitoring (`quality-monitoring.yml`):** Continuously monitors the theme for performance and accessibility issues.
 
-#######################################################################
-# 7. Competitors (65-mile radius Cape Coral, FL)
-#######################################################################
+All workflows are located in the `.github/workflows` directory.
 
-## Competitor | City Analysis
+## Current Status
 
-| Competitor | City | Distance | Notes |
-| --- | --- | --- | --- |
-| Kava Culture Kava Bar | Fort Myers | 15.3 miles | Downtown location, app-based loyalty |
-| Elevation Kava | Cape Coral | 8.4 miles | South Cape Coral, signature blend |
-| High Tide Kava Bar | Cape Coral | 7.8 miles | Midtown location, beach theme |
-| Bula Kava Bar & Coffeehouse | Cape Coral | 8.1 miles | Downtown, hybrid coffee/kava |
-| Shangri-La Botanical | Cape Coral | 6.7 miles | SW Cape Coral, wellness focus |
-| Purple Lotus Kava Bar | Cape Coral | 9.8 miles | Surfside location, modern lounge |
-| Roots House Of Kava | Cape Coral | 6.2 miles | Pine Island Corridor, traditional |
-| Southern Roots Kava Bar | Fort Myers | 6.9 miles | San Carlos Park, vegan-friendly |
+All branches have been successfully merged into the `main` branch, and all merge conflicts have been resolved. The `main` branch is now the single source of truth for the theme.
 
-Additional competitors:
-- Botanical Brewing Taproom (Cape Coral)
-- Island Vibes Kava Bar (North Fort Myers, Fort Myers)
-- Nectar Lab Kava Bar (North & Central Naples)
-- The Sound Garden Kava Bar (Fort Myers)
-- Burma Kava Company (Fort Myers)
-- Kapua Kava Bar (Fort Myers)
-- Kava Nirvana Kava Bar (Fort Myers)
-- Cosmic Kava (Naples)
-- Alchemist Kava Bar & Lounge (Naples)
-- Kava Luv Social Lounge (Naples)
-- Downtown Kava (Punta Gorda)
+All GitHub Actions workflows have been verified and are fully functional.
 
-#######################################################################
-# 8. Competitive Positioning
-#######################################################################
-- Wellness-forward, daylight-friendly, “soccer-mom adjacent”.
-- Quality & safety: COAs, dosing guidance, trained staff.
-- Menu: Culinary-grade botanical cocktails, functional add-ons, LTOs.
-- Consistency & speed: SOPs, predictable hours, online pickup.
-- Community & loyalty: partnerships, referral rewards, VIP events.
-- Content & SEO moat: education-led + strong local listings.
-#######################################################################
+The documentation has been updated to reflect the current state of the repository and its workflows.
+
