@@ -17,9 +17,13 @@
         <input type="hidden" name="id" value="" data-variant-id>
         
         {% comment %} Base Drink Selection {% endcomment %}
-        <div class="drink-builder__step" data-step="base">
-          <h3 class="drink-builder__step-title">Choose Your Base</h3>
-          <div class="drink-builder__options" data-option-group="base">
+        <fieldset class="drink-builder__step" data-step="base">
+          <legend class="drink-builder__step-title">Choose Your Base</legend>
+          <div class="drink-builder__options" 
+               data-option-group="base"
+               role="radiogroup"
+               aria-labelledby="base-selection-title"
+               aria-required="true">
             {% for product in collections.kava-drinks.products limit: 6 %}
               <div class="drink-option" data-product-id="{{ product.id }}">
                 <input type="radio" 
@@ -27,14 +31,18 @@
                        value="{{ product.handle }}" 
                        id="base-{{ product.id }}"
                        data-price="{{ product.price }}"
-                       data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                       data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                       required
+                       aria-describedby="base-selection-help"
+                       {% if forloop.first %}aria-checked="false"{% endif %}>
                 <label for="base-{{ product.id }}" class="drink-option__label">
                   {% if product.featured_image %}
                     <img src="{{ product.featured_image | image_url: width: 100 }}" 
                          alt="{{ product.title }}" 
                          class="drink-option__image"
                          width="100" 
-                         height="100">
+                         height="100"
+                         loading="lazy">
                   {% endif %}
                   <span class="drink-option__name">{{ product.title }}</span>
                   <span class="drink-option__price">${{ product.price | money_without_currency }}</span>
@@ -42,7 +50,10 @@
               </div>
             {% endfor %}
           </div>
-        </div>
+          <div id="base-selection-help" class="drink-builder__help-text">
+            Select your preferred base drink to begin customization
+          </div>
+        </fieldset>
 
         {% comment %} Size Selection {% endcomment %}
         <div class="drink-builder__step" data-step="size">
@@ -95,7 +106,10 @@
               </div>
             {% endfor %}
           </div>
-        </div>
+          <div id="base-selection-help" class="drink-builder__help-text">
+            Select your preferred base drink to begin customization
+          </div>
+        </fieldset>
 
         {% comment %} Add-ons {% endcomment %}
         <div class="drink-builder__step" data-step="addons">
@@ -715,3 +729,13 @@ document.addEventListener('DOMContentLoaded', function() {
   ]
 }
 {% endschema %}
+
+{% comment %} Schema Markup for Drink Builder Products {% endcomment %}
+{% for product in collections[section.settings.base_drinks_collection].products limit: 1 %}
+  {% render 'product-schema', product: product %}
+{% endfor %}
+
+{% comment %} Recipe Schema for Preset Combinations {% endcomment %}
+{% if section.settings.show_presets %}
+  {% render 'recipe-schema' %}
+{% endif %}

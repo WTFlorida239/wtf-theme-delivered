@@ -2,8 +2,14 @@
 
 ## 1. Mission & Launch Focus
 - Deliver a production-ready Shopify theme for **WTF | Welcome To Florida** with a frictionless drink builder, POS-ready catalog, and compliant payment stack.
-- Current milestone: **Phase 3 – Content, Marketing, and Launch Readiness**. We are integrating competitor intelligence, tightening automations, and finalizing documentation for go-live.
+- Current milestone: **Phase 4 – Hardening & Production Readiness**. We have completed comprehensive theme auditing, implemented quality automation, standardized naming conventions, and updated all documentation for production deployment.
 - Always keep accessibility (WCAG 2.1 AA), performance (90+ Lighthouse), and SEO (rich structured data) as non-negotiable requirements.
+
+## 1.1. Recent Hardening Improvements
+- **Theme Quality Automation**: Implemented comprehensive CI/CD workflows including theme-check validation, JSON validation, accessibility testing, and security scanning.
+- **Development Standards**: Established consistent naming conventions across all files, documented in `NAMING_CONVENTIONS.md`.
+- **Pre-commit Hooks**: Added automated quality checks that run before every commit to prevent issues from entering the codebase.
+- **Documentation Overhaul**: Updated README.md, AGENTS.md, and TASKS.md to reflect current architecture and procedures.
 
 ## 2. Sources of Truth
 | Artifact | Purpose |
@@ -19,16 +25,19 @@ When modifying files inside a subdirectory, check for additional `AGENTS.md` fil
 ## 3. Automation & Quality Gates
 | Automation | Trigger | What it must do |
 | --- | --- | --- |
-| **CI (ci.yml)** | PR + pushes to `main` | Install dependencies, run `npm run lint`, `npm test`, and surface coverage + bundle size warnings. |
-| **Theme Check (theme-check.yml)** | PR + `main` | Execute `shopify theme check` against Liquid templates. |
-| **Lighthouse CI (lighthouse.yml)** | Nightly + manual dispatch | Audits storefront Performance, Best Practices, Accessibility, SEO. Export results to the PR as artifacts. |
+| **Theme Quality Check (theme-quality-check.yml)** | PR + pushes to `main`, `develop`, `hardening/*` | Comprehensive quality validation including theme-check with auto-correct, JSON validation, Liquid syntax checking, asset optimization review, accessibility patterns, and naming convention enforcement. |
+| **CI/CD Pipeline (ci-cd-pipeline.yml)** | PR + pushes to `main`, `develop` | Install dependencies, run conflict scan, competitor audit, order readiness check, theme validation, and security scanning. |
+| **Theme Check (automated-testing.yml)** | PR + `main` | Execute `shopify theme check` against Liquid templates with error-level failure threshold. |
+| **Lighthouse CI (quality-monitoring.yml)** | Nightly + manual dispatch | Audits storefront Performance, Best Practices, Accessibility, SEO. Export results to the PR as artifacts. |
+| **Security & Dependencies (security-dependency-management.yml)** | PR + scheduled | Vulnerability scanning, dependency updates, security header validation, and compliance checking. |
+| **Pre-commit Hooks (.githooks/pre-commit)** | Every commit | Local quality validation including theme-check, JSON validation, large file detection, secret scanning, and required file verification. |
 | **Order Readiness Audit** | PR + `main` | Runs `node scripts/order-readiness-check.js --ci` to confirm cart, builder, and schema outputs remain launch-ready. |
 | **Preview Deploy** | PR merge queue | Publishes preview theme using Shopify CLI with password-protected access. |
 | **Production Deploy** | Release tags | Pushes theme bundle to the live store after approvals. |
 | **Competitor Signal Snapshot** | Manual + scheduled (`npm run competitors:audit`) | Parse the CSV dataset, validate doc parity, surface schema/performance deltas, write `docs/competitor-insights.json`, and attach findings to PRs. _Implementation progress tracked in `TASKS.md`._ |
 | **Merge Conflict Scan** | Pre-commit (`npm run conflicts:scan`) | Fail fast when merge conflict markers remain anywhere in the repo. |
 
-> ✅ Before committing: run `shopify theme check`, `node scripts/order-readiness-check.js`, `npm run competitors:audit`, `npm run conflicts:scan`, and any available npm scripts (`npm run lint`, `npm test`) from `dev-server/`.  
+> ✅ Before committing: Pre-commit hooks automatically run quality checks including `shopify theme check`, JSON validation, security scanning, and file verification. For manual validation, run `./setup-dev.sh` to ensure proper development environment setup.  
 > If a script is missing, note the gap in the PR body and create a follow-up in `TASKS.md`.
 
 ## 4. Role Guides

@@ -1,0 +1,713 @@
+{% comment %}
+  Events Calendar Section
+  Displays upcoming WTF events with structured data
+  Includes competitor event tracking and counterprogramming
+{% endcomment %}
+
+<section class="events-calendar" data-section-id="{{ section.id }}" aria-labelledby="events-title">
+  <div class="events-calendar__container">
+    <div class="events-calendar__header">
+      <h2 id="events-title" class="events-calendar__title">
+        {{ section.settings.title | default: 'Upcoming Events at WTF' }}
+      </h2>
+      {% if section.settings.description != blank %}
+        <p class="events-calendar__description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="events-calendar__content">
+      <!-- Event Categories Filter -->
+      <div class="events-filter" role="tablist" aria-label="Event categories">
+        <button type="button" 
+                class="events-filter__btn events-filter__btn--active" 
+                data-filter="all"
+                role="tab"
+                aria-selected="true"
+                aria-controls="events-all">
+          All Events
+        </button>
+        <button type="button" 
+                class="events-filter__btn" 
+                data-filter="educational"
+                role="tab"
+                aria-selected="false"
+                aria-controls="events-educational">
+          Educational
+        </button>
+        <button type="button" 
+                class="events-filter__btn" 
+                data-filter="social"
+                role="tab"
+                aria-selected="false"
+                aria-controls="events-social">
+          Social
+        </button>
+        <button type="button" 
+                class="events-filter__btn" 
+                data-filter="special"
+                role="tab"
+                aria-selected="false"
+                aria-controls="events-special">
+          Special Events
+        </button>
+      </div>
+
+      <!-- Events Grid -->
+      <div class="events-grid" id="events-container" role="tabpanel">
+        
+        <!-- Kava Education Workshop -->
+        <article class="event-card" data-category="educational" data-event-id="kava-workshop-2024">
+          <div class="event-card__image">
+            <img src="{{ 'event-kava-workshop.jpg' | asset_url }}" 
+                 alt="Kava Education Workshop at WTF" 
+                 width="400" 
+                 height="250"
+                 loading="lazy">
+            <div class="event-card__date-badge">
+              <span class="event-date__month">JAN</span>
+              <span class="event-date__day">15</span>
+            </div>
+          </div>
+          <div class="event-card__content">
+            <div class="event-card__meta">
+              <span class="event-card__category">Educational</span>
+              <time class="event-card__time" datetime="2024-01-15T19:00">7:00 PM</time>
+            </div>
+            <h3 class="event-card__title">Kava 101: Origins, Effects & Preparation</h3>
+            <p class="event-card__description">
+              Learn about the rich history of kava, its traditional preparation methods, and how to identify quality kava. Perfect for beginners and enthusiasts alike.
+            </p>
+            <div class="event-card__details">
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>WTF Lounge</span>
+              </div>
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <path d="M20 8v6"></path>
+                  <path d="M23 11h-6"></path>
+                </svg>
+                <span>20 spots available</span>
+              </div>
+            </div>
+            <button type="button" class="event-card__rsvp" data-event-rsvp="kava-workshop-2024">
+              RSVP Free
+            </button>
+          </div>
+        </article>
+
+        <!-- Game Night -->
+        <article class="event-card" data-category="social" data-event-id="game-night-weekly">
+          <div class="event-card__image">
+            <img src="{{ 'event-game-night.jpg' | asset_url }}" 
+                 alt="Weekly Game Night at WTF" 
+                 width="400" 
+                 height="250"
+                 loading="lazy">
+            <div class="event-card__date-badge event-card__date-badge--recurring">
+              <span class="event-date__month">EVERY</span>
+              <span class="event-date__day">FRI</span>
+            </div>
+          </div>
+          <div class="event-card__content">
+            <div class="event-card__meta">
+              <span class="event-card__category">Social</span>
+              <time class="event-card__time" datetime="19:00">7:00 PM - 10:00 PM</time>
+            </div>
+            <h3 class="event-card__title">Friday Night Game Tournament</h3>
+            <p class="event-card__description">
+              Join us every Friday for board games, card games, and friendly competition. Prizes for winners, fun for everyone. Bring friends or make new ones!
+            </p>
+            <div class="event-card__details">
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                  <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                  <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
+                <span>All skill levels welcome</span>
+              </div>
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.87 2 9l6.91-1.74L12 2z"></path>
+                </svg>
+                <span>Prizes for winners</span>
+              </div>
+            </div>
+            <button type="button" class="event-card__rsvp" data-event-rsvp="game-night-weekly">
+              Join Game Night
+            </button>
+          </div>
+        </article>
+
+        <!-- Kratom Tasting -->
+        <article class="event-card" data-category="educational" data-event-id="kratom-tasting-2024">
+          <div class="event-card__image">
+            <img src="{{ 'event-kratom-tasting.jpg' | asset_url }}" 
+                 alt="Kratom Strain Tasting Event" 
+                 width="400" 
+                 height="250"
+                 loading="lazy">
+            <div class="event-card__date-badge">
+              <span class="event-date__month">JAN</span>
+              <span class="event-date__day">22</span>
+            </div>
+          </div>
+          <div class="event-card__content">
+            <div class="event-card__meta">
+              <span class="event-card__category">Educational</span>
+              <time class="event-card__time" datetime="2024-01-22T18:00">6:00 PM</time>
+            </div>
+            <h3 class="event-card__title">Kratom Strain Comparison Tasting</h3>
+            <p class="event-card__description">
+              Explore the differences between Red, Green, White, and Yellow kratom strains. Learn about effects, origins, and find your preferred variety with expert guidance.
+            </p>
+            <div class="event-card__details">
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 9V5a3 3 0 0 0-6 0v4"></path>
+                  <rect x="2" y="9" width="20" height="11" rx="2" ry="2"></rect>
+                </svg>
+                <span>21+ only</span>
+              </div>
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>Educational materials included</span>
+              </div>
+            </div>
+            <button type="button" class="event-card__rsvp" data-event-rsvp="kratom-tasting-2024">
+              Reserve Spot - $15
+            </button>
+          </div>
+        </article>
+
+        <!-- Community Mixer -->
+        <article class="event-card" data-category="special" data-event-id="community-mixer-2024">
+          <div class="event-card__image">
+            <img src="{{ 'event-community-mixer.jpg' | asset_url }}" 
+                 alt="WTF Community Mixer Event" 
+                 width="400" 
+                 height="250"
+                 loading="lazy">
+            <div class="event-card__date-badge">
+              <span class="event-date__month">FEB</span>
+              <span class="event-date__day">05</span>
+            </div>
+          </div>
+          <div class="event-card__content">
+            <div class="event-card__meta">
+              <span class="event-card__category">Special Event</span>
+              <time class="event-card__time" datetime="2024-02-05T17:00">5:00 PM - 9:00 PM</time>
+            </div>
+            <h3 class="event-card__title">WTF Community Mixer & Open House</h3>
+            <p class="event-card__description">
+              Meet fellow community members, enjoy special pricing on all drinks, live music, and learn about our upcoming programs. Perfect for newcomers and regulars alike.
+            </p>
+            <div class="event-card__details">
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m6-6h4a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-4m-6 0V9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8z"></path>
+                </svg>
+                <span>Live music & entertainment</span>
+              </div>
+              <div class="event-detail">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.87 2 9l6.91-1.74L12 2z"></path>
+                </svg>
+                <span>Special drink pricing</span>
+              </div>
+            </div>
+            <button type="button" class="event-card__rsvp" data-event-rsvp="community-mixer-2024">
+              RSVP Free
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Event Calendar Widget -->
+      <div class="events-calendar-widget">
+        <h3 class="events-calendar-widget__title">Full Event Calendar</h3>
+        <div class="events-calendar-widget__embed">
+          <!-- This would integrate with Google Calendar or similar -->
+          <iframe src="https://calendar.google.com/calendar/embed?src=wtfswag%40gmail.com&ctz=America%2FNew_York" 
+                  style="border: 0" 
+                  width="100%" 
+                  height="400" 
+                  frameborder="0" 
+                  scrolling="no"
+                  title="WTF Events Calendar">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Newsletter Signup -->
+      <div class="events-newsletter">
+        <div class="events-newsletter__content">
+          <h3 class="events-newsletter__title">Never Miss an Event</h3>
+          <p class="events-newsletter__description">
+            Get notified about upcoming events, special workshops, and exclusive member gatherings.
+          </p>
+          <form class="events-newsletter__form" data-newsletter-form>
+            <div class="events-newsletter__input-group">
+              <label for="event-newsletter-email" class="sr-only">Email address</label>
+              <input type="email" 
+                     id="event-newsletter-email" 
+                     name="email" 
+                     placeholder="Enter your email" 
+                     required
+                     aria-describedby="newsletter-help">
+              <button type="submit" class="events-newsletter__submit">
+                Subscribe
+              </button>
+            </div>
+            <div id="newsletter-help" class="events-newsletter__help">
+              We'll only send you event notifications. No spam, unsubscribe anytime.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Events Schema Markup -->
+{% render 'events-schema' %}
+
+<style>
+  .events-calendar {
+    padding: 4rem 0;
+    background: #f8fafc;
+  }
+
+  .events-calendar__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .events-calendar__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .events-calendar__title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  .events-calendar__description {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .events-filter {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .events-filter__btn {
+    background: white;
+    border: 2px solid #e5e7eb;
+    color: #6b7280;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .events-filter__btn:hover,
+  .events-filter__btn--active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+  }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .event-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .event-card__image {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .event-card__image img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .event-card:hover .event-card__image img {
+    transform: scale(1.05);
+  }
+
+  .event-card__date-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: #3b82f6;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 60px;
+  }
+
+  .event-card__date-badge--recurring {
+    background: #10b981;
+  }
+
+  .event-date__month {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+
+  .event-date__day {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .event-card__content {
+    padding: 1.5rem;
+  }
+
+  .event-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .event-card__category {
+    background: #eff6ff;
+    color: #3b82f6;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .event-card__time {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .event-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+  }
+
+  .event-card__description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .event-card__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .event-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .event-detail svg {
+    flex-shrink: 0;
+  }
+
+  .event-card__rsvp {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .event-card__rsvp:hover {
+    background: #2563eb;
+  }
+
+  .events-calendar-widget {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+  }
+
+  .events-calendar-widget__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+    text-align: center;
+  }
+
+  .events-newsletter {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+  }
+
+  .events-newsletter__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+
+  .events-newsletter__description {
+    font-size: 1.125rem;
+    margin: 0 0 2rem 0;
+    opacity: 0.9;
+  }
+
+  .events-newsletter__input-group {
+    display: flex;
+    max-width: 400px;
+    margin: 0 auto 1rem auto;
+    gap: 0.5rem;
+  }
+
+  .events-newsletter__input-group input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .events-newsletter__submit {
+    background: #1f2937;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .events-newsletter__submit:hover {
+    background: #374151;
+  }
+
+  .events-newsletter__help {
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 768px) {
+    .events-calendar__title {
+      font-size: 2rem;
+    }
+
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .events-filter {
+      justify-content: flex-start;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .events-filter__btn {
+      flex-shrink: 0;
+    }
+
+    .events-newsletter__input-group {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Event filtering
+    const filterButtons = document.querySelectorAll('.events-filter__btn');
+    const eventCards = document.querySelectorAll('.event-card');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const filter = this.dataset.filter;
+        
+        // Update active button
+        filterButtons.forEach(btn => {
+          btn.classList.remove('events-filter__btn--active');
+          btn.setAttribute('aria-selected', 'false');
+        });
+        this.classList.add('events-filter__btn--active');
+        this.setAttribute('aria-selected', 'true');
+
+        // Filter events
+        eventCards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // RSVP handling
+    const rsvpButtons = document.querySelectorAll('[data-event-rsvp]');
+    rsvpButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const eventId = this.dataset.eventRsvp;
+        
+        if (window.WTF && window.WTF.handleEventRSVP) {
+          window.WTF.handleEventRSVP(eventId);
+        } else {
+          // Fallback: redirect to contact page with event info
+          window.location.href = `/pages/contact?event=${eventId}`;
+        }
+      });
+    });
+
+    // Newsletter signup
+    const newsletterForm = document.querySelector('[data-newsletter-form]');
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = this.querySelector('input[type="email"]').value;
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        submitButton.textContent = 'Subscribing...';
+        submitButton.disabled = true;
+
+        // Handle newsletter subscription
+        if (window.WTF && window.WTF.subscribeToEvents) {
+          window.WTF.subscribeToEvents(email).then(() => {
+            submitButton.textContent = 'Subscribed!';
+            this.querySelector('input[type="email"]').value = '';
+            
+            setTimeout(() => {
+              submitButton.textContent = originalText;
+              submitButton.disabled = false;
+            }, 2000);
+          });
+        } else {
+          // Fallback: submit to contact form
+          fetch('/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              'form_type': 'contact',
+              'utf8': '✓',
+              'contact[email]': email,
+              'contact[subject]': 'Event Newsletter Subscription',
+              'contact[body]': 'Please subscribe me to event notifications.',
+              'contact[tags]': 'event-newsletter'
+            })
+          }).then(() => {
+            submitButton.textContent = 'Subscribed!';
+            this.querySelector('input[type="email"]').value = '';
+            
+            setTimeout(() => {
+              submitButton.textContent = originalText;
+              submitButton.disabled = false;
+            }, 2000);
+          });
+        }
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Events Calendar",
+  "tag": "section",
+  "class": "section-events-calendar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Upcoming Events at WTF"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section Description",
+      "default": "Join us for educational workshops, social events, and special gatherings at Cape Coral's premier kava and kratom lounge."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Events Calendar"
+    }
+  ]
+}
+{% endschema %}

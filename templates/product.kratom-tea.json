@@ -96,8 +96,11 @@
         "subheading": "Mix and match these house favorites with your custom pour.",
         "button_label": "View product"
       },
-      "blocks": {},
-      "block_order": []
+      "blocks": {
+      },
+      "block_order": [
+
+      ]
     },
     "recommendations": {
       "type": "product-recommendations",

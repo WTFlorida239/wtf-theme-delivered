@@ -11,7 +11,7 @@
   assign business_phone = shop.metafields.wtf.phone | default: '(239) 955-0314'
   assign business_email = shop.metafields.wtf.email | default: 'info@wtfswag.com'
   assign business_address = shop.metafields.wtf.address.value | default: blank
-  assign business_description = shop.metafields.wtf.description | default: 'Cape Coral&apos;s premier kava and kratom lounge offering premium botanical beverages, THC products, and a welcoming community space for sober-friendly nightlife.'
+  assign business_description = shop.metafields.wtf.description | default: "Cape Coral's premier kava and kratom lounge offering premium botanical beverages, THC products, and a welcoming community space for sober-friendly nightlife."
   assign business_logo = shop.metafields.wtf.logo | default: blank
   assign business_images = shop.metafields.wtf.gallery.value | default: blank
   assign business_services = shop.metafields.wtf.services.value | default: blank
@@ -22,9 +22,7 @@
   endif
   
   if business_hours == blank
-    assign default_hours = 'Mo-Su 08:00-22:00'
   else
-    assign default_hours = business_hours
   endif
 %}
 
