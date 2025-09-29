@@ -526,6 +526,118 @@
     ]
   },
   {
+    "name": "Integrations",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Lightspeed POS Integration"
+      },
+      {
+        "type": "text",
+        "id": "lightspeed_account_id",
+        "label": "Lightspeed Account ID",
+        "info": "Your Lightspeed Retail account ID for inventory sync"
+      },
+      {
+        "type": "password",
+        "id": "lightspeed_api_key",
+        "label": "Lightspeed API Key",
+        "info": "API key for Lightspeed integration (keep secure)"
+      },
+      {
+        "type": "checkbox",
+        "id": "lightspeed_enable_sync",
+        "label": "Enable real-time inventory sync",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "lightspeed_sync_interval",
+        "min": 15,
+        "max": 300,
+        "step": 15,
+        "unit": "s",
+        "label": "Sync interval",
+        "default": 30,
+        "info": "How often to sync inventory (seconds)"
+      },
+      {
+        "type": "header",
+        "content": "2accept Payment Gateway"
+      },
+      {
+        "type": "text",
+        "id": "twoaccept_public_key",
+        "label": "2accept Public Key",
+        "info": "Your 2accept public API key"
+      },
+      {
+        "type": "text",
+        "id": "twoaccept_merchant_id",
+        "label": "2accept Merchant ID",
+        "info": "Your 2accept merchant identifier"
+      },
+      {
+        "type": "select",
+        "id": "twoaccept_environment",
+        "label": "Environment",
+        "options": [
+          {
+            "value": "sandbox",
+            "label": "Sandbox (Testing)"
+          },
+          {
+            "value": "production",
+            "label": "Production (Live)"
+          }
+        ],
+        "default": "production"
+      },
+      {
+        "type": "checkbox",
+        "id": "twoaccept_enable_saved_cards",
+        "label": "Enable saved payment methods",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "twoaccept_enable_apple_pay",
+        "label": "Enable Apple Pay",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "twoaccept_enable_google_pay",
+        "label": "Enable Google Pay",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Order Management"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_pos_integration",
+        "label": "Enable POS order sync",
+        "default": true,
+        "info": "Automatically sync online orders to POS system"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_receipt_printing",
+        "label": "Enable automatic receipt printing",
+        "default": true,
+        "info": "Print receipts automatically when orders are placed"
+      },
+      {
+        "type": "text",
+        "id": "webhook_endpoint",
+        "label": "Webhook endpoint URL",
+        "info": "URL for order webhooks (optional)"
+      }
+    ]
+  },
+  {
     "name": "Analytics & Pixels",
     "settings": [
       {
