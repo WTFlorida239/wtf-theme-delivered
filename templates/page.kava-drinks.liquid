@@ -380,15 +380,18 @@
         if (!validateSelections()) return;
 
         const btn = document.getElementById('add-to-cart-btn');
-        const original = btn.textContent;
-        btn.textContent = '⏳ Adding...';
-        btn.disabled = true;
-
+        
+        // Create a form element for the unified cart system
+        const form = document.createElement('form');
+        form.setAttribute('data-cart-form', 'true');
+        
+        // Add required inputs
         const variantId = window.KAVA_DRINKS_VARIANT_ID;
         const quantity = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
         const comments = (document.getElementById('order-comments').value || '').trim();
 
         const properties = { 
+          'Product Type': 'Kava Drink',
           Style: selectedStyle,
           Size: selectedSize,
           Flavor: selectedFlavor,
@@ -397,70 +400,83 @@
         };
         if (comments) properties.Comments = comments;
 
+        // Add hidden inputs to form
+        const variantInput = document.createElement('input');
+        variantInput.type = 'hidden';
+        variantInput.name = 'id';
+        variantInput.value = variantId || '';
+        form.appendChild(variantInput);
+        
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'hidden';
+        quantityInput.name = 'quantity';
+        quantityInput.value = quantity;
+        form.appendChild(quantityInput);
+        
+        // Add properties as hidden inputs
+        for (const [key, value] of Object.entries(properties)) {
+          const propertyInput = document.createElement('input');
+          propertyInput.type = 'hidden';
+          propertyInput.name = `properties[${key}]`;
+          propertyInput.value = value;
+          form.appendChild(propertyInput);
+        }
+        
+        // Add submit button to form
+        const submitBtn = btn.cloneNode(true);
+        submitBtn.type = 'submit';
+        form.appendChild(submitBtn);
+        
+        // Temporarily add form to page
+        form.style.display = 'none';
+        document.body.appendChild(form);
+        
         try {
-          if (variantId) {
-            const body = new URLSearchParams();
-            body.set('id', String(variantId));
-            body.set('quantity', String(quantity));
-            for (const k in properties) body.set(`properties[${k}]`, String(properties[k]));
-
+          // Use the unified cart system if available
+          if (window.WTFCartSystem && window.WTFCartSystem.initialized) {
+            console.log('Using unified cart system for Kava drinks');
+            await window.WTFCartSystem.handleAddToCart(form);
+          } else {
+            // Fallback to direct cart API call
+            console.log('Fallback: Direct cart API call');
+            
+            const formData = new FormData(form);
             const res = await fetch('/cart/add.js', {
               method: 'POST',
+              body: formData,
               headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                Accept: 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
               },
-              credentials: 'same-origin',
-              body,
+              credentials: 'same-origin'
             });
 
             if (!res.ok) {
-              let msg = 'Add to cart failed';
-              try {
-                const data = await res.json();
-                msg = data.description || data.message || msg;
-              } catch {}
-              throw new Error(msg);
+              const errorData = await res.json().catch(() => ({}));
+              throw new Error(errorData.description || errorData.message || 'Failed to add to cart');
             }
-          } else {
-            // Fallback: store cart locally for dev/preview modes
-            const order = {
-              id: 'kava-' + Date.now() + '-' + Math.random().toString(36).slice(2),
-              product: 'Kava Drinks',
-              ...properties,
-              quantity,
-              price: (basePrice * quantity).toFixed(2),
-              timestamp: new Date().toISOString(),
-            };
-            let cart = [];
-            try {
-              cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
-            } catch {}
-            cart.push(order);
-            localStorage.setItem('wtf-cart', JSON.stringify(cart));
+
+            await updateCartCount();
+
+            const success = document.getElementById('success-message');
+            success.innerHTML = `✅ <strong>Added to cart!</strong><br>
+               🥥 ${properties.Style} — <strong>${properties.Size}</strong><br>
+               🍍 Flavor: ${properties.Flavor}<br>
+               🥛 Creamer: ${properties.Creamer} | 🧊 Ice: ${properties.Ice}<br>
+               🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
+            success.classList.add('show');
+            success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            document.dispatchEvent(new CustomEvent('kava:added', { detail: { variantId, ...properties, quantity } }));
           }
-
-          await updateCartCount();
-
-          const success = document.getElementById('success-message');
-          success.innerHTML = `✅ <strong>Added to cart!</strong><br>
-             🥥 ${properties.Style} — <strong>${properties.Size}</strong><br>
-             🍍 Flavor: ${properties.Flavor}<br>
-             🥛 Creamer: ${properties.Creamer} | 🧊 Ice: ${properties.Ice}<br>
-             🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
-          success.classList.add('show');
-          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-          document.dispatchEvent(new CustomEvent('kava:added', { detail: { variantId, ...properties, quantity } }));
         } catch (err) {
           console.error('Add to cart error:', err);
           alert('❌ ' + (err && err.message ? err.message : 'Error adding to cart. Please try again.'));
         } finally {
-          setTimeout(() => {
-            btn.textContent = original;
-            btn.disabled = false;
-            document.getElementById('success-message').classList.remove('show');
-          }, 4000);
+          // Clean up form
+          if (form.parentNode) {
+            form.remove();
+          }
         }
       }
     </script>
