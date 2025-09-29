@@ -1,8 +1,9 @@
-/* WTF Enhanced AJAX Cart System
+/* WTF Enhanced AJAX Cart System - UNIFIED VERSION
    - Handles all cart operations with proper persistence
    - Supports line item properties for custom drinks
    - Provides real-time cart updates and feedback
    - Includes error handling and retry logic
+   - Unified system to prevent conflicts between multiple cart handlers
 */
 
 class WTFCart {
@@ -10,21 +11,55 @@ class WTFCart {
     this.isLoading = false;
     this.retryCount = 0;
     this.maxRetries = 3;
+    this.initialized = false;
+    this.eventListenersAttached = false;
+    
+    // Backup configuration
+    this.backupConfig = {
+      key: 'wtf_cart_backup',
+      ttl: 24 * 60 * 60 * 1000 // 24 hours
+    };
+    
     this.init();
   }
 
   init() {
+    // Prevent double initialization
+    if (this.initialized) return;
+    
     this.attachEventListeners();
     this.updateCartCount();
     this.initializeCartDrawer();
+    this.initializeFormObserver();
+    this.restoreCartFromBackup();
+    
+    this.initialized = true;
+    
+    // Dispatch initialization event
+    document.dispatchEvent(new CustomEvent('wtf:cart:ready', {
+      detail: { cartSystem: this }
+    }));
   }
 
   attachEventListeners() {
-    // Handle form submissions with data-wtf-ajax attribute
+    // Prevent duplicate event listeners
+    if (this.eventListenersAttached) return;
+    
+    // Handle form submissions with data-wtf-ajax attribute OR cart-enabled forms
     document.addEventListener('submit', (e) => {
-      if (e.target.matches('[data-wtf-ajax]')) {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      
+      // Check if this is a cart form (multiple ways to identify)
+      const isCartForm = form.matches('[data-wtf-ajax]') || 
+                        form.matches('.drink-builder-form') ||
+                        form.matches('[data-cart-form]') ||
+                        form.querySelector('[name="id"]') ||
+                        form.action.includes('/cart/add');
+      
+      if (isCartForm) {
         e.preventDefault();
-        this.handleAddToCart(e.target);
+        this.handleAddToCart(form);
       }
     });
 
@@ -52,6 +87,8 @@ class WTFCart {
         this.handleQuantityButton(button);
       }
     });
+    
+    this.eventListenersAttached = true;
   }
 
   async handleAddToCart(form) {
@@ -64,26 +101,32 @@ class WTFCart {
       this.isLoading = true;
       this.setButtonState(submitButton, 'Adding...', true);
 
-      // Validate form before submission
-      if (!this.validateForm(form)) {
+      // Extract and validate form data
+      const cartData = this.extractCartData(form);
+      
+      if (!this.validateCartData(cartData)) {
         throw new Error('Please complete all required selections');
       }
 
-      // Prepare form data
-      const formData = new FormData(form);
-      
-      // Ensure quantity is set
-      if (!formData.get('quantity')) {
-        formData.set('quantity', '1');
-      }
+      // Backup cart data before submission
+      this.backupCartData(cartData);
 
+      // Prepare form data for Shopify
+      const formData = this.prepareFormData(cartData);
+      
       // Log form data for debugging
-      console.log('Form data being submitted:');
+      console.log('Cart data being submitted:', cartData);
+      console.log('FormData entries:');
       for (let [key, value] of formData.entries()) {
         console.log(`  ${key}: ${value}`);
       }
 
-      // Add to cart
+      // Check if we have a variant ID (required for Shopify)
+      if (!cartData.variantId) {
+        throw new Error('Product variant ID is required');
+      }
+
+      // Add to cart via Shopify API
       const response = await fetch('/cart/add.js', {
         method: 'POST',
         body: formData,
@@ -111,18 +154,23 @@ class WTFCart {
       }
 
       const addedItem = await response.json();
+      console.log('Item successfully added:', addedItem);
       
-      // Get updated cart
+      // Get updated cart to ensure consistency
       const cart = await this.getCart();
+      console.log('Updated cart:', cart);
+      
+      // Clear backup since submission was successful
+      this.clearCartBackup();
       
       // Update UI
       this.updateCartCount(cart.item_count);
-      this.showSuccessMessage('Item added to cart!');
+      this.showSuccessMessage(this.formatSuccessMessage(cartData));
       
-      // Dispatch events
-      this.dispatchCartEvents(cart, addedItem);
+      // Dispatch events for other components
+      this.dispatchCartEvents(cart, addedItem, cartData);
       
-      // Reset form if needed
+      // Reset form if it's a drink builder
       this.resetForm(form);
       
       // Open cart drawer if available
@@ -138,12 +186,191 @@ class WTFCart {
       this.showErrorMessage(error.message);
       this.setButtonState(submitButton, 'Try Again', false);
       
+      // Attempt to restore from backup if main submission failed
+      setTimeout(() => {
+        this.attemptCartRecovery(form);
+      }, 1000);
+      
       setTimeout(() => {
         this.setButtonState(submitButton, originalText || 'Add to Cart', false);
       }, 3000);
     } finally {
       this.isLoading = false;
     }
+  }
+
+  extractCartData(form) {
+    const formData = new FormData(form);
+    const data = {
+      variantId: formData.get('id'),
+      quantity: parseInt(formData.get('quantity') || '1', 10),
+      properties: {},
+      timestamp: new Date().toISOString(),
+      orderId: this.generateOrderId()
+    };
+
+    // Extract all line item properties
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith('properties[') && key.endsWith(']')) {
+        const propName = key.slice(11, -1); // Remove 'properties[' and ']'
+        if (value && value.trim()) {
+          data.properties[propName] = value.trim();
+        }
+      }
+    }
+
+    // Extract from data attributes if variant ID is missing
+    if (!data.variantId) {
+      const variantInput = form.querySelector('[data-variant-id]');
+      if (variantInput) {
+        data.variantId = variantInput.dataset.variantId;
+      }
+      
+      // Check for global variant IDs for drink builders
+      if (!data.variantId && window.KAVA_DRINKS_VARIANT_ID) {
+        data.variantId = window.KAVA_DRINKS_VARIANT_ID;
+        data.properties['Product Type'] = 'Kava Drink';
+      }
+      if (!data.variantId && window.KRATOM_TEAS_VARIANT_ID) {
+        data.variantId = window.KRATOM_TEAS_VARIANT_ID;
+        data.properties['Product Type'] = 'Kratom Tea';
+      }
+      if (!data.variantId && window.THC_DRINKS_VARIANT_ID) {
+        data.variantId = window.THC_DRINKS_VARIANT_ID;
+        data.properties['Product Type'] = 'THC Drink';
+      }
+    }
+
+    return data;
+  }
+
+  validateCartData(data) {
+    if (!data.variantId) {
+      console.warn('No variant ID provided');
+      return false;
+    }
+    
+    if (data.quantity < 1 || data.quantity > 50) {
+      console.warn('Invalid quantity:', data.quantity);
+      return false;
+    }
+
+    return true;
+  }
+
+  prepareFormData(cartData) {
+    const formData = new FormData();
+    
+    formData.set('id', String(cartData.variantId));
+    formData.set('quantity', String(cartData.quantity));
+    
+    // Add all properties
+    Object.entries(cartData.properties).forEach(([key, value]) => {
+      formData.set(`properties[${key}]`, String(value));
+    });
+
+    // Add metadata
+    formData.set('properties[Order ID]', cartData.orderId);
+    formData.set('properties[Added At]', cartData.timestamp);
+
+    return formData;
+  }
+
+  generateOrderId() {
+    return 'wtf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  backupCartData(data) {
+    try {
+      const backup = {
+        timestamp: new Date().toISOString(),
+        data: data,
+        ttl: Date.now() + this.backupConfig.ttl
+      };
+      localStorage.setItem(this.backupConfig.key, JSON.stringify(backup));
+      console.log('Cart data backed up:', backup);
+    } catch (error) {
+      console.warn('Failed to backup cart data:', error);
+    }
+  }
+
+  clearCartBackup() {
+    try {
+      localStorage.removeItem(this.backupConfig.key);
+    } catch (error) {
+      console.warn('Failed to clear cart backup:', error);
+    }
+  }
+
+  restoreCartFromBackup() {
+    try {
+      const backup = localStorage.getItem(this.backupConfig.key);
+      if (!backup) return null;
+
+      const parsed = JSON.parse(backup);
+      if (Date.now() > parsed.ttl) {
+        localStorage.removeItem(this.backupConfig.key);
+        return null;
+      }
+
+      console.log('Found cart backup:', parsed);
+      return parsed.data;
+    } catch (error) {
+      console.warn('Failed to restore cart from backup:', error);
+      return null;
+    }
+  }
+
+  attemptCartRecovery(form) {
+    const backup = this.restoreCartFromBackup();
+    if (backup) {
+      console.log('Attempting cart recovery from backup...');
+      // Could show a "retry with backup data" option to user
+      this.showMessage('Cart data saved. You can try again.', 'info');
+    }
+  }
+
+  formatSuccessMessage(cartData) {
+    let message = 'Item added to cart!';
+    
+    if (cartData.properties['Product Type']) {
+      message = `${cartData.properties['Product Type']} added to cart!`;
+    }
+    
+    if (cartData.properties.Size) {
+      message += ` (${cartData.properties.Size})`;
+    }
+    
+    return message;
+  }
+
+  initializeFormObserver() {
+    // Watch for dynamically added forms
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            const forms = node.matches?.('form') ? [node] : node.querySelectorAll?.('form') || [];
+            forms.forEach(form => {
+              if (this.isCartForm(form) && !form.dataset.wtfEnhanced) {
+                form.dataset.wtfEnhanced = 'true';
+                console.log('Enhanced dynamic cart form:', form);
+              }
+            });
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  isCartForm(form) {
+    return form.matches('[data-wtf-ajax]') || 
+           form.matches('.drink-builder-form') ||
+           form.matches('[data-cart-form]') ||
+           form.querySelector('[name="id"]') ||
+           form.action.includes('/cart/add');
   }
 
   async handleQuantityChange(input) {
@@ -344,26 +571,41 @@ class WTFCart {
     const messageEl = document.createElement('div');
     messageEl.className = `wtf-cart-message wtf-cart-message--${type}`;
     messageEl.textContent = message;
+    
+    // Set styles based on type
+    const backgroundColor = {
+      success: '#28a745',
+      error: '#dc3545', 
+      info: '#007bff',
+      warning: '#ffc107'
+    }[type] || '#6c757d';
+    
+    const textColor = type === 'warning' ? '#212529' : 'white';
+    
     messageEl.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
       padding: 12px 20px;
       border-radius: 4px;
-      color: white;
+      color: ${textColor};
       font-weight: bold;
       z-index: 10000;
       animation: slideIn 0.3s ease-out;
-      background: ${type === 'success' ? '#28a745' : '#dc3545'};
+      background: ${backgroundColor};
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      max-width: 300px;
+      word-wrap: break-word;
     `;
 
     document.body.appendChild(messageEl);
 
-    // Auto-remove after 3 seconds
+    // Auto-remove after 4 seconds for info messages, 3 for others
+    const timeout = type === 'info' ? 4000 : 3000;
     setTimeout(() => {
       messageEl.style.animation = 'slideOut 0.3s ease-in';
       setTimeout(() => messageEl.remove(), 300);
-    }, 3000);
+    }, timeout);
   }
 
   initializeCartDrawer() {
@@ -396,30 +638,50 @@ class WTFCart {
     }
   }
 
-  dispatchCartEvents(cart, addedItem = null) {
+  dispatchCartEvents(cart, addedItem = null, cartData = null) {
     // Dispatch multiple events for compatibility
+    const eventDetail = { 
+      cart, 
+      last_added: addedItem,
+      cart_data: cartData
+    };
+
     const events = [
-      new CustomEvent('wtf:cart:update', { detail: { cart, last_added: addedItem } }),
+      new CustomEvent('wtf:cart:update', { detail: eventDetail }),
       new CustomEvent('cart:updated', { detail: cart }),
-      new CustomEvent('wtf:cart:open')
+      new CustomEvent('wtf:cart:open', { detail: eventDetail })
     ];
 
     if (addedItem) {
-      events.push(new CustomEvent('cart:added', { detail: { item: addedItem, cart } }));
+      events.push(new CustomEvent('cart:added', { detail: { item: addedItem, cart, cart_data: cartData } }));
     }
 
-    events.forEach(event => document.dispatchEvent(event));
+    events.forEach(event => {
+      document.dispatchEvent(event);
+      console.log(`Dispatched event: ${event.type}`, event.detail);
+    });
   }
 }
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.WTFCartSystem = new WTFCart();
-  });
-} else {
+// Initialize when DOM is ready - but only if not already initialized
+function initializeWTFCart() {
+  // Prevent multiple instances
+  if (window.WTFCartSystem && window.WTFCartSystem.initialized) {
+    console.log('WTF Cart System already initialized');
+    return window.WTFCartSystem;
+  }
+  
+  console.log('Initializing WTF Cart System...');
   window.WTFCartSystem = new WTFCart();
+  return window.WTFCartSystem;
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeWTFCart);
+} else {
+  initializeWTFCart();
 }
 
 // Export for use in other scripts
 window.WTFCart = WTFCart;
+window.initializeWTFCart = initializeWTFCart;

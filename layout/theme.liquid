@@ -229,12 +229,14 @@
       -------------------------------------------------------------------------------------
     {%- endcomment %}
     
-    {%- comment %} Core WTF Scripts - Load enhanced cart first {%- endcomment %}
+    {%- comment %} Core WTF Scripts - Load enhanced cart first and prevent conflicts {%- endcomment %}
     <script src="{{ 'wtf-enhanced-cart.js' | asset_url }}"></script>
     <script src="{{ 'wtf-drink-builder-enhanced.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-variants.js' | asset_url }}" defer></script>
+    {%- comment %} Disable duplicate cart systems to prevent conflicts
     <script src="{{ 'wtf-ajax-cart.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-enhanced-cart-persistence.js' | asset_url }}" defer></script>
+    {%- endcomment %}
     <script src="{{ 'enhanced-drink-builder.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-upselling.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-analytics.js' | asset_url }}" defer></script>

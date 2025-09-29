@@ -450,15 +450,33 @@ class WTFDrinkBuilderEnhanced {
     this.updateFlavorProperties();
     this.updateAddonProperties();
 
-    // Ensure the form has the data-wtf-ajax attribute for the cart system
-    this.form.setAttribute('data-wtf-ajax', '');
+    // Ensure the form has the data-cart-form attribute for the unified cart system
+    this.form.setAttribute('data-cart-form', 'true');
+    
+    // Add Product Type property for better cart handling
+    this.updateLineItemProperty('Product Type', 'Custom Drink');
 
-    // Trigger the enhanced cart system
-    if (window.WTFCartSystem) {
+    // Wait for cart system to be ready, then trigger it
+    if (window.WTFCartSystem && window.WTFCartSystem.initialized) {
+      console.log('Using unified cart system for drink builder');
       window.WTFCartSystem.handleAddToCart(this.form);
+    } else if (window.WTFCartSystem) {
+      // Wait for initialization
+      document.addEventListener('wtf:cart:ready', () => {
+        console.log('Cart system ready, processing drink builder form');
+        window.WTFCartSystem.handleAddToCart(this.form);
+      });
     } else {
-      // Fallback to regular form submission
-      this.form.submit();
+      // Fallback: wait for cart system to load
+      setTimeout(() => {
+        if (window.WTFCartSystem && window.WTFCartSystem.initialized) {
+          window.WTFCartSystem.handleAddToCart(this.form);
+        } else {
+          // Final fallback to regular form submission
+          console.warn('Cart system not available, using fallback submission');
+          this.form.submit();
+        }
+      }, 100);
     }
 
     return true;
