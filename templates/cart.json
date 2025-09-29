@@ -1,0 +1,12 @@
+{
+  "name": "Cart",
+  "sections": {
+    "wtf-cart": {
+      "type": "wtf-cart",
+      "settings": {}
+    }
+  },
+  "order": [
+    "wtf-cart"
+  ]
+}
