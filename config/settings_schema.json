@@ -178,7 +178,7 @@
         "default": "4"
       },
       {
-        "type": "paragraph",
+        "type": "header",
         "content": "Per-page metafield overrides (Namespace: custom): included_pumps (integer), extra_pump_price (money), max_flavors (integer)."
       }
     ]
@@ -442,7 +442,7 @@
         "content": "Global category cards"
       },
       {
-        "type": "paragraph",
+        "type": "header",
         "content": "Configure up to 8 global category cards. Sections can reference these settings as defaults. Only populated cards will render."
       }
     ]
@@ -457,7 +457,7 @@
         "default": false
       },
       {
-        "type": "paragraph",
+        "type": "header",
         "content": "Metafield keys used by pages (namespace: custom): kratom_variant_id, thc_variant_id, included_pumps, extra_pump_price, max_flavors."
       }
     ]
