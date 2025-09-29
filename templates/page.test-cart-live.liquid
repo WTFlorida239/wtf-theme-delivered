@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Cart Test - {{ shop.name }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: #ff6600;
+            color: white;
+            padding: 1rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #ff6600;
+        }
+        
+        .test-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .test-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #e55a00;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .status-display {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .cart-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .cart-info strong {
+            color: #856404;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #ff6600;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid #ff6600;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: #ff6600;
+            color: white;
+        }
+        
+        #console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Live Cart Functionality Test</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Testing cart persistence and AJAX operations on {{ shop.name }}</p>
+        </div>
+        
+        <a href="{{ routes.root_url }}" class="back-link">← Back to Store</a>
+        
+        <!-- Current Cart Status -->
+        <div class="test-section">
+            <h2>📊 Current Cart Status</h2>
+            <div class="cart-info">
+                <strong>Cart Items:</strong> <span data-cart-count>{{ cart.item_count }}</span><br>
+                <strong>Cart Total:</strong> ${{ cart.total_price | money_without_currency }}<br>
+                <strong>Cart Token:</strong> {{ cart.token | default: 'Not available' }}<br>
+                <strong>Test Time:</strong> <span id="test-time">{{ 'now' | date: '%Y-%m-%d %H:%M:%S' }}</span>
+            </div>
+        </div>
+        
+        <!-- Manual Cart Test -->
+        <div class="test-section">
+            <h2>🛒 Manual Cart Test</h2>
+            <p>Test adding items to cart manually to verify the enhanced cart system.</p>
+            
+            <div class="test-form">
+                <form data-wtf-ajax>
+                    <input type="hidden" name="id" value="12345678901234567890">
+                    <input type="hidden" name="properties[Test Product]" value="Live Cart Test Item">
+                    <input type="hidden" name="properties[Test Time]" value="{{ 'now' | date: '%Y-%m-%d %H:%M:%S' }}">
+                    <input type="hidden" name="properties[Store]" value="{{ shop.name }}">
+                    
+                    <div class="form-group">
+                        <label for="test-quantity">Quantity:</label>
+                        <input type="number" id="test-quantity" name="quantity" value="1" min="1" max="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="test-notes">Test Notes:</label>
+                        <input type="text" id="test-notes" name="properties[Notes]" placeholder="Optional test notes">
+                    </div>
+                    
+                    <button type="submit" class="btn">Add Test Item to Cart</button>
+                </form>
+                
+                <div id="manual-test-status" class="status-display">Ready to test...</div>
+            </div>
+        </div>
+        
+        <!-- Automated Tests -->
+        <div class="test-section">
+            <h2>🤖 Automated Tests</h2>
+            <p>Run comprehensive tests to verify all cart functionality.</p>
+            
+            <button onclick="runAutomatedTests()" class="btn">Run All Tests</button>
+            <button onclick="clearConsole()" class="btn btn-secondary">Clear Console</button>
+            <button onclick="refreshCartData()" class="btn btn-secondary">Refresh Cart Data</button>
+            
+            <div id="console-output">Click "Run All Tests" to begin automated testing...</div>
+        </div>
+        
+        <!-- Cart Operations -->
+        <div class="test-section">
+            <h2>⚙️ Cart Operations</h2>
+            <p>Manual cart operations for testing and debugging.</p>
+            
+            <button onclick="fetchCartData()" class="btn btn-secondary">Fetch Cart</button>
+            <button onclick="clearCart()" class="btn btn-secondary">Clear Cart</button>
+            <button onclick="testLocalStorage()" class="btn btn-secondary">Test Storage</button>
+            
+            <div id="operations-output" class="status-display">No operations performed yet...</div>
+        </div>
+    </div>
+
+    <!-- Load the cart test script -->
+    <script src="{{ 'test-cart-functionality.js' | asset_url }}"></script>
+    
+    <script>
+        // Override console.log to display in our custom console
+        const originalConsoleLog = console.log;
+        const consoleOutput = document.getElementById('console-output');
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            consoleOutput.textContent += message + '\n';
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        };
+        
+        // Test functions
+        async function runAutomatedTests() {
+            clearConsole();
+            console.log('🚀 Starting automated cart tests...\n');
+            
+            if (typeof CartTester !== 'undefined') {
+                const tester = new CartTester();
+                await tester.runAllTests();
+            } else {
+                console.log('❌ CartTester not available. Check if test script loaded correctly.');
+            }
+        }
+        
+        function clearConsole() {
+            consoleOutput.textContent = '';
+        }
+        
+        async function refreshCartData() {
+            try {
+                const response = await fetch('/cart.js');
+                const cart = await response.json();
+                
+                document.querySelector('[data-cart-count]').textContent = cart.item_count;
+                document.getElementById('test-time').textContent = new Date().toLocaleString();
+                
+                console.log('✅ Cart data refreshed');
+                console.log(`Items: ${cart.item_count}, Total: $${(cart.total_price / 100).toFixed(2)}`);
+            } catch (error) {
+                console.log('❌ Failed to refresh cart data:', error.message);
+            }
+        }
+        
+        async function fetchCartData() {
+            const output = document.getElementById('operations-output');
+            output.textContent = 'Fetching cart data...';
+            
+            try {
+                const response = await fetch('/cart.js');
+                const cart = await response.json();
+                
+                output.textContent = `Cart Data Retrieved:
+Item Count: ${cart.item_count}
+Total Price: $${(cart.total_price / 100).toFixed(2)}
+Token: ${cart.token}
+Items: ${cart.items.length > 0 ? cart.items.map(item => `${item.product_title} (${item.quantity})`).join(', ') : 'None'}`;
+            } catch (error) {
+                output.textContent = `Error fetching cart: ${error.message}`;
+            }
+        }
+        
+        async function clearCart() {
+            if (!confirm('Are you sure you want to clear the cart?')) return;
+            
+            const output = document.getElementById('operations-output');
+            output.textContent = 'Clearing cart...';
+            
+            try {
+                const response = await fetch('/cart/clear.js', { method: 'POST' });
+                if (response.ok) {
+                    output.textContent = 'Cart cleared successfully!';
+                    refreshCartData();
+                } else {
+                    output.textContent = `Failed to clear cart: ${response.status}`;
+                }
+            } catch (error) {
+                output.textContent = `Error clearing cart: ${error.message}`;
+            }
+        }
+        
+        function testLocalStorage() {
+            const output = document.getElementById('operations-output');
+            
+            try {
+                // Test localStorage
+                localStorage.setItem('wtf-test', 'test-value');
+                const retrieved = localStorage.getItem('wtf-test');
+                localStorage.removeItem('wtf-test');
+                
+                // Check for cart backup
+                const cartBackup = localStorage.getItem('wtf-cart-backup');
+                
+                output.textContent = `Local Storage Test:
+Available: ${retrieved === 'test-value' ? 'Yes' : 'No'}
+Cart Backup: ${cartBackup ? 'Found' : 'None'}
+${cartBackup ? `Backup Data: ${cartBackup}` : ''}`;
+            } catch (error) {
+                output.textContent = `Local Storage Error: ${error.message}`;
+            }
+        }
+        
+        // Listen for cart events
+        document.addEventListener('wtf:cart:update', function(event) {
+            const statusEl = document.getElementById('manual-test-status');
+            statusEl.textContent = `✅ Cart Updated Successfully!
+New item count: ${event.detail.cart?.item_count || 'Unknown'}
+Time: ${new Date().toLocaleTimeString()}`;
+            
+            refreshCartData();
+        });
+        
+        document.addEventListener('wtf:cart:error', function(event) {
+            const statusEl = document.getElementById('manual-test-status');
+            statusEl.textContent = `❌ Cart Error:
+${event.detail.message || 'Unknown error'}
+Time: ${new Date().toLocaleTimeString()}`;
+        });
+        
+        // Auto-refresh cart data every 30 seconds
+        setInterval(refreshCartData, 30000);
+    </script>
+</body>
+</html>

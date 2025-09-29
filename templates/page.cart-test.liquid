@@ -12,12 +12,22 @@
         .cart-item { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #f9f9f9; }
         .cart-item h4 { color: #ff6600; margin-bottom: 10px; }
         .cart-item p { margin: 5px 0; color: #666; }
+        .cart-item ul { margin: 5px 0 5px 20px; color: #666; }
         .cart-total { background: #ff6600; color: white; padding: 20px; border-radius: 8px; text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px; }
         .empty-cart { text-align: center; color: #666; padding: 40px; }
         .back-link { display: inline-block; color: #ff6600; text-decoration: none; font-weight: bold; margin-bottom: 20px; padding: 10px 15px; border: 2px solid #ff6600; border-radius: 5px; }
         .back-link:hover { background: #ff6600; color: white; }
         .clear-cart { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
         .clear-cart:hover { background: #c82333; }
+        .test-form { background: #e8f5e8; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .test-form h3 { color: #155724; margin-bottom: 15px; }
+        .test-form input, .test-form button { margin: 5px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; }
+        .test-form button { background: #28a745; color: white; border: none; cursor: pointer; }
+        .test-form button:hover { background: #218838; }
+        .status { padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .status-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
     </style>
 </head>
 <body>
@@ -26,35 +36,121 @@
     <div class="container">
         <a href="{{ routes.root_url }}" class="back-link">← Back to Menu</a>
         
+        <!-- Test Form -->
+        <div class="test-form">
+            <h3>Test Cart Functionality</h3>
+            <form data-wtf-ajax>
+                <input type="hidden" name="id" value="12345678901234567890">
+                <input type="hidden" name="properties[Test Product]" value="Cart Test Item">
+                <input type="hidden" name="properties[Test Time]" value="{{ 'now' | date: '%Y-%m-%d %H:%M:%S' }}">
+                
+                <label>Quantity: <input type="number" name="quantity" value="1" min="1" max="10"></label>
+                <button type="submit">Add Test Item to Cart</button>
+            </form>
+            <div id="test-status"></div>
+        </div>
+        
         <h2>Your Cart Contents</h2>
         <div id="cart-contents"></div>
         
         <button class="clear-cart" onclick="clearCart()">Clear Cart</button>
+        <button class="clear-cart" onclick="testShopifyCart()" style="background: #007bff;">Test Shopify Cart</button>
     </div>
 
     <script>
         function displayCart() {
             try {
-                const cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
+                // Check both localStorage and Shopify cart
+                const localCart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
                 const container = document.getElementById('cart-contents');
                 
-                if (cart.length === 0) {
-                    container.innerHTML = '<div class="empty-cart">Your cart is empty. Add some drinks to test!</div>';
-                    return;
-                }
-                
-                let totalPrice = 0;
-                let html = '';
-                
-                cart.forEach((item, index) => {
-                    const price = parseFloat(item.price || 0);
-                    totalPrice += price;
-                    
-                    html += <p><strong>Brand:</strong> ${item.brand}</p><p><strong>Flavor:</strong> ${item.flavor}</p><p><strong>Selections:</strong> ${JSON.stringify(item.selections)}</p><p><strong>Flavors:</strong> ${item.flavors.join(', ')}</p><p><strong>Comments:</strong> ${item.comments}</p>;
-                });
-                
-                html += ;
-                container.innerHTML = html;
+                // Fetch Shopify cart data
+                fetch('/cart.js')
+                    .then(response => response.json())
+                    .then(shopifyCart => {
+                        let html = '';
+                        
+                        // Display Shopify cart items
+                        if (shopifyCart.item_count > 0) {
+                            html += '<h3>Shopify Cart (Live):</h3>';
+                            shopifyCart.items.forEach(item => {
+                                html += `<div class="cart-item">
+                                    <h4>${item.product_title} - ${item.variant_title || 'Default'}</h4>
+                                    <p><strong>Quantity:</strong> ${item.quantity}</p>
+                                    <p><strong>Price:</strong> $${(item.final_price / 100).toFixed(2)}</p>
+                                    <p><strong>Total:</strong> $${(item.final_line_price / 100).toFixed(2)}</p>`;
+                                
+                                if (item.properties && Object.keys(item.properties).length > 0) {
+                                    html += '<p><strong>Properties:</strong></p><ul>';
+                                    for (const [key, value] of Object.entries(item.properties)) {
+                                        if (value) html += `<li>${key}: ${value}</li>`;
+                                    }
+                                    html += '</ul>';
+                                }
+                                html += '</div>';
+                            });
+                            html += `<div class="cart-total">Shopify Cart Total: $${(shopifyCart.total_price / 100).toFixed(2)}</div>`;
+                        }
+                        
+                        // Display localStorage cart items
+                        if (localCart.length > 0) {
+                            html += '<h3>Local Storage Cart:</h3>';
+                            let totalPrice = 0;
+                            
+                            localCart.forEach((item, index) => {
+                                const price = parseFloat(item.price || 0);
+                                totalPrice += price;
+                                
+                                html += `<div class="cart-item">
+                                    <h4>${item.brand || 'Unknown'} - ${item.flavor || 'Unknown'}</h4>
+                                    <p><strong>Brand:</strong> ${item.brand || 'N/A'}</p>
+                                    <p><strong>Flavor:</strong> ${item.flavor || 'N/A'}</p>
+                                    <p><strong>Selections:</strong> ${JSON.stringify(item.selections || {})}</p>
+                                    <p><strong>Flavors:</strong> ${(item.flavors || []).join(', ')}</p>
+                                    <p><strong>Comments:</strong> ${item.comments || 'None'}</p>
+                                    <p><strong>Price:</strong> $${price.toFixed(2)}</p>
+                                </div>`;
+                            });
+                            
+                            html += `<div class="cart-total">Local Cart Total: $${totalPrice.toFixed(2)}</div>`;
+                        }
+                        
+                        if (shopifyCart.item_count === 0 && localCart.length === 0) {
+                            html = '<div class="empty-cart">Your cart is empty. Add some drinks to test!</div>';
+                        }
+                        
+                        container.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching Shopify cart:', error);
+                        
+                        // Fallback to localStorage only
+                        if (localCart.length === 0) {
+                            container.innerHTML = '<div class="empty-cart">Your cart is empty. Add some drinks to test!</div>';
+                            return;
+                        }
+                        
+                        let totalPrice = 0;
+                        let html = '<h3>Local Storage Cart (Shopify cart unavailable):</h3>';
+                        
+                        localCart.forEach((item, index) => {
+                            const price = parseFloat(item.price || 0);
+                            totalPrice += price;
+                            
+                            html += `<div class="cart-item">
+                                <h4>${item.brand || 'Unknown'} - ${item.flavor || 'Unknown'}</h4>
+                                <p><strong>Brand:</strong> ${item.brand || 'N/A'}</p>
+                                <p><strong>Flavor:</strong> ${item.flavor || 'N/A'}</p>
+                                <p><strong>Selections:</strong> ${JSON.stringify(item.selections || {})}</p>
+                                <p><strong>Flavors:</strong> ${(item.flavors || []).join(', ')}</p>
+                                <p><strong>Comments:</strong> ${item.comments || 'None'}</p>
+                                <p><strong>Price:</strong> $${price.toFixed(2)}</p>
+                            </div>`;
+                        });
+                        
+                        html += `<div class="cart-total">Total: $${totalPrice.toFixed(2)}</div>`;
+                        container.innerHTML = html;
+                    });
                 
             } catch (error) {
                 console.error('Error displaying cart:', error);
@@ -64,16 +160,69 @@
         
         function clearCart() {
             if (confirm('Are you sure you want to clear the cart?')) {
+                // Clear localStorage
                 localStorage.removeItem('wtf-cart');
-                displayCart();
+                localStorage.removeItem('wtf-cart-backup');
+                
+                // Clear Shopify cart
+                fetch('/cart/clear.js', { method: 'POST' })
+                    .then(() => {
+                        displayCart();
+                        showStatus('Cart cleared successfully!', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error clearing Shopify cart:', error);
+                        displayCart();
+                        showStatus('Local cart cleared. Shopify cart may need manual clearing.', 'error');
+                    });
             }
+        }
+        
+        function testShopifyCart() {
+            const statusEl = document.getElementById('test-status');
+            statusEl.innerHTML = '<div class="status-info">Testing Shopify cart connection...</div>';
+            
+            fetch('/cart.js')
+                .then(response => response.json())
+                .then(cart => {
+                    statusEl.innerHTML = `<div class="status-success">
+                        <strong>Shopify Cart Connected!</strong><br>
+                        Items: ${cart.item_count}<br>
+                        Total: $${(cart.total_price / 100).toFixed(2)}<br>
+                        Token: ${cart.token}
+                    </div>`;
+                })
+                .catch(error => {
+                    statusEl.innerHTML = `<div class="status-error">
+                        <strong>Shopify Cart Error:</strong><br>
+                        ${error.message}
+                    </div>`;
+                });
+        }
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('test-status');
+            statusEl.innerHTML = `<div class="status-${type}">${message}</div>`;
         }
         
         // Load cart on page load
         document.addEventListener('DOMContentLoaded', displayCart);
         
-        // Refresh cart every 2 seconds to show real-time updates
-        setInterval(displayCart, 2000);
+        // Refresh cart every 3 seconds to show real-time updates
+        setInterval(displayCart, 3000);
+        
+        // Listen for cart update events
+        document.addEventListener('wtf:cart:update', function(event) {
+            console.log('Cart updated:', event.detail);
+            displayCart();
+            showStatus('Cart updated successfully!', 'success');
+        });
+        
+        // Listen for cart errors
+        document.addEventListener('wtf:cart:error', function(event) {
+            console.log('Cart error:', event.detail);
+            showStatus('Cart error: ' + (event.detail.message || 'Unknown error'), 'error');
+        });
     </script>
 </body>
 </html>

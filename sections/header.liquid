@@ -68,6 +68,12 @@
         </div>
       {% endif %}
 
+      {% if section.settings.show_social_icons %}
+        <div class="header__social">
+          {% render 'social-media-icons', style: 'header', size: 'small' %}
+        </div>
+      {% endif %}
+
       <div class="header__cart">
         <a href="{{ routes.cart_url }}" class="header__cart-link" aria-label="Cart">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -512,6 +518,12 @@ document.addEventListener('DOMContentLoaded', function() {
       "id": "sticky_header",
       "default": true,
       "label": "Sticky header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_icons",
+      "default": true,
+      "label": "Show social media icons"
     }
   ]
 }

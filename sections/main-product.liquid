@@ -68,7 +68,7 @@
           
           {% when 'buy_buttons' %}
             <div class="product__buttons">
-              <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="product__form">
+              <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="product__form" data-wtf-ajax>
                 <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
                 
                 <button type="submit" 
