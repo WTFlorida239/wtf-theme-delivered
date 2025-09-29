@@ -463,6 +463,69 @@
     ]
   },
   {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social Media Links"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Facebook URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube_link",
+        "label": "YouTube URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "TikTok URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter_link",
+        "label": "Twitter/X URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat_link",
+        "label": "Snapchat URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_reddit_link",
+        "label": "Reddit URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_lemon8_link",
+        "label": "Lemon8 URL",
+        "info": "Include https://"
+      },
+      {
+        "type": "text",
+        "id": "social_google_link",
+        "label": "Google Business URL",
+        "info": "Include https://"
+      }
+    ]
+  },
+  {
     "name": "Analytics & Pixels",
     "settings": [
       {

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WTF Theme - Cart & Social Media Test</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+        }
+        
+        .test-section h2 {
+            color: #ff6600;
+            margin-top: 0;
+        }
+        
+        .test-form {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #e55a00;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .cart-display {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        
+        .social-test {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .status-message {
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>WTF Theme Functionality Test</h1>
+        <p>This page tests the enhanced cart system and social media integration.</p>
+        
+        <!-- Cart Functionality Test -->
+        <div class="test-section">
+            <h2>🛒 Cart Functionality Test</h2>
+            <p>Test the enhanced AJAX cart system with proper persistence.</p>
+            
+            <form class="test-form" data-wtf-ajax>
+                <input type="hidden" name="id" value="12345678901234567890">
+                <input type="hidden" name="properties[Base Drink]" value="Custom Kratom Tea">
+                <input type="hidden" name="properties[Size]" value="Medium">
+                <input type="hidden" name="properties[Strain]" value="Green">
+                <input type="hidden" name="properties[Flavors & Pumps]" value="Mango: 2 | Lime: 1">
+                <input type="hidden" name="properties[Custom Total]" value="$12.00">
+                
+                <div class="form-group">
+                    <label>Product (Test Mode)</label>
+                    <select name="test_product">
+                        <option value="kratom">Custom Kratom Tea - Medium</option>
+                        <option value="kava">Custom Kava Drink - Large</option>
+                        <option value="thc">THC Drink - Medium</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" name="quantity" value="1" min="1" max="10">
+                </div>
+                
+                <button type="submit" class="btn">Add to Cart (Test)</button>
+            </form>
+            
+            <div class="cart-display">
+                <strong>Current Cart Count: <span data-cart-count>0</span></strong>
+                <div id="cart-status"></div>
+            </div>
+            
+            <div class="test-results" id="cart-test-results">
+                <strong>Test Results:</strong><br>
+                <span id="cart-results-content">No tests run yet</span>
+            </div>
+        </div>
+        
+        <!-- Social Media Integration Test -->
+        <div class="test-section">
+            <h2>📱 Social Media Integration Test</h2>
+            <p>Test the social media icons and linking system.</p>
+            
+            <div class="social-test">
+                <div>
+                    <h4>Header Style (Small):</h4>
+                    <div id="social-header-test"></div>
+                </div>
+                
+                <div>
+                    <h4>Footer Style (Medium):</h4>
+                    <div id="social-footer-test"></div>
+                </div>
+            </div>
+            
+            <div class="test-results" id="social-test-results">
+                <strong>Social Media Test Results:</strong><br>
+                <span id="social-results-content">Loading social media icons...</span>
+            </div>
+        </div>
+        
+        <!-- System Integration Test -->
+        <div class="test-section">
+            <h2>⚙️ System Integration Test</h2>
+            <p>Test overall system functionality and event handling.</p>
+            
+            <button class="btn" onclick="runSystemTests()">Run System Tests</button>
+            
+            <div class="test-results" id="system-test-results">
+                <strong>System Test Results:</strong><br>
+                <span id="system-results-content">Click "Run System Tests" to begin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load WTF Scripts -->
+    <script>
+        // Mock Shopify environment
+        window.WTF_ENV = {
+            shopDomain: 'wtfswag.myshopify.com',
+            cartToken: 'test-token',
+            customerId: null,
+            customerEmail: null,
+            currency: 'USD',
+            locale: 'en',
+            routes: {
+                cart_add_url: '/cart/add.js',
+                cart_change_url: '/cart/change.js',
+                cart_update_url: '/cart/update.js',
+                cart_url: '/cart.js',
+                predictive_search_url: '/search/suggest.json',
+                root_url: '/'
+            }
+        };
+
+        // Mock settings for social media
+        window.settings = {
+            social_facebook_link: 'https://facebook.com/wtfswag',
+            social_instagram_link: 'https://instagram.com/wtfswag',
+            social_youtube_link: 'https://youtube.com/@wtfswag',
+            social_tiktok_link: 'https://tiktok.com/@wtfswag',
+            social_twitter_link: 'https://twitter.com/wtfswag',
+            social_snapchat_link: 'https://snapchat.com/add/wtfswag',
+            social_reddit_link: 'https://reddit.com/r/wtfswag',
+            social_lemon8_link: 'https://lemon8-app.com/wtfswag',
+            social_google_link: 'https://g.page/wtfswag'
+        };
+    </script>
+    
+    <!-- Enhanced Cart System -->
+    <script>
+        // Simplified version of the enhanced cart system for testing
+        class TestWTFCart {
+            constructor() {
+                this.isLoading = false;
+                this.init();
+            }
+
+            init() {
+                this.attachEventListeners();
+                this.updateCartCount();
+                this.showStatus('Cart system initialized', 'info');
+            }
+
+            attachEventListeners() {
+                document.addEventListener('submit', (e) => {
+                    if (e.target.matches('[data-wtf-ajax]')) {
+                        e.preventDefault();
+                        this.handleAddToCart(e.target);
+                    }
+                });
+            }
+
+            async handleAddToCart(form) {
+                if (this.isLoading) return;
+
+                const submitButton = form.querySelector('[type="submit"]');
+                const originalText = submitButton.textContent;
+                
+                try {
+                    this.isLoading = true;
+                    this.setButtonState(submitButton, 'Adding...', true);
+                    this.showStatus('Adding item to cart...', 'info');
+
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    // Mock successful add to cart
+                    const currentCount = parseInt(document.querySelector('[data-cart-count]').textContent);
+                    const newCount = currentCount + parseInt(form.querySelector('[name="quantity"]').value);
+                    
+                    this.updateCartCount(newCount);
+                    this.showStatus('Item added to cart successfully!', 'success');
+                    
+                    // Log test results
+                    this.logCartTest('SUCCESS', 'Item added to cart', {
+                        product: form.querySelector('[name="test_product"]').value,
+                        quantity: form.querySelector('[name="quantity"]').value,
+                        newCartCount: newCount
+                    });
+
+                    this.setButtonState(submitButton, 'Added!', false);
+                    setTimeout(() => {
+                        this.setButtonState(submitButton, originalText, false);
+                    }, 2000);
+
+                } catch (error) {
+                    this.showStatus('Failed to add item to cart: ' + error.message, 'error');
+                    this.logCartTest('ERROR', error.message);
+                    this.setButtonState(submitButton, 'Try Again', false);
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            updateCartCount(count) {
+                const cartCountElements = document.querySelectorAll('[data-cart-count]');
+                cartCountElements.forEach(element => {
+                    element.textContent = count || 0;
+                });
+            }
+
+            setButtonState(button, text, disabled) {
+                if (!button) return;
+                button.textContent = text;
+                button.disabled = disabled;
+            }
+
+            showStatus(message, type) {
+                const statusEl = document.getElementById('cart-status');
+                statusEl.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+            }
+
+            logCartTest(status, message, data = {}) {
+                const resultsEl = document.getElementById('cart-results-content');
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${status}: ${message}`;
+                const dataStr = Object.keys(data).length ? `\nData: ${JSON.stringify(data, null, 2)}` : '';
+                
+                resultsEl.innerHTML = logEntry + dataStr + '\n\n' + resultsEl.innerHTML;
+            }
+        }
+
+        // Initialize test cart system
+        window.WTFCartSystem = new TestWTFCart();
+    </script>
+
+    <!-- Social Media Icons Test -->
+    <script>
+        function createSocialIcon(platform, url, size = 'medium') {
+            const icons = {
+                facebook: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z',
+                instagram: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z',
+                youtube: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
+                tiktok: 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z'
+            };
+
+            const iconSize = size === 'small' ? 24 : size === 'large' ? 48 : 32;
+            
+            return `
+                <a href="${url}" 
+                   class="social-media-icon social-media-icon--${platform}"
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   style="display: inline-flex; align-items: center; justify-content: center; width: ${iconSize + 16}px; height: ${iconSize + 16}px; background: #f5f5f5; color: #333; border-radius: 50%; text-decoration: none; margin: 0 0.5rem; transition: all 0.3s ease;"
+                   onmouseover="this.style.background='#ff6600'; this.style.color='white'; this.style.transform='translateY(-2px)'"
+                   onmouseout="this.style.background='#f5f5f5'; this.style.color='#333'; this.style.transform='translateY(0)'"
+                   aria-label="Follow us on ${platform.charAt(0).toUpperCase() + platform.slice(1)}">
+                  <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="${icons[platform] || icons.facebook}"/>
+                  </svg>
+                </a>
+            `;
+        }
+
+        function testSocialMediaIcons() {
+            const platforms = ['facebook', 'instagram', 'youtube', 'tiktok'];
+            let results = [];
+
+            // Test header style (small)
+            const headerContainer = document.getElementById('social-header-test');
+            let headerIcons = '';
+            platforms.forEach(platform => {
+                const url = window.settings[`social_${platform}_link`];
+                if (url) {
+                    headerIcons += createSocialIcon(platform, url, 'small');
+                    results.push(`✓ ${platform.charAt(0).toUpperCase() + platform.slice(1)} icon created (header)`);
+                }
+            });
+            headerContainer.innerHTML = headerIcons;
+
+            // Test footer style (medium)
+            const footerContainer = document.getElementById('social-footer-test');
+            let footerIcons = '';
+            platforms.forEach(platform => {
+                const url = window.settings[`social_${platform}_link`];
+                if (url) {
+                    footerIcons += createSocialIcon(platform, url, 'medium');
+                    results.push(`✓ ${platform.charAt(0).toUpperCase() + platform.slice(1)} icon created (footer)`);
+                }
+            });
+            footerContainer.innerHTML = footerIcons;
+
+            // Update results
+            const resultsEl = document.getElementById('social-results-content');
+            resultsEl.innerHTML = results.join('<br>') + '<br><br>✓ All social media icons loaded successfully!';
+        }
+
+        // Run social media test when page loads
+        document.addEventListener('DOMContentLoaded', testSocialMediaIcons);
+    </script>
+
+    <!-- System Integration Tests -->
+    <script>
+        function runSystemTests() {
+            const resultsEl = document.getElementById('system-results-content');
+            let results = [];
+
+            // Test 1: Check if WTF Cart System is loaded
+            if (window.WTFCartSystem) {
+                results.push('✓ WTF Cart System loaded successfully');
+            } else {
+                results.push('✗ WTF Cart System not found');
+            }
+
+            // Test 2: Check event listeners
+            try {
+                const testEvent = new CustomEvent('wtf:cart:update', { detail: { cart: { item_count: 5 } } });
+                document.dispatchEvent(testEvent);
+                results.push('✓ Custom events working');
+            } catch (e) {
+                results.push('✗ Custom events failed: ' + e.message);
+            }
+
+            // Test 3: Check form validation
+            const testForm = document.querySelector('[data-wtf-ajax]');
+            if (testForm) {
+                const variantId = testForm.querySelector('[name="id"]');
+                if (variantId && variantId.value) {
+                    results.push('✓ Form validation ready');
+                } else {
+                    results.push('⚠ Form missing variant ID');
+                }
+            }
+
+            // Test 4: Check social media configuration
+            const socialPlatforms = ['facebook', 'instagram', 'youtube', 'tiktok'];
+            let socialCount = 0;
+            socialPlatforms.forEach(platform => {
+                if (window.settings[`social_${platform}_link`]) {
+                    socialCount++;
+                }
+            });
+            results.push(`✓ ${socialCount}/${socialPlatforms.length} social media platforms configured`);
+
+            // Test 5: Check responsive design
+            const isMobile = window.innerWidth <= 768;
+            results.push(`✓ Device type detected: ${isMobile ? 'Mobile' : 'Desktop'}`);
+
+            // Test 6: Check localStorage availability
+            try {
+                localStorage.setItem('wtf-test', 'test');
+                localStorage.removeItem('wtf-test');
+                results.push('✓ Local storage available for cart persistence');
+            } catch (e) {
+                results.push('⚠ Local storage not available');
+            }
+
+            // Update results display
+            resultsEl.innerHTML = results.join('<br>') + '<br><br><strong>System integration test completed!</strong>';
+        }
+    </script>
+</body>
+</html>

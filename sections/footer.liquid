@@ -34,21 +34,12 @@
         <p class="footer__text">{{ section.settings.hours | default: 'Daily 8am–10pm' }}</p>
       </div>
 
-      {% if section.blocks.size > 0 %}
-        <div class="footer__section">
-          <h4 class="footer__subheading">Follow Us</h4>
-          <div class="footer__social">
-            {% for block in section.blocks %}
-              {% case block.type %}
-                {% when 'social_link' %}
-                  <a href="{{ block.settings.url }}" class="footer__social-link" {{ block.shopify_attributes }}>
-                    {{ block.settings.label }}
-                  </a>
-              {% endcase %}
-            {% endfor %}
-          </div>
+      <div class="footer__section">
+        <h4 class="footer__subheading">Follow Us</h4>
+        <div class="footer__social">
+          {% render 'social-media-icons', style: 'footer', size: 'medium' %}
         </div>
-      {% endif %}
+      </div>
     </div>
 
     <div class="footer__bottom">
