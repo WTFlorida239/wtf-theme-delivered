@@ -530,19 +530,31 @@
     "settings": [
       {
         "type": "header",
-        "content": "Lightspeed POS Integration"
+        "content": "Secure Integration Proxy"
+      },
+      {
+        "type": "text",
+        "id": "integration_proxy_base_path",
+        "label": "Proxy base path",
+        "default": "/apps/wtf",
+        "info": "Root path for the secure backend proxy that handles Lightspeed, 2accept, and Shopify Admin requests."
+      },
+      {
+        "type": "text",
+        "id": "shopify_admin_proxy_path",
+        "label": "Shopify Admin proxy path",
+        "default": "/apps/wtf/shopify-admin",
+        "info": "Relative path to the secure endpoint that performs Shopify Admin operations."
+      },
+      {
+        "type": "header",
+        "content": "Lightspeed POS (public storefront config)"
       },
       {
         "type": "text",
         "id": "lightspeed_account_id",
         "label": "Lightspeed Account ID",
         "info": "Your Lightspeed Retail account ID for inventory sync"
-      },
-      {
-        "type": "password",
-        "id": "lightspeed_api_key",
-        "label": "Lightspeed API Key",
-        "info": "API key for Lightspeed integration (keep secure)"
       },
       {
         "type": "checkbox",
@@ -563,7 +575,7 @@
       },
       {
         "type": "header",
-        "content": "2accept Payment Gateway"
+        "content": "2accept Payment Gateway (public storefront config)"
       },
       {
         "type": "text",
