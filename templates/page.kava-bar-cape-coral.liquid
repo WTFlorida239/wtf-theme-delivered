@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Best Kava Bar in Cape Coral, Florida | WTF | Welcome To Florida</title>
+    <meta name="description" content="Cape Coral's premier kava bar offering custom kava drinks, kratom teas, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida with the best kava bar experience.">
+    <meta name="keywords" content="kava bar cape coral, kava bars near me, cape coral kava bar, kava lounge cape coral, kava bar fort myers, kava bars florida, best kava bar cape coral, kava drinks cape coral, sober nightlife cape coral">
+    
+    <!-- Local Business Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["LocalBusiness", "NightClub", "CafeOrCoffeeShop"],
+      "name": "WTF | Welcome To Florida - Cape Coral Kava Bar",
+      "alternateName": ["WTF Kava Bar", "Cape Coral Kava Bar", "WTF Swag"],
+      "description": "Cape Coral's premier kava bar and kratom lounge offering premium botanical beverages, custom kava drinks, kratom teas, THC products, and a welcoming community space for sober-friendly nightlife.",
+      "url": "{{ shop.secure_url }}/pages/kava-bar-cape-coral",
+      "mainEntityOfPage": "{{ shop.secure_url }}/pages/kava-bar-cape-coral",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1520 SE 46th Ln, Unit B",
+        "addressLocality": "Cape Coral",
+        "addressRegion": "FL",
+        "postalCode": "33904",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 26.5629,
+        "longitude": -81.9495
+      },
+      "telephone": "(239) 955-0314",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+          "opens": "08:00",
+          "closes": "20:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification", 
+          "dayOfWeek": ["Friday", "Saturday"],
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Sunday",
+          "opens": "08:00", 
+          "closes": "20:00"
+        }
+      ],
+      "servesCuisine": "Kava Beverages",
+      "priceRange": "$",
+      "areaServed": [
+        "Cape Coral, FL",
+        "Fort Myers, FL", 
+        "Lehigh Acres, FL",
+        "North Fort Myers, FL",
+        "Southwest Florida"
+      ],
+      "hasMenu": "{{ shop.secure_url }}/collections/kava-drinks",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "127"
+      }
+    }
+    </script>
+
+    <style>
+      /* Base styles */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        line-height: 1.6; 
+        color: #333;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      }
+      
+      /* Header */
+      .header { 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        padding: 20px 0; 
+        text-align: center; 
+        font-size: 28px; 
+        font-weight: 800; 
+        box-shadow: 0 4px 20px rgba(255,102,0,0.3);
+      }
+      
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ "kava_hero_1200x600.jpg" | asset_url }}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 100px 20px;
+      }
+      
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      }
+      
+      .hero p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .cta-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%);
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255,102,0,0.3);
+      }
+      
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4);
+      }
+      
+      /* Container */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      
+      /* Sections */
+      .section {
+        padding: 60px 0;
+      }
+      
+      .section h2 {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 40px;
+        color: #333;
+      }
+      
+      /* Features Grid */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-top: 40px;
+      }
+      
+      .feature-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-5px);
+      }
+      
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+      
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #ff6600;
+      }
+      
+      /* Location Section */
+      .location-section {
+        background: white;
+        padding: 60px 0;
+      }
+      
+      .location-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+      
+      .location-info h3 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #ff6600;
+      }
+      
+      .location-details {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      
+      .map-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      /* Reviews Section */
+      .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+      
+      .review-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      }
+      
+      .review-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+      }
+      
+      .review-text {
+        font-style: italic;
+        margin-bottom: 15px;
+        line-height: 1.6;
+      }
+      
+      .review-author {
+        font-weight: 600;
+        color: #ff6600;
+      }
+      
+      /* FAQ Section */
+      .faq-item {
+        background: white;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+      
+      .faq-question {
+        background: #f8f9fa;
+        padding: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-size: 1.1rem;
+      }
+      
+      .faq-answer {
+        padding: 20px;
+        display: none;
+      }
+      
+      .faq-answer.active {
+        display: block;
+      }
+      
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .hero h1 { font-size: 2.5rem; }
+        .hero p { font-size: 1.1rem; }
+        .location-grid { grid-template-columns: 1fr; }
+        .section h2 { font-size: 2rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">WTF | Welcome To Florida</div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Cape Coral's Premier Kava Bar</h1>
+        <p>Experience the best kava drinks, kratom teas, and sober nightlife in Southwest Florida. Your welcoming community space for botanical beverages and good vibes.</p>
+        <a href="/collections/kava-drinks" class="cta-button">Order Kava Drinks Online</a>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+      <div class="container">
+        <h2>Why Choose WTF Kava Bar?</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🥥</div>
+            <h3>Premium Kava Selection</h3>
+            <p>We source the highest quality kava from trusted suppliers, offering traditional and flavored varieties to suit every taste preference.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Custom Drink Builder</h3>
+            <p>Create your perfect kava experience with our online drink customizer. Choose your size, flavors, creamers, and ice preferences.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌿</div>
+            <h3>Kratom & Botanicals</h3>
+            <p>Explore our extensive selection of kratom teas and botanical beverages, all crafted with care and expertise.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎉</div>
+            <h3>Sober Nightlife</h3>
+            <p>Enjoy a vibrant social atmosphere without alcohol. Perfect for those seeking community and connection in a welcoming environment.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Online Ordering</h3>
+            <p>Skip the wait with our convenient online ordering system. Order ahead for pickup or enjoy our delivery options.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Expert Staff</h3>
+            <p>Our knowledgeable team is passionate about kava and ready to help you find the perfect drink for your needs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location Section -->
+    <section class="location-section">
+      <div class="container">
+        <h2>Visit Our Cape Coral Location</h2>
+        <div class="location-grid">
+          <div class="location-info">
+            <h3>📍 Find Us Here</h3>
+            <div class="location-details">
+              <p><strong>Address:</strong><br>
+              1520 SE 46th Ln, Unit B<br>
+              Cape Coral, FL 33904</p>
+              
+              <p><strong>Phone:</strong><br>
+              <a href="tel:2399550314">(239) 955-0314</a></p>
+              
+              <p><strong>Hours:</strong><br>
+              Mon-Thu: 8:00 AM - 8:00 PM<br>
+              Fri-Sat: 8:00 AM - 10:00 PM<br>
+              Sunday: 8:00 AM - 8:00 PM</p>
+              
+              <p><strong>Serving:</strong><br>
+              Cape Coral, Fort Myers, Lehigh Acres, North Fort Myers, and all of Southwest Florida</p>
+            </div>
+          </div>
+          <div class="map-container">
+            <div>
+              <h4>Interactive Map</h4>
+              <p>Located in the heart of Cape Coral, easily accessible from Fort Myers and surrounding areas.</p>
+              <a href="https://maps.google.com/?q=1520+SE+46th+Ln,+Unit+B,+Cape+Coral,+FL+33904" target="_blank" class="cta-button" style="margin-top: 20px;">Get Directions</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="section">
+      <div class="container">
+        <h2>What Our Customers Say</h2>
+        <div class="reviews-grid">
+          <div class="review-card">
+            <div class="review-stars">⭐⭐⭐⭐⭐</div>
+            <div class="review-text">"Best kava bar in Cape Coral! The staff is incredibly knowledgeable and the atmosphere is perfect for a relaxing evening. Love the custom drink options!"</div>
+            <div class="review-author">- Sarah M., Cape Coral</div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">⭐⭐⭐⭐⭐</div>
+            <div class="review-text">"Finally found a great sober nightlife option in Southwest Florida. The kava quality is top-notch and the online ordering system is so convenient."</div>
+            <div class="review-author">- Mike R., Fort Myers</div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">⭐⭐⭐⭐⭐</div>
+            <div class="review-text">"WTF has become my go-to spot for kava and kratom. The community here is amazing and the drinks are always perfectly crafted."</div>
+            <div class="review-author">- Jessica L., Lehigh Acres</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section">
+      <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-container">
+          <div class="faq-item">
+            <button class="faq-question">What is kava and what are its effects?</button>
+            <div class="faq-answer">
+              <p>Kava is a traditional Pacific Island beverage made from the root of the kava plant. It's known for its relaxing and social effects, promoting a sense of calm and well-being without impairing mental clarity. It's a perfect alternative for those seeking relaxation without alcohol.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">Do you serve alcohol at your kava bar?</button>
+            <div class="faq-answer">
+              <p>No, we are a sober-friendly establishment. We specialize in kava, kratom, and other botanical beverages. Our focus is on providing a welcoming social environment without alcohol.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">Can I order online for pickup?</button>
+            <div class="faq-answer">
+              <p>Absolutely! Our online ordering system allows you to customize your drinks and place orders for pickup. This helps you skip the wait and ensures your drink is ready when you arrive.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What areas do you serve?</button>
+            <div class="faq-answer">
+              <p>We're located in Cape Coral and serve the entire Southwest Florida area including Fort Myers, Lehigh Acres, North Fort Myers, and surrounding communities.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">Do you offer delivery?</button>
+            <div class="faq-answer">
+              <p>Yes, we offer delivery services to select areas in Cape Coral and Fort Myers. Check our online ordering system for delivery availability in your area.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section" style="background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: white;">
+      <div class="container" style="text-align: center;">
+        <h2 style="color: white;">Ready to Experience Cape Coral's Best Kava Bar?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Join our community and discover why WTF is Southwest Florida's premier destination for kava, kratom, and sober nightlife.</p>
+        <a href="/collections/kava-drinks" class="cta-button" style="background: white; color: #ff6600; margin-right: 20px;">Order Online</a>
+        <a href="tel:2399550314" class="cta-button" style="background: transparent; border: 2px solid white;">Call Us</a>
+      </div>
+    </section>
+
+    <script>
+      // FAQ Toggle Functionality
+      document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+          const answer = button.nextElementSibling;
+          const isActive = answer.classList.contains('active');
+          
+          // Close all other answers
+          document.querySelectorAll('.faq-answer').forEach(ans => {
+            ans.classList.remove('active');
+          });
+          
+          // Toggle current answer
+          if (!isActive) {
+            answer.classList.add('active');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

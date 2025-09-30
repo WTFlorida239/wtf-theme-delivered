@@ -1,0 +1,32 @@
+{% layout none %}
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: {{ shop.secure_url }}/sitemap.xml
+
+# Allow all search engines to crawl product pages
+Allow: /products/
+Allow: /collections/
+Allow: /pages/
+
+# Allow crawling of kava bar specific pages
+Allow: /pages/kava-bar-cape-coral
+Allow: /pages/kava-drinks
+Allow: /pages/kratom-teas
+Allow: /pages/thc-drinks
+Allow: /pages/thc-shots
+Allow: /pages/draft-pours
+Allow: /pages/canned-drinks
+
+# Disallow admin and checkout pages
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /orders/
+Disallow: /account/
+Disallow: /search?
+Disallow: /policies/
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1

@@ -1,118 +1,611 @@
-{% comment %}
-  THC Shots Builder - Same 4 Rotating Flavors as THC Drinks
-{% endcomment %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>THC Shots - WTF | Welcome To Florida</title>
 
-{% assign thc_flavors = 'Coconut,Pineapple,Mango,Passion Fruit,Vanilla,Chocolate,Strawberry,Blueberry,Lime,Lemon,Orange,Mint,Ginger,Cinnamon,Caramel,Tropical Mango,Berry Blast,Citrus Punch,Grape Escape,Peach,Watermelon,Cherry' | split: ',' %}
+    <style>
+      /* ——— Base / Layout ——— */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+        line-height: 1.6; 
+        color:#333; 
+        min-height: 100vh;
+      }
+      .header { 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        padding: 20px 0; 
+        text-align: center; 
+        font-size: 28px; 
+        font-weight: 800; 
+        box-shadow: 0 4px 20px rgba(255,102,0,0.3);
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+      .back-link { 
+        display: inline-block; 
+        color: #ff6600; 
+        text-decoration: none; 
+        font-weight: 700; 
+        font-size: 16px; 
+        margin-bottom: 30px; 
+        padding: 12px 20px; 
+        border: 3px solid #ff6600; 
+        border-radius: 25px; 
+        transition: all .3s ease; 
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(255,102,0,0.2);
+      }
+      .back-link:hover { 
+        background: #ff6600; 
+        color: #fff; 
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4);
+      }
+      .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+      .product-image { 
+        width: 100%; 
+        max-width: 400px; 
+        border-radius: 20px; 
+        box-shadow: 0 8px 30px rgba(0,0,0,.15); 
+        height:auto; 
+        transition: transform .3s ease;
+      }
+      .product-image:hover { transform: scale(1.02); }
+      .product-details { 
+        background: #fff; 
+        padding: 40px; 
+        border-radius: 20px; 
+        box-shadow: 0 8px 30px rgba(0,0,0,.1); 
+        border: 1px solid #f0f0f0;
+      }
+      .product-title { 
+        font-size: 36px; 
+        margin-bottom: 15px; 
+        font-weight: 900; 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .product-price { 
+        font-size: 28px; 
+        color: #ff6600; 
+        font-weight: 800; 
+        margin-bottom: 20px; 
+        text-shadow: 0 2px 4px rgba(255,102,0,0.2);
+      }
+      .product-description { color: #666; margin-bottom: 35px; font-size: 17px; line-height: 1.7; }
+      .selection-section { 
+        margin: 35px 0; 
+        border-bottom: 2px solid #f0f0f0; 
+        padding-bottom: 25px; 
+        transition: all .3s ease;
+      }
+      .selection-section:last-child { border-bottom: none; }
+      .section-title { 
+        font-size: 20px; 
+        font-weight: 800; 
+        margin-bottom: 18px; 
+        color: #333;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+      .info-box { 
+        background: linear-gradient(135deg, #e7f3ff 0%, #d1ecf1 100%); 
+        padding: 18px; 
+        border-radius: 12px; 
+        margin-bottom: 18px; 
+        font-size: 14px; 
+        border: 1px solid #bee5eb;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
+      .savings-box {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
 
-<div class="thc-shots-builder" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
-  <header style="text-align: center; margin-bottom: 4rem;">
-    <a href="{{ routes.root_url }}" style="display: inline-block; margin-bottom: 2rem; padding: 1rem 2rem; border-radius: 2.5rem; border: 2px solid #ff6600; color: #ff6600; text-decoration: none; font-weight: 700;">← Back to Menu</a>
-    <h1 style="font-size: 4rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1rem;">THC Shots</h1>
-    <p style="font-size: 1.8rem; color: #4a4a4a;">Fast-acting concentrated cannabis shots</p>
-  </header>
+      /* ——— Options ——— */
+      .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; }
+      .option-button { 
+        padding: 18px; 
+        border: 3px solid #ddd; 
+        border-radius: 12px; 
+        text-align: center; 
+        background: #fff; 
+        cursor: pointer; 
+        transition: all .2s ease; 
+        color:#333; 
+        font-size: 14px; 
+        min-height: 70px; 
+        display:flex; 
+        align-items:center; 
+        justify-content:center; 
+        flex-direction:column;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
+      .option-button:hover { 
+        border-color: #ff6600; 
+        transform: translateY(-3px); 
+        box-shadow: 0 6px 20px rgba(255,102,0,0.25); 
+      }
+      .option-button.selected { 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        border-color: #ff6600; 
+        font-weight: 800; 
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4);
+      }
 
-  <form class="drink-customizer" style="background: #fff; border-radius: 2rem; padding: 4rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
-    
-    <!-- Comprehensive Flavor Selection matching THC Drinks -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Choose Your Flavor</h3>
-      <div id="thc-shots-flavors">
-        <!-- Flavors will be populated by JavaScript with categorized display -->
+      /* Flavor buttons */
+      .flavor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; }
+      .flavor-button { 
+        padding: 15px 10px; 
+        border: 2px solid #ddd; 
+        border-radius: 10px; 
+        text-align: center; 
+        background: #fff; 
+        cursor: pointer; 
+        transition: all .2s ease; 
+        font-size: 13px; 
+        color: #333; 
+        min-height: 55px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+      .flavor-button:hover { 
+        border-color: #28a745; 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 12px rgba(40,167,69,0.2);
+      }
+      .flavor-button.selected { 
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+        color: #fff; 
+        border-color: #28a745; 
+        font-weight: 600; 
+        box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+      }
+
+      /* ——— Quantity ——— */
+      .quantity-controls { display:flex; align-items:center; gap: 20px; }
+      .qty-btn { 
+        width: 45px; 
+        height: 45px; 
+        border: 3px solid #ff6600; 
+        background:#fff; 
+        color:#ff6600; 
+        border-radius: 50%; 
+        cursor: pointer; 
+        font-size: 20px; 
+        font-weight: 700; 
+        transition: all .2s ease;
+        box-shadow: 0 2px 8px rgba(255,102,0,0.2);
+      }
+      .qty-btn:hover { 
+        background:#ff6600; 
+        color:#fff; 
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(255,102,0,0.4);
+      }
+      .qty-input { 
+        width: 90px; 
+        text-align:center; 
+        padding:12px; 
+        border:3px solid #ddd; 
+        border-radius:8px; 
+        font-size:16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+
+      /* ——— Comments ——— */
+      .comments-textarea { 
+        width: 100%; 
+        padding: 15px; 
+        border: 3px solid #ddd; 
+        border-radius: 8px; 
+        resize: vertical; 
+        font-size: 14px; 
+        line-height: 1.5;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+      .comments-textarea:focus { 
+        border-color: #ff6600; 
+        outline: none; 
+        box-shadow: 0 4px 12px rgba(255,102,0,0.2);
+      }
+
+      /* ——— CTA / Status ——— */
+      .add-to-cart-btn { 
+        width: 100%; 
+        padding: 20px; 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color: #fff; 
+        border: none; 
+        border-radius: 12px; 
+        font-size: 18px; 
+        font-weight: 800; 
+        cursor: pointer; 
+        margin-top: 25px; 
+        transition: all .2s ease;
+        box-shadow: 0 4px 15px rgba(255,102,0,0.3);
+      }
+      .add-to-cart-btn:hover { 
+        background: linear-gradient(135deg, #e55a00 0%, #d44500 100%); 
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4); 
+      }
+      .add-to-cart-btn:disabled { 
+        background:#ccc; 
+        cursor:not-allowed; 
+        transform:none; 
+        box-shadow:none; 
+      }
+      .success-message { 
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); 
+        color: #155724; 
+        padding: 18px; 
+        border-radius: 10px; 
+        margin: 18px 0; 
+        border: 1px solid #c3e6cb; 
+        display: none; 
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
+      .success-message.show { display: block; }
+      .cart-status { 
+        position: fixed; 
+        top: 20px; 
+        right: 20px; 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color:#fff; 
+        padding:12px 18px; 
+        border-radius:25px; 
+        font-weight:700; 
+        z-index:1000; 
+        box-shadow:0 4px 15px rgba(255,102,0,0.4);
+      }
+
+      /* ——— Motion preferences ——— */
+      @media (prefers-reduced-motion: reduce){
+        .back-link, .option-button, .qty-btn, .add-to-cart-btn { transition: none !important; }
+      }
+
+      /* ——— Responsive ——— */
+      @media (max-width: 768px){
+        .product-grid { grid-template-columns: 1fr; gap:30px; }
+        .option-grid { grid-template-columns: repeat(2,1fr); }
+        .flavor-grid { grid-template-columns: repeat(2,1fr); }
+        .product-details { padding: 25px; }
+        .container { padding: 20px 15px; }
+      }
+
+      /* Focus visible outline */
+      :where(.back-link, .option-button, .qty-btn, .add-to-cart-btn):focus-visible { 
+        outline: 3px solid #1a73e8; 
+        outline-offset: 2px; 
+        border-radius: 8px; 
+      }
+      .sr-only { 
+        position:absolute!important; 
+        width:1px; 
+        height:1px; 
+        overflow:hidden; 
+        clip:rect(1px,1px,1px,1px); 
+        white-space:nowrap; 
+      }
+    </style>
+
+    <script>
+      window.THC_SHOTS_VARIANT_ID = {{ page.metafields.custom.thc_shots_variant_id | default: settings.thc_shots_variant_id | json }};
+    </script>
+  </head>
+
+  <body>
+    <div class="header">WTF | Welcome To Florida</div>
+    <div class="cart-status" id="cart-status" aria-live="polite">
+      Cart: <span id="cart-count">{{ cart.item_count }}</span> items
+    </div>
+
+    <div class="container">
+      <a href="/" class="back-link">← Back to Menu</a>
+
+      <div class="product-grid">
+        <div class="product-image-section">
+          <img
+            src="{{ 'thc_shots_150x150.png' | asset_url }}"
+            alt="THC Shots"
+            class="product-image"
+            width="400"
+            height="400"
+            loading="eager"
+            fetchpriority="high"
+          >
+        </div>
+
+        <div class="product-details">
+          <h1 class="product-title">THC Shots</h1>
+          <div class="product-price" id="product-price">$12.00 - 1 Shot • $40.00 - Flight of Shots</div>
+          <p class="product-description">
+            Premium THC shot concentrates available as single shots or a flight of all four flavors. Perfect for precise dosing and quick onset.
+          </p>
+
+          <div class="info-box">
+            <strong>⚠️ Important:</strong> Must be 21+ to purchase. Please consume responsibly. Effects may take 15-45 minutes to onset.
+          </div>
+
+          <!-- Shot Type Selection (Variants) -->
+          <div class="selection-section">
+            <h3 class="section-title">🥃 Choose Your Option</h3>
+            <div class="option-grid" id="type-options" role="group" aria-label="Shot type options">
+              <button type="button" class="option-button" data-type="1 Shot" data-price="12.00">
+                <strong>1 Shot</strong><br>
+                <small>$12.00</small>
+              </button>
+              <button type="button" class="option-button" data-type="Flight of Shots" data-price="40.00">
+                <strong>Flight of Shots</strong><br>
+                <small>$40.00</small><br>
+                <small style="color: #28a745; font-weight: 600;">Save $8!</small>
+              </button>
+            </div>
+            <div class="info-box savings-box">
+              <strong>💰 Flight Special:</strong> Get all 4 flavors for $40 instead of $48 individual - save $8!
+            </div>
+          </div>
+
+          <!-- Flavor Selection -->
+          <div class="selection-section">
+            <h3 class="section-title">🍹 Choose Your Flavor</h3>
+            <div class="info-box" id="flavor-info">
+              Select your shot type first to see flavor options.
+            </div>
+            <div class="flavor-grid" id="flavor-options" role="group" aria-label="Flavor options" style="display: none;">
+              <button type="button" class="flavor-button" data-flavor="Fail Margarita">
+                <strong>Fail Margarita</strong>
+              </button>
+              <button type="button" class="flavor-button" data-flavor="Cherry Vanilla">
+                <strong>Cherry Vanilla</strong>
+              </button>
+              <button type="button" class="flavor-button" data-flavor="Melon Peach Mojito">
+                <strong>Melon Peach Mojito</strong>
+              </button>
+              <button type="button" class="flavor-button" data-flavor="Pomegranate Cherry">
+                <strong>Pomegranate Cherry</strong>
+              </button>
+            </div>
+          </div>
+
+          <!-- Comments -->
+          <div class="selection-section">
+            <h3 class="section-title">💬 Special Requests & Comments</h3>
+            <label for="order-comments" class="sr-only">Order comments</label>
+            <textarea
+              id="order-comments"
+              class="comments-textarea"
+              placeholder="Any special requests or modifications? We'll try to accommodate!"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Quantity -->
+          <div class="selection-section">
+            <h3 class="section-title">🔢 Quantity</h3>
+            <div class="quantity-controls">
+              <button type="button" class="qty-btn" aria-label="Decrease quantity" onclick="changeQuantity(-1)">
+                −
+              </button>
+              <input
+                type="number"
+                id="quantity"
+                value="1"
+                min="1"
+                max="50"
+                class="qty-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+              >
+              <button type="button" class="qty-btn" aria-label="Increase quantity" onclick="changeQuantity(1)">
+                +
+              </button>
+            </div>
+          </div>
+
+          <div id="success-message" class="success-message" role="status" aria-live="polite"></div>
+
+          <button type="button" id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()" disabled>
+            Select Shot Type
+          </button>
+        </div>
       </div>
-      
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const flavorContainer = document.getElementById('thc-shots-flavors');
-          
-          // Same categorized flavor list as THC drinks
-          const flavorCategories = {
-            'Tropical': ['Coconut', 'Pineapple', 'Mango', 'Passion Fruit', 'Tropical Mango'],
-            'Citrus': ['Lime', 'Lemon', 'Orange', 'Citrus Punch'],
-            'Berry': ['Strawberry', 'Blueberry', 'Berry Blast', 'Cherry', 'Watermelon'],
-            'Classic': ['Vanilla', 'Chocolate', 'Caramel', 'Mint'],
-            'Specialty': ['Ginger', 'Cinnamon', 'Peach', 'Grape Escape']
-          };
-          
-          flavorContainer.innerHTML = '';
-          
-          Object.entries(flavorCategories).forEach(([category, flavors]) => {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.style.marginBottom = '3rem';
-            categoryDiv.innerHTML = `<h4 style="font-size: 1.8rem; font-weight: 700; color: #333; margin-bottom: 1.5rem; text-align: center; padding: 1rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 1.5rem; border: 2px solid #dee2e6;">${category}</h4>`;
+    </div>
+
+    <script>
+      // ——— Currency formatter ———
+      const moneyFmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
+
+      // ——— State ———
+      let selectedType = null;
+      let selectedFlavor = null;
+      let basePrice = 12.0;
+
+      // Type to price mapping
+      const typePrices = {
+        '1 Shot': 12.00,
+        'Flight of Shots': 40.00
+      };
+
+      // ——— Init ———
+      document.addEventListener('DOMContentLoaded', () => {
+        wireOptionButtons();
+        updateCartCount();
+        updateUI();
+      });
+
+      function wireOptionButtons() {
+        // Type buttons
+        document.querySelectorAll('#type-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#type-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedType = btn.dataset.type;
+            basePrice = typePrices[selectedType] || 12.0;
             
-            const categoryGrid = document.createElement('div');
-            categoryGrid.style.display = 'grid';
-            categoryGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(20rem, 1fr))';
-            categoryGrid.style.gap = '1.5rem';
+            // Show/hide flavor selection based on type
+            const flavorOptions = document.getElementById('flavor-options');
+            const flavorInfo = document.getElementById('flavor-info');
             
-            flavors.forEach((flavor, index) => {
-              const label = document.createElement('label');
-              label.className = 'thc-flavor-option';
-              label.style.cursor = 'pointer';
-              
-              const isFirst = category === 'Tropical' && index === 0;
-              
-              label.innerHTML = `
-                <input type="radio" name="thc_flavor" value="${flavor}" ${isFirst ? 'checked' : ''} style="display: none;">
-                <div style="background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); color: #fff; padding: 2rem; border-radius: 1.6rem; text-align: center; transition: all 0.3s ease; border: 3px solid transparent;">
-                  <div style="font-size: 2.5rem; margin-bottom: 1rem;">💉</div>
-                  <h4 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem;">${flavor}</h4>
-                  <p style="opacity: 0.9; font-size: 1.2rem;">25mg THC • Fast acting</p>
-                </div>
-              `;
-              
-              categoryGrid.appendChild(label);
-            });
+            if (selectedType === '1 Shot') {
+              flavorOptions.style.display = 'grid';
+              flavorInfo.innerHTML = 'Choose one flavor for your shot.';
+              // Reset flavor selection
+              document.querySelectorAll('.flavor-button').forEach((b) => b.classList.remove('selected'));
+              selectedFlavor = null;
+            } else if (selectedType === 'Flight of Shots') {
+              flavorOptions.style.display = 'none';
+              flavorInfo.innerHTML = '<strong>Flight includes all 4 flavors:</strong> Fail Margarita, Cherry Vanilla, Melon Peach Mojito, and Pomegranate Cherry.';
+              selectedFlavor = 'All 4 Flavors';
+            }
             
-            categoryDiv.appendChild(categoryGrid);
-            flavorContainer.appendChild(categoryDiv);
+            updateUI();
           });
         });
-      </script>
-      <div style="text-align: center; margin-top: 2rem;">
-        <p style="font-size: 1.4rem; color: #666; font-style: italic;">Same comprehensive flavor selection as our THC drinks and kava beverages</p>
-      </div>
-    </div>
 
-    <!-- Dosage Selection -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Select Dosage</h3>
-      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-        <label class="dosage-option" style="cursor: pointer;">
-          <input type="radio" name="dosage" value="2.5mg THC" style="display: none;">
-          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center;">
-            <h4 style="font-size: 1.8rem; font-weight: 700;">2.5mg</h4>
-            <p style="color: #666;">Micro dose - $8.00</p>
-          </div>
-        </label>
-        <label class="dosage-option" style="cursor: pointer;">
-          <input type="radio" name="dosage" value="5mg THC" style="display: none;">
-          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center;">
-            <h4 style="font-size: 1.8rem; font-weight: 700;">5mg</h4>
-            <p style="color: #666;">Low dose - $12.00</p>
-          </div>
-        </label>
-        <label class="dosage-option" style="cursor: pointer;">
-          <input type="radio" name="dosage" value="25mg THC" style="display: none;" checked>
-          <div style="background: #f8f9fa; border: 3px solid #e9ecef; padding: 2rem 3rem; border-radius: 1.6rem; text-align: center;">
-            <h4 style="font-size: 1.8rem; font-weight: 700;">25mg</h4>
-            <p style="color: #666;">Fast acting - $18.00</p>
-          </div>
-        </label>
-      </div>
-    </div>
+        // Flavor buttons
+        document.querySelectorAll('.flavor-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (selectedType === '1 Shot') {
+              document.querySelectorAll('.flavor-button').forEach((b) => b.classList.remove('selected'));
+              btn.classList.add('selected');
+              selectedFlavor = btn.dataset.flavor;
+              updateUI();
+            }
+          });
+        });
+      }
 
-    <!-- Comments Section -->
-    <div class="customizer-section" style="margin-bottom: 4rem;">
-      <h3 style="font-size: 2.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2rem; text-align: center;">Special Instructions</h3>
-      <textarea name="comments" placeholder="Any special requests or modifications..." style="width: 100%; min-height: 12rem; padding: 2rem; border: 2px solid #e9ecef; border-radius: 1.2rem; font-size: 1.5rem; resize: vertical; font-family: inherit;"></textarea>
-    </div>
+      function updateUI() {
+        const priceEl = document.getElementById('product-price');
+        const btnEl = document.getElementById('add-to-cart-btn');
 
-    <!-- Order Button -->
-    <div style="background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); border-radius: 2rem; padding: 4rem; text-align: center; color: #fff;">
-      <h3 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 2rem;">Ready to Order?</h3>
-      <p style="font-size: 1.8rem; margin-bottom: 3rem;">Must be 21+ with valid ID</p>
-      <a href="tel:(239) 955-0314" style="display: inline-flex; align-items: center; justify-content: center; padding: 2rem 4rem; background: #fff; color: #e91e63; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.8rem;">📞 Call (239) 955-0314</a>
-    </div>
-  </form>
-</div>
+        // Update price display
+        priceEl.textContent = moneyFmt.format(basePrice);
+
+        // Update button state
+        const canAdd = selectedType && selectedFlavor;
+        btnEl.disabled = !canAdd;
+        
+        if (canAdd) {
+          btnEl.textContent = `Add to Cart - ${moneyFmt.format(basePrice)}`;
+        } else {
+          const missing = [];
+          if (!selectedType) missing.push('Shot Type');
+          if (!selectedFlavor && selectedType === '1 Shot') missing.push('Flavor');
+          btnEl.textContent = missing.length > 0 ? `Select ${missing.join(' & ')}` : 'Select Shot Type';
+        }
+      }
+
+      function changeQuantity(delta) {
+        const input = document.getElementById('quantity');
+        const newVal = Math.max(1, Math.min(50, parseInt(input.value) + delta));
+        input.value = newVal;
+        updateUI();
+      }
+
+      async function updateCartCount() {
+        try {
+          const res = await fetch('/cart.js');
+          const cart = await res.json();
+          document.getElementById('cart-count').textContent = cart.item_count;
+        } catch (err) {
+          console.warn('Cart count update failed:', err);
+        }
+      }
+
+      async function addToCart() {
+        const btn = document.getElementById('add-to-cart-btn');
+        const original = btn.textContent;
+        btn.textContent = 'Adding...';
+        btn.disabled = true;
+
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const comments = document.getElementById('order-comments').value.trim();
+        const variantId = window.THC_SHOTS_VARIANT_ID;
+
+        const properties = {
+          Type: selectedType,
+          Flavor: selectedFlavor
+        };
+        if (comments) properties.Comments = comments;
+
+        try {
+          if (variantId) {
+            const body = new URLSearchParams();
+            body.set('id', String(variantId));
+            body.set('quantity', String(quantity));
+            for (const k in properties) body.set(`properties[${k}]`, String(properties[k]));
+
+            const res = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                Accept: 'application/json',
+              },
+              credentials: 'same-origin',
+              body,
+            });
+
+            if (!res.ok) {
+              let msg = 'Add to cart failed';
+              try {
+                const data = await res.json();
+                msg = data.description || data.message || msg;
+              } catch {}
+              throw new Error(msg);
+            }
+          } else {
+            // Fallback: store cart locally for dev/preview modes
+            const order = {
+              id: 'thc-shots-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+              product: 'THC Shots',
+              ...properties,
+              quantity,
+              price: (basePrice * quantity).toFixed(2),
+              timestamp: new Date().toISOString(),
+            };
+            let cart = [];
+            try {
+              cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
+            } catch {}
+            cart.push(order);
+            localStorage.setItem('wtf-cart', JSON.stringify(cart));
+          }
+
+          await updateCartCount();
+
+          const success = document.getElementById('success-message');
+          success.innerHTML = `✅ <strong>Added to cart!</strong><br>
+             🥃 THC Shots — <strong>${properties.Type}</strong><br>
+             🍓 Flavor: ${properties.Flavor}<br>
+             🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
+          success.classList.add('show');
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          document.dispatchEvent(new CustomEvent('thc-shots:added', { detail: { variantId, ...properties, quantity } }));
+        } catch (err) {
+          console.error('Add to cart error:', err);
+          alert('❌ ' + (err && err.message ? err.message : 'Error adding to cart. Please try again.'));
+        } finally {
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.disabled = false;
+            document.getElementById('success-message').classList.remove('show');
+          }, 4000);
+        }
+      }
+    </script>
+  </body>
+</html>

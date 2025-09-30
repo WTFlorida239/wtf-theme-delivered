@@ -36,6 +36,14 @@
       .strain-white.selected { background: #9e9e9e; border-color: #9e9e9e; }
       .strain-yellow.selected { background: #ffeb3b; border-color: #ffeb3b; color: #333; }
 
+      /* Flavor categories */
+      .flavor-category { margin: 20px 0; }
+      .flavor-category-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #555; }
+      .flavor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; }
+      .flavor-button { padding: 10px 8px; border: 2px solid #ddd; border-radius: 6px; text-align: center; background: #fff; cursor: pointer; transition: all .12s ease; font-size: 12px; color: #333; min-height: 45px; display: flex; align-items: center; justify-content: center; }
+      .flavor-button:hover { border-color: #28a745; transform: translateY(-1px); }
+      .flavor-button.selected { background: #28a745; color: #fff; border-color: #28a745; font-weight: 600; }
+
       /* ——— Quantity ——— */
       .quantity-controls { display:flex; align-items:center; gap: 15px; }
       .qty-btn { width: 40px; height: 40px; border: 2px solid #ff6600; background:#fff; color:#ff6600; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: 700; transition: all .12s ease; }
@@ -63,6 +71,7 @@
       @media (max-width: 768px){
         .product-grid { grid-template-columns: 1fr; gap:24px; }
         .option-grid { grid-template-columns: repeat(2,1fr); }
+        .flavor-grid { grid-template-columns: repeat(3,1fr); }
         .product-details { padding: 20px; }
       }
 
@@ -100,10 +109,29 @@
 
         <div class="product-details">
           <h1 class="product-title">Kratom Teas</h1>
-          <div class="product-price" id="product-price">$9.00 - Medium • Large • Gallon</div>
+          <div class="product-price" id="product-price">$9.00 - Medium • $15.00 - Large • $100.00 - Gallon</div>
           <p class="product-description">
-            Premium kratom teas with your choice of strain, size, and 26 delicious flavors. Customize with creamer options and ice preferences.
+            Premium kratom teas with your choice of strain, size, and extensive flavor options. Customize with sugar-free options, regular flavors, creamers, and ice preferences.
           </p>
+
+          <!-- Size Selection (Variants) -->
+          <div class="selection-section">
+            <h3 class="section-title">📏 Choose Your Size</h3>
+            <div class="option-grid" id="size-options" role="group" aria-label="Size options">
+              <button type="button" class="option-button" data-size="Medium" data-price="9.00">
+                <strong>Medium</strong><br>
+                <small>$9.00</small>
+              </button>
+              <button type="button" class="option-button" data-size="Large" data-price="15.00">
+                <strong>Large</strong><br>
+                <small>$15.00</small>
+              </button>
+              <button type="button" class="option-button" data-size="Gallon" data-price="100.00">
+                <strong>Gallon</strong><br>
+                <small>$100.00</small>
+              </button>
+            </div>
+          </div>
 
           <!-- Kratom Strain Selection -->
           <div class="selection-section">
@@ -113,91 +141,74 @@
             </div>
 
             <div class="option-grid" id="strain-options" role="group" aria-label="Kratom strain options">
-              <button type="button" class="option-button strain-green" data-strain="Green Kratom" data-price="9.00">
-                <strong>Green Kratom</strong><br>
-                <small>Energizing & mood-lifting</small>
+              <button type="button" class="option-button strain-green" data-strain="Green">
+                <strong>Green</strong><br>
+                <small>Energizing</small>
               </button>
-              <button type="button" class="option-button strain-red" data-strain="Red Kratom" data-price="9.00">
-                <strong>Red Kratom</strong><br>
-                <small>Relaxing & calming</small>
+              <button type="button" class="option-button strain-red" data-strain="Red">
+                <strong>Red</strong><br>
+                <small>Relaxing</small>
               </button>
-              <button type="button" class="option-button strain-white" data-strain="White Kratom" data-price="9.00">
-                <strong>White Kratom</strong><br>
-                <small>Stimulating & focus-enhancing</small>
+              <button type="button" class="option-button strain-white" data-strain="White">
+                <strong>White</strong><br>
+                <small>Stimulating</small>
               </button>
-              <button type="button" class="option-button strain-yellow" data-strain="Yellow Kratom" data-price="9.00">
-                <strong>Yellow Kratom</strong><br>
-                <small>Balanced & smooth</small>
-              </button>
-            </div>
-          </div>
-
-          <!-- Size Selection -->
-          <div class="selection-section">
-            <h3 class="section-title">📏 Choose Your Size</h3>
-            <div class="option-grid" id="size-options" role="group" aria-label="Size options">
-              <button type="button" class="option-button" data-size="Medium" data-price="9.00">
-                <strong>Medium</strong><br>
-                <small>$9.00</small>
-              </button>
-              <button type="button" class="option-button" data-size="Large" data-price="12.00">
-                <strong>Large</strong><br>
-                <small>$12.00</small>
-              </button>
-              <button type="button" class="option-button" data-size="Gallon" data-price="35.00">
-                <strong>Gallon</strong><br>
-                <small>$35.00</small>
+              <button type="button" class="option-button strain-yellow" data-strain="Yellow">
+                <strong>Yellow</strong><br>
+                <small>Balanced</small>
               </button>
             </div>
           </div>
 
-          <!-- Flavor Selection -->
+          <!-- Sugar-Free Flavor Selection -->
           <div class="selection-section">
-            <h3 class="section-title">🍓 Choose Your Flavor (26 Options)</h3>
-            <div class="option-grid" id="flavor-options" role="group" aria-label="Flavor options">
-              <button type="button" class="option-button" data-flavor="Mango">Mango</button>
-              <button type="button" class="option-button" data-flavor="Strawberry">Strawberry</button>
-              <button type="button" class="option-button" data-flavor="Blue Razz">Blue Razz</button>
-              <button type="button" class="option-button" data-flavor="Watermelon">Watermelon</button>
-              <button type="button" class="option-button" data-flavor="Pineapple">Pineapple</button>
-              <button type="button" class="option-button" data-flavor="Peach">Peach</button>
-              <button type="button" class="option-button" data-flavor="Lemon">Lemon</button>
-              <button type="button" class="option-button" data-flavor="Lime">Lime</button>
-              <button type="button" class="option-button" data-flavor="Orange">Orange</button>
-              <button type="button" class="option-button" data-flavor="Grape">Grape</button>
-              <button type="button" class="option-button" data-flavor="Cherry">Cherry</button>
-              <button type="button" class="option-button" data-flavor="Apple">Apple</button>
-              <button type="button" class="option-button" data-flavor="Coconut">Coconut</button>
-              <button type="button" class="option-button" data-flavor="Vanilla">Vanilla</button>
-              <button type="button" class="option-button" data-flavor="Chocolate">Chocolate</button>
-              <button type="button" class="option-button" data-flavor="Caramel">Caramel</button>
-              <button type="button" class="option-button" data-flavor="Banana">Banana</button>
-              <button type="button" class="option-button" data-flavor="Kiwi">Kiwi</button>
-              <button type="button" class="option-button" data-flavor="Passion Fruit">Passion Fruit</button>
-              <button type="button" class="option-button" data-flavor="Guava">Guava</button>
-              <button type="button" class="option-button" data-flavor="Pomegranate">Pomegranate</button>
-              <button type="button" class="option-button" data-flavor="Raspberry">Raspberry</button>
-              <button type="button" class="option-button" data-flavor="Blackberry">Blackberry</button>
-              <button type="button" class="option-button" data-flavor="Green Apple">Green Apple</button>
-              <button type="button" class="option-button" data-flavor="Tropical Punch">Tropical Punch</button>
-              <button type="button" class="option-button" data-flavor="Cotton Candy">Cotton Candy</button>
+            <h3 class="section-title">🍓 Sugar-Free Flavors</h3>
+            <div class="flavor-grid" id="sugar-free-options" role="group" aria-label="Sugar-free flavor options">
+              <button type="button" class="flavor-button" data-flavor="Strawberry">Strawberry</button>
+              <button type="button" class="flavor-button" data-flavor="Mexican Chocolate">Mexican Chocolate</button>
+              <button type="button" class="flavor-button" data-flavor="Cosmopolitan">Cosmopolitan</button>
+              <button type="button" class="flavor-button" data-flavor="Pumpkin Spice">Pumpkin Spice</button>
+              <button type="button" class="flavor-button" data-flavor="Cranberry">Cranberry</button>
+              <button type="button" class="flavor-button" data-flavor="Apple Spice">Apple Spice</button>
+              <button type="button" class="flavor-button" data-flavor="S'mores">S'mores</button>
+              <button type="button" class="flavor-button" data-flavor="Candy Corn">Candy Corn</button>
+              <button type="button" class="flavor-button" data-flavor="Pomegranate">Pomegranate</button>
+              <button type="button" class="flavor-button" data-flavor="Lemon Spritz">Lemon Spritz</button>
+              <button type="button" class="flavor-button" data-flavor="Lavender">Lavender</button>
+              <button type="button" class="flavor-button" data-flavor="White Chocolate">White Chocolate</button>
+              <button type="button" class="flavor-button" data-flavor="Vanilla">Vanilla</button>
+              <button type="button" class="flavor-button" data-flavor="Sour Apple">Sour Apple</button>
+              <button type="button" class="flavor-button" data-flavor="Peach">Peach</button>
+              <button type="button" class="flavor-button" data-flavor="Caramel">Caramel</button>
+              <button type="button" class="flavor-button" data-flavor="Rose">Rose</button>
+              <button type="button" class="flavor-button" data-flavor="Blueberry">Blueberry</button>
+              <button type="button" class="flavor-button" data-flavor="Winter Spice">Winter Spice</button>
+              <button type="button" class="flavor-button" data-flavor="Mexican Cinnamon">Mexican Cinnamon</button>
+              <button type="button" class="flavor-button" data-flavor="Dulce de Leche">Dulce de Leche</button>
+              <button type="button" class="flavor-button" data-flavor="Watermelon">Watermelon</button>
+              <button type="button" class="flavor-button" data-flavor="Cotton Candy">Cotton Candy</button>
+              <button type="button" class="flavor-button" data-flavor="Blackberry">Blackberry</button>
+              <button type="button" class="flavor-button" data-flavor="Jellybean">Jellybean</button>
+              <button type="button" class="flavor-button" data-flavor="Lavender Shortbread">Lavender Shortbread</button>
+              <button type="button" class="flavor-button" data-flavor="Coconut">Coconut</button>
+              <button type="button" class="flavor-button" data-flavor="Coconut Caramel">Coconut Caramel</button>
+              <button type="button" class="flavor-button" data-flavor="Blueberry Lavender">Blueberry Lavender</button>
+              <button type="button" class="flavor-button" data-flavor="Dubai Chocolate">Dubai Chocolate</button>
+              <button type="button" class="flavor-button" data-flavor="Almond Horchata">Almond Horchata</button>
+              <button type="button" class="flavor-button" data-flavor="Pecan Pie">Pecan Pie</button>
+              <button type="button" class="flavor-button" data-flavor="Pumpkin Pie">Pumpkin Pie</button>
             </div>
           </div>
 
-          <!-- Creamer Options -->
+          <!-- Regular Flavor Selection -->
           <div class="selection-section">
-            <h3 class="section-title">🥛 Creamer Options</h3>
-            <div class="option-grid" id="creamer-options" role="group" aria-label="Creamer options">
-              <button type="button" class="option-button" data-creamer="None">No Creamer</button>
-              <button type="button" class="option-button" data-creamer="Regular Cream">Regular Cream</button>
-              <button type="button" class="option-button" data-creamer="Half & Half">Half & Half</button>
-              <button type="button" class="option-button" data-creamer="Whole Milk">Whole Milk</button>
-              <button type="button" class="option-button" data-creamer="2% Milk">2% Milk</button>
-              <button type="button" class="option-button" data-creamer="Almond Milk">Almond Milk</button>
-              <button type="button" class="option-button" data-creamer="Oat Milk">Oat Milk</button>
-              <button type="button" class="option-button" data-creamer="Coconut Milk">Coconut Milk</button>
-              <button type="button" class="option-button" data-creamer="Soy Milk">Soy Milk</button>
-              <button type="button" class="option-button" data-creamer="Vanilla Creamer">Vanilla Creamer</button>
+            <h3 class="section-title">🍯 Regular Flavors</h3>
+            <div class="flavor-grid" id="regular-options" role="group" aria-label="Regular flavor options">
+              <button type="button" class="flavor-button" data-flavor="Grenadine">Grenadine</button>
+              <button type="button" class="flavor-button" data-flavor="Caramel Apple Butter">Caramel Apple Butter</button>
+              <button type="button" class="flavor-button" data-flavor="Cranberry">Cranberry</button>
+              <button type="button" class="flavor-button" data-flavor="Lime">Lime</button>
+              <button type="button" class="flavor-button" data-flavor="Dark Chocolate">Dark Chocolate</button>
             </div>
           </div>
 
@@ -205,10 +216,10 @@
           <div class="selection-section">
             <h3 class="section-title">🧊 Ice Preference</h3>
             <div class="option-grid" id="ice-options" role="group" aria-label="Ice options">
-              <button type="button" class="option-button" data-ice="Regular Ice">Regular Ice</button>
-              <button type="button" class="option-button" data-ice="Light Ice">Light Ice</button>
-              <button type="button" class="option-button" data-ice="Extra Ice">Extra Ice</button>
-              <button type="button" class="option-button" data-ice="No Ice">No Ice</button>
+              <button type="button" class="option-button" data-ice="None">No Ice</button>
+              <button type="button" class="option-button" data-ice="Light">Light Ice</button>
+              <button type="button" class="option-button" data-ice="Regular">Regular Ice</button>
+              <button type="button" class="option-button" data-ice="Extra">Extra Ice</button>
             </div>
           </div>
 
@@ -250,7 +261,7 @@
           <div id="success-message" class="success-message" role="status" aria-live="polite"></div>
 
           <button type="button" id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()" disabled>
-            Select Strain, Size & Flavor
+            Select Size, Strain & Flavor
           </button>
         </div>
       </div>
@@ -261,12 +272,18 @@
       const moneyFmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
 
       // ——— State ———
-      let selectedStrain = null;
       let selectedSize = null;
-      let selectedFlavor = null;
-      let selectedCreamer = 'None';
-      let selectedIce = 'Regular Ice';
+      let selectedStrain = null;
+      let selectedFlavors = [];
+      let selectedIce = 'Regular';
       let basePrice = 9.0;
+
+      // Size to price mapping
+      const sizePrices = {
+        'Medium': 9.00,
+        'Large': 15.00,
+        'Gallon': 100.00
+      };
 
       // ——— Init ———
       document.addEventListener('DOMContentLoaded', () => {
@@ -276,6 +293,17 @@
       });
 
       function wireOptionButtons() {
+        // Size buttons
+        document.querySelectorAll('#size-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#size-options .option-button').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedSize = btn.dataset.size;
+            basePrice = sizePrices[selectedSize] || 9.0;
+            updateUI();
+          });
+        });
+
         // Strain buttons
         document.querySelectorAll('#strain-options .option-button').forEach((btn) => {
           btn.addEventListener('click', () => {
@@ -286,34 +314,17 @@
           });
         });
 
-        // Size buttons
-        document.querySelectorAll('#size-options .option-button').forEach((btn) => {
+        // Flavor buttons (multi-select)
+        document.querySelectorAll('.flavor-button').forEach((btn) => {
           btn.addEventListener('click', () => {
-            document.querySelectorAll('#size-options .option-button').forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedSize = btn.dataset.size;
-            const p = parseFloat(btn.dataset.price || '');
-            if (Number.isFinite(p)) basePrice = p;
-            updateUI();
-          });
-        });
-
-        // Flavor buttons
-        document.querySelectorAll('#flavor-options .option-button').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#flavor-options .option-button').forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedFlavor = btn.dataset.flavor;
-            updateUI();
-          });
-        });
-
-        // Creamer buttons
-        document.querySelectorAll('#creamer-options .option-button').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#creamer-options .option-button').forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedCreamer = btn.dataset.creamer;
+            const flavor = btn.dataset.flavor;
+            if (btn.classList.contains('selected')) {
+              btn.classList.remove('selected');
+              selectedFlavors = selectedFlavors.filter(f => f !== flavor);
+            } else {
+              btn.classList.add('selected');
+              selectedFlavors.push(flavor);
+            }
             updateUI();
           });
         });
@@ -328,80 +339,63 @@
           });
         });
 
-        // Set defaults
-        document.querySelector('[data-creamer="None"]').classList.add('selected');
-        document.querySelector('[data-ice="Regular Ice"]').classList.add('selected');
+        // Set default ice selection
+        document.querySelector('#ice-options .option-button[data-ice="Regular"]').classList.add('selected');
       }
 
       function updateUI() {
-        const sizeText = selectedSize ? ` - ${selectedSize}` : ' - Medium • Large • Gallon';
-        document.getElementById('product-price').textContent = `${moneyFmt.format(basePrice)}${sizeText}`;
-        
-        const button = document.getElementById('add-to-cart-btn');
-        const qty = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
-        const total = basePrice * qty;
+        const priceEl = document.getElementById('product-price');
+        const btnEl = document.getElementById('add-to-cart-btn');
 
-        if (selectedStrain && selectedSize && selectedFlavor) {
-          button.textContent = `Add to Cart — ${moneyFmt.format(total)}`;
-          button.disabled = false;
+        // Update price display
+        priceEl.textContent = moneyFmt.format(basePrice);
+
+        // Update button state
+        const canAdd = selectedSize && selectedStrain && selectedFlavors.length > 0;
+        btnEl.disabled = !canAdd;
+        
+        if (canAdd) {
+          btnEl.textContent = `Add to Cart - ${moneyFmt.format(basePrice)}`;
         } else {
-          button.textContent = 'Select Strain, Size & Flavor';
-          button.disabled = true;
+          const missing = [];
+          if (!selectedSize) missing.push('Size');
+          if (!selectedStrain) missing.push('Strain');
+          if (selectedFlavors.length === 0) missing.push('Flavor');
+          btnEl.textContent = `Select ${missing.join(', ')}`;
         }
       }
 
       function changeQuantity(delta) {
         const input = document.getElementById('quantity');
-        const next = Math.max(1, Math.min(50, (parseInt(input.value, 10) || 1) + delta));
-        input.value = next;
+        const newVal = Math.max(1, Math.min(50, parseInt(input.value) + delta));
+        input.value = newVal;
         updateUI();
       }
 
       async function updateCartCount() {
         try {
-          const res = await fetch('/cart.js', { credentials: 'same-origin' });
-          if (res.ok) {
-            const cart = await res.json();
-            const countEl = document.getElementById('cart-count');
-            countEl.textContent = cart.item_count || 0;
-            countEl.parentElement.setAttribute('aria-live', 'polite');
-          }
-        } catch (e) {}
-      }
-
-      function validateSelections() {
-        if (!selectedStrain) {
-          alert('❗ Please choose a kratom strain.');
-          return false;
+          const res = await fetch('/cart.js');
+          const cart = await res.json();
+          document.getElementById('cart-count').textContent = cart.item_count;
+        } catch (err) {
+          console.warn('Cart count update failed:', err);
         }
-        if (!selectedSize) {
-          alert('❗ Please choose a size.');
-          return false;
-        }
-        if (!selectedFlavor) {
-          alert('❗ Please choose a flavor.');
-          return false;
-        }
-        return true;
       }
 
       async function addToCart() {
-        if (!validateSelections()) return;
-
         const btn = document.getElementById('add-to-cart-btn');
         const original = btn.textContent;
-        btn.textContent = '⏳ Adding...';
+        btn.textContent = 'Adding...';
         btn.disabled = true;
 
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const comments = document.getElementById('order-comments').value.trim();
         const variantId = window.KRATOM_TEAS_VARIANT_ID;
-        const quantity = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
-        const comments = (document.getElementById('order-comments').value || '').trim();
 
-        const properties = { 
-          Strain: selectedStrain,
+        const properties = {
           Size: selectedSize,
-          Flavor: selectedFlavor,
-          Creamer: selectedCreamer,
+          Strain: selectedStrain,
+          Flavors: selectedFlavors.join(', '),
           Ice: selectedIce
         };
         if (comments) properties.Comments = comments;
@@ -453,9 +447,9 @@
 
           const success = document.getElementById('success-message');
           success.innerHTML = `✅ <strong>Added to cart!</strong><br>
-             🍃 ${properties.Strain} — <strong>${properties.Size}</strong><br>
-             🍓 Flavor: ${properties.Flavor}<br>
-             🥛 Creamer: ${properties.Creamer} | 🧊 Ice: ${properties.Ice}<br>
+             🍃 ${properties.Strain} Kratom — <strong>${properties.Size}</strong><br>
+             🍓 Flavors: ${properties.Flavors}<br>
+             🧊 Ice: ${properties.Ice}<br>
              🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
           success.classList.add('show');
           success.scrollIntoView({ behavior: 'smooth', block: 'center' });

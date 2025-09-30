@@ -27,14 +27,20 @@
 
       {% if section.settings.heading != blank %}
         <h1 class="home-hero__title">{{ section.settings.heading | escape }}</h1>
+      {% else %}
+        <h1 class="home-hero__title">Cape Coral's Premier Kava Bar | WTF | Welcome To Florida</h1>
       {% endif %}
 
       {% if section.settings.subheading != blank %}
         <p class="home-hero__subtitle">{{ section.settings.subheading | escape }}</p>
+      {% else %}
+        <p class="home-hero__subtitle">Best Kava Drinks, Kratom Teas & Sober Nightlife in Southwest Florida</p>
       {% endif %}
 
       {% if section.settings.description != blank %}
         <p class="home-hero__description">{{ section.settings.description | escape }}</p>
+      {% else %}
+        <p class="home-hero__description">Experience premium kava beverages, custom kratom teas, and THC products in Cape Coral's most welcoming community space. Serving Cape Coral, Fort Myers, and all of Southwest Florida with the best kava bar experience.</p>
       {% endif %}
 
       <div class="home-hero__actions">

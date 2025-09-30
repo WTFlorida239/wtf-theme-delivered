@@ -15,15 +15,53 @@
     {%- endif -%}
 
     <title>
-      {{ page_title }}
-      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {% if template == 'index' %}
+        Cape Coral's Premier Kava Bar | {{ shop.name }} | Best Kava Drinks & Kratom Teas in Southwest Florida
+      {% elsif template contains 'kava' %}
+        {{ page_title }} | Best Kava Bar Cape Coral | {{ shop.name }}
+      {% elsif template contains 'kratom' %}
+        {{ page_title }} | Premium Kratom Teas Cape Coral | {{ shop.name }}
+      {% else %}
+        {{ page_title }}
+        {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+        {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+        {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {% endif %}
     </title>
 
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
+    {% elsif template == 'index' %}
+      <meta name="description" content="Cape Coral's premier kava bar offering custom kava drinks, kratom teas, THC beverages, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida with the best kava bar experience.">
+    {% else %}
+      <meta name="description" content="Visit WTF | Welcome To Florida - Cape Coral's best kava bar for premium botanical beverages, custom drinks, and sober-friendly nightlife in Southwest Florida.">
     {% endif %}
+    
+    <!-- Local SEO Meta Tags -->
+    <meta name="geo.region" content="US-FL">
+    <meta name="geo.placename" content="Cape Coral">
+    <meta name="geo.position" content="26.5629;-81.9495">
+    <meta name="ICBM" content="26.5629, -81.9495">
+    <meta name="keywords" content="kava bar cape coral, kava bars near me, cape coral kava bar, kava lounge cape coral, kava bar fort myers, kava bars florida, best kava bar cape coral, kratom cape coral, sober nightlife cape coral">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:type" content="business.business">
+    <meta property="og:title" content="{% if template == 'index' %}Cape Coral's Premier Kava Bar | {{ shop.name }}{% else %}{{ page_title }} | {{ shop.name }}{% endif %}">
+    <meta property="og:description" content="{% if page_description %}{{ page_description | escape }}{% else %}Cape Coral's premier kava bar offering custom kava drinks, kratom teas, and sober nightlife in Southwest Florida.{% endif %}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:site_name" content="{{ shop.name }}">
+    <meta property="og:image" content="{{ 'wtf_storefront_hero_original.png' | asset_url }}">
+    <meta property="business:contact_data:street_address" content="1520 SE 46th Ln, Unit B">
+    <meta property="business:contact_data:locality" content="Cape Coral">
+    <meta property="business:contact_data:region" content="FL">
+    <meta property="business:contact_data:postal_code" content="33904">
+    <meta property="business:contact_data:country_name" content="United States">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% if template == 'index' %}Cape Coral's Premier Kava Bar | {{ shop.name }}{% else %}{{ page_title }} | {{ shop.name }}{% endif %}">
+    <meta name="twitter:description" content="{% if page_description %}{{ page_description | escape }}{% else %}Cape Coral's premier kava bar offering custom kava drinks, kratom teas, and sober nightlife.{% endif %}">
+    <meta name="twitter:image" content="{{ 'wtf_storefront_hero_original.png' | asset_url }}">
 
     {% if settings.google_analytics_id != blank %}
       <meta name="ga4-measurement-id" content="{{ settings.google_analytics_id }}">
@@ -404,6 +442,12 @@
       </script>
     {% endif %}
 
+    {%- comment %} Persistent Cart Management {%- endcomment %}
+    {{ 'persistent-cart.js' | asset_url | script_tag }}
+    
+    {%- comment %} Pricing Validation System {%- endcomment %}
+    {{ 'pricing-validation.js' | asset_url | script_tag }}
+
     {%- comment %} Development tools {%- endcomment %}
     {% if settings.enable_debug_mode %}
       <script>
@@ -420,7 +464,8 @@
             localStorage.clear();
             sessionStorage.clear();
             console.log('Storage cleared');
-          }
+          },
+          persistentCart: () => window.debugCart && window.debugCart()
         };
         console.log('WTF Debug tools available: WTF_DEBUG');
       </script>

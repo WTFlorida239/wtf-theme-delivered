@@ -1,0 +1,184 @@
+{% layout none %}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>{{ shop.secure_url }}</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>{{ 'wtf_storefront_hero_original.png' | asset_url }}</image:loc>
+      <image:title>WTF Welcome To Florida - Cape Coral Kava Bar</image:title>
+      <image:caption>Cape Coral's premier kava bar and kratom lounge</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Kava Bar Landing Page -->
+  <url>
+    <loc>{{ shop.secure_url }}/pages/kava-bar-cape-coral</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>{{ 'kava_drinks_150x150.png' | asset_url }}</image:loc>
+      <image:title>Cape Coral Kava Bar - Premium Kava Drinks</image:title>
+      <image:caption>Best kava bar in Cape Coral, Florida</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Product Category Pages -->
+  <url>
+    <loc>{{ shop.secure_url }}/pages/kava-drinks</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>{{ 'kava_drinks_150x150.png' | asset_url }}</image:loc>
+      <image:title>Custom Kava Drinks - Cape Coral</image:title>
+      <image:caption>Premium kava beverages with custom flavors</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>{{ shop.secure_url }}/pages/kratom-teas</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>{{ 'kratom_teas_150x150.png' | asset_url }}</image:loc>
+      <image:title>Custom Kratom Teas - Cape Coral</image:title>
+      <image:caption>Premium kratom teas with custom strains and flavors</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>{{ shop.secure_url }}/pages/thc-drinks</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>{{ 'thc_drinks_150x150.png' | asset_url }}</image:loc>
+      <image:title>THC Beverages - Cape Coral</image:title>
+      <image:caption>Premium Delta-9 THC drinks and beverages</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>{{ shop.secure_url }}/pages/thc-shots</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>{{ 'thc_shots_150x150.png' | asset_url }}</image:loc>
+      <image:title>THC Shots - Cape Coral</image:title>
+      <image:caption>Premium THC shot concentrates</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>{{ shop.secure_url }}/pages/draft-pours</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>{{ 'draft_pours_150x150.png' | asset_url }}</image:loc>
+      <image:title>Draft Pours - Cape Coral Kava Bar</image:title>
+      <image:caption>Fresh draft beverages on tap</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>{{ shop.secure_url }}/pages/canned-drinks</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>{{ 'edibles_150x150.png' | asset_url }}</image:loc>
+      <image:title>Canned Drinks - Cape Coral</image:title>
+      <image:caption>Premium ready-to-drink beverages</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Collections -->
+  {% for collection in collections %}
+    {% unless collection.handle == 'frontpage' %}
+      <url>
+        <loc>{{ shop.secure_url }}{{ collection.url }}</loc>
+        <lastmod>{{ collection.updated_at | date: '%Y-%m-%d' }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+        {% if collection.featured_image %}
+          <image:image>
+            <image:loc>{{ collection.featured_image | image_url }}</image:loc>
+            <image:title>{{ collection.title | escape }}</image:title>
+            <image:caption>{{ collection.description | strip_html | truncate: 160 | escape }}</image:caption>
+          </image:image>
+        {% endif %}
+      </url>
+    {% endunless %}
+  {% endfor %}
+
+  <!-- Products -->
+  {% for product in collections.all.products limit: 250 %}
+    <url>
+      <loc>{{ shop.secure_url }}{{ product.url }}</loc>
+      <lastmod>{{ product.updated_at | date: '%Y-%m-%d' }}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.5</priority>
+      {% if product.featured_image %}
+        <image:image>
+          <image:loc>{{ product.featured_image | image_url }}</image:loc>
+          <image:title>{{ product.title | escape }}</image:title>
+          <image:caption>{{ product.description | strip_html | truncate: 160 | escape }}</image:caption>
+        </image:image>
+      {% endif %}
+    </url>
+  {% endfor %}
+
+  <!-- Pages -->
+  {% for page in pages %}
+    {% unless page.handle == 'kava-bar-cape-coral' %}
+      <url>
+        <loc>{{ shop.secure_url }}{{ page.url }}</loc>
+        <lastmod>{{ page.updated_at | date: '%Y-%m-%d' }}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+      </url>
+    {% endunless %}
+  {% endfor %}
+
+  <!-- Blog Posts -->
+  {% for article in blog.articles limit: 100 %}
+    <url>
+      <loc>{{ shop.secure_url }}{{ article.url }}</loc>
+      <lastmod>{{ article.updated_at | date: '%Y-%m-%d' }}</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.4</priority>
+      {% if article.image %}
+        <image:image>
+          <image:loc>{{ article.image | image_url }}</image:loc>
+          <image:title>{{ article.title | escape }}</image:title>
+          <image:caption>{{ article.summary | strip_html | truncate: 160 | escape }}</image:caption>
+        </image:image>
+      {% endif %}
+    </url>
+  {% endfor %}
+
+  <!-- Location-specific pages for local SEO -->
+  <url>
+    <loc>{{ shop.secure_url }}/pages/kava-bar-fort-myers</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>{{ shop.secure_url }}/pages/kava-bars-southwest-florida</loc>
+    <lastmod>{{ 'now' | date: '%Y-%m-%d' }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>

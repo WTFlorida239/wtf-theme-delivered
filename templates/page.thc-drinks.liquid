@@ -98,150 +98,172 @@
         padding: 18px; 
         border-radius: 12px; 
         margin-bottom: 18px; 
-        font-size: 15px; 
+        font-size: 14px; 
         border: 1px solid #bee5eb;
-        box-shadow: 0 2px 8px rgba(0,123,255,0.1);
-      }
-      .age-warning { 
-        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
-        color: #856404; 
-        padding: 18px; 
-        border-radius: 12px; 
-        margin-bottom: 18px; 
-        font-size: 15px; 
-        border: 2px solid #ffeaa7; 
-        box-shadow: 0 4px 15px rgba(255,193,7,0.2);
-        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       }
 
       /* ——— Options ——— */
       .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; }
       .option-button { 
         padding: 18px; 
-        border: 3px solid #e0e0e0; 
-        border-radius: 15px; 
+        border: 3px solid #ddd; 
+        border-radius: 12px; 
         text-align: center; 
-        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); 
+        background: #fff; 
         cursor: pointer; 
-        transition: all .3s ease; 
+        transition: all .2s ease; 
         color:#333; 
-        font-size: 15px; 
-        font-weight: 600;
+        font-size: 14px; 
         min-height: 70px; 
         display:flex; 
         align-items:center; 
         justify-content:center; 
-        flex-direction:column; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        position: relative;
-        overflow: hidden;
-      }
-      .option-button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-        transition: left .5s ease;
-      }
-      .option-button:hover::before {
-        left: 100%;
+        flex-direction:column;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       }
       .option-button:hover { 
         border-color: #ff6600; 
         transform: translateY(-3px); 
-        box-shadow: 0 8px 25px rgba(255,102,0,0.25); 
-        background: linear-gradient(135deg, #fff 0%, #fff5f0 100%);
+        box-shadow: 0 6px 20px rgba(255,102,0,0.25); 
       }
       .option-button.selected { 
         background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
         color: #fff; 
         border-color: #ff6600; 
         font-weight: 800; 
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255,102,0,0.4);
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4);
       }
 
-      /* THC-specific colors */
-      .thc-flavor.selected { background: #9c27b0; border-color: #9c27b0; }
-
-      /* Flavor Categories */
-      .flavor-category { margin-bottom: 25px; }
-      .flavor-category-title { 
-        font-size: 16px; 
-        font-weight: 700; 
+      /* Flavor buttons */
+      .flavor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; }
+      .flavor-button { 
+        padding: 15px 10px; 
+        border: 2px solid #ddd; 
+        border-radius: 10px; 
+        text-align: center; 
+        background: #fff; 
+        cursor: pointer; 
+        transition: all .2s ease; 
+        font-size: 13px; 
         color: #333; 
-        margin-bottom: 10px; 
-        text-align: center;
-        padding: 8px 15px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 20px;
-        border: 2px solid #dee2e6;
+        min-height: 55px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       }
-      .flavor-category-grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-        gap: 8px; 
+      .flavor-button:hover { 
+        border-color: #28a745; 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 12px rgba(40,167,69,0.2);
+      }
+      .flavor-button.selected { 
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+        color: #fff; 
+        border-color: #28a745; 
+        font-weight: 600; 
+        box-shadow: 0 4px 12px rgba(40,167,69,0.3);
       }
 
       /* ——— Quantity ——— */
-      .quantity-controls { display:flex; align-items:center; gap: 15px; }
-      .qty-btn { width: 40px; height: 40px; border: 2px solid #ff6600; background:#fff; color:#ff6600; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: 700; transition: all .12s ease; }
-      .qty-btn:hover { background:#ff6600; color:#fff; transform: scale(1.08); }
-      .qty-input { width: 80px; text-align:center; padding:10px; border:2px solid #ddd; border-radius:5px; font-size:16px; }
+      .quantity-controls { display:flex; align-items:center; gap: 20px; }
+      .qty-btn { 
+        width: 45px; 
+        height: 45px; 
+        border: 3px solid #ff6600; 
+        background:#fff; 
+        color:#ff6600; 
+        border-radius: 50%; 
+        cursor: pointer; 
+        font-size: 20px; 
+        font-weight: 700; 
+        transition: all .2s ease;
+        box-shadow: 0 2px 8px rgba(255,102,0,0.2);
+      }
+      .qty-btn:hover { 
+        background:#ff6600; 
+        color:#fff; 
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(255,102,0,0.4);
+      }
+      .qty-input { 
+        width: 90px; 
+        text-align:center; 
+        padding:12px; 
+        border:3px solid #ddd; 
+        border-radius:8px; 
+        font-size:16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
 
       /* ——— Comments ——— */
-      .comments-textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; resize: vertical; font-size: 14px; line-height: 1.4; }
-      .comments-textarea:focus { border-color: #ff6600; outline: none; }
+      .comments-textarea { 
+        width: 100%; 
+        padding: 15px; 
+        border: 3px solid #ddd; 
+        border-radius: 8px; 
+        resize: vertical; 
+        font-size: 14px; 
+        line-height: 1.5;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+      .comments-textarea:focus { 
+        border-color: #ff6600; 
+        outline: none; 
+        box-shadow: 0 4px 12px rgba(255,102,0,0.2);
+      }
 
       /* ——— CTA / Status ——— */
       .add-to-cart-btn { 
         width: 100%; 
-        padding: 22px; 
+        padding: 20px; 
         background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
         color: #fff; 
         border: none; 
-        border-radius: 25px; 
-        font-size: 20px; 
+        border-radius: 12px; 
+        font-size: 18px; 
         font-weight: 800; 
         cursor: pointer; 
-        margin-top: 30px; 
-        transition: all .3s ease; 
-        box-shadow: 0 6px 20px rgba(255,102,0,0.3);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
-      }
-      .add-to-cart-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left .5s ease;
-      }
-      .add-to-cart-btn:hover::before {
-        left: 100%;
+        margin-top: 25px; 
+        transition: all .2s ease;
+        box-shadow: 0 4px 15px rgba(255,102,0,0.3);
       }
       .add-to-cart-btn:hover { 
-        background: linear-gradient(135deg, #e55a00 0%, #d14900 100%); 
-        transform: translateY(-3px); 
-        box-shadow: 0 10px 30px rgba(255,102,0,0.4); 
+        background: linear-gradient(135deg, #e55a00 0%, #d44500 100%); 
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 20px rgba(255,102,0,0.4); 
       }
       .add-to-cart-btn:disabled { 
-        background: linear-gradient(135deg, #ccc 0%, #bbb 100%); 
-        cursor: not-allowed; 
-        transform: none; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        background:#ccc; 
+        cursor:not-allowed; 
+        transform:none; 
+        box-shadow:none; 
       }
-      .success-message { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 15px 0; border: 1px solid #c3e6cb; display: none; font-size: 14px; }
+      .success-message { 
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); 
+        color: #155724; 
+        padding: 18px; 
+        border-radius: 10px; 
+        margin: 18px 0; 
+        border: 1px solid #c3e6cb; 
+        display: none; 
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
       .success-message.show { display: block; }
-      .cart-status { position: fixed; top: 20px; right: 20px; background:#ff6600; color:#fff; padding:10px 15px; border-radius:25px; font-weight:700; z-index:1000; box-shadow:0 4px 12px rgba(255,102,0,0.3); }
+      .cart-status { 
+        position: fixed; 
+        top: 20px; 
+        right: 20px; 
+        background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); 
+        color:#fff; 
+        padding:12px 18px; 
+        border-radius:25px; 
+        font-weight:700; 
+        z-index:1000; 
+        box-shadow:0 4px 15px rgba(255,102,0,0.4);
+      }
 
       /* ——— Motion preferences ——— */
       @media (prefers-reduced-motion: reduce){
@@ -250,28 +272,31 @@
 
       /* ——— Responsive ——— */
       @media (max-width: 768px){
-        .product-grid { grid-template-columns: 1fr; gap:24px; }
+        .product-grid { grid-template-columns: 1fr; gap:30px; }
         .option-grid { grid-template-columns: repeat(2,1fr); }
-        .product-details { padding: 20px; }
+        .flavor-grid { grid-template-columns: repeat(2,1fr); }
+        .product-details { padding: 25px; }
+        .container { padding: 20px 15px; }
       }
 
       /* Focus visible outline */
-      :where(.back-link, .option-button, .qty-btn, .add-to-cart-btn):focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; border-radius: 8px; }
-      .sr-only { position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+      :where(.back-link, .option-button, .qty-btn, .add-to-cart-btn):focus-visible { 
+        outline: 3px solid #1a73e8; 
+        outline-offset: 2px; 
+        border-radius: 8px; 
+      }
+      .sr-only { 
+        position:absolute!important; 
+        width:1px; 
+        height:1px; 
+        overflow:hidden; 
+        clip:rect(1px,1px,1px,1px); 
+        white-space:nowrap; 
+      }
     </style>
 
     <script>
       window.THC_DRINKS_VARIANT_ID = {{ page.metafields.custom.thc_drinks_variant_id | default: settings.thc_drinks_variant_id | json }};
-      
-      // ——— EASILY EDITABLE THC FLAVORS (syncs with THC Shots) ———
-      // 👇 EDIT THESE 4 FLAVORS TO ROTATE YOUR SELECTION 👇
-      window.THC_ROTATING_FLAVORS = [
-        'Tropical Mango',
-        'Berry Blast', 
-        'Citrus Punch',
-        'Grape Escape'
-      ];
-      // 👆 EDIT THESE 4 FLAVORS TO ROTATE YOUR SELECTION 👆
     </script>
   </head>
 
@@ -287,7 +312,7 @@
       <div class="product-grid">
         <div class="product-image-section">
           <img
-            src="{{ 'delta9_drinks_150x150.png' | asset_url }}"
+            src="{{ 'thc_drinks_150x150.png' | asset_url }}"
             alt="THC Drinks"
             class="product-image"
             width="400"
@@ -299,67 +324,53 @@
 
         <div class="product-details">
           <h1 class="product-title">THC Drinks</h1>
-          <div class="product-price" id="product-price">$15.99 - Large • Gallon Only</div>
-          
-          <div class="age-warning">
-            <strong>⚠️ 21+ Only:</strong> Must be 21 or older to purchase. Valid ID required. Cannabis beverages with rotating flavors.
-          </div>
-          
+          <div class="product-price" id="product-price">$15.00 - Regular • $20.00 - Large • $120.00 - Gallon</div>
           <p class="product-description">
-            Premium cannabis beverages - Large size and Gallon only. House-made with rotating flavors for the ultimate experience.
+            Premium THC-infused drinks with your choice of size and four delicious flavors. Each drink is carefully crafted for consistent potency and exceptional taste.
           </p>
 
-          <!-- Size Selection (Large & Gallon Only) -->
+          <div class="info-box">
+            <strong>⚠️ Important:</strong> Must be 21+ to purchase. Please consume responsibly. Effects may take 30-90 minutes to onset.
+          </div>
+
+          <!-- Size Selection (Variants) -->
           <div class="selection-section">
             <h3 class="section-title">📏 Choose Your Size</h3>
-            <div class="info-box">
-              <strong>Available Sizes:</strong> Large and Gallon only for THC drinks
-            </div>
             <div class="option-grid" id="size-options" role="group" aria-label="Size options">
-              <button type="button" class="option-button" data-size="Large" data-price="15.99">
-                <strong>Large</strong><br>
-                <small>$15.99</small>
+              <button type="button" class="option-button" data-size="Regular" data-price="15.00">
+                <strong>Regular</strong><br>
+                <small>$15.00</small>
               </button>
-              <button type="button" class="option-button" data-size="Gallon" data-price="45.99">
+              <button type="button" class="option-button" data-size="Large" data-price="20.00">
+                <strong>Large</strong><br>
+                <small>$20.00</small>
+              </button>
+              <button type="button" class="option-button" data-size="Gallon" data-price="120.00">
                 <strong>Gallon</strong><br>
-                <small>$45.99</small>
+                <small>$120.00</small>
               </button>
             </div>
           </div>
 
-          <!-- Comprehensive Flavor Selection -->
+          <!-- Flavor Selection -->
           <div class="selection-section">
             <h3 class="section-title">🍹 Choose Your Flavor</h3>
             <div class="info-box">
-              <strong>Full Selection:</strong> Choose from our complete flavor menu - same options as our kava drinks for consistency.
+              All four flavors are available for each size option.
             </div>
-            <div class="option-grid" id="flavor-options" role="group" aria-label="Flavor options">
-              <!-- Flavors will be populated by JavaScript from the rotating array -->
-            </div>
-          </div>
-
-          <!-- THC Concentration (for Gallon size) -->
-          <div class="selection-section" id="thc-concentration-section" style="display: none;">
-            <h3 class="section-title">🧪 THC Concentration (Gallon Only)</h3>
-            <div class="info-box">
-              <strong>Gallon Special:</strong> Choose your preferred THC concentration for the full gallon.
-            </div>
-            <div class="option-grid" id="thc-concentration-options" role="group" aria-label="THC concentration options">
-              <button type="button" class="option-button" data-concentration="Low (5mg per serving)">Low<br><small>5mg per serving</small></button>
-              <button type="button" class="option-button" data-concentration="Medium (10mg per serving)">Medium<br><small>10mg per serving</small></button>
-              <button type="button" class="option-button" data-concentration="High (25mg per serving)">High<br><small>25mg per serving</small></button>
-              <button type="button" class="option-button" data-concentration="Custom">Custom<br><small>Specify in comments</small></button>
-            </div>
-          </div>
-
-          <!-- Ice Options -->
-          <div class="selection-section">
-            <h3 class="section-title">🧊 Ice Preference</h3>
-            <div class="option-grid" id="ice-options" role="group" aria-label="Ice options">
-              <button type="button" class="option-button" data-ice="Regular Ice">Regular Ice</button>
-              <button type="button" class="option-button" data-ice="Light Ice">Light Ice</button>
-              <button type="button" class="option-button" data-ice="Extra Ice">Extra Ice</button>
-              <button type="button" class="option-button" data-ice="No Ice">No Ice</button>
+            <div class="flavor-grid" id="flavor-options" role="group" aria-label="Flavor options">
+              <button type="button" class="flavor-button" data-flavor="Fail Margarita">
+                <strong>Fail Margarita</strong>
+              </button>
+              <button type="button" class="flavor-button" data-flavor="Cherry Vanilla">
+                <strong>Cherry Vanilla</strong>
+              </button>
+              <button type="button" class="flavor-button" data-flavor="Melon Peach Mojito">
+                <strong>Melon Peach Mojito</strong>
+              </button>
+              <button type="button" class="flavor-button" data-flavor="Pomegranate Cherry">
+                <strong>Pomegranate Cherry</strong>
+              </button>
             </div>
           </div>
 
@@ -370,7 +381,7 @@
             <textarea
               id="order-comments"
               class="comments-textarea"
-              placeholder="Any special requests, dosage preferences, or modifications? We'll try to accommodate!"
+              placeholder="Any special requests or modifications? We'll try to accommodate!"
               rows="3"
             ></textarea>
           </div>
@@ -414,54 +425,21 @@
       // ——— State ———
       let selectedSize = null;
       let selectedFlavor = null;
-      let selectedIce = 'Regular Ice';
-      let selectedConcentration = null;
-      let basePrice = 15.99;
+      let basePrice = 15.0;
+
+      // Size to price mapping
+      const sizePrices = {
+        'Regular': 15.00,
+        'Large': 20.00,
+        'Gallon': 120.00
+      };
 
       // ——— Init ———
       document.addEventListener('DOMContentLoaded', () => {
-        populateRotatingFlavors();
         wireOptionButtons();
         updateCartCount();
         updateUI();
       });
-
-      function populateRotatingFlavors() {
-        const flavorContainer = document.getElementById('flavor-options');
-        
-        // Categorized flavor list for better user experience
-        const flavorCategories = {
-          'Tropical': ['Coconut', 'Pineapple', 'Mango', 'Passion Fruit', 'Tropical Mango'],
-          'Citrus': ['Lime', 'Lemon', 'Orange', 'Citrus Punch'],
-          'Berry': ['Strawberry', 'Blueberry', 'Berry Blast', 'Cherry', 'Watermelon'],
-          'Classic': ['Vanilla', 'Chocolate', 'Caramel', 'Mint'],
-          'Specialty': ['Ginger', 'Cinnamon', 'Peach', 'Grape Escape']
-        };
-        
-        flavorContainer.innerHTML = '';
-        
-        // Create categorized display
-        Object.entries(flavorCategories).forEach(([category, flavors]) => {
-          const categoryDiv = document.createElement('div');
-          categoryDiv.className = 'flavor-category';
-          categoryDiv.innerHTML = `<h4 class="flavor-category-title">${category}</h4>`;
-          
-          const categoryGrid = document.createElement('div');
-          categoryGrid.className = 'flavor-category-grid';
-          
-          flavors.forEach(flavor => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'option-button thc-flavor';
-            button.dataset.flavor = flavor;
-            button.innerHTML = `<strong>${flavor}</strong>`;
-            categoryGrid.appendChild(button);
-          });
-          
-          categoryDiv.appendChild(categoryGrid);
-          flavorContainer.appendChild(categoryDiv);
-        });
-      }
 
       function wireOptionButtons() {
         // Size buttons
@@ -470,133 +448,74 @@
             document.querySelectorAll('#size-options .option-button').forEach((b) => b.classList.remove('selected'));
             btn.classList.add('selected');
             selectedSize = btn.dataset.size;
-            const p = parseFloat(btn.dataset.price || '');
-            if (Number.isFinite(p)) basePrice = p;
-            
-            // Show/hide THC concentration section for Gallon size
-            const concentrationSection = document.getElementById('thc-concentration-section');
-            if (selectedSize === 'Gallon') {
-              concentrationSection.style.display = 'block';
-            } else {
-              concentrationSection.style.display = 'none';
-              selectedConcentration = null;
-              document.querySelectorAll('#thc-concentration-options .option-button').forEach((b) => b.classList.remove('selected'));
-            }
-            
+            basePrice = sizePrices[selectedSize] || 15.0;
             updateUI();
           });
         });
 
-        // Flavor buttons (dynamically created)
-        document.addEventListener('click', (e) => {
-          if (e.target.matches('#flavor-options .option-button')) {
-            document.querySelectorAll('#flavor-options .option-button').forEach((b) => b.classList.remove('selected'));
-            e.target.classList.add('selected');
-            selectedFlavor = e.target.dataset.flavor;
-            updateUI();
-          }
-        });
-
-        // THC concentration buttons
-        document.querySelectorAll('#thc-concentration-options .option-button').forEach((btn) => {
+        // Flavor buttons
+        document.querySelectorAll('.flavor-button').forEach((btn) => {
           btn.addEventListener('click', () => {
-            document.querySelectorAll('#thc-concentration-options .option-button').forEach((b) => b.classList.remove('selected'));
+            document.querySelectorAll('.flavor-button').forEach((b) => b.classList.remove('selected'));
             btn.classList.add('selected');
-            selectedConcentration = btn.dataset.concentration;
+            selectedFlavor = btn.dataset.flavor;
             updateUI();
           });
         });
-
-        // Ice buttons
-        document.querySelectorAll('#ice-options .option-button').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#ice-options .option-button').forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedIce = btn.dataset.ice;
-            updateUI();
-          });
-        });
-
-        // Set defaults
-        document.querySelector('[data-ice="Regular Ice"]').classList.add('selected');
       }
 
       function updateUI() {
-        const sizeText = selectedSize ? ` - ${selectedSize}` : ' - Large • Gallon Only';
-        document.getElementById('product-price').textContent = `${moneyFmt.format(basePrice)}${sizeText}`;
-        
-        const button = document.getElementById('add-to-cart-btn');
-        const qty = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
-        const total = basePrice * qty;
+        const priceEl = document.getElementById('product-price');
+        const btnEl = document.getElementById('add-to-cart-btn');
 
-        const isGallonWithoutConcentration = selectedSize === 'Gallon' && !selectedConcentration;
+        // Update price display
+        priceEl.textContent = moneyFmt.format(basePrice);
+
+        // Update button state
+        const canAdd = selectedSize && selectedFlavor;
+        btnEl.disabled = !canAdd;
         
-        if (selectedSize && selectedFlavor && !isGallonWithoutConcentration) {
-          button.textContent = `Add to Cart — ${moneyFmt.format(total)}`;
-          button.disabled = false;
-        } else if (isGallonWithoutConcentration) {
-          button.textContent = 'Select THC Concentration';
-          button.disabled = true;
+        if (canAdd) {
+          btnEl.textContent = `Add to Cart - ${moneyFmt.format(basePrice)}`;
         } else {
-          button.textContent = 'Select Size & Flavor';
-          button.disabled = true;
+          const missing = [];
+          if (!selectedSize) missing.push('Size');
+          if (!selectedFlavor) missing.push('Flavor');
+          btnEl.textContent = `Select ${missing.join(' & ')}`;
         }
       }
 
       function changeQuantity(delta) {
         const input = document.getElementById('quantity');
-        const next = Math.max(1, Math.min(50, (parseInt(input.value, 10) || 1) + delta));
-        input.value = next;
+        const newVal = Math.max(1, Math.min(50, parseInt(input.value) + delta));
+        input.value = newVal;
         updateUI();
       }
 
       async function updateCartCount() {
         try {
-          const res = await fetch('/cart.js', { credentials: 'same-origin' });
-          if (res.ok) {
-            const cart = await res.json();
-            const countEl = document.getElementById('cart-count');
-            countEl.textContent = cart.item_count || 0;
-            countEl.parentElement.setAttribute('aria-live', 'polite');
-          }
-        } catch (e) {}
-      }
-
-      function validateSelections() {
-        if (!selectedSize) {
-          alert('❗ Please choose a size.');
-          return false;
+          const res = await fetch('/cart.js');
+          const cart = await res.json();
+          document.getElementById('cart-count').textContent = cart.item_count;
+        } catch (err) {
+          console.warn('Cart count update failed:', err);
         }
-        if (!selectedFlavor) {
-          alert('❗ Please choose a flavor.');
-          return false;
-        }
-        if (selectedSize === 'Gallon' && !selectedConcentration) {
-          alert('❗ Please choose a THC concentration for gallon size.');
-          return false;
-        }
-        return true;
       }
 
       async function addToCart() {
-        if (!validateSelections()) return;
-
         const btn = document.getElementById('add-to-cart-btn');
         const original = btn.textContent;
-        btn.textContent = '⏳ Adding...';
+        btn.textContent = 'Adding...';
         btn.disabled = true;
 
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const comments = document.getElementById('order-comments').value.trim();
         const variantId = window.THC_DRINKS_VARIANT_ID;
-        const quantity = Math.max(1, Math.min(50, parseInt(document.getElementById('quantity').value || '1', 10)));
-        const comments = (document.getElementById('order-comments').value || '').trim();
 
-        const properties = { 
+        const properties = {
           Size: selectedSize,
-          Flavor: selectedFlavor,
-          Ice: selectedIce,
-          'Product Type': 'THC Drinks'
+          Flavor: selectedFlavor
         };
-        if (selectedConcentration) properties['THC Concentration'] = selectedConcentration;
         if (comments) properties.Comments = comments;
 
         try {
@@ -646,9 +565,8 @@
 
           const success = document.getElementById('success-message');
           success.innerHTML = `✅ <strong>Added to cart!</strong><br>
-             🍹 THC Drinks — <strong>${properties.Size}</strong><br>
+             🍹 THC Drink — <strong>${properties.Size}</strong><br>
              🍓 Flavor: ${properties.Flavor}<br>
-             🧊 Ice: ${properties.Ice}<br>
              🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
           success.classList.add('show');
           success.scrollIntoView({ behavior: 'smooth', block: 'center' });
