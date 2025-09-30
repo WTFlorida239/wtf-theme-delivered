@@ -1,0 +1,343 @@
+name: Automation Status Dashboard
+
+on:
+  schedule:
+    # 9:00 AM America/New_York (13:00 UTC) every day
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  TZ: America/New_York
+
+jobs:
+  build-dashboard:
+    name: Build & Publish Automation Status
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Collect workflow health & build report
+        id: collect
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowsToAudit = [
+              'deploy-theme.yml',
+              'ci-cd-pipeline.yml',
+              'automated-testing.yml',
+              'maintenance-optimization.yml',
+              'quality-monitoring.yml',
+              'security-dependency-management.yml'
+            ];
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Label rules: regex -> label + rationale
+            const labelRules = [
+              {
+                label: 'needs-secrets',
+                color: 'B60205',
+                description: 'Required GitHub secrets missing or invalid',
+                rationale: 'A required GitHub secret appears to be missing or invalid.',
+                patterns: [
+                  /missing.*(SHOPIFY_.*TOKEN|THEME_ID_.*)/i,
+                  /Secrets.*not.*configured/i,
+                  /ENOENT: no such file or directory.*secrets/i,
+                  /401 Unauthorized|403 Forbidden.*token/i
+                ]
+              },
+              {
+                label: 'theme-path',
+                color: '1D76DB',
+                description: 'Theme path / structure issue',
+                rationale: 'Shopify CLI can’t find theme files or the --path is wrong.',
+                patterns: [
+                  /Could not find theme\.liquid/i,
+                  /--path.*invalid/i,
+                  /No such file or directory.*layout\/theme\.liquid/i
+                ]
+              },
+              {
+                label: 'admin-api-scope',
+                color: '0E8A16',
+                description: 'Admin API permissions / scopes',
+                rationale: 'Admin API call failed due to insufficient scopes or bad credentials.',
+                patterns: [
+                  /access denied/i,
+                  /insufficient scope/i,
+                  /You do not have permission to access this resource/i,
+                  /GraphQL.*extensions.*code.*FORBIDDEN/i
+                ]
+              },
+              {
+                label: 'storefront-api',
+                color: 'FBCA04',
+                description: 'Storefront API token / version',
+                rationale: 'Storefront API errors—token invalid or API version mismatch.',
+                patterns: [
+                  /Invalid API key or access token/i,
+                  /GraphQL error.*(Unknown argument|Unknown field)/i,
+                  /404.*\/api\/\d{4}-\d{2}\/graphql\.json/i
+                ]
+              },
+              {
+                label: 'node-deps',
+                color: '5319E7',
+                description: 'Node/npm dependency failure',
+                rationale: 'Node/npm failed to install or resolve dependencies.',
+                patterns: [
+                  /npm ERR!/i,
+                  /ELIFECYCLE/i,
+                  /ERESOLVE unable to resolve dependency tree/i,
+                  /Integrity check failed/i
+                ]
+              },
+              {
+                label: 'lint-validation',
+                color: 'C5DEF5',
+                description: 'Lint / validation blocking',
+                rationale: 'Theme Check or lint step failed.',
+                patterns: [
+                  /theme check.*found \d+ offenses/i,
+                  /lint.*failed/i
+                ]
+              }
+            ];
+
+            const icon = (conclusion) => {
+              if (!conclusion) return '⏳';
+              return {
+                success: '✅',
+                failure: '❌',
+                cancelled: '🚫',
+                neutral: '⚪',
+                timed_out: '⏰',
+                action_required: '🟠',
+                skipped: '⏭️'
+              }[conclusion] || '❓';
+            };
+
+            const wfList = await github.rest.actions.listRepoWorkflows({ owner, repo });
+            const allWorkflows = wfList.data.workflows || [];
+
+            const lines = [];
+            const failures = [];
+            const derivedLabels = new Set();
+            let missing = [];
+
+            const fmtDate = (iso) => {
+              if (!iso) return '—';
+              const d = new Date(iso);
+              return d.toLocaleString('en-US', { timeZone: process.env.TZ || 'America/New_York' }) + ' ET';
+            };
+
+            // helper to fetch job logs (text) for pattern scanning
+            async function fetchJobLogs(run_id) {
+              // We’ll scan the job names first; only fetch logs if needed
+              const jobs = (await github.rest.actions.listJobsForWorkflowRun({
+                owner, repo, run_id, per_page: 100
+              })).data.jobs || [];
+
+              const failedJobs = jobs.filter(j => ['failure','timed_out','cancelled'].includes(j.conclusion));
+              const texts = [];
+
+              for (const j of failedJobs) {
+                // logs URL is .logs_url but needs auth; we can use the checks steps text via listJobs (steps[].name/outcome)
+                // Fallback: gather the step names and if any step has an error message in its 'name' or 'completed_at' we still match by job name
+                const steps = j.steps || [];
+                const stepText = steps.map(s => `${s.name || ''} ${s.conclusion || ''}`).join('\n');
+                texts.push(`JOB: ${j.name}\n${stepText}\nURL: ${j.html_url}\n`);
+              }
+
+              return { jobs, failedJobs, text: texts.join('\n') };
+            }
+
+            // Build status
+            for (const wfName of workflowsToAudit) {
+              const wf = allWorkflows.find(w => w.path.endsWith('/' + wfName));
+              if (!wf) { missing.push(wfName); continue; }
+
+              const runs = (await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id: wf.id, per_page: 5
+              })).data.workflow_runs;
+
+              if (!runs.length) {
+                lines.push(`### ${wf.name}\n- Status: ⚪ No runs found\n- File: \`${wfName}\`\n`);
+                continue;
+              }
+
+              const lastRun = runs[0];
+              const counts = runs.reduce((acc, r) => {
+                acc[r.conclusion || r.status] = (acc[r.conclusion || r.status] || 0) + 1;
+                return acc;
+              }, {});
+
+              let failedJobsMd = '';
+              if (lastRun.conclusion === 'failure') {
+                const { jobs, failedJobs, text } = await fetchJobLogs(lastRun.id);
+
+                // Label inference: test regexes against combined failed jobs text and job names
+                const haystack = [
+                  text,
+                  failedJobs.map(j => j.name).join('\n')
+                ].join('\n');
+
+                for (const rule of labelRules) {
+                  if (rule.patterns.some(rx => rx.test(haystack))) {
+                    derivedLabels.add(rule.label);
+                  }
+                }
+
+                if (failedJobs.length) {
+                  failedJobsMd += `\n  - Failed jobs:\n`;
+                  for (const j of failedJobs) {
+                    failedJobsMd += `    • **${j.name}** – ${j.conclusion.toUpperCase()} ([logs](${j.html_url}))\n`;
+                  }
+                }
+                failures.push({
+                  name: wf.name,
+                  url: lastRun.html_url,
+                  when: lastRun.created_at,
+                });
+              }
+
+              lines.push(
+                `### ${wf.name}\n` +
+                `- Status: ${icon(lastRun.conclusion)} **${(lastRun.conclusion || lastRun.status).toUpperCase()}**\n` +
+                `- File: \`${wfName}\`\n` +
+                `- Last run: ${fmtDate(lastRun.created_at)} on \`${lastRun.head_branch}\` ([open](${lastRun.html_url}))\n` +
+                `- Recent runs: ${Object.entries(counts).map(([k,v]) => \`${k}:${v}\`).join(', ')}\n` +
+                `${failedJobsMd}`
+              );
+            }
+
+            const header =
+              `# 🧭 Automation Status Dashboard\n` +
+              `**Repo:** ${owner}/${repo}\n` +
+              `**Generated:** ${fmtDate(new Date().toISOString())}\n\n` +
+              (missing.length ? `> ⚠️ Missing workflow files (not found in repository): ${missing.map(m => \`${m}\`).join(', ')}\n\n` : '');
+
+            const triage =
+              failures.length
+                ? `## 🔴 Immediate Attention Needed\n` +
+                  failures.map(f =>
+                    `- **${f.name}** failed at ${fmtDate(f.when)} → [Open last run](${f.url})`
+                  ).join('\n') + '\n\n'
+                : `## 🟢 All Good\nAll audited workflows succeeded in their most recent runs.\n\n`;
+
+            // Explain applied labels
+            let labelsExplain = '';
+            if (derivedLabels.size) {
+              labelsExplain = '## 🏷️ Suggested Labels (Fail-Fast)\n' +
+                Array.from(derivedLabels).map(lbl => {
+                  const rule = labelRules.find(r => r.label === lbl);
+                  return `- **${lbl}** — ${rule?.rationale || 'Auto-detected category'}`;
+                }).join('\n') + '\n\n';
+            }
+
+            const tips =
+              `---\n` +
+              `## 🧰 Quick Fix Tips\n` +
+              `- **Theme deploy failing?** Check \`SHOPIFY_CLI_THEME_TOKEN\` and \`THEME_ID_*\`; ensure theme path is correct (repo root or \`/theme\`).\n` +
+              `- **Admin API failing?** Verify \`SHOPIFY_ADMIN_*\` creds and app scopes.\n` +
+              `- **Storefront API failing?** Verify token and use current versioned endpoint (e.g., \`/api/2025-07/graphql.json\`).\n` +
+              `- **Node/npm issues?** Ensure Node 20, refresh lockfile on integrity errors.\n` +
+              `- **Lint/validation blocking?** Fix Liquid errors or make non-blocking with \`|| true\`.\n`;
+
+            const body = header + triage + labelsExplain + lines.join('\n') + '\n\n' + tips;
+
+            core.setOutput('dashboard', body);
+            core.setOutput('hasFailures', failures.length ? 'true' : 'false');
+            core.setOutput('labelsCsv', Array.from(derivedLabels).join(','));
+            core.setOutput('labelRules', JSON.stringify(labelRules));
+
+      - name: Save dashboard to file
+        run: |
+          echo "${{ steps.collect.outputs.dashboard }}" > DASHBOARD.md
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-dashboard
+          path: DASHBOARD.md
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create/Update dashboard issue
+        id: issue
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "Automation Status Dashboard"
+          content-filepath: DASHBOARD.md
+          labels: status, automation
+          assignees: ${{ github.actor }}
+          update-existing: true
+
+      - name: Ensure suggested labels exist
+        if: ${{ steps.collect.outputs.labelsCsv != '' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const wanted = ${{ steps.collect.outputs.labelRules }};
+            const rules = JSON.parse(wanted);
+
+            // Get existing labels
+            const existing = await github.paginate(github.rest.issues.listLabelsForRepo, { owner, repo, per_page: 100 });
+            const existingMap = new Map(existing.map(l => [l.name.toLowerCase(), l]));
+
+            for (const r of rules) {
+              const name = r.label;
+              if (!name) continue;
+              if (existingMap.has(name.toLowerCase())) continue;
+              try {
+                await github.rest.issues.createLabel({
+                  owner, repo,
+                  name,
+                  color: r.color || 'ededed',
+                  description: r.description || ''
+                });
+              } catch (e) {
+                // ignore if race/create conflict
+              }
+            }
+
+      - name: Apply suggested labels to dashboard issue
+        if: ${{ steps.collect.outputs.labelsCsv != '' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = Number('${{ steps.issue.outputs.issue-number || 0 }}');
+            if (!issue_number) {
+              core.setFailed('Could not resolve dashboard issue number.');
+            } else {
+              const labels = '${{ steps.collect.outputs.labelsCsv }}'
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
+
+              if (labels.length) {
+                await github.rest.issues.addLabels({
+                  owner, repo, issue_number,
+                  labels
+                });
+              }
+            }
+
+      - name: Optional Slack ping (only runs if webhook is set)
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+        run: |
+          SUMMARY="Automation Status Dashboard updated for $GITHUB_REPOSITORY"
+          STATUS="${{ steps.collect.outputs.hasFailures == 'true' && '🔴 Failures detected' || '🟢 All green' }}"
+          ISSUE_URL="https://github.com/${GITHUB_REPOSITORY}/issues"
+          PAYLOAD=$(jq -n --arg text "*$SUMMARY*\n$STATUS\nSee: $ISSUE_URL" '{text: $text}')
+          curl -s -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"
