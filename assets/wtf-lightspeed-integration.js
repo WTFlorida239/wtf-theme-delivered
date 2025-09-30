@@ -6,14 +6,58 @@
 
 class WTFLightspeedIntegration {
   constructor(config = {}) {
+    const globalConfig = window.WTFConfig?.get
+      ? window.WTFConfig.getIntegrationConfig('lightspeed')
+      : (window.WTF_CONFIG_DATA?.integrations?.lightspeed || {});
+
+    const baseEndpoint = config.endpoints?.base
+      || globalConfig?.endpoints?.base
+      || '/apps/wtf/lightspeed';
+
     this.config = {
-      apiUrl: config.apiUrl || 'https://api.lightspeedapp.com/API',
-      accountId: config.accountId || window.WTF_CONFIG?.lightspeed?.accountId,
-      apiKey: config.apiKey || window.WTF_CONFIG?.lightspeed?.apiKey,
-      syncInterval: config.syncInterval || 30000, // 30 seconds
-      enableRealTimeSync: config.enableRealTimeSync !== false,
-      ...config
+      enabled: typeof config.enabled === 'boolean'
+        ? config.enabled
+        : (typeof globalConfig.enabled === 'boolean' ? globalConfig.enabled : true),
+      accountId: config.accountId || globalConfig?.accountId || null,
+      syncInterval: config.syncInterval || globalConfig?.syncInterval || 30000,
+      enableRealTimeSync: config.enableRealTimeSync !== undefined
+        ? config.enableRealTimeSync
+        : (globalConfig?.enableRealTimeSync !== undefined ? globalConfig.enableRealTimeSync : true),
+      variantMapping: config.variantMapping || globalConfig?.variantMapping || {},
+      endpoints: {
+        base: baseEndpoint,
+        inventory: config.endpoints?.inventory
+          || globalConfig?.endpoints?.inventory
+          || `${baseEndpoint}/inventory`,
+        availability: config.endpoints?.availability
+          || globalConfig?.endpoints?.availability
+          || `${baseEndpoint}/availability`,
+        reserve: config.endpoints?.reserve
+          || globalConfig?.endpoints?.reserve
+          || `${baseEndpoint}/reserve`,
+        release: config.endpoints?.release
+          || globalConfig?.endpoints?.release
+          || `${baseEndpoint}/release`,
+        sync: config.endpoints?.sync
+          || globalConfig?.endpoints?.sync
+          || `${baseEndpoint}/sync`,
+        orders: config.endpoints?.orders
+          || globalConfig?.endpoints?.orders
+          || `${baseEndpoint}/orders`
+      }
     };
+
+    this.config.variantMapping = {
+      ...(globalConfig?.variantMapping || {}),
+      ...(config.variantMapping || {})
+    };
+
+    if (config.endpoints) {
+      this.config.endpoints = {
+        ...this.config.endpoints,
+        ...config.endpoints
+      };
+    }
     
     this.syncTimer = null;
     this.lastSyncTime = null;
@@ -23,9 +67,13 @@ class WTFLightspeedIntegration {
   }
 
   async init() {
-    if (!this.config.accountId || !this.config.apiKey) {
-      console.warn('WTF Lightspeed: Missing API credentials');
+    if (!this.config.enabled) {
+      console.info('WTF Lightspeed: Integration disabled');
       return;
+    }
+
+    if (!this.config.accountId) {
+      console.warn('WTF Lightspeed: Missing account ID');
     }
 
     // Start inventory sync
@@ -108,41 +156,51 @@ class WTFLightspeedIntegration {
    * Get inventory from Lightspeed POS
    */
   async getLightspeedInventory() {
-    const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Item.json`, {
-      headers: {
-        'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`
-      }
+    const response = await fetch(this.config.endpoints.inventory, {
+      credentials: 'include'
     });
 
     if (!response.ok) {
-      throw new Error(`Lightspeed API error: ${response.status}`);
+      throw new Error(`Lightspeed inventory proxy error: ${response.status}`);
     }
 
     const data = await response.json();
-    return data.Item || [];
+    if (Array.isArray(data)) {
+      return data;
+    }
+    if (Array.isArray(data.items)) {
+      return data.items;
+    }
+    if (Array.isArray(data.Item)) {
+      return data.Item;
+    }
+
+    return [];
   }
 
   /**
    * Update Shopify inventory levels
    */
   async updateShopifyInventory(updates) {
-    for (const update of updates) {
-      try {
-        await fetch('/admin/api/2023-10/inventory_levels/set.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Shopify-Access-Token': window.WTF_CONFIG?.shopify?.accessToken
-          },
-          body: JSON.stringify({
-            location_id: window.WTF_CONFIG?.shopify?.locationId,
-            inventory_item_id: update.variantId,
-            available: update.quantity
-          })
-        });
-      } catch (error) {
-        console.error(`Failed to update inventory for variant ${update.variantId}:`, error);
+    if (!updates || updates.length === 0) {
+      return;
+    }
+
+    try {
+      const response = await fetch(this.config.endpoints.sync, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ updates })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Inventory sync proxy error: ${response.status}`);
       }
+    } catch (error) {
+      console.error('Failed to update Shopify inventory via proxy:', error);
     }
   }
 
@@ -193,20 +251,26 @@ class WTFLightspeedIntegration {
     }
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Item/${lightspeedId}.json`, {
-        headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`
-        }
+      const params = new URLSearchParams({
+        variant_id: String(variantId),
+        lightspeed_id: String(lightspeedId)
+      });
+      const response = await fetch(`${this.config.endpoints.availability}?${params.toString()}`, {
+        credentials: 'include'
       });
 
+      if (!response.ok) {
+        throw new Error(`Availability proxy error: ${response.status}`);
+      }
+
       const data = await response.json();
-      const item = data.Item;
-      const qtyOnHand = parseInt(item.qtyOnHand || 0);
+      const qtyOnHand = parseInt(data.quantity ?? data.qtyOnHand ?? 0, 10);
+      const isAvailable = data.available !== false ? qtyOnHand > 0 : false;
 
       return {
-        available: qtyOnHand > 0,
+        available: isAvailable,
         quantity: qtyOnHand,
-        message: qtyOnHand === 0 ? 'Out of stock' : `${qtyOnHand} available`
+        message: data.message || (isAvailable ? `${qtyOnHand} available` : 'Out of stock')
       };
     } catch (error) {
       console.error('WTF Lightspeed: Availability check failed:', error);
@@ -221,41 +285,103 @@ class WTFLightspeedIntegration {
     const lightspeedId = this.mapShopifyToLightspeed(variantId);
     if (!lightspeedId) return;
 
-    // Create a temporary sale in Lightspeed to reserve inventory
-    const saleData = {
-      Sale: {
-        customerID: 0, // Anonymous customer
-        shopID: 1,
-        registerID: 1,
-        employeeID: 1,
-        SaleLines: {
-          SaleLine: [{
-            itemID: lightspeedId,
-            unitQuantity: quantity,
-            unitPrice: 0, // Reservation, no charge
-            note: `Shopify reservation - expires ${new Date(Date.now() + 15 * 60 * 1000).toISOString()}`
-          }]
-        }
-      }
-    };
-
     try {
-      const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Sale.json`, {
+      const response = await fetch(this.config.endpoints.reserve, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(saleData)
+        credentials: 'include',
+        body: JSON.stringify({
+          variantId,
+          lightspeedId,
+          quantity,
+          accountId: this.config.accountId,
+          expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString()
+        })
       });
 
       if (response.ok) {
         const result = await response.json();
-        // Store reservation ID for later cleanup
-        sessionStorage.setItem(`wtf_reservation_${variantId}`, result.Sale.saleID);
+        if (result.reservationId) {
+          sessionStorage.setItem(`wtf_reservation_${variantId}`, result.reservationId);
+        }
+      } else {
+        throw new Error(`Reservation proxy error: ${response.status}`);
       }
     } catch (error) {
       console.error('WTF Lightspeed: Item reservation failed:', error);
+    }
+  }
+
+  async updateItemReservation(variantId, quantity) {
+    const lightspeedId = this.mapShopifyToLightspeed(variantId);
+    if (!lightspeedId) return;
+
+    const reservationId = sessionStorage.getItem(`wtf_reservation_${variantId}`);
+
+    if (!reservationId) {
+      await this.reserveItem(variantId, quantity);
+      return;
+    }
+
+    if (quantity <= 0) {
+      await this.releaseReservation(variantId, lightspeedId, reservationId);
+      return;
+    }
+
+    try {
+      const response = await fetch(this.config.endpoints.reserve, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          variantId,
+          lightspeedId,
+          quantity,
+          reservationId,
+          accountId: this.config.accountId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Reservation update error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result && result.reservationId) {
+        sessionStorage.setItem(`wtf_reservation_${variantId}`, result.reservationId);
+      }
+    } catch (error) {
+      console.error('WTF Lightspeed: Reservation update failed:', error);
+    }
+  }
+
+  async releaseReservation(variantId, lightspeedId, reservationId) {
+    try {
+      const response = await fetch(this.config.endpoints.release, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          variantId,
+          lightspeedId,
+          reservationId,
+          accountId: this.config.accountId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Reservation release error: ${response.status}`);
+      }
+
+      sessionStorage.removeItem(`wtf_reservation_${variantId}`);
+    } catch (error) {
+      console.error('WTF Lightspeed: Reservation release failed:', error);
     }
   }
 
@@ -263,41 +389,46 @@ class WTFLightspeedIntegration {
    * Process completed order in Lightspeed POS
    */
   async processCompletedOrder(orderData) {
-    const saleData = {
-      Sale: {
-        customerID: await this.getOrCreateCustomer(orderData.customer),
-        shopID: 1,
-        registerID: 1,
-        employeeID: 1,
-        note: `Shopify Order #${orderData.order_number}`,
-        SaleLines: {
-          SaleLine: orderData.line_items.map(item => ({
-            itemID: this.mapShopifyToLightspeed(item.variant_id),
-            unitQuantity: item.quantity,
-            unitPrice: item.price,
-            note: this.buildItemNote(item)
-          })).filter(line => line.itemID) // Only include mapped items
-        }
-      }
+    if (!orderData) return null;
+
+    const payload = {
+      orderNumber: orderData.order_number,
+      accountId: this.config.accountId,
+      customer: orderData.customer || null,
+      cartToken: orderData.cart_token || null,
+      lineItems: orderData.line_items
+        .map((item) => ({
+          lightspeedId: this.mapShopifyToLightspeed(item.variant_id),
+          variantId: item.variant_id,
+          quantity: item.quantity,
+          price: item.price,
+          note: this.buildItemNote(item)
+        }))
+        .filter((line) => line.lightspeedId)
     };
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Sale.json`, {
+      const response = await fetch(this.config.endpoints.orders, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(saleData)
+        credentials: 'include',
+        body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(`WTF Lightspeed: Order processed as Sale #${result.Sale.saleID}`);
-        return result.Sale.saleID;
+      if (!response.ok) {
+        throw new Error(`Lightspeed order proxy error: ${response.status}`);
       }
+
+      const result = await response.json();
+      if (result && result.saleId) {
+        console.log(`WTF Lightspeed: Order processed via proxy #${result.saleId}`);
+      }
+      return result;
     } catch (error) {
       console.error('WTF Lightspeed: Order processing failed:', error);
+      return null;
     }
   }
 
@@ -319,76 +450,10 @@ class WTFLightspeedIntegration {
   }
 
   /**
-   * Get or create customer in Lightspeed
-   */
-  async getOrCreateCustomer(customerData) {
-    if (!customerData || !customerData.email) return 0;
-
-    try {
-      // Search for existing customer
-      const searchResponse = await fetch(
-        `${this.config.apiUrl}/Account/${this.config.accountId}/Customer.json?email=${encodeURIComponent(customerData.email)}`,
-        {
-          headers: {
-            'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`
-          }
-        }
-      );
-
-      const searchData = await searchResponse.json();
-      
-      if (searchData.Customer && searchData.Customer.length > 0) {
-        return searchData.Customer[0].customerID;
-      }
-
-      // Create new customer
-      const customerPayload = {
-        Customer: {
-          firstName: customerData.first_name || '',
-          lastName: customerData.last_name || '',
-          email: customerData.email,
-          phone: customerData.phone || '',
-          Contact: {
-            Addresses: {
-              ContactAddress: customerData.default_address ? [{
-                address1: customerData.default_address.address1 || '',
-                address2: customerData.default_address.address2 || '',
-                city: customerData.default_address.city || '',
-                state: customerData.default_address.province || '',
-                zip: customerData.default_address.zip || '',
-                country: customerData.default_address.country || ''
-              }] : []
-            }
-          }
-        }
-      };
-
-      const createResponse = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Customer.json`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(customerPayload)
-      });
-
-      if (createResponse.ok) {
-        const result = await createResponse.json();
-        return result.Customer.customerID;
-      }
-    } catch (error) {
-      console.error('WTF Lightspeed: Customer sync failed:', error);
-    }
-
-    return 0; // Default to anonymous customer
-  }
-
-  /**
    * Map Shopify variant ID to Lightspeed item ID
    */
   mapShopifyToLightspeed(variantId) {
-    // This mapping should be stored in your database or configuration
-    const mapping = window.WTF_CONFIG?.lightspeed?.variantMapping || {};
+    const mapping = this.config.variantMapping || {};
     return mapping[variantId] || null;
   }
 
@@ -396,7 +461,7 @@ class WTFLightspeedIntegration {
    * Map Lightspeed item ID to Shopify variant ID
    */
   mapLightspeedToShopify(itemId) {
-    const mapping = window.WTF_CONFIG?.lightspeed?.variantMapping || {};
+    const mapping = this.config.variantMapping || {};
     const reverseMapping = Object.fromEntries(
       Object.entries(mapping).map(([k, v]) => [v, k])
     );
@@ -462,8 +527,12 @@ class WTFLightspeedIntegration {
 
 // Initialize Lightspeed integration
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.WTF_CONFIG?.lightspeed?.enabled) {
-    window.WTFLightspeed = new WTFLightspeedIntegration(window.WTF_CONFIG.lightspeed);
+  const lightspeedConfig = window.WTFConfig?.get
+    ? window.WTFConfig.getIntegrationConfig('lightspeed')
+    : (window.WTF_CONFIG_DATA?.integrations?.lightspeed || null);
+
+  if (lightspeedConfig && (lightspeedConfig.enabled !== false)) {
+    window.WTFLightspeed = new WTFLightspeedIntegration(lightspeedConfig);
   }
 });
 

@@ -6,16 +6,59 @@
 
 class WTF2AcceptIntegration {
   constructor(config = {}) {
+    const globalConfig = window.WTFConfig?.get
+      ? window.WTFConfig.getIntegrationConfig('twoaccept')
+      : (window.WTF_CONFIG_DATA?.integrations?.twoaccept || {});
+
+    const baseEndpoint = config.endpoints?.base
+      || globalConfig?.endpoints?.base
+      || '/apps/wtf/2accept';
+
     this.config = {
-      apiUrl: config.apiUrl || 'https://api.2accept.com/v1',
-      publicKey: config.publicKey || window.WTF_CONFIG?.twoaccept?.publicKey,
-      merchantId: config.merchantId || window.WTF_CONFIG?.twoaccept?.merchantId,
-      environment: config.environment || 'production', // 'sandbox' or 'production'
-      enableSavedCards: config.enableSavedCards !== false,
-      enableApplePay: config.enableApplePay !== false,
-      enableGooglePay: config.enableGooglePay !== false,
-      ...config
+      enabled: typeof config.enabled === 'boolean'
+        ? config.enabled
+        : (typeof globalConfig.enabled === 'boolean' ? globalConfig.enabled : true),
+      publicKey: config.publicKey || globalConfig?.publicKey || null,
+      merchantId: config.merchantId || globalConfig?.merchantId || null,
+      environment: config.environment || globalConfig?.environment || 'production',
+      enableSavedCards: config.enableSavedCards !== undefined
+        ? config.enableSavedCards
+        : (globalConfig?.enableSavedCards !== undefined ? globalConfig.enableSavedCards : true),
+      enableApplePay: config.enableApplePay !== undefined
+        ? config.enableApplePay
+        : (globalConfig?.enableApplePay !== undefined ? globalConfig.enableApplePay : true),
+      enableGooglePay: config.enableGooglePay !== undefined
+        ? config.enableGooglePay
+        : (globalConfig?.enableGooglePay !== undefined ? globalConfig.enableGooglePay : true),
+      endpoints: {
+        base: baseEndpoint,
+        paymentMethods: config.endpoints?.paymentMethods
+          || globalConfig?.endpoints?.paymentMethods
+          || `${baseEndpoint}/payment-methods`,
+        payments: config.endpoints?.payments
+          || globalConfig?.endpoints?.payments
+          || `${baseEndpoint}/payments`,
+        orders: config.endpoints?.orders
+          || globalConfig?.endpoints?.orders
+          || `${baseEndpoint}/orders`,
+        savedMethods: config.endpoints?.savedMethods
+          || globalConfig?.endpoints?.savedMethods
+          || `${baseEndpoint}/customers`,
+        merchantValidation: config.endpoints?.merchantValidation
+          || globalConfig?.endpoints?.merchantValidation
+          || `${baseEndpoint}/apple-pay/validate`,
+        applePay: config.endpoints?.applePay
+          || globalConfig?.endpoints?.applePay
+          || `${baseEndpoint}/apple-pay`
+      }
     };
+
+    if (config.endpoints) {
+      this.config.endpoints = {
+        ...this.config.endpoints,
+        ...config.endpoints
+      };
+    }
 
     this.paymentMethods = new Map();
     this.currentTransaction = null;
@@ -24,8 +67,13 @@ class WTF2AcceptIntegration {
   }
 
   async init() {
+    if (!this.config.enabled) {
+      console.info('WTF 2accept: Integration disabled');
+      return;
+    }
+
     if (!this.config.publicKey || !this.config.merchantId) {
-      console.warn('WTF 2accept: Missing API credentials');
+      console.warn('WTF 2accept: Missing public credentials');
       return;
     }
 
@@ -75,11 +123,8 @@ class WTF2AcceptIntegration {
    */
   async initializePaymentMethods() {
     try {
-      const response = await fetch(`${this.config.apiUrl}/payment-methods`, {
-        headers: {
-          'Authorization': `Bearer ${this.config.publicKey}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await fetch(this.config.endpoints.paymentMethods, {
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -472,12 +517,12 @@ class WTF2AcceptIntegration {
     };
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/payments`, {
+      const response = await fetch(this.config.endpoints.payments, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.publicKey}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(paymentData)
       });
 
@@ -515,12 +560,12 @@ class WTF2AcceptIntegration {
     };
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/orders`, {
+      const response = await fetch(this.config.endpoints.orders, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.publicKey}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(orderData)
       });
 
@@ -588,10 +633,8 @@ class WTF2AcceptIntegration {
     if (!customerEmail) return;
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/customers/${customerEmail}/payment-methods`, {
-        headers: {
-          'Authorization': `Bearer ${this.config.publicKey}`
-        }
+      const response = await fetch(`${this.config.endpoints.savedMethods}/${encodeURIComponent(customerEmail)}/payment-methods`, {
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -739,12 +782,12 @@ class WTF2AcceptIntegration {
    * Validate Apple Pay merchant
    */
   async validateApplePayMerchant(validationURL) {
-    const response = await fetch(`${this.config.apiUrl}/apple-pay/validate`, {
+    const response = await fetch(this.config.endpoints.merchantValidation, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.config.publicKey}`,
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify({ validation_url: validationURL })
     });
 
@@ -756,27 +799,41 @@ class WTF2AcceptIntegration {
    */
   async processApplePayPayment(payment) {
     const cart = await this.getCart();
-    
-    const paymentData = {
-      payment_method: {
-        type: 'apple_pay',
-        apple_pay: {
-          payment_data: payment.token.paymentData
-        }
-      },
-      amount: cart.total_price,
-      currency: 'USD',
-      description: `WTF Apple Pay Order - ${cart.item_count} items`
-    };
 
-    return this.processPaymentWithMethod(paymentData.payment_method);
+    try {
+      const response = await fetch(this.config.endpoints.applePay, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          payment,
+          cart
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        return { success: true, payment: result };
+      }
+
+      return { success: false, error: result.error || 'Apple Pay processing failed' };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 }
 
 // Initialize 2accept integration
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.WTF_CONFIG?.twoaccept?.enabled) {
-    window.WTF2Accept = new WTF2AcceptIntegration(window.WTF_CONFIG.twoaccept);
+  const twoAcceptConfig = window.WTFConfig?.get
+    ? window.WTFConfig.getIntegrationConfig('twoaccept')
+    : (window.WTF_CONFIG_DATA?.integrations?.twoaccept || null);
+
+  if (twoAcceptConfig && (twoAcceptConfig.enabled !== false)) {
+    window.WTF2Accept = new WTF2AcceptIntegration(twoAcceptConfig);
   }
 });
 
