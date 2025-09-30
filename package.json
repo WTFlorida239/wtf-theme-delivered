@@ -10,7 +10,8 @@
     "health:check": "node scripts/github-actions-health-check.js"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^3.3.2"
   },
   "description": "WTF | Welcome To Florida Shopify Theme"
 }
