@@ -6,61 +6,179 @@
 
 class WTFLightspeedIntegration {
   constructor(config = {}) {
+    const globalConfig = window.WTFConfig?.get
+      ? window.WTFConfig.getIntegrationConfig('lightspeed')
+      : (window.WTF_CONFIG_DATA?.integrations?.lightspeed || {});
+
+    const baseEndpoint = config.endpoints?.base
+      || globalConfig?.endpoints?.base
+      || '/apps/wtf/lightspeed';
+
     this.config = {
-      apiUrl: config.apiUrl || 'https://api.lightspeedapp.com/API',
-      accountId: config.accountId || window.WTF_CONFIG?.lightspeed?.accountId,
-      apiKey: config.apiKey || window.WTF_CONFIG?.lightspeed?.apiKey,
-      syncInterval: config.syncInterval || 30000, // 30 seconds
-      enableRealTimeSync: config.enableRealTimeSync !== false,
-      ...config
+      enabled: typeof config.enabled === 'boolean'
+        ? config.enabled
+        : (typeof globalConfig.enabled === 'boolean' ? globalConfig.enabled : true),
+      accountId: config.accountId || globalConfig?.accountId || null,
+      syncInterval: config.syncInterval || globalConfig?.syncInterval || 30000,
+      enableRealTimeSync: config.enableRealTimeSync !== undefined
+        ? config.enableRealTimeSync
+        : (globalConfig?.enableRealTimeSync !== undefined ? globalConfig.enableRealTimeSync : true),
+      variantMapping: config.variantMapping || globalConfig?.variantMapping || {},
+      endpoints: {
+        base: baseEndpoint,
+        inventory: config.endpoints?.inventory
+          || globalConfig?.endpoints?.inventory
+          || `${baseEndpoint}/inventory`,
+        availability: config.endpoints?.availability
+          || globalConfig?.endpoints?.availability
+          || `${baseEndpoint}/availability`,
+        reserve: config.endpoints?.reserve
+          || globalConfig?.endpoints?.reserve
+          || `${baseEndpoint}/reserve`,
+        release: config.endpoints?.release
+          || globalConfig?.endpoints?.release
+          || `${baseEndpoint}/release`,
+        sync: config.endpoints?.sync
+          || globalConfig?.endpoints?.sync
+          || `${baseEndpoint}/sync`,
+        orders: config.endpoints?.orders
+          || globalConfig?.endpoints?.orders
+          || `${baseEndpoint}/orders`
+      }
     };
-    
+
+    this.config.variantMapping = {
+      ...(globalConfig?.variantMapping || {}),
+      ...(config.variantMapping || {})
+    };
+
+    if (config.endpoints) {
+      this.config.endpoints = {
+        ...this.config.endpoints,
+        ...config.endpoints
+      };
+    }
+
     this.syncTimer = null;
     this.lastSyncTime = null;
     this.inventoryCache = new Map();
-    
+    this.listenersBound = false;
+    this.ready = false;
+
+    this.capabilities = {
+      availability: Boolean(this.config.endpoints?.availability),
+      reservations: Boolean(this.config.endpoints?.reserve && this.config.endpoints?.release),
+      orderSync: Boolean(this.config.endpoints?.orders)
+    };
+
+    this.boundHandlers = {
+      cartAdded: (event) => this.handleCartAdd(event?.detail),
+      cartUpdated: (event) => this.handleCartUpdate(event?.detail)
+    };
+
     this.init();
   }
 
-  async init() {
-    if (!this.config.accountId || !this.config.apiKey) {
-      console.warn('WTF Lightspeed: Missing API credentials');
+  shouldEnableIntegration() {
+    if (!this.config.enabled) {
+      console.info('WTF Lightspeed: Integration disabled via theme settings.');
+      return false;
+    }
+
+    const endpoints = this.config.endpoints || {};
+    const requiredEndpoints = ['inventory', 'sync'];
+    const missing = requiredEndpoints.filter((key) => !endpoints[key]);
+
+    if (missing.length > 0) {
+      console.info(`WTF Lightspeed: Missing required middleware endpoints (${missing.join(', ')}). Integration will remain inactive.`);
+      return false;
+    }
+
+    if (typeof window.fetch !== 'function') {
+      console.warn('WTF Lightspeed: Fetch API not available. Integration disabled.');
+      return false;
+    }
+
+    return true;
+  }
+
+  init() {
+    this.ready = this.shouldEnableIntegration();
+    if (!this.ready) {
       return;
     }
 
-    // Start inventory sync
+    if (!this.config.accountId) {
+      console.warn('WTF Lightspeed: Missing Lightspeed account ID.');
+    }
+
     if (this.config.enableRealTimeSync) {
       this.startInventorySync();
     }
 
-    // Listen for Shopify cart events to sync with POS
-    document.addEventListener('cart:added', (event) => {
-      this.handleCartAdd(event.detail);
-    });
+    this.bindEventListeners();
 
-    document.addEventListener('cart:updated', (event) => {
-      this.handleCartUpdate(event.detail);
-    });
-
-    // Listen for checkout completion
-    if (window.Shopify && window.Shopify.checkout) {
+    if (this.capabilities.orderSync && window.Shopify?.checkout) {
       this.handleCheckoutCompletion(window.Shopify.checkout);
     }
   }
 
-  /**
-   * Start real-time inventory synchronization
-   */
-  startInventorySync() {
-    this.syncInventory();
-    this.syncTimer = setInterval(() => {
-      this.syncInventory();
-    }, this.config.syncInterval);
+  isActive() {
+    return this.ready;
   }
 
-  /**
-   * Stop inventory sync
-   */
+  bindEventListeners() {
+    if (this.listenersBound || !this.ready) {
+      return;
+    }
+    document.addEventListener('cart:added', this.boundHandlers.cartAdded);
+    document.addEventListener('cart:updated', this.boundHandlers.cartUpdated);
+    this.listenersBound = true;
+  }
+
+  unbindEventListeners() {
+    if (!this.listenersBound) {
+      return;
+    }
+    document.removeEventListener('cart:added', this.boundHandlers.cartAdded);
+    document.removeEventListener('cart:updated', this.boundHandlers.cartUpdated);
+    this.listenersBound = false;
+  }
+
+  disableIntegration(reason) {
+    if (reason) {
+      console.warn('WTF Lightspeed: Integration disabled.', reason);
+    } else {
+      console.info('WTF Lightspeed: Integration disabled.');
+    }
+    this.ready = false;
+    this.stopInventorySync();
+    this.unbindEventListeners();
+
+    if (typeof window !== 'undefined' && window.WTFLightspeed === this) {
+      window.WTFLightspeed = null;
+    }
+  }
+
+  startInventorySync() {
+    if (!this.ready) {
+      return;
+    }
+
+    const interval = Math.max(15000, Number(this.config.syncInterval) || 30000);
+
+    this.syncInventory();
+    this.stopInventorySync();
+
+    this.syncTimer = window.setInterval(() => {
+      if (!this.ready) {
+        this.stopInventorySync();
+        return;
+      }
+      this.syncInventory();
+    }, interval);
+  }
+
   stopInventorySync() {
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
@@ -68,28 +186,77 @@ class WTFLightspeedIntegration {
     }
   }
 
-  /**
-   * Sync inventory levels between Lightspeed and Shopify
-   */
+  async proxyRequest(endpoint, options = {}) {
+    if (!this.ready) {
+      throw new Error('Lightspeed integration disabled');
+    }
+
+    if (!endpoint) {
+      throw new Error('Lightspeed middleware endpoint missing');
+    }
+
+    const fetchOptions = { ...options };
+    fetchOptions.headers = {
+      Accept: 'application/json',
+      ...(options.headers || {})
+    };
+
+    if (!('credentials' in fetchOptions)) {
+      fetchOptions.credentials = 'same-origin';
+    }
+
+    try {
+      const response = await fetch(endpoint, fetchOptions);
+
+      if (response.status === 404) {
+        this.disableIntegration('Middleware endpoint returned 404.');
+        throw new Error('Lightspeed middleware unavailable');
+      }
+
+      if (!response.ok) {
+        throw new Error(`Lightspeed middleware error: ${response.status}`);
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (response.status === 204 || fetchOptions.method === 'HEAD') {
+        return null;
+      }
+
+      if (contentType.includes('application/json')) {
+        return response.json();
+      }
+
+      return response.text();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async syncInventory() {
+    if (!this.ready) {
+      return;
+    }
+
     try {
       const items = await this.getLightspeedInventory();
       const updates = [];
 
       for (const item of items) {
         const shopifyVariantId = this.mapLightspeedToShopify(item.itemID);
-        if (shopifyVariantId) {
-          const currentStock = this.inventoryCache.get(shopifyVariantId);
-          const newStock = parseInt(item.qtyOnHand || 0);
+        if (!shopifyVariantId) {
+          continue;
+        }
 
-          if (currentStock !== newStock) {
-            updates.push({
-              variantId: shopifyVariantId,
-              quantity: newStock,
-              lightspeedId: item.itemID
-            });
-            this.inventoryCache.set(shopifyVariantId, newStock);
-          }
+        const currentStock = this.inventoryCache.get(shopifyVariantId);
+        const newStock = Number(item.qtyOnHand ?? item.qoh ?? 0);
+
+        if (currentStock !== newStock) {
+          updates.push({
+            variantId: shopifyVariantId,
+            quantity: newStock,
+            lightspeedId: item.itemID
+          });
+          this.inventoryCache.set(shopifyVariantId, newStock);
         }
       }
 
@@ -104,109 +271,116 @@ class WTFLightspeedIntegration {
     }
   }
 
-  /**
-   * Get inventory from Lightspeed POS
-   */
   async getLightspeedInventory() {
-    const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Item.json`, {
-      headers: {
-        'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Lightspeed API error: ${response.status}`);
+    if (!this.ready) {
+      return [];
     }
 
-    const data = await response.json();
-    return data.Item || [];
-  }
-
-  /**
-   * Update Shopify inventory levels
-   */
-  async updateShopifyInventory(updates) {
-    for (const update of updates) {
-      try {
-        await fetch('/admin/api/2023-10/inventory_levels/set.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Shopify-Access-Token': window.WTF_CONFIG?.shopify?.accessToken
-          },
-          body: JSON.stringify({
-            location_id: window.WTF_CONFIG?.shopify?.locationId,
-            inventory_item_id: update.variantId,
-            available: update.quantity
-          })
-        });
-      } catch (error) {
-        console.error(`Failed to update inventory for variant ${update.variantId}:`, error);
-      }
-    }
-  }
-
-  /**
-   * Handle cart additions - sync with POS for real-time availability
-   */
-  async handleCartAdd(detail) {
-    const { item, cart } = detail;
-    
     try {
-      // Check real-time availability in Lightspeed
+      const data = await this.proxyRequest(this.config.endpoints.inventory);
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      if (Array.isArray(data?.items)) {
+        return data.items;
+      }
+
+      if (Array.isArray(data?.Item)) {
+        return data.Item;
+      }
+
+      if (Array.isArray(data?.data?.items)) {
+        return data.data.items;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('WTF Lightspeed: Failed to fetch inventory:', error);
+      return [];
+    }
+  }
+
+  async updateShopifyInventory(updates) {
+    if (!this.ready || !Array.isArray(updates) || updates.length === 0) {
+      return;
+    }
+
+    try {
+      await this.proxyRequest(this.config.endpoints.sync, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ updates })
+      });
+    } catch (error) {
+      console.error('Failed to update Shopify inventory via middleware:', error);
+    }
+  }
+
+  async handleCartAdd(detail) {
+    if (!this.ready || !detail?.item) {
+      return;
+    }
+
+    const { item } = detail;
+
+    try {
       const availability = await this.checkItemAvailability(item.variant_id);
-      
+
       if (!availability.available) {
-        // Item out of stock, remove from cart and notify user
         await this.removeFromCart(item.key);
         this.showStockAlert(item.title, availability.message);
         return;
       }
 
-      // Reserve item in POS system for 15 minutes
-      await this.reserveItem(item.variant_id, item.quantity);
-      
+      if (this.capabilities.reservations) {
+        await this.reserveItem(item.variant_id, item.quantity);
+      }
     } catch (error) {
       console.error('WTF Lightspeed: Cart add sync failed:', error);
     }
   }
 
-  /**
-   * Handle cart updates
-   */
   async handleCartUpdate(detail) {
-    const { cart } = detail;
-    
-    // Sync cart contents with POS reservations
-    for (const item of cart.items) {
+    if (!this.ready || !this.capabilities.reservations || !detail?.cart?.items) {
+      return;
+    }
+
+    for (const item of detail.cart.items) {
       await this.updateItemReservation(item.variant_id, item.quantity);
     }
   }
 
-  /**
-   * Check item availability in real-time
-   */
   async checkItemAvailability(variantId) {
+    if (!this.ready) {
+      return { available: false, message: 'Integration inactive' };
+    }
+
     const lightspeedId = this.mapShopifyToLightspeed(variantId);
     if (!lightspeedId) {
       return { available: true, message: 'Item not synced with POS' };
     }
 
-    try {
-      const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Item/${lightspeedId}.json`, {
-        headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`
-        }
-      });
+    if (!this.capabilities.availability) {
+      return { available: true, message: 'Availability service disabled' };
+    }
 
-      const data = await response.json();
-      const item = data.Item;
-      const qtyOnHand = parseInt(item.qtyOnHand || 0);
+    try {
+      const params = new URLSearchParams({
+        variant_id: String(variantId),
+        lightspeed_id: String(lightspeedId)
+      });
+      const data = await this.proxyRequest(`${this.config.endpoints.availability}?${params.toString()}`);
+      const qtyOnHand = parseInt(data?.quantity ?? data?.qtyOnHand ?? 0, 10);
+      const isAvailable = data?.available !== false ? qtyOnHand > 0 : false;
 
       return {
-        available: qtyOnHand > 0,
+        available: isAvailable,
         quantity: qtyOnHand,
-        message: qtyOnHand === 0 ? 'Out of stock' : `${qtyOnHand} available`
+        message: data?.message || (isAvailable ? `${qtyOnHand} available` : 'Out of stock')
       };
     } catch (error) {
       console.error('WTF Lightspeed: Availability check failed:', error);
@@ -214,99 +388,188 @@ class WTFLightspeedIntegration {
     }
   }
 
-  /**
-   * Reserve item in POS system
-   */
   async reserveItem(variantId, quantity) {
-    const lightspeedId = this.mapShopifyToLightspeed(variantId);
-    if (!lightspeedId) return;
+    if (!this.ready || !this.capabilities.reservations) {
+      return;
+    }
 
-    // Create a temporary sale in Lightspeed to reserve inventory
-    const saleData = {
-      Sale: {
-        customerID: 0, // Anonymous customer
-        shopID: 1,
-        registerID: 1,
-        employeeID: 1,
-        SaleLines: {
-          SaleLine: [{
-            itemID: lightspeedId,
-            unitQuantity: quantity,
-            unitPrice: 0, // Reservation, no charge
-            note: `Shopify reservation - expires ${new Date(Date.now() + 15 * 60 * 1000).toISOString()}`
-          }]
-        }
-      }
-    };
+    const lightspeedId = this.mapShopifyToLightspeed(variantId);
+    if (!lightspeedId) {
+      return;
+    }
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Sale.json`, {
+      const result = await this.proxyRequest(this.config.endpoints.reserve, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(saleData)
+        body: JSON.stringify({
+          variantId,
+          lightspeedId,
+          quantity,
+          accountId: this.config.accountId,
+          expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString()
+        })
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        // Store reservation ID for later cleanup
-        sessionStorage.setItem(`wtf_reservation_${variantId}`, result.Sale.saleID);
+      if (result?.reservationId) {
+        sessionStorage.setItem(`wtf_reservation_${variantId}`, result.reservationId);
       }
     } catch (error) {
       console.error('WTF Lightspeed: Item reservation failed:', error);
     }
   }
 
-  /**
-   * Process completed order in Lightspeed POS
-   */
-  async processCompletedOrder(orderData) {
-    const saleData = {
-      Sale: {
-        customerID: await this.getOrCreateCustomer(orderData.customer),
-        shopID: 1,
-        registerID: 1,
-        employeeID: 1,
-        note: `Shopify Order #${orderData.order_number}`,
-        SaleLines: {
-          SaleLine: orderData.line_items.map(item => ({
-            itemID: this.mapShopifyToLightspeed(item.variant_id),
-            unitQuantity: item.quantity,
-            unitPrice: item.price,
-            note: this.buildItemNote(item)
-          })).filter(line => line.itemID) // Only include mapped items
-        }
-      }
-    };
+  async updateItemReservation(variantId, quantity) {
+    if (!this.ready || !this.capabilities.reservations) {
+      return;
+    }
+
+    const lightspeedId = this.mapShopifyToLightspeed(variantId);
+    if (!lightspeedId) {
+      return;
+    }
+
+    const reservationId = sessionStorage.getItem(`wtf_reservation_${variantId}`);
+
+    if (!reservationId) {
+      await this.reserveItem(variantId, quantity);
+      return;
+    }
+
+    if (quantity <= 0) {
+      await this.releaseReservation(variantId, lightspeedId, reservationId);
+      return;
+    }
 
     try {
-      const response = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Sale.json`, {
-        method: 'POST',
+      const result = await this.proxyRequest(this.config.endpoints.reserve, {
+        method: 'PUT',
         headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(saleData)
+        body: JSON.stringify({
+          variantId,
+          lightspeedId,
+          quantity,
+          reservationId,
+          accountId: this.config.accountId
+        })
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(`WTF Lightspeed: Order processed as Sale #${result.Sale.saleID}`);
-        return result.Sale.saleID;
+      if (result?.reservationId) {
+        sessionStorage.setItem(`wtf_reservation_${variantId}`, result.reservationId);
       }
     } catch (error) {
-      console.error('WTF Lightspeed: Order processing failed:', error);
+      console.error('WTF Lightspeed: Reservation update failed:', error);
     }
   }
 
-  /**
-   * Build item note from Shopify line item properties
-   */
+  async releaseReservation(variantId, lightspeedId, reservationId) {
+    if (!this.ready || !this.capabilities.reservations) {
+      return;
+    }
+
+    try {
+      await this.proxyRequest(this.config.endpoints.release, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          variantId,
+          lightspeedId,
+          reservationId,
+          accountId: this.config.accountId
+        })
+      });
+
+      sessionStorage.removeItem(`wtf_reservation_${variantId}`);
+    } catch (error) {
+      console.error('WTF Lightspeed: Reservation release failed:', error);
+    }
+  }
+
+  async processCompletedOrder(orderData) {
+    if (!this.ready || !this.capabilities.orderSync || !orderData) {
+      return null;
+    }
+
+    const payload = {
+      orderNumber: orderData.order_number,
+      accountId: this.config.accountId,
+      customer: orderData.customer || null,
+      cartToken: orderData.cart_token || null,
+      lineItems: (orderData.line_items || [])
+        .map((item) => ({
+          lightspeedId: this.mapShopifyToLightspeed(item.variant_id),
+          variantId: item.variant_id,
+          quantity: item.quantity,
+          price: item.price,
+          note: this.buildItemNote(item)
+        }))
+        .filter((line) => line.lightspeedId)
+    };
+
+    if (payload.lineItems.length === 0) {
+      return null;
+    }
+
+    try {
+      const result = await this.proxyRequest(this.config.endpoints.orders, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (result?.saleId || result?.sale?.saleID) {
+        console.log(`WTF Lightspeed: Order processed via middleware #${result.saleId || result.sale.saleID}`);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('WTF Lightspeed: Order processing failed:', error);
+      return null;
+    }
+  }
+
+  async handleCheckoutCompletion(checkout) {
+    if (!this.ready || !this.capabilities.orderSync || !checkout) {
+      return;
+    }
+
+    try {
+      await this.processCompletedOrder(checkout);
+    } catch (error) {
+      console.error('WTF Lightspeed: Checkout completion handling failed:', error);
+    }
+  }
+
+  async removeFromCart(lineKey) {
+    if (!lineKey) {
+      return;
+    }
+
+    try {
+      await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({ id: lineKey, quantity: 0 })
+      });
+    } catch (error) {
+      console.error('WTF Lightspeed: Failed to remove item from cart:', error);
+    }
+  }
+
   buildItemNote(item) {
     const notes = [];
-    
+
     if (item.properties) {
       Object.entries(item.properties).forEach(([key, value]) => {
         if (value && value !== '') {
@@ -318,104 +581,29 @@ class WTFLightspeedIntegration {
     return notes.join(', ');
   }
 
-  /**
-   * Get or create customer in Lightspeed
-   */
-  async getOrCreateCustomer(customerData) {
-    if (!customerData || !customerData.email) return 0;
-
-    try {
-      // Search for existing customer
-      const searchResponse = await fetch(
-        `${this.config.apiUrl}/Account/${this.config.accountId}/Customer.json?email=${encodeURIComponent(customerData.email)}`,
-        {
-          headers: {
-            'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`
-          }
-        }
-      );
-
-      const searchData = await searchResponse.json();
-      
-      if (searchData.Customer && searchData.Customer.length > 0) {
-        return searchData.Customer[0].customerID;
-      }
-
-      // Create new customer
-      const customerPayload = {
-        Customer: {
-          firstName: customerData.first_name || '',
-          lastName: customerData.last_name || '',
-          email: customerData.email,
-          phone: customerData.phone || '',
-          Contact: {
-            Addresses: {
-              ContactAddress: customerData.default_address ? [{
-                address1: customerData.default_address.address1 || '',
-                address2: customerData.default_address.address2 || '',
-                city: customerData.default_address.city || '',
-                state: customerData.default_address.province || '',
-                zip: customerData.default_address.zip || '',
-                country: customerData.default_address.country || ''
-              }] : []
-            }
-          }
-        }
-      };
-
-      const createResponse = await fetch(`${this.config.apiUrl}/Account/${this.config.accountId}/Customer.json`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${btoa(this.config.apiKey + ':')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(customerPayload)
-      });
-
-      if (createResponse.ok) {
-        const result = await createResponse.json();
-        return result.Customer.customerID;
-      }
-    } catch (error) {
-      console.error('WTF Lightspeed: Customer sync failed:', error);
-    }
-
-    return 0; // Default to anonymous customer
-  }
-
-  /**
-   * Map Shopify variant ID to Lightspeed item ID
-   */
   mapShopifyToLightspeed(variantId) {
-    // This mapping should be stored in your database or configuration
-    const mapping = window.WTF_CONFIG?.lightspeed?.variantMapping || {};
+    const mapping = this.config.variantMapping || {};
     return mapping[variantId] || null;
   }
 
-  /**
-   * Map Lightspeed item ID to Shopify variant ID
-   */
   mapLightspeedToShopify(itemId) {
-    const mapping = window.WTF_CONFIG?.lightspeed?.variantMapping || {};
+    const mapping = this.config.variantMapping || {};
     const reverseMapping = Object.fromEntries(
-      Object.entries(mapping).map(([k, v]) => [v, k])
+      Object.entries(mapping).map(([key, value]) => [value, key])
     );
     return reverseMapping[itemId] || null;
   }
 
-  /**
-   * Show stock alert to user
-   */
   showStockAlert(itemName, message) {
     const alert = document.createElement('div');
     alert.className = 'wtf-stock-alert';
     alert.innerHTML = `
       <div class="wtf-stock-alert__content">
         <strong>Stock Alert:</strong> ${itemName} - ${message}
-        <button class="wtf-stock-alert__close" onclick="this.parentElement.parentElement.remove()">×</button>
+        <button class="wtf-stock-alert__close" type="button">×</button>
       </div>
     `;
-    
+
     alert.style.cssText = `
       position: fixed;
       top: 20px;
@@ -429,42 +617,55 @@ class WTFLightspeedIntegration {
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     `;
 
+    alert.querySelector('.wtf-stock-alert__close')?.addEventListener('click', () => {
+      alert.remove();
+    });
+
     document.body.appendChild(alert);
-    
-    setTimeout(() => {
+
+    window.setTimeout(() => {
       if (alert.parentElement) {
         alert.remove();
       }
     }, 5000);
   }
 
-  /**
-   * Dispatch inventory update event
-   */
   dispatchInventoryUpdate(updates) {
+    if (!this.ready) {
+      return;
+    }
+
     document.dispatchEvent(new CustomEvent('wtf:inventory:updated', {
       detail: { updates, timestamp: new Date() }
     }));
   }
 
-  /**
-   * Get sync status
-   */
   getSyncStatus() {
     return {
+      active: this.ready,
       isRunning: !!this.syncTimer,
       lastSync: this.lastSyncTime,
       cacheSize: this.inventoryCache.size,
+      capabilities: this.capabilities,
       config: this.config
     };
   }
 }
 
 // Initialize Lightspeed integration
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.WTF_CONFIG?.lightspeed?.enabled) {
-    window.WTFLightspeed = new WTFLightspeedIntegration(window.WTF_CONFIG.lightspeed);
+document.addEventListener('DOMContentLoaded', () => {
+  const lightspeedConfig = window.WTFConfig?.get
+    ? window.WTFConfig.getIntegrationConfig('lightspeed')
+    : (window.WTF_CONFIG_DATA?.integrations?.lightspeed || null);
+
+  if (!lightspeedConfig || lightspeedConfig.enabled === false) {
+    console.info('WTF Lightspeed: Integration disabled by configuration.');
+    window.WTFLightspeed = null;
+    return;
   }
+
+  const integration = new WTFLightspeedIntegration(lightspeedConfig);
+  window.WTFLightspeed = integration.isActive() ? integration : null;
 });
 
 // Export for use in other modules

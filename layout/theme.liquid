@@ -100,57 +100,135 @@
 
     {%- comment %} Load WTF Configuration {%- endcomment %}
     <script>
-      // Environment variables and configuration
-      window.WTF_ENV = {
-        shopDomain: '{{ shop.permanent_domain }}',
-        cartToken: '{{ cart.token }}',
-        customerId: {% if customer %}{{ customer.id }}{% else %}null{% endif %},
-        customerEmail: {% if customer %}'{{ customer.email }}'{% else %}null{% endif %},
-        currency: '{{ cart.currency.iso_code }}',
-        locale: '{{ request.locale.iso_code }}',
-        routes: {
-          cart_add_url: '{{ routes.cart_add_url }}',
-          cart_change_url: '{{ routes.cart_change_url }}',
-          cart_update_url: '{{ routes.cart_update_url }}',
-          cart_url: '{{ routes.cart_url }}',
-          predictive_search_url: '{{ routes.predictive_search_url }}',
-          root_url: '{{ routes.root_url }}'
-        }
-      };
+      (function() {
+        const storeHours = {% if shop.metafields.wtf.hours.value %}{{ shop.metafields.wtf.hours.value }}{% else %}null{% endif %};
+        const storeAddress = {% if shop.metafields.wtf.address.value %}{{ shop.metafields.wtf.address.value }}{% else %}null{% endif %};
+        const integrationEndpoints = {% if shop.metafields.wtf.integration_endpoints.value %}{{ shop.metafields.wtf.integration_endpoints.value }}{% else %}null{% endif %};
+        const lightspeedVariantMap = {% if shop.metafields.wtf.lightspeed_variant_map.value %}{{ shop.metafields.wtf.lightspeed_variant_map.value }}{% else %}{}{% endif %};
+        const metafieldPhone = {% if shop.metafields.wtf.phone %}{{ shop.metafields.wtf.phone | json }}{% else %}null{% endif %};
+        const metafieldEmail = {% if shop.metafields.wtf.email %}{{ shop.metafields.wtf.email | json }}{% else %}null{% endif %};
+        const metafieldTimezone = {% if shop.metafields.wtf.timezone %}{{ shop.metafields.wtf.timezone | json }}{% else %}null{% endif %};
+        const proxyBaseSetting = {{ settings.integration_proxy_base_path | default: '/apps/wtf' | json }};
+        const adminProxyPath = {{ settings.shopify_admin_proxy_path | default: '/apps/wtf/shopify-admin' | json }};
+        const normalizedProxyBase = (proxyBaseSetting || '/apps/wtf').replace(/\/$/, '');
+        const lightspeedBase = integrationEndpoints?.lightspeed?.base || `${normalizedProxyBase}/lightspeed`;
+        const twoAcceptBase = integrationEndpoints?.twoaccept?.base || `${normalizedProxyBase}/2accept`;
 
-      // Integration settings (these would come from your admin settings)
-      window.WTF_INTEGRATION_CONFIG = {
-        lightspeed: {
-          enabled: true,
-          accountId: '{{ settings.lightspeed_account_id }}',
-          // API key would be handled server-side for security
-          syncInterval: 30000,
-          enableRealTimeSync: true
-        },
-        twoaccept: {
-          enabled: true,
-          publicKey: '{{ settings.twoaccept_public_key }}',
-          merchantId: '{{ settings.twoaccept_merchant_id }}',
-          environment: '{{ settings.twoaccept_environment | default: "production" }}',
-          enableSavedCards: true,
-          enableApplePay: true,
-          enableGooglePay: true
-        },
-        analytics: {
-          googleAnalytics: {
-            enabled: {% if settings.google_analytics_id != blank %}true{% else %}false{% endif %},
-            measurementId: '{{ settings.google_analytics_id }}'
-          },
-          facebookPixel: {
-            enabled: {% if settings.facebook_pixel_id != blank %}true{% else %}false{% endif %},
-            pixelId: '{{ settings.facebook_pixel_id }}'
-          },
-          tiktokPixel: {
-            enabled: {% if settings.tiktok_pixel_id != blank %}true{% else %}false{% endif %},
-            pixelId: '{{ settings.tiktok_pixel_id }}'
+        window.WTF_ENV = {
+          shopDomain: {{ shop.permanent_domain | json }},
+          cartToken: {{ cart.token | json }},
+          customerId: {% if customer %}{{ customer.id | json }}{% else %}null{% endif %},
+          customerEmail: {% if customer %}{{ customer.email | json }}{% else %}null{% endif %},
+          currency: {{ cart.currency.iso_code | default: shop.currency | json }},
+          locale: {{ request.locale.iso_code | json }},
+          routes: {
+            cart_add_url: {{ routes.cart_add_url | json }},
+            cart_change_url: {{ routes.cart_change_url | json }},
+            cart_update_url: {{ routes.cart_update_url | json }},
+            cart_url: {{ routes.cart_url | json }},
+            predictive_search_url: {{ routes.predictive_search_url | json }},
+            root_url: {{ routes.root_url | json }}
           }
-        }
-      };
+        };
+
+        const resolvedAddress = storeAddress || {
+          line1: {{ settings.store_address_1 | json }},
+          line2: {{ settings.store_address_2 | json }},
+          city: {{ settings.store_city | json }},
+          region: {{ settings.store_state | json }},
+          postalCode: {{ settings.store_zip | json }},
+          country: 'US'
+        };
+
+        const resolvedHours = storeHours || {
+          monday: { open: '08:00', close: '22:00' },
+          tuesday: { open: '08:00', close: '22:00' },
+          wednesday: { open: '08:00', close: '22:00' },
+          thursday: { open: '08:00', close: '22:00' },
+          friday: { open: '08:00', close: '23:00' },
+          saturday: { open: '08:00', close: '23:00' },
+          sunday: { open: '10:00', close: '22:00' }
+        };
+
+        const fallbackPhone = {{ settings.store_phone | default: shop.phone | json }};
+        const fallbackEmail = {{ settings.store_email | default: shop.customer_email | default: shop.email | json }};
+        const lightspeedEnabled = {{ settings.lightspeed_enable_sync | json }};
+        const lightspeedSyncInterval = {{ settings.lightspeed_sync_interval | default: 30 | times: 1000 }};
+        const twoAcceptEnabled = {{ settings.twoaccept_public_key != blank | json }};
+
+        window.WTFConfig = {
+          store: {
+            name: {{ shop.name | json }},
+            phone: metafieldPhone || fallbackPhone,
+            email: metafieldEmail || fallbackEmail,
+            address: resolvedAddress,
+            hours: resolvedHours,
+            timezone: metafieldTimezone || 'America/New_York'
+          },
+          integrations: {
+            shopify: {
+              enabled: true,
+              domain: {{ shop.permanent_domain | json }},
+              locationId: null,
+              endpoints: {
+                adminProxy: adminProxyPath
+              }
+            },
+            lightspeed: {
+              enabled: lightspeedEnabled,
+              accountId: {{ settings.lightspeed_account_id | json }},
+              syncInterval: lightspeedSyncInterval,
+              variantMapping: lightspeedVariantMap,
+              endpoints: {
+                base: lightspeedBase,
+                inventory: integrationEndpoints?.lightspeed?.inventory || `${lightspeedBase}/inventory`,
+                availability: integrationEndpoints?.lightspeed?.availability || `${lightspeedBase}/availability`,
+                reserve: integrationEndpoints?.lightspeed?.reserve || `${lightspeedBase}/reserve`,
+                release: integrationEndpoints?.lightspeed?.release || `${lightspeedBase}/release`,
+                sync: integrationEndpoints?.lightspeed?.sync || `${lightspeedBase}/sync`,
+                orders: integrationEndpoints?.lightspeed?.orders || `${lightspeedBase}/orders`
+              }
+            },
+            twoaccept: {
+              enabled: twoAcceptEnabled,
+              publicKey: {{ settings.twoaccept_public_key | json }},
+              merchantId: {{ settings.twoaccept_merchant_id | json }},
+              environment: {{ settings.twoaccept_environment | default: 'production' | json }},
+              enableSavedCards: {{ settings.twoaccept_enable_saved_cards | json }},
+              enableApplePay: {{ settings.twoaccept_enable_apple_pay | json }},
+              enableGooglePay: {{ settings.twoaccept_enable_google_pay | json }},
+              endpoints: {
+                base: twoAcceptBase,
+                paymentMethods: integrationEndpoints?.twoaccept?.paymentMethods || `${twoAcceptBase}/payment-methods`,
+                payments: integrationEndpoints?.twoaccept?.payments || `${twoAcceptBase}/payments`,
+                orders: integrationEndpoints?.twoaccept?.orders || `${twoAcceptBase}/orders`,
+                savedMethods: integrationEndpoints?.twoaccept?.savedMethods || `${twoAcceptBase}/customers`,
+                merchantValidation: integrationEndpoints?.twoaccept?.merchantValidation || `${twoAcceptBase}/apple-pay/validate`,
+                applePay: integrationEndpoints?.twoaccept?.applePay || `${twoAcceptBase}/apple-pay`
+              }
+            }
+          },
+          analytics: {
+            google: {
+              measurementId: {{ settings.google_analytics_id | json }},
+              enabled: {{ settings.google_analytics_id != blank | json }}
+            },
+            googleAds: {{ settings.google_ads_id | json }},
+            metaPixel: {{ settings.facebook_pixel_id | json }},
+            tiktokPixel: {{ settings.tiktok_pixel_id | json }},
+            snapchatPixel: {{ settings.snapchat_pixel_id | json }},
+            pinterestTag: {{ settings.pinterest_tag_id | json }},
+            clarityProjectId: {{ settings.clarity_project_id | json }},
+            hotjarSiteId: {{ settings.hotjar_site_id | json }}
+          },
+          endpoints: {
+            proxyBase: normalizedProxyBase,
+            shopifyAdminProxy: adminProxyPath
+          }
+        };
+
+        window.WTF_CONFIG_DATA = window.WTFConfig;
+      })();
     </script>
 
     {%- comment %} Load WTF Configuration Manager {%- endcomment %}
@@ -453,7 +531,7 @@
       <script>
         // Development debugging tools
         window.WTF_DEBUG = {
-          config: () => console.table(window.WTF_CONFIG),
+          config: () => console.table(window.WTFConfig?.raw || window.WTF_CONFIG_DATA || {}),
           integrations: () => console.log('Integrations:', {
             lightspeed: !!window.WTFLightspeed,
             twoaccept: !!window.WTF2Accept,
