@@ -1,0 +1,145 @@
+---
+layout: theme
+---
+
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+  .blog-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .blog-header { text-align: center; margin-bottom: 50px; padding: 60px 20px; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: white; border-radius: 15px; }
+  .blog-header h1 { font-size: 3rem; margin-bottom: 20px; }
+  .blog-header p { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+  .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 50px; }
+  .blog-post { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .blog-post:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+  .blog-image { width: 100%; height: 200px; background: linear-gradient(45deg, #ff6600, #e55a00); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: 600; }
+  .blog-content { padding: 25px; }
+  .blog-title { font-size: 1.4rem; color: #333; margin-bottom: 15px; font-weight: 700; }
+  .blog-title a { color: #333; text-decoration: none; }
+  .blog-title a:hover { color: #ff6600; }
+  .blog-meta { color: #666; font-size: 0.9rem; margin-bottom: 15px; }
+  .blog-excerpt { color: #555; margin-bottom: 20px; line-height: 1.6; }
+  .blog-tags { margin-bottom: 20px; }
+  .blog-tag { display: inline-block; background: #fff3e0; color: #ff6600; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; margin-right: 8px; margin-bottom: 8px; }
+  .read-more { display: inline-block; background: #ff6600; color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-weight: 600; transition: background 0.3s ease; }
+  .read-more:hover { background: #e55a00; }
+  .cta-section { background: #f8f9fa; padding: 40px; border-radius: 15px; text-align: center; margin-top: 50px; }
+  .cta-button { display: inline-block; background: #ff6600; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: 700; margin: 10px; }
+  .cta-button:hover { background: #e55a00; }
+</style>
+
+<div class="blog-container">
+  <div class="blog-header">
+    <h1>WTF Blog</h1>
+    <p>Discover the world of kava, kratom, and wellness culture in Cape Coral. Learn from Southwest Florida's premier botanical beverage experts.</p>
+  </div>
+
+  <div class="blog-grid">
+    <!-- Blog Post 1: What is Kava -->
+    <article class="blog-post">
+      <div class="blog-image">
+        🌿 Traditional Kava Culture
+      </div>
+      <div class="blog-content">
+        <h2 class="blog-title">
+          <a href="/pages/what-is-kava-beginners-guide">What is Kava? A Beginner's Guide to the South Pacific's Relaxation Root</a>
+        </h2>
+        <div class="blog-meta">
+          September 30, 2025 | By WTF Team | 5 min read
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Kava</span>
+          <span class="blog-tag">Education</span>
+          <span class="blog-tag">Cape Coral</span>
+          <span class="blog-tag">Wellness</span>
+        </div>
+        <p class="blog-excerpt">
+          Discover what kava is, how it's prepared, and why it's becoming a popular alcohol-free alternative in Cape Coral. Learn about kava's effects, traditional preparation methods, and why WTF serves the best kava drinks in Southwest Florida.
+        </p>
+        <a href="/pages/what-is-kava-beginners-guide" class="read-more">Read More</a>
+      </div>
+    </article>
+
+    <!-- Blog Post 2: What is Kratom -->
+    <article class="blog-post">
+      <div class="blog-image">
+        🍃 Kratom Tea Culture
+      </div>
+      <div class="blog-content">
+        <h2 class="blog-title">
+          <a href="/pages/what-is-kratom-florida-botanical">What is Kratom? Exploring Florida's Favorite Brewed Botanical</a>
+        </h2>
+        <div class="blog-meta">
+          September 30, 2025 | By WTF Team | 6 min read
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Kratom</span>
+          <span class="blog-tag">Education</span>
+          <span class="blog-tag">Tea</span>
+          <span class="blog-tag">Botanical</span>
+        </div>
+        <p class="blog-excerpt">
+          Learn what kratom tea is, the different strains we serve, and why it's a staple at our Cape Coral kava bar. Discover the benefits of Green, Red, White, and Yellow kratom strains and how each can enhance your wellness routine.
+        </p>
+        <a href="/pages/what-is-kratom-florida-botanical" class="read-more">Read More</a>
+      </div>
+    </article>
+
+    <!-- Blog Post 3: Kava vs Kratom -->
+    <article class="blog-post">
+      <div class="blog-image">
+        ⚖️ Botanical Comparison
+      </div>
+      <div class="blog-content">
+        <h2 class="blog-title">
+          <a href="/pages/kava-vs-kratom-comparison">Kava vs Kratom: How These Two Botanicals Compare</a>
+        </h2>
+        <div class="blog-meta">
+          September 30, 2025 | By WTF Team | 7 min read
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Kava</span>
+          <span class="blog-tag">Kratom</span>
+          <span class="blog-tag">Comparison</span>
+          <span class="blog-tag">Education</span>
+        </div>
+        <p class="blog-excerpt">
+          Kava and kratom are popular at Florida kava bars — but they're not the same. Learn the key differences between these botanicals and discover which one might be right for your wellness goals and lifestyle preferences.
+        </p>
+        <a href="/pages/kava-vs-kratom-comparison" class="read-more">Read More</a>
+      </div>
+    </article>
+
+    <!-- Blog Post 4: Date Ideas -->
+    <article class="blog-post">
+      <div class="blog-image">
+        💕 Cape Coral Dates
+      </div>
+      <div class="blog-content">
+        <h2 class="blog-title">
+          <a href="/pages/alcohol-free-date-ideas-cape-coral">5 Alcohol-Free Date Ideas in Cape Coral</a>
+        </h2>
+        <div class="blog-meta">
+          September 30, 2025 | By WTF Team | 8 min read
+        </div>
+        <div class="blog-tags">
+          <span class="blog-tag">Cape Coral</span>
+          <span class="blog-tag">Date Ideas</span>
+          <span class="blog-tag">Alcohol-Free</span>
+          <span class="blog-tag">Entertainment</span>
+        </div>
+        <p class="blog-excerpt">
+          Looking for sober-curious or wellness-forward date night options in Cape Coral? Discover 5 creative ideas for memorable alcohol-free dates in Southwest Florida, from kava experiences to sunset adventures.
+        </p>
+        <a href="/pages/alcohol-free-date-ideas-cape-coral" class="read-more">Read More</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="cta-section">
+    <h2>Ready to Experience What You've Read About?</h2>
+    <p>Visit WTF in Cape Coral and discover the amazing world of kava and kratom for yourself. Our expert team is ready to guide you through your first botanical beverage experience.</p>
+    <a href="/pages/kava-drinks" class="cta-button">Try Our Kava</a>
+    <a href="/pages/kratom-teas" class="cta-button">Try Our Kratom</a>
+    <a href="/pages/kava-bar-cape-coral" class="cta-button">Visit Our Location</a>
+  </div>
+</div>
