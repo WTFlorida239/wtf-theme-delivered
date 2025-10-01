@@ -1,345 +1,164 @@
-{% comment %}
-  WTF Blog Template - Professional blog layout with categories, search, and social sharing
-  Integrates with Shopify blog functionality and provides enhanced features
-{% endcomment %}
+---
+layout: theme
+---
 
-<div class="wtf-blog-container" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
-  
-  <!-- Blog Header -->
-  <header class="wtf-blog-header" style="text-align: center; margin-bottom: 6rem; background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); color: #fff; padding: 6rem 4rem; border-radius: 2rem;">
-    <h1 style="font-size: 5rem; font-weight: 900; margin-bottom: 2rem;">WTF Blog</h1>
-    <p style="font-size: 2rem; opacity: 0.95; max-width: 80rem; margin: 0 auto;">
-      Stay updated with the latest in kratom, kava, cannabis culture, and wellness insights from your favorite Cape Coral destination.
-    </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WTF Blog | Kava, Kratom & Cape Coral Wellness | WTF | Welcome To Florida</title>
+    <meta name="description" content="Discover the latest insights about kava, kratom, and wellness culture in Cape Coral. Learn about botanical beverages, local events, and alcohol-free lifestyle tips from Southwest Florida's premier kava bar.">
+    <meta name="keywords" content="kava blog, kratom blog, cape coral wellness, kava bar blog, botanical beverages, alcohol-free lifestyle, southwest florida wellness">
     
-    <!-- Blog Search -->
-    <div class="wtf-blog-search" style="margin-top: 4rem;">
-      <form action="{{ blog.url }}" method="get" style="display: flex; max-width: 60rem; margin: 0 auto; gap: 1rem;">
-        <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search articles..." style="flex: 1; padding: 1.5rem 2rem; border: none; border-radius: 2.4rem; font-size: 1.6rem; background: rgba(255,255,255,0.9); color: #333;">
-        <button type="submit" style="padding: 1.5rem 3rem; background: #ff6600; color: #fff; border: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.6rem; cursor: pointer; transition: all 0.3s ease;">
-          🔍 Search
-        </button>
-      </form>
-    </div>
-  </header>
-
-  <div class="wtf-blog-layout" style="display: grid; grid-template-columns: 1fr 35rem; gap: 6rem; align-items: start;">
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="WTF Blog | Kava, Kratom & Cape Coral Wellness">
+    <meta property="og:description" content="Discover the latest insights about kava, kratom, and wellness culture in Cape Coral from Southwest Florida's premier kava bar.">
+    <meta property="og:image" content="{{ 'wtf_blog_header_800x400.jpg' | asset_url }}">
+    <meta property="og:url" content="{{ shop.secure_url }}/blogs/wtf-blog">
     
-    <!-- Main Content Area -->
-    <main class="wtf-blog-main">
-      
-      <!-- Category Filter -->
-      {% if blog.tags.size > 0 %}
-        <div class="wtf-blog-categories" style="margin-bottom: 4rem;">
-          <h3 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: #1a1a1a;">Browse by Category</h3>
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-            <a href="{{ blog.url }}" style="padding: 1rem 2rem; background: {% if current_tags == blank %}#4caf50{% else %}#f8f9fa{% endif %}; color: {% if current_tags == blank %}#fff{% else %}#666{% endif %}; text-decoration: none; border-radius: 2.4rem; font-weight: 600; transition: all 0.3s ease; border: 2px solid {% if current_tags == blank %}#4caf50{% else %}#e9ecef{% endif %};">
-              All Posts
-            </a>
-            {% for tag in blog.tags %}
-              <a href="{{ blog.url }}/tagged/{{ tag | handle }}" style="padding: 1rem 2rem; background: {% if current_tags contains tag %}#4caf50{% else %}#f8f9fa{% endif %}; color: {% if current_tags contains tag %}#fff{% else %}#666{% endif %}; text-decoration: none; border-radius: 2.4rem; font-weight: 600; transition: all 0.3s ease; border: 2px solid {% if current_tags contains tag %}#4caf50{% else %}#e9ecef{% endif %};">
-                {{ tag }}
-              </a>
-            {% endfor %}
-          </div>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+        .blog-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .blog-header { text-align: center; margin-bottom: 50px; padding: 60px 20px; background: linear-gradient(135deg, #ff6600 0%, #e55a00 100%); color: white; border-radius: 15px; }
+        .blog-header h1 { font-size: 3rem; margin-bottom: 20px; }
+        .blog-header p { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 50px; }
+        .blog-post { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .blog-post:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .blog-image { width: 100%; height: 200px; background: linear-gradient(45deg, #ff6600, #e55a00); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: 600; }
+        .blog-content { padding: 25px; }
+        .blog-title { font-size: 1.4rem; color: #333; margin-bottom: 15px; font-weight: 700; }
+        .blog-title a { color: #333; text-decoration: none; }
+        .blog-title a:hover { color: #ff6600; }
+        .blog-meta { color: #666; font-size: 0.9rem; margin-bottom: 15px; }
+        .blog-excerpt { color: #555; margin-bottom: 20px; line-height: 1.6; }
+        .blog-tags { margin-bottom: 20px; }
+        .blog-tag { display: inline-block; background: #fff3e0; color: #ff6600; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; margin-right: 8px; margin-bottom: 8px; }
+        .read-more { display: inline-block; background: #ff6600; color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-weight: 600; transition: background 0.3s ease; }
+        .read-more:hover { background: #e55a00; }
+        .cta-section { background: #f8f9fa; padding: 40px; border-radius: 15px; text-align: center; margin-top: 50px; }
+        .cta-button { display: inline-block; background: #ff6600; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: 700; margin: 10px; }
+        .cta-button:hover { background: #e55a00; }
+    </style>
+</head>
+
+<body>
+    <div class="blog-container">
+        <div class="blog-header">
+            <h1>WTF Blog</h1>
+            <p>Discover the world of kava, kratom, and wellness culture in Cape Coral. Learn from Southwest Florida's premier botanical beverage experts.</p>
         </div>
-      {% endif %}
 
-      <!-- Search Results Info -->
-      {% if search.performed %}
-        <div class="wtf-search-results" style="margin-bottom: 4rem; padding: 2rem; background: #e3f2fd; border-radius: 1.2rem; border-left: 4px solid #2196f3;">
-          {% if search.results.size > 0 %}
-            <h3 style="color: #1976d2; margin-bottom: 1rem;">Found {{ search.results.size }} {% if search.results.size == 1 %}result{% else %}results{% endif %} for "{{ search.terms }}"</h3>
-          {% else %}
-            <h3 style="color: #1976d2; margin-bottom: 1rem;">No results found for "{{ search.terms }}"</h3>
-            <p style="color: #666;">Try different keywords or browse our categories above.</p>
-          {% endif %}
-        </div>
-      {% endif %}
-
-      <!-- Blog Posts Grid -->
-      <div class="wtf-blog-posts" style="display: grid; gap: 4rem;">
-        {% paginate blog.articles by 6 %}
-          {% if blog.articles.size > 0 %}
-            {% for article in blog.articles %}
-              <article class="wtf-blog-post" style="background: #fff; border-radius: 2rem; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid #f0f0f0;">
-                
-                <!-- Featured Image -->
-                {% if article.image %}
-                  <div class="wtf-post-image" style="position: relative; height: 30rem; overflow: hidden;">
-                    <img src="{{ article.image | image_url: width: 800 }}" alt="{{ article.image.alt | escape }}" width="800" height="400" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                    
-                    <!-- Category Badge -->
-                    {% if article.tags.size > 0 %}
-                      <div class="wtf-post-category" style="position: absolute; top: 2rem; left: 2rem;">
-                        <span style="background: #4caf50; color: #fff; padding: 0.8rem 1.6rem; border-radius: 2rem; font-size: 1.2rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
-                          {{ article.tags.first }}
-                        </span>
-                      </div>
-                    {% endif %}
-                  </div>
-                {% endif %}
-
-                <!-- Post Content -->
-                <div class="wtf-post-content" style="padding: 3rem;">
-                  
-                  <!-- Post Meta -->
-                  <div class="wtf-post-meta" style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; font-size: 1.4rem; color: #666;">
-                    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-                      📅 {{ article.published_at | date: '%B %d, %Y' }}
-                    </time>
-                    {% if article.author %}
-                      <span>👤 {{ article.author }}</span>
-                    {% endif %}
-                    <span>⏱️ {{ article.content | strip_html | truncatewords: 200 | size | divided_by: 200 | plus: 1 }} min read</span>
-                  </div>
-
-                  <!-- Post Title -->
-                  <h2 style="font-size: 2.8rem; font-weight: 700; margin-bottom: 2rem; line-height: 1.3;">
-                    <a href="{{ article.url }}" style="color: #1a1a1a; text-decoration: none; transition: color 0.3s ease;">
-                      {{ article.title }}
-                    </a>
-                  </h2>
-
-                  <!-- Post Excerpt -->
-                  <div class="wtf-post-excerpt" style="font-size: 1.6rem; line-height: 1.6; color: #4a4a4a; margin-bottom: 3rem;">
-                    {% if article.excerpt != blank %}
-                      {{ article.excerpt }}
-                    {% else %}
-                      {{ article.content | strip_html | truncatewords: 40 }}
-                    {% endif %}
-                  </div>
-
-                  <!-- Read More Button -->
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <a href="{{ article.url }}" style="display: inline-flex; align-items: center; padding: 1.5rem 3rem; background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.5rem; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);">
-                      Read Full Article →
-                    </a>
-                    
-                    <!-- Social Share Preview -->
-                    <div class="wtf-post-share" style="display: flex; gap: 1rem;">
-                      <button onclick="shareArticle('{{ article.url | prepend: request.origin }}', '{{ article.title | escape }}')" style="background: #1877f2; color: #fff; border: none; padding: 1rem; border-radius: 50%; cursor: pointer; transition: transform 0.3s ease;" title="Share on Facebook">
-                        📘
-                      </button>
-                      <button onclick="shareOnTwitter('{{ article.url | prepend: request.origin }}', '{{ article.title | escape }}')" style="background: #1da1f2; color: #fff; border: none; padding: 1rem; border-radius: 50%; cursor: pointer; transition: transform 0.3s ease;" title="Share on Twitter">
-                        🐦
-                      </button>
+        <div class="blog-grid">
+            <!-- Blog Post 1: What is Kava -->
+            <article class="blog-post">
+                <div class="blog-image">
+                    🌿 Traditional Kava Culture
+                </div>
+                <div class="blog-content">
+                    <h2 class="blog-title">
+                        <a href="/blogs/wtf-blog/what-is-kava-beginners-guide">What is Kava? A Beginner's Guide to the South Pacific's Relaxation Root</a>
+                    </h2>
+                    <div class="blog-meta">
+                        September 30, 2025 | By WTF Team | 5 min read
                     </div>
-                  </div>
+                    <div class="blog-tags">
+                        <span class="blog-tag">Kava</span>
+                        <span class="blog-tag">Education</span>
+                        <span class="blog-tag">Cape Coral</span>
+                        <span class="blog-tag">Wellness</span>
+                    </div>
+                    <p class="blog-excerpt">
+                        Discover what kava is, how it's prepared, and why it's becoming a popular alcohol-free alternative in Cape Coral. Learn about kava's effects, traditional preparation methods, and why WTF serves the best kava drinks in Southwest Florida.
+                    </p>
+                    <a href="/blogs/wtf-blog/what-is-kava-beginners-guide" class="read-more">Read More</a>
                 </div>
-              </article>
-            {% endfor %}
+            </article>
 
-            <!-- Pagination -->
-            {% if paginate.pages > 1 %}
-              <nav class="wtf-blog-pagination" style="margin-top: 6rem; text-align: center;">
-                <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                  
-                  {% if paginate.previous %}
-                    <a href="{{ paginate.previous.url }}" style="padding: 1.5rem 2.5rem; background: #4caf50; color: #fff; text-decoration: none; border-radius: 1.2rem; font-weight: 600; transition: all 0.3s ease;">
-                      ← Previous
-                    </a>
-                  {% endif %}
-
-                  {% for part in paginate.parts %}
-                    {% if part.is_link %}
-                      <a href="{{ part.url }}" style="padding: 1.5rem 2rem; background: #f8f9fa; color: #666; text-decoration: none; border-radius: 1.2rem; font-weight: 600; transition: all 0.3s ease; border: 2px solid #e9ecef;">
-                        {{ part.title }}
-                      </a>
-                    {% else %}
-                      <span style="padding: 1.5rem 2rem; background: #4caf50; color: #fff; border-radius: 1.2rem; font-weight: 700;">
-                        {{ part.title }}
-                      </span>
-                    {% endif %}
-                  {% endfor %}
-
-                  {% if paginate.next %}
-                    <a href="{{ paginate.next.url }}" style="padding: 1.5rem 2.5rem; background: #4caf50; color: #fff; text-decoration: none; border-radius: 1.2rem; font-weight: 600; transition: all 0.3s ease;">
-                      Next →
-                    </a>
-                  {% endif %}
+            <!-- Blog Post 2: What is Kratom -->
+            <article class="blog-post">
+                <div class="blog-image">
+                    🍃 Kratom Tea Culture
                 </div>
-                
-                <p style="margin-top: 2rem; color: #666; font-size: 1.4rem;">
-                  Showing {{ paginate.current_offset | plus: 1 }}-{{ paginate.current_offset | plus: paginate.current_page_size }} of {{ paginate.items }} articles
-                </p>
-              </nav>
-            {% endif %}
+                <div class="blog-content">
+                    <h2 class="blog-title">
+                        <a href="/blogs/wtf-blog/what-is-kratom-florida-botanical">What is Kratom? Exploring Florida's Favorite Brewed Botanical</a>
+                    </h2>
+                    <div class="blog-meta">
+                        September 30, 2025 | By WTF Team | 6 min read
+                    </div>
+                    <div class="blog-tags">
+                        <span class="blog-tag">Kratom</span>
+                        <span class="blog-tag">Education</span>
+                        <span class="blog-tag">Tea</span>
+                        <span class="blog-tag">Botanical</span>
+                    </div>
+                    <p class="blog-excerpt">
+                        Learn what kratom tea is, the different strains we serve, and why it's a staple at our Cape Coral kava bar. Discover the benefits of Green, Red, White, and Yellow kratom strains and how each can enhance your wellness routine.
+                    </p>
+                    <a href="/blogs/wtf-blog/what-is-kratom-florida-botanical" class="read-more">Read More</a>
+                </div>
+            </article>
 
-          {% else %}
-            <!-- No Posts Message -->
-            <div class="wtf-no-posts" style="text-align: center; padding: 6rem 2rem; background: #f8f9fa; border-radius: 2rem;">
-              <div style="font-size: 6rem; margin-bottom: 2rem;">📝</div>
-              <h3 style="font-size: 2.4rem; font-weight: 700; margin-bottom: 2rem; color: #1a1a1a;">No Articles Yet</h3>
-              <p style="font-size: 1.6rem; color: #666; margin-bottom: 3rem;">
-                We're working on some great content for you. Check back soon!
-              </p>
-              <a href="{{ routes.root_url }}" style="display: inline-flex; align-items: center; padding: 1.5rem 3rem; background: #4caf50; color: #fff; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.6rem;">
-                ← Back to Store
-              </a>
-            </div>
-          {% endif %}
-        {% endpaginate %}
-      </div>
-    </main>
+            <!-- Blog Post 3: Kava vs Kratom -->
+            <article class="blog-post">
+                <div class="blog-image">
+                    ⚖️ Botanical Comparison
+                </div>
+                <div class="blog-content">
+                    <h2 class="blog-title">
+                        <a href="/blogs/wtf-blog/kava-vs-kratom-comparison">Kava vs Kratom: How These Two Botanicals Compare</a>
+                    </h2>
+                    <div class="blog-meta">
+                        September 30, 2025 | By WTF Team | 7 min read
+                    </div>
+                    <div class="blog-tags">
+                        <span class="blog-tag">Kava</span>
+                        <span class="blog-tag">Kratom</span>
+                        <span class="blog-tag">Comparison</span>
+                        <span class="blog-tag">Education</span>
+                    </div>
+                    <p class="blog-excerpt">
+                        Kava and kratom are popular at Florida kava bars — but they're not the same. Learn the key differences between these botanicals and discover which one might be right for your wellness goals and lifestyle preferences.
+                    </p>
+                    <a href="/blogs/wtf-blog/kava-vs-kratom-comparison" class="read-more">Read More</a>
+                </div>
+            </article>
 
-    <!-- Sidebar -->
-    <aside class="wtf-blog-sidebar">
-      
-      <!-- Newsletter Signup -->
-      <div class="wtf-newsletter" style="background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%); color: #fff; padding: 3rem; border-radius: 2rem; margin-bottom: 4rem; text-align: center;">
-        <h3 style="font-size: 2.4rem; font-weight: 700; margin-bottom: 2rem;">Stay in the Loop</h3>
-        <p style="margin-bottom: 3rem; opacity: 0.95;">Get updates on new flavors, events, and wellness tips!</p>
-        <form action="#" method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
-          <input type="email" placeholder="Your email address" required style="padding: 1.5rem; border: none; border-radius: 1.2rem; font-size: 1.5rem;">
-          <button type="submit" style="padding: 1.5rem; background: #fff; color: #ff6600; border: none; border-radius: 1.2rem; font-weight: 700; font-size: 1.5rem; cursor: pointer; transition: all 0.3s ease;">
-            Subscribe Now
-          </button>
-        </form>
-      </div>
-
-      <!-- Recent Posts -->
-      {% assign recent_articles = blog.articles | slice: 0, 5 %}
-      {% if recent_articles.size > 0 %}
-        <div class="wtf-recent-posts" style="background: #fff; padding: 3rem; border-radius: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 4rem;">
-          <h3 style="font-size: 2rem; font-weight: 700; margin-bottom: 3rem; color: #1a1a1a;">Recent Articles</h3>
-          {% for article in recent_articles %}
-            <div class="wtf-recent-post" style="{% unless forloop.last %}border-bottom: 1px solid #f0f0f0; padding-bottom: 2rem; margin-bottom: 2rem;{% endunless %}">
-              <h4 style="font-size: 1.6rem; font-weight: 600; margin-bottom: 1rem; line-height: 1.4;">
-                <a href="{{ article.url }}" style="color: #1a1a1a; text-decoration: none; transition: color 0.3s ease;">
-                  {{ article.title }}
-                </a>
-              </h4>
-              <p style="font-size: 1.3rem; color: #666; margin-bottom: 1rem;">
-                {{ article.published_at | date: '%B %d, %Y' }}
-              </p>
-              {% if article.tags.size > 0 %}
-                <span style="background: #e8f5e8; color: #4caf50; padding: 0.4rem 1rem; border-radius: 1rem; font-size: 1.1rem; font-weight: 600;">
-                  {{ article.tags.first }}
-                </span>
-              {% endif %}
-            </div>
-          {% endfor %}
+            <!-- Blog Post 4: Date Ideas -->
+            <article class="blog-post">
+                <div class="blog-image">
+                    💕 Cape Coral Dates
+                </div>
+                <div class="blog-content">
+                    <h2 class="blog-title">
+                        <a href="/blogs/wtf-blog/alcohol-free-date-ideas-cape-coral">5 Alcohol-Free Date Ideas in Cape Coral</a>
+                    </h2>
+                    <div class="blog-meta">
+                        September 30, 2025 | By WTF Team | 8 min read
+                    </div>
+                    <div class="blog-tags">
+                        <span class="blog-tag">Cape Coral</span>
+                        <span class="blog-tag">Date Ideas</span>
+                        <span class="blog-tag">Alcohol-Free</span>
+                        <span class="blog-tag">Entertainment</span>
+                    </div>
+                    <p class="blog-excerpt">
+                        Looking for sober-curious or wellness-forward date night options in Cape Coral? Discover 5 creative ideas for memorable alcohol-free dates in Southwest Florida, from kava experiences to sunset adventures.
+                    </p>
+                    <a href="/blogs/wtf-blog/alcohol-free-date-ideas-cape-coral" class="read-more">Read More</a>
+                </div>
+            </article>
         </div>
-      {% endif %}
 
-      <!-- Store Info -->
-      <div class="wtf-store-info" style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); color: #fff; padding: 3rem; border-radius: 2rem; text-align: center;">
-        <h3 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Visit Our Store</h3>
-        <p style="margin-bottom: 2rem; opacity: 0.95;">Experience our products in person!</p>
-        <div style="margin-bottom: 3rem; font-size: 1.4rem; line-height: 1.6;">
-          <p><strong>📍 1520 SE 46th Ln, Unit B</strong></p>
-          <p>Cape Coral, FL 33904</p>
-          <p><strong>📞 (239) 955-0314</strong></p>
+        <div class="cta-section">
+            <h2>Ready to Experience What You've Read About?</h2>
+            <p>Visit WTF in Cape Coral and discover the amazing world of kava and kratom for yourself. Our expert team is ready to guide you through your first botanical beverage experience.</p>
+            <a href="/pages/kava-drinks" class="cta-button">Try Our Kava</a>
+            <a href="/pages/kratom-teas" class="cta-button">Try Our Kratom</a>
+            <a href="/pages/kava-bar-cape-coral" class="cta-button">Visit Our Location</a>
         </div>
-        <a href="{{ routes.root_url }}" style="display: inline-flex; align-items: center; padding: 1.5rem 3rem; background: #fff; color: #4caf50; text-decoration: none; border-radius: 2.4rem; font-weight: 700; font-size: 1.5rem; transition: all 0.3s ease;">
-          Shop Now →
-        </a>
-      </div>
-    </aside>
-  </div>
-</div>
-
-<style>
-  .wtf-blog-post:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
-  }
-
-  .wtf-blog-post:hover .wtf-post-image img {
-    transform: scale(1.05);
-  }
-
-  .wtf-blog-post h2 a:hover {
-    color: #4caf50 !important;
-  }
-
-  .wtf-recent-post a:hover {
-    color: #4caf50 !important;
-  }
-
-  .wtf-post-share button:hover {
-    transform: scale(1.1);
-  }
-
-  @media (max-width: 768px) {
-    .wtf-blog-container {
-      padding: 1rem !important;
-    }
-    
-    .wtf-blog-layout {
-      grid-template-columns: 1fr !important;
-      gap: 3rem !important;
-    }
-    
-    .wtf-blog-header {
-      padding: 4rem 2rem !important;
-    }
-    
-    .wtf-blog-header h1 {
-      font-size: 3.5rem !important;
-    }
-    
-    .wtf-blog-search form {
-      flex-direction: column !important;
-    }
-    
-    .wtf-blog-categories > div {
-      justify-content: center !important;
-    }
-    
-    .wtf-post-content {
-      padding: 2rem !important;
-    }
-    
-    .wtf-post-content h2 {
-      font-size: 2.2rem !important;
-    }
-  }
-</style>
-
-<script>
-// Social sharing functions
-function shareArticle(url, title) {
-  const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-  window.open(shareUrl, 'facebook-share', 'width=580,height=296');
-}
-
-function shareOnTwitter(url, title) {
-  const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
-  window.open(shareUrl, 'twitter-share', 'width=580,height=296');
-}
-
-// Newsletter signup handling
-document.addEventListener('DOMContentLoaded', function() {
-  const newsletterForm = document.querySelector('.wtf-newsletter form');
-  if (newsletterForm) {
-    newsletterForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = this.querySelector('input[type="email"]').value;
-      
-      // Here you would integrate with your email service (Mailchimp, Klaviyo, etc.)
-      fetch('/api/newsletter-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: email })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Thanks for subscribing! You\'ll hear from us soon.');
-          this.reset();
-        } else {
-          alert('Something went wrong. Please try again.');
-        }
-      })
-      .catch(error => {
-        console.error('Newsletter signup error:', error);
-        alert('Something went wrong. Please try again.');
-      });
-    });
-  }
-});
-</script>
+    </div>
+</body>
+</html>
