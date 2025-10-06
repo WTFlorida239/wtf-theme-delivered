@@ -94,6 +94,8 @@
                 {{ product.description }}
               </div>
             {% endif %}
+            
+            {%- render 'product-category-specs', product: product -%}
           
           {% when 'share' %}
             <div class="product__share">

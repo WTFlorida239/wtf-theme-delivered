@@ -1,0 +1,112 @@
+{% comment %}
+  Product Category Specifications
+  Renders category metafields with safe fallbacks
+  Docs: https://help.shopify.com/en/manual/products/details/product-category#category-metafields
+{% endcomment %}
+
+{% if product.category %}
+  {% assign has_specs = false %}
+  
+  {% comment %} Check if any metafields exist {% endcomment %}
+  {% if product.category.metafields.care_instructions or 
+        product.category.metafields.material or 
+        product.category.metafields.size_guide or 
+        product.category.metafields.fit or 
+        product.category.metafields.additional_info %}
+    {% assign has_specs = true %}
+  {% endif %}
+  
+  {% if has_specs %}
+    <div class="product-specs">
+      <h3 class="product-specs__heading">Product Specifications</h3>
+      
+      {% if product.category.metafields.care_instructions %}
+        <div class="spec-row">
+          <span class="spec-label">Care Instructions:</span>
+          <span class="spec-value">{{ product.category.metafields.care_instructions }}</span>
+        </div>
+      {% endif %}
+      
+      {% if product.category.metafields.material %}
+        <div class="spec-row">
+          <span class="spec-label">Ingredients:</span>
+          <span class="spec-value">{{ product.category.metafields.material }}</span>
+        </div>
+      {% endif %}
+      
+      {% if product.category.metafields.size_guide %}
+        <div class="spec-row">
+          <span class="spec-label">Dosage Guide:</span>
+          <span class="spec-value">{{ product.category.metafields.size_guide }}</span>
+        </div>
+      {% endif %}
+      
+      {% if product.category.metafields.fit %}
+        <div class="spec-row">
+          <span class="spec-label">Consistency:</span>
+          <span class="spec-value">{{ product.category.metafields.fit }}</span>
+        </div>
+      {% endif %}
+      
+      {% if product.category.metafields.additional_info %}
+        <div class="spec-row">
+          <span class="spec-label">Additional Info:</span>
+          <span class="spec-value">{{ product.category.metafields.additional_info }}</span>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endif %}
+
+<style>
+  .product-specs {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+  
+  .product-specs__heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .spec-row {
+    display: flex;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .spec-row:last-child {
+    border-bottom: none;
+  }
+  
+  .spec-label {
+    font-weight: 600;
+    min-width: 150px;
+    color: #666;
+  }
+  
+  .spec-value {
+    flex: 1;
+    color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    .product-specs {
+      padding: 1rem;
+    }
+    
+    .spec-row {
+      flex-direction: column;
+    }
+    
+    .spec-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+  }
+</style>

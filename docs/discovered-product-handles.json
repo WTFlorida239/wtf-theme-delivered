@@ -1,0 +1,58 @@
+{
+  "discovery_date": "2025-10-06",
+  "site_url": "https://wtfswag.com/",
+  "discovery_method": "Browser automation + products.json analysis",
+  "note": "The live site uses custom product pages (e.g., /pages/kratom-teas) with dynamic builders rather than traditional Shopify product pages. Product handles were extracted from the theme's products.json file instead.",
+  "limitation": "Standard /collections/all endpoint returns 404. Site uses custom page-based ordering system.",
+  "product_handles": [
+    "barneys-12mg-pack-of-10-light-blue",
+    "barneys-12mg-30-count-bottle",
+    "barneys-bontanicals-blue-razz-delta-9-syrup",
+    "barneys-bontanicals-blue-razz-delta-9-syrup-4oz",
+    "barneys-bontanicals-blueberry-cheesecake-delta-9-syrup-4oz"
+  ],
+  "product_categories": [
+    {
+      "category": "Kratom Teas",
+      "url": "https://wtfswag.com/pages/kratom-teas",
+      "type": "Custom builder page",
+      "note": "Dynamic product with strain/flavor customization"
+    },
+    {
+      "category": "Kava Drinks",
+      "url": "https://wtfswag.com/pages/kava-drinks",
+      "type": "Custom builder page"
+    },
+    {
+      "category": "THC Drinks",
+      "url": "https://wtfswag.com/pages/thc-drinks",
+      "type": "Custom builder page"
+    },
+    {
+      "category": "THC Shots",
+      "url": "https://wtfswag.com/pages/thc-shots",
+      "type": "Custom builder page"
+    },
+    {
+      "category": "Canned Drinks",
+      "url": "https://wtfswag.com/pages/canned-drinks",
+      "type": "Custom builder page"
+    },
+    {
+      "category": "Draft Pours",
+      "url": "https://wtfswag.com/pages/draft-pours",
+      "type": "Custom builder page"
+    },
+    {
+      "category": "Take Home Items",
+      "url": "https://wtfswag.com/pages/take-home-items",
+      "type": "Custom builder page"
+    }
+  ],
+  "test_product_urls": [
+    "https://wtfswag.com/products/barneys-12mg-pack-of-10-light-blue",
+    "https://wtfswag.com/products/barneys-12mg-30-count-bottle",
+    "https://wtfswag.com/products/barneys-bontanicals-blue-razz-delta-9-syrup"
+  ],
+  "recommendation": "Test category metafields on the standard /products/* URLs. The custom builder pages (/pages/*) may not use the main-product section."
+}
