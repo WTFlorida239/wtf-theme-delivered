@@ -1,0 +1,37 @@
+{%- comment -%} Render BreadcrumbList JSON-LD dynamically {%- endcomment -%}
+{%- assign crumbs = '' | split: '' -%}
+
+{%- assign home_crumb = '{"@type":"ListItem","position":1,"name":"Home","item":"' | append: shop.url | append: '"}' -%}
+{%- assign crumbs = crumbs | push: home_crumb -%}
+
+{%- if collection %}
+  {%- assign col_url = collection.url | absolute_url -%}
+  {%- assign col_crumb = '{"@type":"ListItem","position":2,"name":' | append: collection.title | json | append: ',"item":"' | append: col_url | append: '"}' -%}
+  {%- assign crumbs = crumbs | push: col_crumb -%}
+{%- endif -%}
+
+{%- if product %}
+  {%- assign p_name = product.title | json -%}
+  {%- assign p_url = product.url | absolute_url -%}
+  {%- assign pos = crumbs.size | plus: 1 -%}
+  {%- assign p_crumb = '{"@type":"ListItem","position":' | append: pos | append: ',"name":' | append: p_name | append: ',"item":"' | append: p_url | append: '"}' -%}
+  {%- assign crumbs = crumbs | push: p_crumb -%}
+{%- elsif article %}
+  {%- assign b_url = blog.url | absolute_url -%}
+  {%- assign b_crumb = '{"@type":"ListItem","position":2,"name":' | append: blog.title | json | append: ',"item":"' | append: b_url | append: '"}' -%}
+  {%- assign a_url = article.url | absolute_url -%}
+  {%- assign a_crumb = '{"@type":"ListItem","position":3,"name":' | append: article.title | json | append: ',"item":"' | append: a_url | append: '"}' -%}
+  {%- assign crumbs = crumbs | push: b_crumb | push: a_crumb -%}
+{%- elsif page %}
+  {%- assign pg_url = page.url | absolute_url -%}
+  {%- assign pg_crumb = '{"@type":"ListItem","position":2,"name":' | append: page.title | json | append: ',"item":"' | append: pg_url | append: '"}' -%}
+  {%- assign crumbs = crumbs | push: pg_crumb -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"BreadcrumbList",
+  "itemListElement":[{{ crumbs | join: ',' }}]
+}
+</script>
