@@ -31,12 +31,15 @@
   "mpn": "{{ product.selected_or_first_available_variant.barcode | default: product.handle }}",
   "brand": {
     "@type": "Brand",
+    "@id": "{{ business_url }}/#brand",
     "name": "{{ business_name }}",
+    "alternateName": ["WTF Swag", "WTF", "Welcome To Florida"],
     "url": "{{ business_url }}",
     "logo": "{{ 'wtf-logo.png' | asset_url }}"
   },
   "manufacturer": {
     "@type": "Organization",
+    "@id": "{{ business_url }}/#organization",
     "name": "{{ business_name }}",
     "url": "{{ business_url }}",
     "address": {

@@ -6,7 +6,16 @@
   "name": {{ product.title | json }},
   "description": {{ product.description | strip_html | strip | truncate: 500 | json }},
   "sku": {{ product.selected_or_first_available_variant.sku | default: product.id | json }},
-  "brand": {"@type":"Brand","name":"WTF"},
+  "brand": {
+    "@type": "Brand",
+    "@id": "{{ shop.secure_url }}/#brand",
+    "name": "WTF | Welcome To Florida"
+  },
+  "manufacturer": {
+    "@type": "Organization",
+    "@id": "{{ shop.secure_url }}/#organization",
+    "name": "WTF | Welcome To Florida"
+  },
   {% if product.featured_image %}
   "image": ["{{ product.featured_image | image_url: width: 1200 }}"],
   {% endif %}

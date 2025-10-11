@@ -12,14 +12,23 @@ Core sitewide JSON-LD: Organization + WebSite + SearchAction
 {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": "{{ shop.secure_url }}/#organization",
   "name": {{ org_name | json }},
+  "alternateName": ["WTF Swag", "WTF", "Welcome To Florida", "WTF Cape Coral"],
   "url": {{ org_url | json }},
   {% if logo_url %}"logo": {{ logo_url | json }},{% endif %}
-  "brand": {"@type": "Brand", "name": "WTF Swag"},
+  "brand": {
+    "@type": "Brand",
+    "@id": "{{ shop.secure_url }}/#brand",
+    "name": "WTF | Welcome To Florida"
+  },
   "sameAs": [
-    {% if settings.social_instagram != blank %}{{ settings.social_instagram | json }}{% endif %}
-    {% if settings.social_tiktok != blank %}{% if settings.social_instagram != blank %},{% endif %}{{ settings.social_tiktok | json }}{% endif %}
-    {% if settings.social_youtube != blank %}{% if settings.social_instagram or settings.social_tiktok %},{% endif %}{{ settings.social_youtube | json }}{% endif %}
+    "https://www.facebook.com/p/WTF-Welcome-to-Florida-61566655386481/",
+    "https://www.instagram.com/wtfswagbrand/",
+    "https://www.tiktok.com/@wtf.welcome.to.fl"
+    {% if settings.social_instagram != blank %},{{ settings.social_instagram | json }}{% endif %}
+    {% if settings.social_tiktok != blank %},{{ settings.social_tiktok | json }}{% endif %}
+    {% if settings.social_youtube != blank %},{{ settings.social_youtube | json }}{% endif %}
   ]
 }
 </script>

@@ -15,7 +15,7 @@
       {% if section.settings.logo != blank %}
         <a href="{{ routes.root_url }}" class="header__logo-link">
           <img src="{{ section.settings.logo | image_url: width: 200 }}" 
-               alt="{{ shop.name }}"
+               alt="WTF | Welcome To Florida - {{ shop.name }} logo"
                class="header__logo-image"
                width="200"
                height="auto"
@@ -24,7 +24,7 @@
       {% else %}
         <a href="{{ routes.root_url }}" class="header__logo-link">
           <img src="{{ 'WTFLogo.png' | asset_url }}" 
-               alt="{{ shop.name }}"
+               alt="WTF | Welcome To Florida logo"
                class="header__logo-image"
                width="120"
                height="120">

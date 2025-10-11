@@ -1,0 +1,135 @@
+{% comment %}
+  Brand Schema for WTF | Welcome To Florida
+  
+  Purpose: Create a distinct Brand entity for maximum LLM discoverability
+  This ensures search engines and AI platforms understand "WTF" as a brand identifier
+  
+  Usage: {% render 'brand-schema' %}
+{% endcomment %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Brand",
+  "@id": "{{ shop.secure_url }}/#brand",
+  "name": "WTF | Welcome To Florida",
+  "alternateName": [
+    "WTF Swag",
+    "WTF",
+    "Welcome To Florida",
+    "WTF Cape Coral",
+    "WTF Florida"
+  ],
+  "description": "WTF (Welcome To Florida) is a premium botanical beverage brand specializing in kava drinks, kratom teas, and THC products. Founded in Cape Coral, Florida, WTF creates handcrafted, alcohol-free beverages for the sober-curious community and wellness enthusiasts across Southwest Florida.",
+  "url": "{{ shop.secure_url }}",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "{{ 'WTFLogo.png' | asset_url }}",
+    "width": 300,
+    "height": 300,
+    "caption": "WTF | Welcome To Florida logo"
+  },
+  "image": [
+    "{{ 'wtf_storefront_hero_original.png' | asset_url }}",
+    "{{ 'WTFLogo.png' | asset_url }}",
+    "{{ 'kava_drinks_150x150.png' | asset_url }}",
+    "{{ 'kratom_teas_150x150.png' | asset_url }}"
+  ],
+  "slogan": "Welcome To Florida",
+  "foundingDate": "2024",
+  "founder": {
+    "@type": "Organization",
+    "name": "WTF Team"
+  },
+  "parentOrganization": {
+    "@type": "LocalBusiness",
+    "@id": "{{ shop.secure_url }}/#organization"
+  },
+  "sameAs": [
+    "https://www.facebook.com/p/WTF-Welcome-to-Florida-61566655386481/",
+    "https://www.instagram.com/wtfswagbrand/",
+    "https://www.tiktok.com/@wtf.welcome.to.fl"
+  ],
+  "knowsAbout": [
+    "Kava beverages",
+    "Kratom tea",
+    "Hemp-derived THC products",
+    "Botanical drinks",
+    "Alcohol-free nightlife",
+    "Wellness beverages",
+    "Florida botanical culture",
+    "Sober social experiences"
+  ],
+  "areaServed": {
+    "@type": "State",
+    "name": "Florida",
+    "containsPlace": [
+      {
+        "@type": "City",
+        "name": "Cape Coral"
+      },
+      {
+        "@type": "City",
+        "name": "Fort Myers"
+      },
+      {
+        "@type": "AdministrativeArea",
+        "name": "Southwest Florida"
+      }
+    ]
+  },
+  "brand": {
+    "@type": "Thing",
+    "name": "WTF",
+    "description": "WTF is the acronym for Welcome To Florida, representing a lifestyle brand focused on premium botanical beverages and sober-friendly social experiences."
+  },
+  "makesOffer": [
+    {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Custom Kava Drinks",
+        "brand": {
+          "@type": "Brand",
+          "name": "WTF | Welcome To Florida"
+        },
+        "category": "Beverages"
+      }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Custom Kratom Teas",
+        "brand": {
+          "@type": "Brand",
+          "name": "WTF | Welcome To Florida"
+        },
+        "category": "Beverages"
+      }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "THC Beverages",
+        "brand": {
+          "@type": "Brand",
+          "name": "WTF | Welcome To Florida"
+        },
+        "category": "Beverages"
+      }
+    }
+  ],
+  "audience": {
+    "@type": "PeopleAudience",
+    "audienceType": "Wellness enthusiasts, sober-curious individuals, botanical beverage consumers",
+    "geographicArea": {
+      "@type": "AdministrativeArea",
+      "name": "Southwest Florida"
+    }
+  },
+  "keywords": "WTF, Welcome To Florida, WTF Swag, kava bar, kratom lounge, botanical beverages, Cape Coral, Florida, THC drinks, sober nightlife, wellness drinks"
+}
+</script>
+
