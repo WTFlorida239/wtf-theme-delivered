@@ -1,0 +1,63 @@
+{%- comment -%}
+Generates meta tags, canonical, Open Graph, Twitter Cards, and brand-consistent titles.
+Brand: "WTF | Welcome To Florida" (WTF / WTF Swag)
+{%- endcomment -%}
+
+{%- assign brand_root = "WTF | Welcome To Florida" -%}
+{%- assign site_name  = shop.name | default: brand_root -%}
+{%- assign title_sep  = " | " -%}
+
+{%- capture computed_title -%}
+  {%- if page_title and page_title != blank -%}
+    {{ page_title | strip }}{{ title_sep }}{{ brand_root }}
+  {%- else -%}
+    {{ site_name }}{{ title_sep }}{{ brand_root }}
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign computed_title = computed_title | strip -%}
+
+{%- assign description_fallback = "WTF Swag from Welcome To Florida — bold, Florida-first gear and gifts. Shop WTF." -%}
+{%- assign computed_description = page_description | default: shop.meta_description | default: description_fallback -%}
+{%- assign computed_description = computed_description | strip | truncate: 300, "" -%}
+
+{%- assign canonical = canonical_url | default: shop.url -%}
+
+<title>{{ computed_title }}</title>
+<link rel="canonical" href="{{ canonical }}" />
+
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<meta name="description" content="{{ computed_description }}">
+
+{%- comment -%} Open Graph {%- endcomment -%}
+<meta property="og:type" content="{% if template.name == 'product' %}product{% elsif template.name contains 'article' %}article{% else %}website{% endif %}">
+<meta property="og:site_name" content="{{ site_name }}">
+<meta property="og:title" content="{{ computed_title }}">
+<meta property="og:description" content="{{ computed_description }}">
+<meta property="og:url" content="{{ canonical }}">
+
+{%- assign share_image = nil -%}
+{%- if product and product.featured_image -%}
+  {%- assign share_image = product.featured_image | image_url: width: 1200 -%}
+{%- elsif article and article.image -%}
+  {%- assign share_image = article.image | image_url: width: 1200 -%}
+{%- elsif settings.social_default_image != blank -%}
+  {%- assign share_image = settings.social_default_image | image_url: width: 1200 -%}
+{%- endif -%}
+{% if share_image %}
+  <meta property="og:image" content="{{ share_image }}">
+  <meta name="twitter:image" content="{{ share_image }}">
+{% endif %}
+
+{%- comment -%} Twitter {%- endcomment -%}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ computed_title }}">
+<meta name="twitter:description" content="{{ computed_description }}">
+
+{%- comment -%} Brand reinforcement meta {%- endcomment -%}
+<meta name="application-name" content="{{ brand_root }}">
+<meta name="apple-mobile-web-app-title" content="{{ brand_root }}">
+<meta name="theme-color" content="{{ settings.theme_color | default: '#000000' }}">
+
+{%- comment -%} Hreflang for primary locale (extend if multilingual) {%- endcomment -%}
+<link rel="alternate" href="{{ canonical }}" hreflang="{{ request.locale.iso_code | default: 'en' }}" />
+<link rel="alternate" href="{{ canonical }}" hreflang="x-default" />
