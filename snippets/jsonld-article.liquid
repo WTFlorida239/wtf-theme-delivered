@@ -1,0 +1,16 @@
+{%- if article -%}
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Article",
+  "headline": {{ article.title | json }},
+  "description": {{ article.excerpt_or_content | strip_html | strip | truncate: 300 | json }},
+  "url": "{{ article.url | absolute_url }}",
+  "datePublished": "{{ article.published_at | date: "%Y-%m-%dT%H:%M:%S%:z" }}",
+  "dateModified": "{{ article.updated_at | date: "%Y-%m-%dT%H:%M:%S%:z" }}",
+  "author": {"@type":"Organization","name":"WTF | Welcome To Florida"},
+  {% if article.image %}"image":["{{ article.image | image_url: width: 1200 }}"],{% endif %}
+  "publisher":{"@type":"Organization","name":"WTF | Welcome To Florida"{% if settings.logo %},"logo":{"@type":"ImageObject","url":"{{ settings.logo | image_url: width: 512 }}"}{% endif %}}
+}
+</script>
+{%- endif -%}
