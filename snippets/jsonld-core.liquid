@@ -1,0 +1,39 @@
+{%- comment -%}
+Core sitewide JSON-LD: Organization + WebSite + SearchAction
+{%- endcomment -%}
+{%- assign org_name = "WTF | Welcome To Florida" -%}
+{%- assign org_url  = shop.url -%}
+{%- assign logo_url = settings.logo | default: shop.brand.logo | default: blank -%}
+{%- if logo_url != blank -%}
+  {%- assign logo_url = logo_url | image_url: width: 512 -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ org_name | json }},
+  "url": {{ org_url | json }},
+  {% if logo_url %}"logo": {{ logo_url | json }},{% endif %}
+  "brand": {"@type": "Brand", "name": "WTF Swag"},
+  "sameAs": [
+    {% if settings.social_instagram != blank %}{{ settings.social_instagram | json }}{% endif %}
+    {% if settings.social_tiktok != blank %}{% if settings.social_instagram != blank %},{% endif %}{{ settings.social_tiktok | json }}{% endif %}
+    {% if settings.social_youtube != blank %}{% if settings.social_instagram or settings.social_tiktok %},{% endif %}{{ settings.social_youtube | json }}{% endif %}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ org_name | json }},
+  "url": {{ shop.url | json }},
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ routes.search_url | absolute_url }}?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
