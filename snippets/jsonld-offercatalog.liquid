@@ -1,0 +1,209 @@
+{% comment %}
+  OfferCatalog JSON-LD Schema for WTF | Welcome To Florida
+  
+  Purpose: Define high-level product categories for LLM understanding
+  No medical/effects claims - neutral, compliant language only
+  
+  Usage: {% render 'jsonld-offercatalog' %}
+{% endcomment %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OfferCatalog",
+  "@id": "{{ shop.secure_url }}/#offercatalog",
+  "name": "WTF | Welcome To Florida Product Catalog",
+  "description": "Licensed, lab-tested THC products, kava drinks, kratom teas, edibles, flower, pre-rolls, and botanical beverages. 21+ only.",
+  "provider": {
+    "@type": "BarOrPub",
+    "@id": "{{ shop.secure_url }}/#localbusiness"
+  },
+  "itemListElement": [
+    {
+      "@type": "OfferCatalog",
+      "name": "THC Beverages",
+      "description": "Hemp-derived Delta-9 THC drinks in various potencies. Lab-tested, licensed, 21+.",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "THC Drinks",
+            "category": "Beverages",
+            "brand": {
+              "@type": "Brand",
+              "@id": "{{ shop.secure_url }}/#brand"
+            }
+          },
+          "eligibleCustomerType": "https://schema.org/Adult",
+          "eligibleRegion": {
+            "@type": "State",
+            "name": "Florida"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "OfferCatalog",
+      "name": "Edibles",
+      "description": "THC-infused edibles including cookies, gummies, infused candy, syrups, and coffee. Lab-tested, 21+.",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "THC Cookies",
+            "category": "Edibles"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "THC Gummies",
+            "category": "Edibles"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Infused Candy",
+            "category": "Edibles"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "THC Syrups",
+            "category": "Edibles"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "THC-Infused Coffee",
+            "category": "Edibles"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "OfferCatalog",
+      "name": "Kava Drinks",
+      "description": "Custom kava beverages with customizable sizes, strengths, and flavor combinations. Premium Pacific Island kava.",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Custom Kava Drinks",
+            "category": "Beverages",
+            "brand": {
+              "@type": "Brand",
+              "@id": "{{ shop.secure_url }}/#brand"
+            }
+          },
+          "eligibleCustomerType": "https://schema.org/Adult"
+        }
+      ]
+    },
+    {
+      "@type": "OfferCatalog",
+      "name": "Kratom Teas",
+      "description": "Premium kratom teas in green, red, white, and yellow strains with 25+ flavor options. Custom strength and size.",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Green Kratom Tea",
+            "category": "Beverages"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Red Kratom Tea",
+            "category": "Beverages"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "White Kratom Tea",
+            "category": "Beverages"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Yellow Kratom Tea",
+            "category": "Beverages"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "OfferCatalog",
+      "name": "Flower & Pre-Rolls",
+      "description": "Premium cannabis flower and pre-rolled products. Lab-tested, licensed, 21+.",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Cannabis Flower",
+            "category": "Cannabis Products"
+          },
+          "eligibleCustomerType": "https://schema.org/Adult",
+          "eligibleRegion": {
+            "@type": "State",
+            "name": "Florida"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Pre-Rolled Cannabis",
+            "category": "Cannabis Products"
+          },
+          "eligibleCustomerType": "https://schema.org/Adult",
+          "eligibleRegion": {
+            "@type": "State",
+            "name": "Florida"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "OfferCatalog",
+      "name": "Mushroom Chocolate Bars",
+      "description": "Premium mushroom-infused chocolate bars. Lab-tested, 21+.",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "Mushroom Chocolate Bars",
+            "category": "Edibles"
+          },
+          "eligibleCustomerType": "https://schema.org/Adult"
+        }
+      ]
+    }
+  ],
+  "audience": {
+    "@type": "PeopleAudience",
+    "audienceType": "Adults 21+",
+    "requiredMinAge": 21
+  }
+}
+</script>
+

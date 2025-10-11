@@ -16,25 +16,25 @@
 
     <title>
       {% if template == 'index' %}
-        Cape Coral's Premier Kava Bar | {{ shop.name }} | Best Kava Drinks & Kratom Teas in Southwest Florida
+        WTF | Welcome To Florida - Cape Coral's Premier Kava Bar & Kratom Lounge | Best Botanical Beverages in Southwest Florida
       {% elsif template contains 'kava' %}
-        {{ page_title }} | Best Kava Bar Cape Coral | {{ shop.name }}
+        {{ page_title }} | WTF Kava Bar Cape Coral | {{ shop.name }}
       {% elsif template contains 'kratom' %}
-        {{ page_title }} | Premium Kratom Teas Cape Coral | {{ shop.name }}
+        {{ page_title }} | WTF Kratom Teas Cape Coral | {{ shop.name }}
       {% else %}
         {{ page_title }}
         {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
         {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-        {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+        {%- unless page_title contains shop.name or page_title contains 'WTF' %} | WTF | {{ shop.name }}{% endunless -%}
       {% endif %}
     </title>
 
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
     {% elsif template == 'index' %}
-      <meta name="description" content="Cape Coral's premier kava bar offering custom kava drinks, kratom teas, THC beverages, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida with the best kava bar experience.">
+      <meta name="description" content="WTF (Welcome To Florida) is Cape Coral's premier kava bar and kratom lounge. Custom kava drinks, kratom teas, THC beverages, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida. Order online or visit our botanical beverage lounge.">
     {% else %}
-      <meta name="description" content="Visit WTF | Welcome To Florida - Cape Coral's best kava bar for premium botanical beverages, custom drinks, and sober-friendly nightlife in Southwest Florida.">
+      <meta name="description" content="WTF | Welcome To Florida - Cape Coral's best kava bar for premium botanical beverages, custom kava drinks, kratom teas, and sober-friendly nightlife in Southwest Florida.">
     {% endif %}
     
     <!-- Local SEO Meta Tags -->
@@ -42,7 +42,7 @@
     <meta name="geo.placename" content="Cape Coral">
     <meta name="geo.position" content="26.5629;-81.9495">
     <meta name="ICBM" content="26.5629, -81.9495">
-    <meta name="keywords" content="kava bar cape coral, kava bars near me, cape coral kava bar, kava lounge cape coral, kava bar fort myers, kava bars florida, best kava bar cape coral, kratom cape coral, sober nightlife cape coral">
+    <meta name="keywords" content="WTF, Welcome To Florida, WTF Swag, kava bar cape coral, kava bars near me, cape coral kava bar, kava lounge cape coral, kava bar fort myers, kava bars florida, best kava bar cape coral, kratom cape coral, sober nightlife cape coral, WTF Cape Coral, botanical beverages florida">
     
     <!-- Open Graph Tags -->
     <meta property="og:type" content="business.business">
@@ -72,10 +72,14 @@
     {% if settings.tiktok_pixel_id != blank %}
       <meta name="tiktok-pixel-id" content="{{ settings.tiktok_pixel_id }}">
     {% endif %}
+    {% render 'seo-meta-tags' %}
     {% render 'enhanced-meta-tags' %}
     {% render 'structured-data' %}
     
     <!-- Comprehensive Schema Markup -->
+    {% render 'brand-schema' %}
+    {% render 'jsonld-local-business' %}
+    {% render 'jsonld-offercatalog' %}
     {% render 'local-business-schema' %}
     
     {% if template contains 'product' %}
@@ -554,6 +558,9 @@
         console.log('WTF Debug tools available: WTF_DEBUG');
       </script>
     {% endif %}
+
+    <!-- 21+ Age Gate Banner -->
+    {% render 'age-gate-banner' %}
 
   </body>
 </html>

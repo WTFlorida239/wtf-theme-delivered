@@ -1,0 +1,136 @@
+{% comment %}
+  Age Gate Banner for WTF | Welcome To Florida
+  
+  Purpose: Lightweight, localStorage-based 21+ compliance notice
+  Non-blocking, dismissible banner
+  
+  Usage: Include before </body> in theme.liquid
+{% endcomment %}
+
+<div id="age-gate-banner" class="age-gate-banner" style="display: none;">
+  <div class="age-gate-banner__content">
+    <div class="age-gate-banner__icon">🔞</div>
+    <div class="age-gate-banner__text">
+      <strong>21+ Only</strong> — This site offers THC products, kava, kratom, and botanical beverages. 
+      You must be 21 years or older with valid ID to purchase. Licensed. Lab-tested. Enjoy responsibly.
+    </div>
+    <button id="age-gate-confirm" class="age-gate-banner__button">I'm 21+</button>
+  </div>
+</div>
+
+<style>
+  .age-gate-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+    color: white;
+    padding: 1.5rem;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+    z-index: 9999;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .age-gate-banner__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .age-gate-banner__icon {
+    font-size: 2.5rem;
+  }
+
+  .age-gate-banner__text {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-width: 250px;
+  }
+
+  .age-gate-banner__button {
+    background: white;
+    color: #ff6b35;
+    border: none;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .age-gate-banner__button:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    .age-gate-banner__content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .age-gate-banner__text {
+      font-size: 0.9rem;
+    }
+
+    .age-gate-banner__button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    // Check if user has already confirmed age
+    const ageConfirmed = localStorage.getItem('wtf_age_confirmed');
+    const banner = document.getElementById('age-gate-banner');
+    const confirmButton = document.getElementById('age-gate-confirm');
+
+    if (!ageConfirmed && banner) {
+      // Show banner after short delay
+      setTimeout(function() {
+        banner.style.display = 'block';
+      }, 1000);
+    }
+
+    if (confirmButton) {
+      confirmButton.addEventListener('click', function() {
+        // Set localStorage flag
+        localStorage.setItem('wtf_age_confirmed', 'true');
+        
+        // Hide banner with animation
+        banner.style.animation = 'slideDown 0.3s ease-out';
+        setTimeout(function() {
+          banner.style.display = 'none';
+        }, 300);
+      });
+    }
+  })();
+</script>
+
+<style>
+  @keyframes slideDown {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+</style>
+
