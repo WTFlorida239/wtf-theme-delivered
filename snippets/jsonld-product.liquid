@@ -1,0 +1,28 @@
+{%- if product -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | strip | truncate: 500 | json }},
+  "sku": {{ product.selected_or_first_available_variant.sku | default: product.id | json }},
+  "brand": {"@type":"Brand","name":"WTF"},
+  {% if product.featured_image %}
+  "image": ["{{ product.featured_image | image_url: width: 1200 }}"],
+  {% endif %}
+  "url": "{{ product.url | absolute_url }}",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": {{ shop.currency | json }},
+    "price": {{ product.selected_or_first_available_variant.price | money_without_currency | replace: ',', '' | json }},
+    "availability": "https://schema.org/{% if product.selected_or_first_available_variant.available %}InStock{% else %}OutOfStock{% endif %}",
+    "url": "{{ product.url | absolute_url }}"
+  },
+  "aggregateRating": {
+    "@type":"AggregateRating",
+    "ratingValue": {{ product.metafields.reviews.average | default: 5 | json }},
+    "reviewCount": {{ product.metafields.reviews.count | default: 1 | json }}
+  }
+}
+</script>
+{%- endif -%}
