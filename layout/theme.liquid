@@ -239,7 +239,13 @@
       <noscript>{{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}</noscript>
     {%- endif -%}
 
-    <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+      {%- render 'seo-meta-tags' -%}
+      {%- render 'jsonld-core' -%}
+      {%- render 'jsonld-breadcrumbs' -%}
+      {%- if template.name == 'product' -%}{% render 'jsonld-product' %}{%- endif -%}
+      {%- if template.name contains 'article' -%}{% render 'jsonld-article' %}{%- endif -%}
+
+   <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
