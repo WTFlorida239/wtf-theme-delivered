@@ -1,25 +1,182 @@
-{%- comment -%} Central SEO & Social Head {%- endcomment -%}
-{%- assign page_title = page_title | default: shop.name -%}
-{%- assign meta_desc = shop.meta_description | default: shop.description | strip_html | truncate: 155 -%}
+{%- comment -%}
+  Central SEO & Social Head Meta System
+  
+  Usage: {% render 'seo-head' %}
+  
+  Features:
+  - Dynamic title/description per template type
+  - Canonical URLs with variant/query handling
+  - Open Graph + Twitter Cards
+  - Geo/local meta tags
+  - Robots meta control
+  - Fallbacks from metafields/settings
+{%- endcomment -%}
 
+{%- liquid
+  # Title Logic
+  assign page_title = page_title | default: shop.name
+  
+  if template.name == 'index'
+    assign page_title = "Cape Coral's Premier Kava Bar | " | append: shop.name | append: " | Best Kava Drinks & Kratom Teas in Southwest Florida"
+  elsif template.name contains 'product'
+    assign page_title = product.title | append: " | " | append: shop.name
+    if product.metafields.seo.title != blank
+      assign page_title = product.metafields.seo.title
+    endif
+  elsif template.name contains 'collection'
+    assign page_title = collection.title | append: " | " | append: shop.name
+    if collection.metafields.seo.title != blank
+      assign page_title = collection.metafields.seo.title
+    endif
+  elsif template.name contains 'article'
+    assign page_title = article.title | append: " | " | append: shop.name | append: " Blog"
+  elsif template.name contains 'page'
+    assign page_title = page.title | append: " | " | append: shop.name
+    if page.metafields.seo.title != blank
+      assign page_title = page.metafields.seo.title
+    endif
+  endif
+  
+  # Truncate title to 60 chars for mobile
+  if page_title.size > 60
+    assign page_title = page_title | truncate: 60, '...'
+  endif
+  
+  # Description Logic
+  assign meta_desc = page_description | default: shop.description | strip_html | truncate: 155
+  
+  if template.name == 'index'
+    assign meta_desc = "Cape Coral's premier kava bar offering custom kava drinks, kratom teas, THC beverages, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida."
+  elsif template.name contains 'product'
+    if product.metafields.seo.description != blank
+      assign meta_desc = product.metafields.seo.description | strip_html | truncate: 155
+    elsif product.description != blank
+      assign meta_desc = product.description | strip_html | truncate: 155
+    endif
+  elsif template.name contains 'collection'
+    if collection.metafields.seo.description != blank
+      assign meta_desc = collection.metafields.seo.description | strip_html | truncate: 155
+    elsif collection.description != blank
+      assign meta_desc = collection.description | strip_html | truncate: 155
+    endif
+  elsif template.name contains 'article'
+    if article.excerpt != blank
+      assign meta_desc = article.excerpt | strip_html | truncate: 155
+    elsif article.content != blank
+      assign meta_desc = article.content | strip_html | truncate: 155
+    endif
+  elsif template.name contains 'page'
+    if page.metafields.seo.description != blank
+      assign meta_desc = page.metafields.seo.description | strip_html | truncate: 155
+    elsif page.content != blank
+      assign meta_desc = page.content | strip_html | truncate: 155
+    endif
+  endif
+  
+  # Robots Logic
+  assign robots_content = "index, follow"
+  
+  if template.name contains 'search'
+    assign robots_content = "noindex, follow"
+  elsif template.name contains 'cart'
+    assign robots_content = "noindex, nofollow"
+  elsif template.name contains 'account'
+    assign robots_content = "noindex, nofollow"
+  endif
+  
+  # OG Image Logic
+  assign og_img = settings.og_default | default: settings.logo
+  
+  if template.name contains 'product' and product.featured_image
+    assign og_img = product.featured_image
+  elsif template.name contains 'collection' and collection.image
+    assign og_img = collection.image
+  elsif template.name contains 'article' and article.image
+    assign og_img = article.image
+  endif
+-%}
+
+{%- comment %} Title & Description {%- endcomment -%}
 <title>{{ page_title }}</title>
 <meta name="description" content="{{ meta_desc | escape }}">
+
+{%- comment %} Canonical URL (strip variants/UTM) {%- endcomment -%}
 <link rel="canonical" href="{{ canonical_url }}">
 
-{%- if robots -%}<meta name="robots" content="{{ robots }}">{%- endif -%}
+{%- comment %} Robots {%- endcomment -%}
+<meta name="robots" content="{{ robots_content }}">
 
-{%- comment %} Open Graph / Twitter {%- endcomment -%}
+{%- comment %} Geo/Local Meta Tags {%- endcomment -%}
+<meta name="geo.region" content="US-FL">
+<meta name="geo.placename" content="Cape Coral">
+<meta name="geo.position" content="26.5629;-81.9495">
+<meta name="ICBM" content="26.5629, -81.9495">
+
+{%- comment %} Open Graph {%- endcomment -%}
 <meta property="og:site_name" content="{{ shop.name }}">
 <meta property="og:title" content="{{ page_title }}">
 <meta property="og:description" content="{{ meta_desc | escape }}">
 <meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:type" content="{% if template.name contains 'product' %}product{% elsif template.name contains 'article' %}article{% else %}website{% endif %}">
-{%- assign og_img = settings.og_default | default: settings.logo -%}
-{%- if template.name contains 'product' and product.featured_image -%}{% assign og_img = product.featured_image.src %}{% endif -%}
-{%- if template.name contains 'collection' and collection.image -%}{% assign og_img = collection.image.src %}{% endif -%}
-{%- if og_img -%}<meta property="og:image" content="{{ og_img | img_url: '1200x630' }}">{%- endif -%}
+<meta property="og:locale" content="en_US">
 
+{%- if template.name contains 'product' -%}
+  <meta property="product:price:amount" content="{{ product.price | money_without_currency }}">
+  <meta property="product:price:currency" content="{{ shop.currency }}">
+  <meta property="product:availability" content="{% if product.available %}in stock{% else %}out of stock{% endif %}">
+  <meta property="product:brand" content="{{ product.vendor | default: shop.name }}">
+{%- endif -%}
+
+{%- comment %} OG Image (1200x630 for social) {%- endcomment -%}
+{%- if og_img -%}
+  {%- if og_img.src -%}
+    <meta property="og:image" content="{{ og_img | image_url: width: 1200, height: 630, crop: 'center' }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ og_img.alt | default: page_title | escape }}">
+  {%- else -%}
+    <meta property="og:image" content="{{ og_img | image_url: width: 1200, height: 630 }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+  {%- endif -%}
+{%- endif -%}
+
+{%- comment %} Twitter Cards {%- endcomment -%}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page_title }}">
 <meta name="twitter:description" content="{{ meta_desc | escape }}">
-{%- if og_img -%}<meta name="twitter:image" content="{{ og_img | img_url: '1200x630' }}">{%- endif -%}
+{%- if shop.metafields.social.twitter_handle -%}
+  <meta name="twitter:site" content="@{{ shop.metafields.social.twitter_handle }}">
+{%- endif -%}
+{%- if og_img -%}
+  {%- if og_img.src -%}
+    <meta name="twitter:image" content="{{ og_img | image_url: width: 1200, height: 630, crop: 'center' }}">
+    <meta name="twitter:image:alt" content="{{ og_img.alt | default: page_title | escape }}">
+  {%- else -%}
+    <meta name="twitter:image" content="{{ og_img | image_url: width: 1200, height: 630 }}">
+  {%- endif -%}
+{%- endif -%}
+
+{%- comment %} Additional Meta for Local Business {%- endcomment -%}
+{%- if template.name == 'index' -%}
+  <meta property="business:contact_data:street_address" content="1520 SE 46th Ln, Unit B">
+  <meta property="business:contact_data:locality" content="Cape Coral">
+  <meta property="business:contact_data:region" content="FL">
+  <meta property="business:contact_data:postal_code" content="33904">
+  <meta property="business:contact_data:country_name" content="USA">
+  <meta property="place:location:latitude" content="26.5629">
+  <meta property="place:location:longitude" content="-81.9495">
+{%- endif -%}
+
+{%- comment %} Alternate for Mobile {%- endcomment -%}
+<link rel="alternate" media="only screen and (max-width: 640px)" href="{{ canonical_url }}">
+
+{%- comment %} Preconnect for Performance {%- endcomment -%}
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+{%- comment %} Prevent Indexing of Paginated Duplicates {%- endcomment -%}
+{%- if current_page > 1 -%}
+  <meta name="robots" content="noindex, follow">
+{%- endif -%}
