@@ -1,13 +1,15 @@
 /**
- * WTF Analytics - Multi-platform tracking integration
- * Supports GA4, Facebook Pixel, TikTok Pixel
- * Enhanced e-commerce tracking for drink builder
+ * WTF Analytics - MAX
+ * Multi-platform tracking (GA4, Meta, TikTok) + geo/context enrichment + advanced matching.
+ * Backwards compatible with existing WTFAnalytics API and drink builder helpers.
  */
 
-(function() {
+(function () {
   'use strict';
 
-  // Configuration - these should be set via theme settings
+  // ---------------------------
+  // Config and feature flags
+  // ---------------------------
   const config = {
     ga4: {
       measurementId: window.WTF_GA4_ID || null,
@@ -21,129 +23,297 @@
       pixelId: window.WTF_TIKTOK_PIXEL_ID || null,
       enabled: false
     },
-    debug: window.WTF_ANALYTICS_DEBUG || false
+    debug: !!window.WTF_ANALYTICS_DEBUG
   };
 
-  // Initialize configuration from meta tags or global variables
+  // read from meta tags (Shopify settings -> meta we emit in head)
   function initConfig() {
-    // Check for meta tags
     const ga4Meta = document.querySelector('meta[name="ga4-measurement-id"]');
     const fbMeta = document.querySelector('meta[name="facebook-pixel-id"]');
     const tiktokMeta = document.querySelector('meta[name="tiktok-pixel-id"]');
 
-    if (ga4Meta && ga4Meta.content) {
+    if (ga4Meta?.content) {
       config.ga4.measurementId = ga4Meta.content;
       config.ga4.enabled = true;
     }
-
-    if (fbMeta && fbMeta.content) {
+    if (fbMeta?.content) {
       config.facebook.pixelId = fbMeta.content;
       config.facebook.enabled = true;
     }
-
-    if (tiktokMeta && tiktokMeta.content) {
+    if (tiktokMeta?.content) {
       config.tiktok.pixelId = tiktokMeta.content;
       config.tiktok.enabled = true;
     }
+    if (config.debug) console.log('[WTF] Analytics Config:', JSON.parse(JSON.stringify(config)));
+  }
 
-    if (config.debug) {
-      console.log('WTF Analytics Config:', config);
+  // ---------------------------
+  // Consent (Shopify Customer Privacy API if present)
+  // ---------------------------
+  function hasConsent() {
+    try {
+      // If Shopify privacy API exists, check analytics consent
+      const api = window.Shopify && window.Shopify.customerPrivacy;
+      if (api && typeof api.userConsentPreferences === 'function') {
+        const prefs = api.userConsentPreferences();
+        // Allow analytics when marketing or analytics consented (tune if needed)
+        return !!(prefs?.marketing || prefs?.analytics);
+      }
+    } catch {}
+    // Fallback: assume consent true (theme owners can override)
+    return true;
+  }
+
+  // ---------------------------
+  // Distance to store (geolocation)
+  // ---------------------------
+  const STORE = {
+    lat: (window.WTFConfig?.store?.address?.latitude) || 26.5629,
+    lng: (window.WTFConfig?.store?.address?.longitude) || -81.9495,
+    city: window.WTFConfig?.store?.address?.city || 'Cape Coral',
+    region: window.WTFConfig?.store?.address?.region || 'FL'
+  };
+
+  function toRad(d) { return d * Math.PI / 180; }
+  function haversineKm(a, b) {
+    const R = 6371;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const s1 = Math.sin(dLat / 2), s2 = Math.sin(dLng / 2);
+    const c = 2 * Math.asin(Math.sqrt(s1 * s1 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * s2 * s2));
+    return Math.round((R * c) * 10) / 10;
+  }
+
+  const PageContext = {
+    page_type: (window.Shopify && Shopify.designMode) ? 'editor' : (document.body.dataset?.template || 'page'),
+    template: document.body.className,
+    city: STORE.city,
+    region: STORE.region,
+    distance_km: null
+  };
+
+  function requestGeo() {
+    if (!('geolocation' in navigator)) return;
+    if (!hasConsent()) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const you = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        PageContext.distance_km = haversineKm(you, { lat: STORE.lat, lng: STORE.lng });
+        window.WTFGeo = { ok: true, lat: you.lat, lng: you.lng, distance_km: PageContext.distance_km };
+        document.dispatchEvent(new CustomEvent('wtf:geo:ready', { detail: window.WTFGeo }));
+        if (config.debug) console.log('[WTF] Geo resolved:', window.WTFGeo);
+      },
+      () => {
+        window.WTFGeo = { ok: false, distance_km: null };
+        if (config.debug) console.log('[WTF] Geo denied or failed');
+      },
+      { enableHighAccuracy: false, timeout: 3500, maximumAge: 600000 }
+    );
+  }
+
+  // ---------------------------
+  // Advanced Matching (hash PII)
+  // ---------------------------
+  async function sha256(str) {
+    try {
+      if (!window.crypto?.subtle) return null;
+      const enc = new TextEncoder().encode(str.trim().toLowerCase());
+      const buf = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch { return null; }
+  }
+
+  async function buildAdvancedMatching() {
+    if (!hasConsent()) return null;
+    // Use customer email if available
+    const email =
+      (window?.WTF_ENV?.customerEmail) ||
+      (window?.WTFConfig?.store?.email) ||
+      null;
+
+    if (!email) return null;
+    const em = await sha256(email);
+    if (!em) return null;
+    // Extendable: phone, first/last name, etc., when available & allowed
+    return { em };
+  }
+
+  // ---------------------------
+  // Queues + guards
+  // ---------------------------
+  const initState = {
+    ga4: false,
+    facebook: false,
+    tiktok: false,
+    initialized: false
+  };
+  const pendingEvents = [];
+
+  function flushQueue() {
+    while (pendingEvents.length) {
+      const { name, params } = pendingEvents.shift();
+      emitAll(name, params);
     }
   }
 
-  // Google Analytics 4 Integration
+  // ---------------------------
+  // GA4
+  // ---------------------------
   const GA4 = {
-    init() {
+    async init() {
       if (!config.ga4.enabled || !config.ga4.measurementId) return;
-
-      // Load gtag if not already loaded
-      if (typeof gtag === 'undefined') {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${config.ga4.measurementId}`;
-        document.head.appendChild(script);
-
+      if (typeof window.gtag === 'undefined') {
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${config.ga4.measurementId}`;
+        document.head.appendChild(s);
         window.dataLayer = window.dataLayer || [];
-        window.gtag = function() { dataLayer.push(arguments); };
+        window.gtag = function () { dataLayer.push(arguments); };
+      }
+      gtag('js', new Date());
+
+      // Optional: preload web-vitals if not present
+      if (!window.webVitals) {
+        const v = document.createElement('script');
+        v.src = 'https://unpkg.com/web-vitals/dist/web-vitals.iife.js';
+        v.async = true;
+        document.head.appendChild(v);
       }
 
-      gtag('js', new Date());
+      const am = await buildAdvancedMatching();
+      if (am) {
+        try { gtag('set', 'user_data', { email: am.em }); } catch {}
+      }
+
       gtag('config', config.ga4.measurementId, {
         page_title: document.title,
         page_location: window.location.href
       });
 
-      if (config.debug) console.log('GA4 initialized');
+      initState.ga4 = true;
+      if (config.debug) console.log('[WTF] GA4 init');
     },
-
     track(eventName, parameters = {}) {
-      if (!config.ga4.enabled || typeof gtag === 'undefined') return;
-      
+      if (!initState.ga4 || typeof gtag === 'undefined') return;
       gtag('event', eventName, parameters);
-      if (config.debug) console.log('GA4 Event:', eventName, parameters);
+      if (config.debug) console.log('[WTF] GA4 event:', eventName, parameters);
     }
   };
 
-  // Facebook Pixel Integration
+  // ---------------------------
+  // Facebook Pixel
+  // ---------------------------
   const FacebookPixel = {
-    init() {
+    async init() {
       if (!config.facebook.enabled || !config.facebook.pixelId) return;
-
-      // Load Facebook Pixel if not already loaded
       if (typeof fbq === 'undefined') {
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window,document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
+        !function (f, b, e, v, n, t, s) {
+          if (f.fbq) return; n = f.fbq = function () { n.callMethod ?
+            n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+          if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+          n.queue = []; t = b.createElement(e); t.async = !0;
+          t.src = v; s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s)
+        }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       }
 
-      fbq('init', config.facebook.pixelId);
-      fbq('track', 'PageView');
+      const am = await buildAdvancedMatching();
+      if (am) fbq('init', config.facebook.pixelId, am);
+      else fbq('init', config.facebook.pixelId);
 
-      if (config.debug) console.log('Facebook Pixel initialized');
+      fbq('track', 'PageView', PageContext);
+      initState.facebook = true;
+      if (config.debug) console.log('[WTF] FB Pixel init');
     },
-
     track(eventName, parameters = {}) {
-      if (!config.facebook.enabled || typeof fbq === 'undefined') return;
-      
+      if (!initState.facebook || typeof fbq === 'undefined') return;
       fbq('track', eventName, parameters);
-      if (config.debug) console.log('Facebook Pixel Event:', eventName, parameters);
+      if (config.debug) console.log('[WTF] FB event:', eventName, parameters);
     }
   };
 
-  // TikTok Pixel Integration
+  // ---------------------------
+  // TikTok Pixel
+  // ---------------------------
   const TikTokPixel = {
     init() {
       if (!config.tiktok.enabled || !config.tiktok.pixelId) return;
-
-      // Load TikTok Pixel if not already loaded
       if (typeof ttq === 'undefined') {
         !function (w, d, t) {
-          w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+          w.TiktokAnalyticsObject = t;
+          var ttq = w[t] = w[t] || [];
+          ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+          ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } };
+          for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+          ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e };
+          ttq.load = function (e, n) {
+            var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
+            ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = i, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {};
+            var o = document.createElement("script"); o.type = "text/javascript", o.async = !0, o.src = i + "?sdkid=" + e + "&lib=" + t;
+            var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(o, a)
+          }
         }(window, document, 'ttq');
       }
-
       ttq.load(config.tiktok.pixelId);
-      ttq.page();
-
-      if (config.debug) console.log('TikTok Pixel initialized');
+      ttq.page(PageContext);
+      initState.tiktok = true;
+      if (config.debug) console.log('[WTF] TikTok init');
     },
-
     track(eventName, parameters = {}) {
-      if (!config.tiktok.enabled || typeof ttq === 'undefined') return;
-      
+      if (!initState.tiktok || typeof ttq === 'undefined') return;
       ttq.track(eventName, parameters);
-      if (config.debug) console.log('TikTok Pixel Event:', eventName, parameters);
+      if (config.debug) console.log('[WTF] TikTok event:', eventName, parameters);
     }
   };
 
-  // Enhanced E-commerce Tracking for Drink Builder
+  // ---------------------------
+  // Unified emitter
+  // ---------------------------
+  function emitAll(eventName, payload = {}) {
+    const params = Object.assign({}, payload, PageContext);
+    GA4.track(eventName, params);
+    FacebookPixel.track(mapToFBEvent(eventName), mapToFBParams(params));
+    TikTokPixel.track(mapToTTEvent(eventName), mapToTTParams(params));
+  }
+
+  // Simple mappers (extend as needed)
+  function mapToFBEvent(name) {
+    const map = {
+      'add_to_cart': 'AddToCart',
+      'begin_checkout': 'InitiateCheckout',
+      'purchase': 'Purchase',
+      'page_view': 'PageView',
+      'view_item': 'ViewContent'
+    };
+    return map[name] || name;
+  }
+  function mapToTTEvent(name) {
+    const map = {
+      'add_to_cart': 'AddToCart',
+      'begin_checkout': 'InitiateCheckout',
+      'purchase': 'CompletePayment',
+      'page_view': 'ViewContent',
+      'view_item': 'ViewContent'
+    };
+    return map[name] || name;
+  }
+  function mapToFBParams(p) {
+    // FB prefers content_ids/content_type/value/currency
+    const base = { ...p };
+    if (!base.currency) base.currency = 'USD';
+    return base;
+  }
+  function mapToTTParams(p) {
+    const base = { ...p };
+    if (!base.currency) base.currency = 'USD';
+    return base;
+  }
+
+  // ---------------------------
+  // E-commerce helpers (kept from your version, enriched)
+  // ---------------------------
   const Ecommerce = {
-    // Track when user begins drink customization
     trackBeginCustomization(productData) {
       const eventData = {
         currency: 'USD',
@@ -156,23 +326,9 @@
           quantity: 1
         }]
       };
-
-      GA4.track('begin_checkout', eventData);
-      FacebookPixel.track('InitiateCheckout', {
-        content_ids: [productData.id],
-        content_type: 'product',
-        value: productData.price || 0,
-        currency: 'USD'
-      });
-      TikTokPixel.track('InitiateCheckout', {
-        content_id: productData.id,
-        content_type: 'product',
-        value: productData.price || 0,
-        currency: 'USD'
-      });
+      emitAll('begin_checkout', eventData);
     },
 
-    // Track add to cart with customizations
     trackAddToCart(productData, customizations = {}) {
       const eventData = {
         currency: 'USD',
@@ -184,29 +340,15 @@
           item_variant: customizations.size || '',
           price: productData.price || 0,
           quantity: 1,
-          // Custom parameters for drink builder
           custom_strain: customizations.strain || '',
           custom_flavors: customizations.flavors || '',
           custom_size: customizations.size || ''
         }]
       };
-
-      GA4.track('add_to_cart', eventData);
-      FacebookPixel.track('AddToCart', {
-        content_ids: [productData.id],
-        content_type: 'product',
-        value: productData.price || 0,
-        currency: 'USD'
-      });
-      TikTokPixel.track('AddToCart', {
-        content_id: productData.id,
-        content_type: 'product',
-        value: productData.price || 0,
-        currency: 'USD'
-      });
+      emitAll('add_to_cart', eventData);
+      document.dispatchEvent(new CustomEvent('wtf:cart:add', { detail: eventData }));
     },
 
-    // Track purchase completion
     trackPurchase(orderData) {
       const eventData = {
         transaction_id: orderData.order_id,
@@ -214,112 +356,94 @@
         currency: 'USD',
         items: orderData.items || []
       };
-
-      GA4.track('purchase', eventData);
-      FacebookPixel.track('Purchase', {
-        content_ids: orderData.items.map(item => item.id),
-        content_type: 'product',
-        value: orderData.total,
-        currency: 'USD'
-      });
-      TikTokPixel.track('CompletePayment', {
-        content_id: orderData.items.map(item => item.id),
-        content_type: 'product',
-        value: orderData.total,
-        currency: 'USD'
-      });
+      emitAll('purchase', eventData);
     }
   };
 
-  // Performance Tracking
-  const Performance = {
-    trackCoreWebVitals() {
-      if (!config.ga4.enabled) return;
-
-      // Track Core Web Vitals when available
-      if ('web-vitals' in window) {
-        // If web-vitals library is loaded
-        const { getCLS, getFID, getFCP, getLCP, getTTFB } = window.webVitals;
-        
-        getCLS((metric) => GA4.track('CLS', { value: metric.value }));
-        getFID((metric) => GA4.track('FID', { value: metric.value }));
-        getFCP((metric) => GA4.track('FCP', { value: metric.value }));
-        getLCP((metric) => GA4.track('LCP', { value: metric.value }));
-        getTTFB((metric) => GA4.track('TTFB', { value: metric.value }));
-      } else {
-        // Basic performance tracking with Performance API
-        if ('performance' in window) {
-          window.addEventListener('load', () => {
-            setTimeout(() => {
-              const navigation = performance.getEntriesByType('navigation')[0];
-              if (navigation) {
-                GA4.track('page_load_time', {
-                  value: Math.round(navigation.loadEventEnd - navigation.fetchStart)
-                });
-              }
-            }, 0);
-          });
-        }
+  // ---------------------------
+  // Web Vitals -> GA4
+  // ---------------------------
+  function trackCoreWebVitals() {
+    if (!config.ga4.enabled) return;
+    function send(name, value) { GA4.track(name, { value }); }
+    if (window.webVitals) {
+      const { getCLS, getFID, getFCP, getLCP, getTTFB } = window.webVitals;
+      getCLS(m => send('CLS', m.value));
+      getFID(m => send('FID', m.value));
+      getFCP(m => send('FCP', m.value));
+      getLCP(m => send('LCP', m.value));
+      getTTFB(m => send('TTFB', m.value));
+    } else {
+      // basic fallback
+      if ('performance' in window) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            const nav = performance.getEntriesByType('navigation')[0];
+            if (nav) GA4.track('page_load_time', {
+              value: Math.round(nav.loadEventEnd - nav.fetchStart)
+            });
+          }, 0);
+        });
       }
     }
-  };
+  }
 
-  // Main Analytics Controller
+  // ---------------------------
+  // Main controller
+  // ---------------------------
   const WTFAnalytics = {
-    init() {
+    async init() {
       initConfig();
-      GA4.init();
-      FacebookPixel.init();
+
+      // initialize pixels (consent-aware)
+      await GA4.init();
+      await FacebookPixel.init();
       TikTokPixel.init();
-      Performance.trackCoreWebVitals();
-      
-      // Set up global tracking function
+
+      // request geo only after consent is known
+      requestGeo();
+
+      // initial page view for GA4 (explicit) + context for others
+      emitAll('page_view', {});
+
+      // track vitals
+      trackCoreWebVitals();
+
+      // public API
       window.wtfTrack = this.track.bind(this);
+
+      initState.initialized = true;
+      flushQueue();
     },
 
     track(eventName, data = {}) {
-      switch (eventName) {
-        case 'begin_customization':
-          Ecommerce.trackBeginCustomization(data);
-          break;
-        case 'add_to_cart':
-          Ecommerce.trackAddToCart(data.product, data.customizations);
-          break;
-        case 'purchase':
-          Ecommerce.trackPurchase(data);
-          break;
-        default:
-          // Generic event tracking
-          GA4.track(eventName, data);
-          if (data.fbEvent) FacebookPixel.track(data.fbEvent, data);
-          if (data.tiktokEvent) TikTokPixel.track(data.tiktokEvent, data);
+      if (!initState.initialized) {
+        pendingEvents.push({ name: eventName, params: data });
+        return;
       }
+      emitAll(eventName, data);
     },
 
-    // Enhanced event tracking for drink builder interactions
+    // Drink builder convenience API (unchanged names)
     trackDrinkBuilder: {
       sizeChange(size, price) {
         WTFAnalytics.track('drink_size_selected', {
           custom_size: size,
           value: price,
-          fbEvent: 'ViewContent',
-          tiktokEvent: 'ViewContent'
+          fbEvent: 'ViewContent'
         });
       },
-
       strainChange(strains) {
         WTFAnalytics.track('drink_strain_selected', {
-          custom_strains: strains.join(', ')
+          custom_strains: Array.isArray(strains) ? strains.join(', ') : `${strains}`
         });
       },
-
       flavorChange(flavors, totalPumps) {
         WTFAnalytics.track('drink_flavors_selected', {
-          custom_flavors: flavors.join(', '),
+          custom_flavors: Array.isArray(flavors) ? flavors.join(', ') : `${flavors}`,
           pump_count: totalPumps
         });
       },
-
       customizationComplete(customizationData) {
         WTFAnalytics.track('drink_customization_complete', {
           custom_size: customizationData.size,
@@ -332,14 +456,14 @@
     }
   };
 
-  // Initialize when DOM is ready
+  // init
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', WTFAnalytics.init);
+    document.addEventListener('DOMContentLoaded', () => WTFAnalytics.init());
   } else {
     WTFAnalytics.init();
   }
 
-  // Export for global use
+  // export
   window.WTFAnalytics = WTFAnalytics;
 
 })();
