@@ -14,94 +14,33 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
 
-    <title>
-      {% if template == 'index' %}
-        WTF | Welcome To Florida - Cape Coral's Premier Kava Bar & Kratom Lounge | Best Botanical Beverages in Southwest Florida
-      {% elsif template contains 'kava' %}
-        {{ page_title }} | WTF Kava Bar Cape Coral | {{ shop.name }}
-      {% elsif template contains 'kratom' %}
-        {{ page_title }} | WTF Kratom Teas Cape Coral | {{ shop.name }}
-      {% else %}
-        {{ page_title }}
-        {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-        {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-        {%- unless page_title contains shop.name or page_title contains 'WTF' %} | WTF | {{ shop.name }}{% endunless -%}
-      {% endif %}
-    </title>
+    {%- comment -%}
+      -----
+      CENTRALIZED SEO
+      Replaces all ad-hoc <title>/meta/OG/Twitter/JSON-LD blocks.
+      -----
+    {%- endcomment -%}
+    {% render 'seo-head' %}
 
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
-    {% elsif template == 'index' %}
-      <meta name="description" content="WTF (Welcome To Florida) is Cape Coral's premier kava bar and kratom lounge. Custom kava drinks, kratom teas, THC beverages, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida. Order online or visit our botanical beverage lounge.">
-    {% else %}
-      <meta name="description" content="WTF | Welcome To Florida - Cape Coral's best kava bar for premium botanical beverages, custom kava drinks, kratom teas, and sober-friendly nightlife in Southwest Florida.">
-    {% endif %}
-    
-    <!-- Local SEO Meta Tags -->
-    <meta name="geo.region" content="US-FL">
-    <meta name="geo.placename" content="Cape Coral">
-    <meta name="geo.position" content="26.5629;-81.9495">
-    <meta name="ICBM" content="26.5629, -81.9495">
-    <meta name="keywords" content="WTF, Welcome To Florida, WTF Swag, kava bar cape coral, kava bars near me, cape coral kava bar, kava lounge cape coral, kava bar fort myers, kava bars florida, best kava bar cape coral, kratom cape coral, sober nightlife cape coral, WTF Cape Coral, botanical beverages florida">
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:type" content="business.business">
-    <meta property="og:title" content="{% if template == 'index' %}Cape Coral's Premier Kava Bar | {{ shop.name }}{% else %}{{ page_title }} | {{ shop.name }}{% endif %}">
-    <meta property="og:description" content="{% if page_description %}{{ page_description | escape }}{% else %}Cape Coral's premier kava bar offering custom kava drinks, kratom teas, and sober nightlife in Southwest Florida.{% endif %}">
-    <meta property="og:url" content="{{ canonical_url }}">
-    <meta property="og:site_name" content="{{ shop.name }}">
-    <meta property="og:image" content="{{ 'wtf_storefront_hero_original.png' | asset_url }}">
-    <meta property="business:contact_data:street_address" content="1520 SE 46th Ln, Unit B">
-    <meta property="business:contact_data:locality" content="Cape Coral">
-    <meta property="business:contact_data:region" content="FL">
-    <meta property="business:contact_data:postal_code" content="33904">
-    <meta property="business:contact_data:country_name" content="United States">
-    
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% if template == 'index' %}Cape Coral's Premier Kava Bar | {{ shop.name }}{% else %}{{ page_title }} | {{ shop.name }}{% endif %}">
-    <meta name="twitter:description" content="{% if page_description %}{{ page_description | escape }}{% else %}Cape Coral's premier kava bar offering custom kava drinks, kratom teas, and sober nightlife.{% endif %}">
-    <meta name="twitter:image" content="{{ 'wtf_storefront_hero_original.png' | asset_url }}">
-
-    {% if settings.google_analytics_id != blank %}
-      <meta name="ga4-measurement-id" content="{{ settings.google_analytics_id }}">
-    {% endif %}
-    {% if settings.facebook_pixel_id != blank %}
-      <meta name="facebook-pixel-id" content="{{ settings.facebook_pixel_id }}">
-    {% endif %}
-    {% if settings.tiktok_pixel_id != blank %}
-      <meta name="tiktok-pixel-id" content="{{ settings.tiktok_pixel_id }}">
-    {% endif %}
-    {% render 'seo-meta-tags' %}
-    {% render 'enhanced-meta-tags' %}
-    {% render 'structured-data' %}
-    
-    <!-- Comprehensive Schema Markup -->
-    {% render 'brand-schema' %}
-    {% render 'jsonld-local-business' %}
-    {% render 'jsonld-offercatalog' %}
-    {% render 'local-business-schema' %}
-    
-    {% if template contains 'product' %}
-      {% render 'product-schema', product: product %}
-    {% endif %}
-    
-    {% if template contains 'collection' %}
-      {% render 'collection-seo-boost', collection: collection %}
-    {% endif %}
-    
-    {% if template == 'index' or template contains 'page' %}
-      {% render 'events-schema' %}
-      {% render 'faq-schema' %}
-      {% render 'loyalty-schema' %}
-    {% endif %}
+    {%- comment -%}
+      -----
+      CRITICAL CSS (inline) — improves LCP/FCP
+      Keep this BEFORE {{ content_for_header }} so Shopify/Apps load after.
+      -----
+    {%- endcomment -%}
+    <style>
+      {% render 'critical-css' %}
+    </style>
 
     {{ content_for_header }}
 
     {%- comment %} Load Google Fonts {%- endcomment %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    >
 
     {%- comment %} Load main CSS {%- endcomment %}
     {{ 'base.css' | asset_url | stylesheet_tag }}
@@ -243,17 +182,26 @@
     <script src="{{ 'wtf-config.js' | asset_url }}" defer></script>
 
     {%- if settings.predictive_search_enabled -%}
-      <link rel="stylesheet" href="{{ 'component-predictive-search.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link
+        rel="stylesheet"
+        href="{{ 'component-predictive-search.css' | asset_url }}"
+        media="print"
+        onload="this.media='all'"
+      >
       <noscript>{{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}</noscript>
     {%- endif -%}
 
-      {%- render 'seo-meta-tags' -%}
-      {%- render 'jsonld-core' -%}
-      {%- render 'jsonld-breadcrumbs' -%}
-      {%- if template.name == 'product' -%}{% render 'jsonld-product' %}{%- endif -%}
-      {%- if template.name contains 'article' -%}{% render 'jsonld-article' %}{%- endif -%}
+    {%- comment -%}
+      NOTE: Removed legacy/duplicate SEO renders:
+      - seo-meta-tags / enhanced-meta-tags / structured-data
+      - brand-schema / local-business schema variants
+      - jsonld-* and product/collection/page-specific schema here
+      These should be handled inside 'seo-head' (conditionally).
+    {%- endcomment -%}
 
-   <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    </script>
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
@@ -358,7 +306,7 @@
       Core functionality for Shopify, Lightspeed POS, 2accept payments, and webhooks
       -------------------------------------------------------------------------------------
     {%- endcomment %}
-    
+
     {%- comment %} Core WTF Scripts - Load enhanced cart first and prevent conflicts {%- endcomment %}
     <script src="{{ 'wtf-enhanced-cart.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-variants.js' | asset_url }}" defer></script>
@@ -401,11 +349,11 @@
 
     {%- comment %} Initialize WTF System {%- endcomment %}
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         // Initialize WTF system with configuration
         if (window.WTFConfig) {
           console.log('WTF System initialized with configuration:', window.WTFConfig.getStoreInfo());
-          
+
           // Validate configuration
           const validation = window.WTFConfig.validate();
           if (!validation.isValid) {
@@ -413,16 +361,18 @@
           }
 
           // Dispatch system ready event
-          document.dispatchEvent(new CustomEvent('wtf:system:ready', {
-            detail: {
-              config: window.WTFConfig,
-              integrations: {
-                lightspeed: window.WTFConfig.isIntegrationEnabled('lightspeed'),
-                twoaccept: window.WTFConfig.isIntegrationEnabled('twoaccept'),
-                shopify: window.WTFConfig.isIntegrationEnabled('shopify')
-              }
-            }
-          }));
+          document.dispatchEvent(
+            new CustomEvent('wtf:system:ready', {
+              detail: {
+                config: window.WTFConfig,
+                integrations: {
+                  lightspeed: window.WTFConfig.isIntegrationEnabled('lightspeed'),
+                  twoaccept: window.WTFConfig.isIntegrationEnabled('twoaccept'),
+                  shopify: window.WTFConfig.isIntegrationEnabled('shopify'),
+                },
+              },
+            })
+          );
         }
 
         // Initialize cart persistence
@@ -437,14 +387,14 @@
         }
 
         // Set up cart backup on changes
-        document.addEventListener('cart:updated', function(event) {
+        document.addEventListener('cart:updated', function (event) {
           localStorage.setItem('wtf-cart-backup', JSON.stringify(event.detail));
         });
 
         // Age verification for THC products
         if (window.WTFConfig && window.WTFConfig.get('customers.enableAgeVerification')) {
           const thcPages = ['/pages/thc-drinks', '/pages/thc-shots'];
-          if (thcPages.some(page => window.location.pathname.includes(page))) {
+          if (thcPages.some((page) => window.location.pathname.includes(page))) {
             // Check if age verification is needed
             if (!sessionStorage.getItem('wtf-age-verified')) {
               // Show age verification modal
@@ -471,7 +421,7 @@
             </div>
           </div>
         `;
-        
+
         modal.style.cssText = `
           position: fixed;
           top: 0;
@@ -501,11 +451,11 @@
       }
 
       // Global error handler for integrations
-      window.addEventListener('error', function(event) {
+      window.addEventListener('error', function (event) {
         if (window.WTFConfig && window.WTFConfig.get('development.enableConsoleLogging')) {
           console.error('WTF System Error:', event.error);
         }
-        
+
         // Report critical errors
         if (event.error && event.error.message && event.error.message.includes('WTF')) {
           // This would integrate with error reporting service
@@ -515,9 +465,10 @@
 
       // Service worker registration for offline functionality
       if ('serviceWorker' in navigator && window.WTFConfig && window.WTFConfig.get('features.enableOfflineMode')) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => console.log('SW registered:', registration))
-          .catch(error => console.log('SW registration failed:', error));
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then((registration) => console.log('SW registered:', registration))
+          .catch((error) => console.log('SW registration failed:', error));
       }
     </script>
 
@@ -526,7 +477,7 @@
       <script>
         // Initialize custom checkout if enabled
         if (window.WTF2Accept && window.WTFConfig.get('features.enableCustomCheckout')) {
-          document.addEventListener('wtf:system:ready', function() {
+          document.addEventListener('wtf:system:ready', function () {
             // Set up custom checkout flow
             console.log('Custom checkout initialized');
           });
@@ -536,7 +487,7 @@
 
     {%- comment %} Persistent Cart Management {%- endcomment %}
     {{ 'persistent-cart.js' | asset_url | script_tag }}
-    
+
     {%- comment %} Pricing Validation System {%- endcomment %}
     {{ 'pricing-validation.js' | asset_url | script_tag }}
 
@@ -546,18 +497,22 @@
         // Development debugging tools
         window.WTF_DEBUG = {
           config: () => console.table(window.WTFConfig?.raw || window.WTF_CONFIG_DATA || {}),
-          integrations: () => console.log('Integrations:', {
-            lightspeed: !!window.WTFLightspeed,
-            twoaccept: !!window.WTF2Accept,
-            webhooks: !!window.WTFWebhooks
-          }),
-          cart: () => fetch('/cart.js').then(r => r.json()).then(console.log),
+          integrations: () =>
+            console.log('Integrations:', {
+              lightspeed: !!window.WTFLightspeed,
+              twoaccept: !!window.WTF2Accept,
+              webhooks: !!window.WTFWebhooks,
+            }),
+          cart: () =>
+            fetch('/cart.js')
+              .then((r) => r.json())
+              .then(console.log),
           clearStorage: () => {
             localStorage.clear();
             sessionStorage.clear();
             console.log('Storage cleared');
           },
-          persistentCart: () => window.debugCart && window.debugCart()
+          persistentCart: () => window.debugCart && window.debugCart(),
         };
         console.log('WTF Debug tools available: WTF_DEBUG');
       </script>
@@ -565,6 +520,5 @@
 
     <!-- 21+ Age Gate Banner -->
     {% render 'age-gate-banner' %}
-
   </body>
 </html>
