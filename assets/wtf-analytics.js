@@ -456,14 +456,152 @@
     }
   };
 
+  // ---------------------------
+  // Event Router - listens for custom events and pipes to pixels
+  // ---------------------------
+  const EventRouter = {
+    init() {
+      // Listen for system ready event
+      document.addEventListener('wtf:system:ready', (e) => {
+        if (config.debug) console.log('[WTF] System ready event:', e.detail);
+        emitAll('system_ready', e.detail || {});
+      });
+
+      // Listen for cart add event
+      document.addEventListener('wtf:cart:add', (e) => {
+        if (config.debug) console.log('[WTF] Cart add event:', e.detail);
+        const detail = e.detail || {};
+        emitAll('add_to_cart', detail);
+      });
+
+      // Listen for checkout begin event
+      document.addEventListener('wtf:checkout:begin', (e) => {
+        if (config.debug) console.log('[WTF] Checkout begin event:', e.detail);
+        const detail = e.detail || {};
+        emitAll('begin_checkout', detail);
+      });
+
+      // Listen for purchase complete event
+      document.addEventListener('wtf:purchase:complete', (e) => {
+        if (config.debug) console.log('[WTF] Purchase complete event:', e.detail);
+        const detail = e.detail || {};
+        emitAll('purchase', detail);
+      });
+
+      // Listen for geo ready and check for nearby users
+      document.addEventListener('wtf:geo:ready', (e) => {
+        if (config.debug) console.log('[WTF] Geo ready event:', e.detail);
+        const geo = e.detail || {};
+        
+        // Fire custom event if user is within 25km
+        if (geo.distance_km !== null && geo.distance_km <= 25) {
+          this.fireUserNearby(geo);
+        }
+      });
+
+      if (config.debug) console.log('[WTF] Event router initialized');
+    },
+
+    fireUserNearby(geoData) {
+      const eventData = {
+        distance_km: geoData.distance_km,
+        city: PageContext.city,
+        region: PageContext.region,
+        page_type: PageContext.page_type
+      };
+
+      // Track as Lead in Meta
+      if (initState.facebook && typeof fbq !== 'undefined') {
+        fbq('track', 'Lead', eventData);
+        if (config.debug) console.log('[WTF] FB Lead event (user nearby):', eventData);
+      }
+
+      // Track as generate_lead in GA4
+      if (initState.ga4 && typeof gtag !== 'undefined') {
+        gtag('event', 'generate_lead', {
+          ...eventData,
+          event_category: 'engagement',
+          event_label: 'user_nearby'
+        });
+        if (config.debug) console.log('[WTF] GA4 generate_lead event (user nearby):', eventData);
+      }
+
+      // Track in TikTok as CompleteRegistration (closest equivalent to lead)
+      if (initState.tiktok && typeof ttq !== 'undefined') {
+        ttq.track('CompleteRegistration', eventData);
+        if (config.debug) console.log('[WTF] TikTok CompleteRegistration event (user nearby):', eventData);
+      }
+
+      // Dispatch custom event for other listeners
+      document.dispatchEvent(new CustomEvent('wtf:user:nearby', { detail: eventData }));
+    }
+  };
+
+  // ---------------------------
+  // Enhanced emitAll with debug output
+  // ---------------------------
+  function emitAllWithDebug(eventName, payload = {}) {
+    const enrichedParams = Object.assign({}, payload, PageContext);
+    
+    // Debug output if enabled
+    if (config.debug) {
+      console.group(`[WTF Analytics] Event: ${eventName}`);
+      console.log('Enriched Payload:', enrichedParams);
+      console.log('GA4:', config.ga4.enabled ? 'enabled' : 'disabled');
+      console.log('Meta:', config.facebook.enabled ? 'enabled' : 'disabled');
+      console.log('TikTok:', config.tiktok.enabled ? 'enabled' : 'disabled');
+      console.groupEnd();
+    }
+    
+    // Call original emitAll
+    emitAll(eventName, enrichedParams);
+  }
+
+  // Replace emitAll in WTFAnalytics.track
+  const originalTrack = WTFAnalytics.track;
+  WTFAnalytics.track = function(eventName, data = {}) {
+    if (!initState.initialized) {
+      pendingEvents.push({ name: eventName, params: data });
+      return;
+    }
+    emitAllWithDebug(eventName, data);
+  };
+
   // init
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => WTFAnalytics.init());
+    document.addEventListener('DOMContentLoaded', () => {
+      WTFAnalytics.init();
+      EventRouter.init();
+      
+      // Dispatch system ready event after initialization
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('wtf:system:ready', {
+          detail: {
+            analytics_initialized: true,
+            geo_available: !!window.WTFGeo,
+            distance_km: PageContext.distance_km
+          }
+        }));
+      }, 500);
+    });
   } else {
     WTFAnalytics.init();
+    EventRouter.init();
+    
+    // Dispatch system ready event after initialization
+    setTimeout(() => {
+      document.dispatchEvent(new CustomEvent('wtf:system:ready', {
+        detail: {
+          analytics_initialized: true,
+          geo_available: !!window.WTFGeo,
+          distance_km: PageContext.distance_km
+        }
+      }));
+    }, 500);
   }
 
   // export
   window.WTFAnalytics = WTFAnalytics;
+  window.WTFEventRouter = EventRouter;
 
 })();
