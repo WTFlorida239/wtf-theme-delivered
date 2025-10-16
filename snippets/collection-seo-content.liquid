@@ -1,346 +1,228 @@
 {%- comment -%}
-  Collection SEO Content Block
+  Collection SEO Content Block - ENHANCED
   
-  Purpose: Add rich, keyword-optimized content to collection pages
+  Purpose: Add rich, keyword-optimized content to collection pages with collapsible UI
   
   Features:
-  - Dynamic content per collection
+  - Dynamic content per collection from metafields or defaults
+  - Collapsible "About This Collection" block
+  - Pulls from collection.metafields.seo.long_description
+  - Auto-inserts top 3 products as internal links if no custom HTML
   - Local keywords (Cape Coral, Fort Myers, SWFL)
-  - FAQ section
-  - Internal links to related collections/pages
-  - Compliance-friendly language (no medical claims)
+  - Visible at bottom of collection page (not hidden)
   
   Usage: {% render 'collection-seo-content', collection: collection %}
 {%- endcomment -%}
 
 {%- if collection -%}
-<div class="collection-seo-content">
+<div class="collection-seo-content" id="collection-about">
   {%- liquid
-    assign collection_handle = collection.handle
-    assign is_kava = false
-    assign is_kratom = false
-    assign is_thc = false
-    assign is_edibles = false
+    assign long_desc = collection.metafields.seo.long_description
+    assign has_custom_content = false
     
-    if collection_handle contains 'kava'
-      assign is_kava = true
-    elsif collection_handle contains 'kratom'
-      assign is_kratom = true
-    elsif collection_handle contains 'thc' or collection_handle contains 'delta'
-      assign is_thc = true
-    elsif collection_handle contains 'edible' or collection_handle contains 'gummies'
-      assign is_edibles = true
+    if long_desc != blank
+      assign has_custom_content = true
     endif
   -%}
   
-  {%- comment -%} === Kava Collection Content === {%- endcomment -%}
-  {%- if is_kava -%}
-    <div class="seo-block">
-      <h2>Premium Kava Drinks in Cape Coral, Florida</h2>
-      <p>
-        Welcome to WTF's kava collection—Cape Coral's premier destination for authentic Pacific Island kava beverages. Our custom kava drinks are handcrafted daily using premium kava root from Vanuatu and Fiji, blended with your choice of tropical flavors. Whether you're new to kava or a seasoned enthusiast, our kava bar in Southeast Cape Coral offers the perfect environment to relax and unwind.
-      </p>
-      <p>
-        Serving Cape Coral, Fort Myers, Lehigh Acres, and all of Southwest Florida, WTF is your go-to kava lounge for sober nightlife and botanical beverages. Visit us at 1520 SE 46th Ln, Unit B, or order online for pickup.
-      </p>
-      
-      <h3>Why Choose WTF for Kava in Cape Coral?</h3>
-      <ul>
-        <li><strong>Premium Quality</strong>: We source only noble kava varieties from trusted Pacific Island suppliers</li>
-        <li><strong>Custom Blends</strong>: Choose from 15+ flavor combinations to create your perfect kava drink</li>
-        <li><strong>Expert Preparation</strong>: Our kava bartenders are trained in traditional and modern preparation methods</li>
-        <li><strong>Community Vibe</strong>: Enjoy live music, trivia nights, and a welcoming sober-friendly atmosphere</li>
-        <li><strong>Convenient Ordering</strong>: Order ahead online and skip the wait</li>
-      </ul>
-      
-      <h3>Frequently Asked Questions About Kava</h3>
-      <details>
-        <summary>What is kava and what are its effects?</summary>
-        <p>
-          Kava is a traditional Pacific Island beverage made from the root of the Piper methysticum plant. It's been used for centuries in social and ceremonial settings. Many people enjoy kava for its calming properties and as an alcohol-free social beverage. At WTF, we serve kava in a modern lounge setting, perfect for unwinding after work or socializing with friends.
-        </p>
-      </details>
-      
-      <details>
-        <summary>Is kava safe to drink?</summary>
-        <p>
-          Kava has been consumed safely for thousands of years in the Pacific Islands. We use only noble kava varieties, which are considered the highest quality and safest for regular consumption. As with any botanical, we recommend starting with a small serving to see how your body responds. Kava is 21+ at WTF Cape Coral.
-        </p>
-      </details>
-      
-      <details>
-        <summary>How much kava should I drink?</summary>
-        <p>
-          If you're new to kava, we recommend starting with a 12oz or 16oz serving. Our kava bartenders can guide you based on your experience level and preferences. Most guests enjoy 1-3 servings during a visit to our lounge.
-        </p>
-      </details>
-      
-      <h3>Visit WTF Kava Bar in Cape Coral</h3>
-      <p>
-        Ready to experience the best kava bar in Southwest Florida? Visit us at <strong>1520 SE 46th Ln, Unit B, Cape Coral, FL 33904</strong> or call <strong>(239) 955-0314</strong>. Open daily with late-night hours. Follow us on <a href="https://www.instagram.com/wtfswagbrand/" target="_blank" rel="noopener">Instagram</a> for events and specials.
-      </p>
-      
-      <p class="related-links">
-        <strong>Explore More:</strong> 
-        <a href="/collections/kratom-teas">Kratom Teas</a> | 
-        <a href="/collections/thc-drinks">THC Beverages</a> | 
-        <a href="/pages/menu">Full Menu</a> | 
-        <a href="/pages/faq">FAQ</a>
-      </p>
+  <details class="collection-about-details" open>
+    <summary class="collection-about-summary">
+      <h2>About This Collection</h2>
+      <span class="collection-about-toggle" aria-hidden="true">
+        <svg class="icon-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </span>
+    </summary>
+    
+    <div class="collection-about-content">
+      {%- if has_custom_content -%}
+        {%- comment -%} Use custom metafield content {%- endcomment -%}
+        <div class="collection-custom-content">
+          {{ long_desc }}
+        </div>
+      {%- else -%}
+        {%- comment -%} Default CTA with top 3 products {%- endcomment -%}
+        <div class="collection-default-content">
+          <p>
+            Explore our curated selection of <strong>{{ collection.title }}</strong> at WTF | Welcome To Florida, 
+            Cape Coral's premier destination for premium botanical beverages and products. 
+            Each item in this collection is carefully selected to provide you with the best quality and experience.
+          </p>
+          
+          {%- if collection.products.size > 0 -%}
+            <h3>Featured Products in {{ collection.title }}</h3>
+            <ul class="collection-featured-products">
+              {%- assign product_count = 0 -%}
+              {%- for product in collection.products limit: 3 -%}
+                {%- if product.available -%}
+                  <li>
+                    <a href="{{ product.url }}">
+                      <strong>{{ product.title }}</strong>
+                    </a>
+                    {%- if product.metafields.seo.short_description -%}
+                      — {{ product.metafields.seo.short_description }}
+                    {%- elsif product.description != blank -%}
+                      — {{ product.description | strip_html | truncate: 100 }}
+                    {%- endif -%}
+                  </li>
+                  {%- assign product_count = product_count | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+          
+          <p>
+            Visit us at <strong>1520 SE 46th Ln, Unit B, Cape Coral, FL 33904</strong> or 
+            call <strong>(239) 955-0314</strong> to learn more. 
+            Serving Cape Coral, Fort Myers, and all of Southwest Florida.
+          </p>
+          
+          <p class="collection-related-links">
+            <strong>Explore More Collections:</strong>
+            {%- for coll in collections limit: 5 -%}
+              {%- if coll.handle != collection.handle and coll.all_products_count > 0 -%}
+                <a href="{{ coll.url }}">{{ coll.title }}</a>
+                {%- unless forloop.last %} | {% endunless -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </p>
+        </div>
+      {%- endif -%}
     </div>
-  {%- endif -%}
-  
-  {%- comment -%} === Kratom Collection Content === {%- endcomment -%}
-  {%- if is_kratom -%}
-    <div class="seo-block">
-      <h2>Premium Kratom Teas in Cape Coral, Florida</h2>
-      <p>
-        Discover WTF's kratom tea collection—Cape Coral's favorite destination for premium kratom beverages. We offer green, red, white, and yellow kratom strains, each handcrafted with your choice of custom flavors. Our kratom lounge in Southeast Cape Coral provides a comfortable space to enjoy botanical beverages in a social setting.
-      </p>
-      <p>
-        Serving Cape Coral, Fort Myers, Lehigh Acres, and Southwest Florida, WTF is your trusted source for quality kratom teas. Visit us at 1520 SE 46th Ln, Unit B, or order online for pickup.
-      </p>
-      
-      <h3>Why Choose WTF for Kratom in Cape Coral?</h3>
-      <ul>
-        <li><strong>Lab-Tested Quality</strong>: All kratom is third-party lab tested for purity and potency</li>
-        <li><strong>Multiple Strains</strong>: Choose from green, red, white, and yellow kratom varieties</li>
-        <li><strong>Custom Flavors</strong>: Over 15 flavor options to mask the natural bitterness</li>
-        <li><strong>Expert Staff</strong>: Our team can help you choose the right strain for your preferences</li>
-        <li><strong>Convenient Service</strong>: Order ahead online or enjoy in our lounge</li>
-      </ul>
-      
-      <h3>Frequently Asked Questions About Kratom</h3>
-      <details>
-        <summary>What types of kratom do you offer?</summary>
-        <p>
-          WTF offers green, red, white, and yellow kratom strains. Each strain has unique characteristics. Green is popular for daytime, red for evening, white for morning, and yellow for a balanced experience. Our staff can help you choose based on your preferences. All kratom is 21+ at WTF Cape Coral.
-        </p>
-      </details>
-      
-      <details>
-        <summary>Is kratom legal in Florida?</summary>
-        <p>
-          Yes, kratom is legal in Florida and Lee County. WTF operates as a licensed establishment and sources kratom from reputable suppliers. All products are lab-tested and comply with local regulations. Must be 21+ to purchase.
-        </p>
-      </details>
-      
-      <details>
-        <summary>How should I start with kratom?</summary>
-        <p>
-          If you're new to kratom, we recommend starting with a small serving (1-2 grams) and waiting 30-45 minutes to assess your response. Our kratom bartenders can prepare your tea at the strength you prefer. We recommend trying green kratom first for a balanced introduction.
-        </p>
-      </details>
-      
-      <h3>Visit WTF Kratom Lounge in Cape Coral</h3>
-      <p>
-        Experience the best kratom bar in Southwest Florida at <strong>1520 SE 46th Ln, Unit B, Cape Coral, FL 33904</strong> or call <strong>(239) 955-0314</strong>. Open daily with late-night hours. Follow us on <a href="https://www.instagram.com/wtfswagbrand/" target="_blank" rel="noopener">Instagram</a> for new strains and events.
-      </p>
-      
-      <p class="related-links">
-        <strong>Explore More:</strong> 
-        <a href="/collections/kava-drinks">Kava Drinks</a> | 
-        <a href="/collections/thc-drinks">THC Beverages</a> | 
-        <a href="/pages/menu">Full Menu</a> | 
-        <a href="/pages/faq">FAQ</a>
-      </p>
-    </div>
-  {%- endif -%}
-  
-  {%- comment -%} === THC Collection Content === {%- endcomment -%}
-  {%- if is_thc -%}
-    <div class="seo-block">
-      <h2>Hemp-Derived THC Beverages in Cape Coral, Florida</h2>
-      <p>
-        Explore WTF's THC beverage collection—Cape Coral's destination for legal hemp-derived Delta-9 THC drinks, shots, and syrups. All products are lab-tested, compliant with federal and Florida law, and available for purchase by adults 21+. Enjoy in our lounge or order online for pickup in Southeast Cape Coral.
-      </p>
-      <p>
-        Serving Cape Coral, Fort Myers, Lehigh Acres, and Southwest Florida, WTF offers a curated selection of THC products in a licensed, welcoming environment. Visit us at 1520 SE 46th Ln, Unit B.
-      </p>
-      
-      <h3>Why Choose WTF for THC Products in Cape Coral?</h3>
-      <ul>
-        <li><strong>Legal & Compliant</strong>: All products are hemp-derived Delta-9 THC, legal under federal law</li>
-        <li><strong>Lab-Tested</strong>: Third-party COAs available for all products</li>
-        <li><strong>Variety</strong>: Drinks, shots, syrups, gummies, and more</li>
-        <li><strong>Licensed Establishment</strong>: WTF is a licensed retailer in Cape Coral</li>
-        <li><strong>Expert Guidance</strong>: Our staff can help you choose the right product and dosage</li>
-      </ul>
-      
-      <h3>Frequently Asked Questions About THC Products</h3>
-      <details>
-        <summary>Are your THC products legal in Florida?</summary>
-        <p>
-          Yes, all WTF THC products are hemp-derived Delta-9 THC, which is legal under the 2018 Farm Bill and Florida law. Products contain ≤0.3% THC by dry weight. Must be 21+ to purchase. WTF is a licensed retailer in Cape Coral.
-        </p>
-      </details>
-      
-      <details>
-        <summary>What's the difference between Delta-9 and Delta-8?</summary>
-        <p>
-          Delta-9 THC is the primary compound found in cannabis. When derived from hemp (≤0.3% by dry weight), it's federally legal. Delta-8 is a different compound. At WTF, we focus on hemp-derived Delta-9 products for consistency and legality. All products are lab-tested with COAs available.
-        </p>
-      </details>
-      
-      <details>
-        <summary>How much should I take?</summary>
-        <p>
-          Start low and go slow. If you're new to THC, we recommend starting with 5-10mg and waiting 60-90 minutes before consuming more. Our staff can help you choose the right dosage based on your experience level. Never drive after consuming THC products.
-        </p>
-      </details>
-      
-      <h3>Visit WTF in Cape Coral for THC Products</h3>
-      <p>
-        Shop legal hemp-derived THC products at <strong>1520 SE 46th Ln, Unit B, Cape Coral, FL 33904</strong> or call <strong>(239) 955-0314</strong>. Must be 21+ with valid ID. Open daily. Follow us on <a href="https://www.instagram.com/wtfswagbrand/" target="_blank" rel="noopener">Instagram</a> for new products.
-      </p>
-      
-      <p class="related-links">
-        <strong>Explore More:</strong> 
-        <a href="/collections/kava-drinks">Kava Drinks</a> | 
-        <a href="/collections/kratom-teas">Kratom Teas</a> | 
-        <a href="/pages/menu">Full Menu</a> | 
-        <a href="/pages/faq">FAQ</a>
-      </p>
-    </div>
-  {%- endif -%}
-  
-  {%- comment -%} === Edibles Collection Content === {%- endcomment -%}
-  {%- if is_edibles -%}
-    <div class="seo-block">
-      <h2>THC Edibles in Cape Coral, Florida</h2>
-      <p>
-        Browse WTF's THC edibles collection—gummies, brownies, cookies, and more. All products are hemp-derived Delta-9 THC, lab-tested, and legal for adults 21+ in Florida. Shop in-store at our Cape Coral location or order online for pickup.
-      </p>
-      
-      <h3>Why Choose WTF for Edibles?</h3>
-      <ul>
-        <li><strong>Lab-Tested</strong>: COAs available for all products</li>
-        <li><strong>Variety</strong>: Gummies, brownies, cookies, cereal bars, and more</li>
-        <li><strong>Accurate Dosing</strong>: Clearly labeled THC content per serving</li>
-        <li><strong>Licensed Retailer</strong>: WTF is a trusted source in Cape Coral</li>
-      </ul>
-      
-      <h3>Dosage Guidance</h3>
-      <p>
-        <strong>Beginners</strong>: Start with 5-10mg. Wait 60-90 minutes before consuming more.<br>
-        <strong>Experienced</strong>: 10-25mg depending on tolerance.<br>
-        <strong>Never</strong>: Drive or operate machinery after consuming edibles.
-      </p>
-      
-      <p class="related-links">
-        <strong>Explore More:</strong> 
-        <a href="/collections/thc-drinks">THC Drinks</a> | 
-        <a href="/collections/kava-drinks">Kava</a> | 
-        <a href="/pages/faq">FAQ</a>
-      </p>
-    </div>
-  {%- endif -%}
-  
-  {%- comment -%} === Default Content (Other Collections) === {%- endcomment -%}
-  {%- unless is_kava or is_kratom or is_thc or is_edibles -%}
-    <div class="seo-block">
-      <h2>{{ collection.title }} at WTF Cape Coral</h2>
-      <p>
-        Browse our {{ collection.title | downcase }} collection at WTF | Welcome To Florida, Cape Coral's premier botanical beverage lounge. Located at 1520 SE 46th Ln, Unit B, serving Cape Coral, Fort Myers, and Southwest Florida. Shop online or visit our lounge for the full WTF experience.
-      </p>
-      
-      <p class="related-links">
-        <strong>Explore More:</strong> 
-        <a href="/collections/kava-drinks">Kava Drinks</a> | 
-        <a href="/collections/kratom-teas">Kratom Teas</a> | 
-        <a href="/collections/thc-drinks">THC Beverages</a> | 
-        <a href="/pages/menu">Full Menu</a>
-      </p>
-    </div>
-  {%- endunless -%}
+  </details>
 </div>
 
 <style>
   .collection-seo-content {
-    max-width: 800px;
-    margin: 3rem auto;
-    padding: 0 1.5rem;
-    font-size: 1rem;
-    line-height: 1.7;
+    margin: 4rem auto;
+    max-width: 1200px;
+    padding: 0 2rem;
   }
   
-  .seo-block h2 {
-    font-size: 1.75rem;
+  .collection-about-details {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+  }
+  
+  .collection-about-details[open] {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .collection-about-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  
+  .collection-about-summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .collection-about-summary h2 {
+    margin: 0;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    color: #1a1a1a;
-  }
-  
-  .seo-block h3 {
-    font-size: 1.35rem;
-    font-weight: 600;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
     color: #333;
   }
   
-  .seo-block p {
-    margin-bottom: 1rem;
-    color: #444;
+  .collection-about-toggle {
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
   }
   
-  .seo-block ul {
-    margin: 1rem 0 1.5rem 1.5rem;
-    list-style: disc;
+  .collection-about-details[open] .collection-about-toggle {
+    transform: rotate(180deg);
   }
   
-  .seo-block li {
-    margin-bottom: 0.5rem;
-    color: #444;
-  }
-  
-  .seo-block details {
-    margin-bottom: 1rem;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px;
-    padding: 1rem;
-  }
-  
-  .seo-block summary {
-    font-weight: 600;
-    cursor: pointer;
+  .icon-chevron {
     color: #ff6600;
   }
   
-  .seo-block details[open] summary {
-    margin-bottom: 0.75rem;
+  .collection-about-content {
+    margin-top: 2rem;
+    line-height: 1.7;
+    color: #555;
   }
   
-  .seo-block a {
+  .collection-about-content h3 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    color: #333;
+  }
+  
+  .collection-about-content p {
+    margin-bottom: 1.5rem;
+  }
+  
+  .collection-featured-products {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+  }
+  
+  .collection-featured-products li {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .collection-featured-products li:last-child {
+    border-bottom: none;
+  }
+  
+  .collection-featured-products a {
     color: #ff6600;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    transition: color 0.2s ease;
   }
   
-  .seo-block a:hover {
+  .collection-featured-products a:hover {
+    color: #cc5200;
     text-decoration: underline;
   }
   
-  .related-links {
+  .collection-related-links {
     margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e5e5e5;
-    font-size: 0.95rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  .collection-related-links a {
+    color: #ff6600;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .collection-related-links a:hover {
+    color: #cc5200;
+    text-decoration: underline;
   }
   
   @media (max-width: 768px) {
     .collection-seo-content {
-      margin: 2rem auto;
-      padding: 0 1rem;
+      padding: 0 1.5rem;
+      margin: 3rem auto;
     }
     
-    .seo-block h2 {
-      font-size: 1.5rem;
+    .collection-about-details {
+      padding: 1.5rem;
     }
     
-    .seo-block h3 {
-      font-size: 1.2rem;
+    .collection-about-summary h2 {
+      font-size: 1.6rem;
     }
   }
 </style>
 {%- endif -%}
+

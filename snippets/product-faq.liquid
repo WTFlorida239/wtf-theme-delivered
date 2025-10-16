@@ -1,307 +1,486 @@
 {%- comment -%}
-  Product FAQ Snippet
+  Product FAQ Snippet - ENHANCED
   
-  Purpose: Add product-specific FAQs for SEO and user education
+  Purpose: Display product FAQs in an accessible accordion UI with metafield support
   
   Features:
-  - Dynamic FAQs based on product type
-  - Compliance-friendly (no medical claims)
-  - Internal links to related pages
-  - Schema.org FAQPage markup
+  - Pulls from product.metafields.faq.items (array of {question, answer}) if available
+  - Falls back to product-type-specific FAQs if no metafield
+  - Renders as <details> accordion (native HTML, accessible)
+  - Automatically matches FAQPage JSON-LD in seo-head (no duplication)
+  - Lazy-loads with CSS animation
+  - Mobile-friendly and screen-reader accessible
   
   Usage: {% render 'product-faq', product: product %}
+  
+  Metafield Structure:
+  Namespace: faq
+  Key: items
+  Type: list.metaobject or JSON
+  Format: [
+    {"question": "What is this product?", "answer": "This is..."},
+    {"question": "How do I use it?", "answer": "You can..."}
+  ]
 {%- endcomment -%}
 
 {%- if product -%}
-{%- liquid
-  assign product_title = product.title | downcase
-  assign is_thc = false
-  assign is_kratom = false
-  assign is_kava = false
-  assign is_gummy = false
-  assign is_drink = false
+  {%- liquid
+    # Check for custom metafield FAQs
+    assign faq_items = product.metafields.faq.items
+    assign has_custom_faq = false
+    
+    if faq_items != blank and faq_items.size > 0
+      assign has_custom_faq = true
+    endif
+    
+    # Determine product type for fallback FAQs
+    assign product_title = product.title | downcase
+    assign is_thc = false
+    assign is_kratom = false
+    assign is_kava = false
+    assign is_gummy = false
+    assign is_drink = false
+    
+    if product_title contains 'thc' or product_title contains 'delta' or product.tags contains 'THC'
+      assign is_thc = true
+    endif
+    
+    if product_title contains 'kratom' or product.tags contains 'Kratom'
+      assign is_kratom = true
+    endif
+    
+    if product_title contains 'kava' or product.tags contains 'Kava'
+      assign is_kava = true
+    endif
+    
+    if product_title contains 'gummies' or product_title contains 'gummy'
+      assign is_gummy = true
+    endif
+    
+    if product_title contains 'drink' or product_title contains 'shot' or product_title contains 'syrup'
+      assign is_drink = true
+    endif
+  -%}
   
-  if product_title contains 'thc' or product_title contains 'delta' or product.tags contains 'THC'
-    assign is_thc = true
-  endif
-  
-  if product_title contains 'kratom' or product.tags contains 'Kratom'
-    assign is_kratom = true
-  endif
-  
-  if product_title contains 'kava' or product.tags contains 'Kava'
-    assign is_kava = true
-  endif
-  
-  if product_title contains 'gummies' or product_title contains 'gummy'
-    assign is_gummy = true
-  endif
-  
-  if product_title contains 'drink' or product_title contains 'shot' or product_title contains 'syrup'
-    assign is_drink = true
-  endif
--%}
-
-<div class="product-faq-section">
-  <h2>Frequently Asked Questions</h2>
-  
-  {%- if is_thc -%}
-    <details>
-      <summary>Is this product legal in Florida?</summary>
-      <p>
-        Yes, this product contains hemp-derived Delta-9 THC (≤0.3% by dry weight), which is legal under federal law and Florida state law. WTF is a licensed retailer in Cape Coral. Must be 21+ to purchase.
-      </p>
-    </details>
+  <div class="product-faq-section" id="product-faq">
+    <h2 class="product-faq-title">Frequently Asked Questions</h2>
     
-    <details>
-      <summary>How much should I take?</summary>
-      <p>
-        Start with a low dose (5-10mg for beginners) and wait 60-90 minutes before consuming more. Effects can take 30-120 minutes to onset depending on metabolism and whether you've eaten. Never drive after consuming THC products.
-      </p>
-    </details>
+    <div class="product-faq-accordion">
+      {%- if has_custom_faq -%}
+        {%- comment -%} Render custom metafield FAQs {%- endcomment -%}
+        {%- for item in faq_items -%}
+          {%- liquid
+            # Handle both metaobject and JSON formats
+            if item.question
+              assign question = item.question
+              assign answer = item.answer
+            elsif item[0]
+              assign question = item[0]
+              assign answer = item[1]
+            else
+              continue
+            endif
+          -%}
+          
+          <details class="faq-item" data-faq-index="{{ forloop.index }}">
+            <summary class="faq-question">
+              <span class="faq-question-text">{{ question }}</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                {{ answer }}
+              </div>
+            </div>
+          </details>
+        {%- endfor -%}
+        
+      {%- else -%}
+        {%- comment -%} Fallback to product-type-specific FAQs {%- endcomment -%}
+        
+        {%- if is_thc -%}
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">Is this product legal in Florida?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Yes, this product contains hemp-derived Delta-9 THC (≤0.3% by dry weight), which is legal under federal law and Florida state law. WTF is a licensed retailer in Cape Coral. Must be 21+ to purchase.</p>
+              </div>
+            </div>
+          </details>
+          
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">How much should I take?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Start with a low dose (5-10mg for beginners) and wait 60-90 minutes before consuming more. Effects can take 30-120 minutes to onset depending on metabolism and whether you've eaten. Never drive after consuming THC products.</p>
+              </div>
+            </div>
+          </details>
+          
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">Is this product lab-tested?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Yes, all WTF THC products are third-party lab tested. Certificates of Analysis (COAs) are available upon request. Lab testing confirms THC content, purity, and absence of contaminants.</p>
+              </div>
+            </div>
+          </details>
+        {%- endif -%}
+        
+        {%- if is_kratom -%}
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">What strain is this kratom?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Check the product title for strain information (green, red, white, or yellow). Each strain has unique characteristics. Our staff can help you choose the right strain for your preferences. All kratom is 21+ at WTF Cape Coral.</p>
+              </div>
+            </div>
+          </details>
+          
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">Is kratom legal in Florida?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Yes, kratom is legal in Florida and Lee County. WTF operates as a licensed establishment and sources kratom from reputable suppliers. All products are lab-tested and comply with local regulations.</p>
+              </div>
+            </div>
+          </details>
+        {%- endif -%}
+        
+        {%- if is_kava -%}
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">What is kava?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Kava is a traditional Pacific Island beverage made from the root of the Piper methysticum plant. It's been used for centuries in social and ceremonial settings. At WTF, we serve kava in a modern lounge setting with custom flavor options.</p>
+              </div>
+            </div>
+          </details>
+          
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span class="faq-question-text">Is kava safe?</span>
+              <span class="faq-toggle" aria-hidden="true">
+                <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 7 10 12 15 7"></polyline>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <p>Kava has been consumed safely for thousands of years in the Pacific Islands. We use only noble kava varieties, which are considered the highest quality. As with any botanical, start with a small serving to see how your body responds. Kava is 21+ at WTF.</p>
+              </div>
+            </div>
+          </details>
+        {%- endif -%}
+        
+        {%- comment -%} General FAQs for all products {%- endcomment -%}
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span class="faq-question-text">Can I order online for pickup?</span>
+            <span class="faq-toggle" aria-hidden="true">
+              <svg class="icon-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="5 7 10 12 15 7"></polyline>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              <p>Yes! Order online at wtfswag.com and pick up at our Cape Coral location (1520 SE 46th Ln, Unit B). Must show valid ID (21+) at pickup. Orders typically ready within 30 minutes.</p>
+            </div>
+          </div>
+        </details>
+        
+      {%- endif -%}
+    </div>
     
-    <details>
-      <summary>Is this product lab-tested?</summary>
-      <p>
-        Yes, all WTF THC products are third-party lab tested. Certificates of Analysis (COAs) are available upon request. Lab testing confirms THC content, purity, and absence of contaminants.
-      </p>
-    </details>
-    
-    {%- if is_gummy -%}
-    <details>
-      <summary>How should I store these gummies?</summary>
-      <p>
-        Store in a cool, dry place away from direct sunlight. Keep out of reach of children and pets. Reseal package after opening. Do not refrigerate unless specified on packaging.
-      </p>
-    </details>
-    {%- endif -%}
-    
-    <details>
-      <summary>Can I order online for pickup?</summary>
-      <p>
-        Yes! Order online at wtfswag.com and pick up at our Cape Coral location (1520 SE 46th Ln, Unit B). Must show valid ID (21+) at pickup. Orders typically ready within 30 minutes.
-      </p>
-    </details>
-  {%- endif -%}
-  
-  {%- if is_kratom -%}
-    <details>
-      <summary>What strain is this kratom?</summary>
-      <p>
-        Check the product title for strain information (green, red, white, or yellow). Each strain has unique characteristics. Our staff can help you choose the right strain for your preferences. All kratom is 21+ at WTF Cape Coral.
-      </p>
-    </details>
-    
-    <details>
-      <summary>Is kratom legal in Florida?</summary>
-      <p>
-        Yes, kratom is legal in Florida and Lee County. WTF operates as a licensed establishment and sources kratom from reputable suppliers. All products are lab-tested and comply with local regulations.
-      </p>
-    </details>
-    
-    <details>
-      <summary>How should I prepare kratom tea?</summary>
-      <p>
-        At WTF, we prepare kratom tea for you with your choice of flavor. If preparing at home, mix kratom powder with hot (not boiling) water and add honey or lemon to taste. Start with 1-2 grams if you're new to kratom.
-      </p>
-    </details>
-    
-    <details>
-      <summary>Can I order kratom online?</summary>
-      <p>
-        Yes! Order kratom teas and products online at wtfswag.com for pickup at our Cape Coral location. Visit us at 1520 SE 46th Ln, Unit B, or call (239) 955-0314.
-      </p>
-    </details>
-  {%- endif -%}
-  
-  {%- if is_kava -%}
-    <details>
-      <summary>What is kava?</summary>
-      <p>
-        Kava is a traditional Pacific Island beverage made from the root of the Piper methysticum plant. It's been used for centuries in social and ceremonial settings. At WTF, we serve kava in a modern lounge setting with custom flavor options.
-      </p>
-    </details>
-    
-    <details>
-      <summary>Is kava safe?</summary>
-      <p>
-        Kava has been consumed safely for thousands of years in the Pacific Islands. We use only noble kava varieties, which are considered the highest quality. As with any botanical, start with a small serving to see how your body responds. Kava is 21+ at WTF.
-      </p>
-    </details>
-    
-    <details>
-      <summary>How much kava should I drink?</summary>
-      <p>
-        If you're new to kava, start with a 12oz or 16oz serving. Most guests enjoy 1-3 servings during a visit. Our kava bartenders can guide you based on your experience level.
-      </p>
-    </details>
-    
-    <details>
-      <summary>Can I order kava online?</summary>
-      <p>
-        Yes! Order kava drinks online at wtfswag.com for pickup at our Cape Coral kava bar. Visit us at 1520 SE 46th Ln, Unit B, or call (239) 955-0314. Open daily with late-night hours.
-      </p>
-    </details>
-  {%- endif -%}
-  
-  {%- comment -%} General FAQs for all products {%- endcomment -%}
-  <details>
-    <summary>What's your return policy?</summary>
-    <p>
-      Due to the nature of botanical products, we cannot accept returns on opened items. Unopened items may be returned within 7 days with receipt. Contact us at (239) 955-0314 with any concerns.
+    <p class="faq-footer">
+      <strong>Still have questions?</strong> Visit our <a href="/pages/faq">full FAQ page</a> or call us at <a href="tel:2399550314">(239) 955-0314</a>. Our team is here to help!
     </p>
-  </details>
+  </div>
   
-  <details>
-    <summary>Do you ship products?</summary>
-    <p>
-      Currently, WTF offers in-store pickup only at our Cape Coral location (1520 SE 46th Ln, Unit B). Order online and pick up the same day. Shipping may be available in the future—follow us on Instagram for updates.
-    </p>
-  </details>
-  
-  <p class="faq-footer">
-    <strong>Still have questions?</strong> Visit our <a href="/pages/faq">full FAQ page</a> or call us at <a href="tel:2399550314">(239) 955-0314</a>. Our team is here to help!
-  </p>
-  
-  <p class="related-products">
-    <strong>You might also like:</strong> 
-    <a href="/collections/kava-drinks">Kava Drinks</a> | 
-    <a href="/collections/kratom-teas">Kratom Teas</a> | 
-    <a href="/collections/thc-drinks">THC Beverages</a>
-  </p>
-</div>
-
-{%- comment -%} FAQ Schema Markup {%- endcomment -%}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {%- if is_thc -%}
-    {
-      "@type": "Question",
-      "name": "Is this product legal in Florida?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, this product contains hemp-derived Delta-9 THC (≤0.3% by dry weight), which is legal under federal law and Florida state law. WTF is a licensed retailer in Cape Coral. Must be 21+ to purchase."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How much should I take?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Start with a low dose (5-10mg for beginners) and wait 60-90 minutes before consuming more. Effects can take 30-120 minutes to onset. Never drive after consuming THC products."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is this product lab-tested?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, all WTF THC products are third-party lab tested. Certificates of Analysis (COAs) are available upon request."
-      }
-    },
-    {%- endif -%}
-    {%- if is_kratom -%}
-    {
-      "@type": "Question",
-      "name": "Is kratom legal in Florida?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, kratom is legal in Florida and Lee County. WTF operates as a licensed establishment and sources kratom from reputable suppliers."
-      }
-    },
-    {%- endif -%}
-    {%- if is_kava -%}
-    {
-      "@type": "Question",
-      "name": "What is kava?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Kava is a traditional Pacific Island beverage made from the root of the Piper methysticum plant. At WTF, we serve kava in a modern lounge setting with custom flavor options."
-      }
-    },
-    {%- endif -%}
-    {
-      "@type": "Question",
-      "name": "Can I order online for pickup?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes! Order online at wtfswag.com and pick up at our Cape Coral location (1520 SE 46th Ln, Unit B). Must show valid ID (21+) at pickup."
-      }
-    }
-  ]
-}
-</script>
-
-<style>
-  .product-faq-section {
-    max-width: 800px;
-    margin: 3rem auto;
-    padding: 2rem 1.5rem;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-  }
-  
-  .product-faq-section h2 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: #1a1a1a;
-  }
-  
-  .product-faq-section details {
-    margin-bottom: 1rem;
-    background-color: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px;
-    padding: 1rem;
-  }
-  
-  .product-faq-section summary {
-    font-weight: 600;
-    cursor: pointer;
-    color: #ff6600;
-    font-size: 1.05rem;
-  }
-  
-  .product-faq-section details[open] summary {
-    margin-bottom: 0.75rem;
-  }
-  
-  .product-faq-section details p {
-    color: #444;
-    line-height: 1.6;
-  }
-  
-  .product-faq-section a {
-    color: #ff6600;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  
-  .product-faq-section a:hover {
-    text-decoration: underline;
-  }
-  
-  .faq-footer,
-  .related-products {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e5e5e5;
-    font-size: 0.95rem;
-  }
-  
-  @media (max-width: 768px) {
+  <style>
     .product-faq-section {
-      margin: 2rem auto;
-      padding: 1.5rem 1rem;
+      margin: 4rem 0;
+      padding: 3rem 2rem;
+      background: #f9f9f9;
+      border-radius: 8px;
     }
     
-    .product-faq-section h2 {
+    .product-faq-title {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: #333;
+      text-align: center;
+    }
+    
+    .product-faq-accordion {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .faq-item {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover {
+      border-color: #ff6600;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.1);
+    }
+    
+    .faq-item[open] {
+      border-color: #ff6600;
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.15);
+    }
+    
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      font-weight: 600;
+      font-size: 1.6rem;
+      color: #333;
+      transition: background-color 0.2s ease;
+    }
+    
+    .faq-question::-webkit-details-marker {
+      display: none;
+    }
+    
+    .faq-question:hover {
+      background-color: #fff8f0;
+    }
+    
+    .faq-item[open] .faq-question {
+      background-color: #fff8f0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .faq-question-text {
+      flex: 1;
+      padding-right: 2rem;
+    }
+    
+    .faq-toggle {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      color: #ff6600;
+      transition: transform 0.3s ease;
+    }
+    
+    .faq-item[open] .faq-toggle {
+      transform: rotate(180deg);
+    }
+    
+    .icon-chevron {
+      display: block;
+    }
+    
+    .faq-answer {
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .faq-item[open] .faq-answer {
+      max-height: 1000px;
+      padding: 0;
+    }
+    
+    .faq-answer-content {
+      padding: 2rem;
+      line-height: 1.7;
+      color: #555;
       font-size: 1.5rem;
     }
-  }
-</style>
+    
+    .faq-answer-content p {
+      margin-bottom: 1rem;
+    }
+    
+    .faq-answer-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .faq-answer-content ul,
+    .faq-answer-content ol {
+      margin: 1rem 0;
+      padding-left: 2rem;
+    }
+    
+    .faq-answer-content li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .faq-answer-content a {
+      color: #ff6600;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    
+    .faq-answer-content a:hover {
+      color: #cc5200;
+      text-decoration: underline;
+    }
+    
+    .faq-footer {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    
+    .faq-footer a {
+      color: #ff6600;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .faq-footer a:hover {
+      color: #cc5200;
+      text-decoration: underline;
+    }
+    
+    /* Animation on load */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .faq-item {
+      animation: fadeInUp 0.4s ease forwards;
+      opacity: 0;
+    }
+    
+    .faq-item:nth-child(1) { animation-delay: 0.05s; }
+    .faq-item:nth-child(2) { animation-delay: 0.1s; }
+    .faq-item:nth-child(3) { animation-delay: 0.15s; }
+    .faq-item:nth-child(4) { animation-delay: 0.2s; }
+    .faq-item:nth-child(5) { animation-delay: 0.25s; }
+    .faq-item:nth-child(n+6) { animation-delay: 0.3s; }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .product-faq-section {
+        padding: 2rem 1.5rem;
+        margin: 3rem 0;
+      }
+      
+      .product-faq-title {
+        font-size: 2rem;
+      }
+      
+      .faq-question {
+        padding: 1.2rem 1.5rem;
+        font-size: 1.4rem;
+      }
+      
+      .faq-question-text {
+        padding-right: 1rem;
+      }
+      
+      .faq-answer-content {
+        padding: 1.5rem;
+        font-size: 1.4rem;
+      }
+      
+      .faq-footer {
+        font-size: 1.4rem;
+      }
+    }
+    
+    /* Accessibility: Focus states */
+    .faq-question:focus {
+      outline: 2px solid #ff6600;
+      outline-offset: 2px;
+    }
+    
+    /* Print styles */
+    @media print {
+      .faq-item {
+        page-break-inside: avoid;
+      }
+      
+      .faq-item[open] .faq-answer {
+        max-height: none;
+      }
+      
+      .faq-toggle {
+        display: none;
+      }
+    }
+  </style>
+  
+  {%- comment -%} 
+    Note: FAQPage JSON-LD schema is handled in seo-head.liquid
+    to avoid duplication and maintain single source of truth
+  {%- endcomment -%}
 {%- endif -%}
+
