@@ -1,0 +1,20 @@
+{%- if template.name contains 'product' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "image": [{% for img in product.images %}{{ img.src | json }}{% unless forloop.last %},{% endunless %}{% endfor %}],
+  "description": {{ product.description | strip_html | json }},
+  "sku": {{ product.first_available_variant.sku | json }},
+  "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "price": {{ product.price | money_without_currency | replace: ',', '' | json }},
+    "availability": "{{ product.available | default: false | ternary: 'https://schema.org/InStock', 'https://schema.org/OutOfStock' }}",
+    "url": {{ canonical_url | json }}
+  }
+}
+</script>
+{%- endif -%}
