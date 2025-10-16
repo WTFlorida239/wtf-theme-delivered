@@ -1,0 +1,21 @@
+# robots.txt.liquid
+# Shopify renders this dynamically. Keep sitemaps. Disallow thin/utility and noisy params.
+
+User-agent: *
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /search
+Disallow: /challenge
+Disallow: /tools
+Disallow: /*?*sort_by=
+Disallow: /*?*view=
+Disallow: /*?*page=
+Disallow: /*?*utm_
+Disallow: /*?*variant=
+Allow: /sitemap.xml
+Allow: /sitemap_products_*.xml
+
+# If you ever add staging:
+# User-agent: *
+# Disallow: /?preview_theme_id=
