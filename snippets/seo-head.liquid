@@ -1,0 +1,25 @@
+{%- comment -%} Central SEO & Social Head {%- endcomment -%}
+{%- assign page_title = page_title | default: shop.name -%}
+{%- assign meta_desc = shop.meta_description | default: shop.description | strip_html | truncate: 155 -%}
+
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ meta_desc | escape }}">
+<link rel="canonical" href="{{ canonical_url }}">
+
+{%- if robots -%}<meta name="robots" content="{{ robots }}">{%- endif -%}
+
+{%- comment %} Open Graph / Twitter {%- endcomment -%}
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ meta_desc | escape }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:type" content="{% if template.name contains 'product' %}product{% elsif template.name contains 'article' %}article{% else %}website{% endif %}">
+{%- assign og_img = settings.og_default | default: settings.logo -%}
+{%- if template.name contains 'product' and product.featured_image -%}{% assign og_img = product.featured_image.src %}{% endif -%}
+{%- if template.name contains 'collection' and collection.image -%}{% assign og_img = collection.image.src %}{% endif -%}
+{%- if og_img -%}<meta property="og:image" content="{{ og_img | img_url: '1200x630' }}">{%- endif -%}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page_title }}">
+<meta name="twitter:description" content="{{ meta_desc | escape }}">
+{%- if og_img -%}<meta name="twitter:image" content="{{ og_img | img_url: '1200x630' }}">{%- endif -%}
