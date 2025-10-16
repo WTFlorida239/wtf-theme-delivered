@@ -1,0 +1,187 @@
+{% comment %}
+  Service-Specific Page Schema
+  For kava, kratom, THC landing pages
+  
+  Usage: {% render 'service-page-schema', service_type: 'kava' %}
+{% endcomment %}
+
+{% liquid
+  assign service_name = ''
+  assign service_description = ''
+  assign service_keywords = ''
+  assign price_range = ''
+  
+  case service_type
+    when 'kava', 'kava-drinks'
+      assign service_name = 'Custom Kava Drinks'
+      assign service_description = 'Traditional and custom kava beverages expertly prepared in Cape Coral, FL. Choose your size, strength, and flavor combinations. Serving the best kava drinks in Southwest Florida since 2024.'
+      assign service_keywords = 'kava bar cape coral, kava drinks cape coral, custom kava, kava lounge, traditional kava, kava bar fort myers, kava southwest florida, best kava cape coral'
+      assign price_range = '$9-$100'
+    when 'kratom', 'kratom-teas'
+      assign service_name = 'Premium Kratom Teas'
+      assign service_description = 'Premium kratom teas with your choice of strain (green, red, white, yellow) and extensive flavor options in Cape Coral, FL. Serving Southwest Florida with the finest kratom selection.'
+      assign service_keywords = 'kratom tea cape coral, kratom fort myers, kratom southwest florida, kratom bar, green kratom, red kratom, white kratom, kratom drinks florida'
+      assign price_range = '$9-$100'
+    when 'thc', 'thc-drinks', 'delta-9'
+      assign service_name = 'Delta-9 THC Beverages'
+      assign service_description = 'Lab-tested Delta-9 THC drinks, shots, and syrups in Cape Coral, FL. Legal, licensed, and 21+ only. Wide selection of hemp-derived THC beverages with precise dosing.'
+      assign service_keywords = 'thc drinks cape coral, delta 9 beverages florida, thc shots, hemp drinks, legal thc cape coral, delta 9 fort myers, thc syrup southwest florida'
+      assign price_range = '$5-$25'
+    when 'edibles', 'thc-edibles'
+      assign service_name = 'THC Edibles'
+      assign service_description = 'Premium THC edibles including gummies, cookies, brownies, and cereal bars in Cape Coral, FL. Lab-tested, precisely dosed, 21+ only. Serving Southwest Florida with quality hemp-derived edibles.'
+      assign service_keywords = 'thc edibles cape coral, delta 9 gummies, thc cookies, edibles fort myers, hemp edibles florida, legal thc edibles swfl'
+      assign price_range = '$15-$30'
+    when 'canned-drinks'
+      assign service_name = 'Canned THC & Botanical Drinks'
+      assign service_description = 'Ready-to-drink canned THC beverages and botanical drinks in Cape Coral, FL. Convenient, portable, and perfectly dosed. Take your favorite drinks on the go.'
+      assign service_keywords = 'canned thc drinks cape coral, ready to drink thc, canned kava, canned kratom, portable thc drinks florida'
+      assign price_range = '$5-$15'
+    when 'draft-pours'
+      assign service_name = 'Draft Pours & Specialty Drinks'
+      assign service_description = 'Rotating selection of draft pours and specialty botanical beverages in Cape Coral, FL. Unique, limited-edition drinks you can\'t find anywhere else in Southwest Florida.'
+      assign service_keywords = 'draft kava cape coral, specialty drinks fort myers, unique beverages swfl, craft drinks cape coral'
+      assign price_range = '$12-$20'
+  endcase
+%}
+
+{% if service_name != blank %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "{{ service_name }}",
+  "name": "{{ service_name }}",
+  "description": "{{ service_description | escape }}",
+  "provider": {
+    "@type": "LocalBusiness",
+    "@id": "{{ shop.secure_url }}/#localbusiness",
+    "name": "WTF | Welcome To Florida",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "1520 SE 46th Ln, Unit B",
+      "addressLocality": "Cape Coral",
+      "addressRegion": "FL",
+      "postalCode": "33904",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 26.5629,
+      "longitude": -81.9495
+    },
+    "telephone": "(239) 955-0314",
+    "email": "info@wtfswag.com",
+    "url": "{{ shop.secure_url }}"
+  },
+  "areaServed": [
+    {
+      "@type": "City",
+      "name": "Cape Coral",
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "City",
+      "name": "Fort Myers",
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "City",
+      "name": "Lehigh Acres",
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "City",
+      "name": "North Fort Myers",
+      "containedInPlace": {
+        "@type": "State",
+        "name": "Florida"
+      }
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Southwest Florida"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Lee County"
+    }
+  ],
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "USD",
+    "priceRange": "{{ price_range }}",
+    "availability": "https://schema.org/InStock",
+    "url": "{{ page.url | default: request.path | prepend: shop.secure_url }}"
+  },
+  "keywords": "{{ service_keywords }}",
+  "availableChannel": {
+    "@type": "ServiceChannel",
+    "serviceUrl": "{{ shop.secure_url }}",
+    "servicePhone": {
+      "@type": "ContactPoint",
+      "telephone": "(239) 955-0314",
+      "contactType": "Customer Service",
+      "areaServed": "US-FL",
+      "availableLanguage": "English"
+    },
+    "serviceLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1520 SE 46th Ln, Unit B",
+        "addressLocality": "Cape Coral",
+        "addressRegion": "FL",
+        "postalCode": "33904",
+        "addressCountry": "US"
+      }
+    }
+  },
+  "hoursAvailable": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "12:00",
+      "closes": "22:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Friday", "Saturday"],
+      "opens": "12:00",
+      "closes": "23:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "12:00",
+      "closes": "22:00"
+    }
+  ]
+}
+</script>
+
+<!-- Service Page Meta Tags -->
+<meta name="keywords" content="{{ service_keywords }}">
+<meta name="description" content="{{ service_description | escape }}">
+<meta name="geo.region" content="US-FL">
+<meta name="geo.placename" content="Cape Coral">
+<meta name="geo.position" content="26.5629;-81.9495">
+
+<!-- Open Graph for Social Sharing -->
+<meta property="og:type" content="product.group">
+<meta property="og:title" content="{{ service_name }} | WTF | Welcome To Florida">
+<meta property="og:description" content="{{ service_description | escape }}">
+<meta property="og:locality" content="Cape Coral">
+<meta property="og:region" content="FL">
+<meta property="og:postal-code" content="33904">
+<meta property="og:country-name" content="USA">
+{% endif %}

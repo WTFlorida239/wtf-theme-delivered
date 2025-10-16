@@ -1,0 +1,147 @@
+{% comment %}
+  Collection-Level SEO Optimization
+  Adds local keywords and structured data to collection pages
+  
+  Usage: {% render 'collection-seo-boost', collection: collection %}
+{% endcomment %}
+
+{% if collection %}
+  {% liquid
+    assign collection_handle = collection.handle
+    assign local_keywords = ''
+    assign service_type = ''
+    assign local_description = ''
+    
+    case collection_handle
+      when 'kratom-teas', 'kratom'
+        assign local_keywords = 'kratom tea cape coral, kratom southwest florida, kratom fort myers, kratom lee county, best kratom cape coral, kratom bar swfl, kratom drinks florida'
+        assign service_type = 'Kratom Tea Service'
+        assign local_description = 'Premium kratom teas in Cape Coral, FL. Choose from green, red, white, and yellow strains with custom flavors. Serving Cape Coral, Fort Myers, and Southwest Florida with the best kratom selection.'
+      when 'kava-drinks', 'kava'
+        assign local_keywords = 'kava bar cape coral, kava drinks cape coral, kava lounge fort myers, kava southwest florida, best kava cape coral, kava bar 33904, kava near me cape coral'
+        assign service_type = 'Kava Bar Service'
+        assign local_description = 'Cape Coral\'s premier kava bar offering traditional and custom kava drinks. Locally sourced, expertly prepared kava beverages in a welcoming lounge atmosphere. Serving Cape Coral, Fort Myers, Lehigh Acres, and SWFL.'
+      when 'thc-drinks', 'thc-beverages', 'delta-9'
+        assign local_keywords = 'thc drinks cape coral, delta 9 beverages florida, thc shots fort myers, hemp drinks southwest florida, legal thc cape coral, delta 9 cape coral'
+        assign service_type = 'THC Beverage Service'
+        assign local_description = 'Lab-tested Delta-9 THC beverages and shots in Cape Coral, FL. Legal, licensed, and 21+ only. Wide selection of THC drinks, syrups, and shots. Serving Southwest Florida with quality hemp-derived products.'
+      when 'edibles', 'thc-edibles'
+        assign local_keywords = 'thc edibles cape coral, delta 9 gummies florida, thc cookies fort myers, edibles southwest florida, legal thc edibles cape coral, hemp edibles swfl'
+        assign service_type = 'THC Edibles'
+        assign local_description = 'Premium THC edibles in Cape Coral including gummies, cookies, brownies, and cereal bars. Lab-tested, precisely dosed, 21+ only. Serving Cape Coral, Fort Myers, and Southwest Florida.'
+      when 'take-home-items', 'retail'
+        assign local_keywords = 'kava powder cape coral, kratom powder fort myers, thc products cape coral, hemp products southwest florida, botanical products swfl'
+        assign service_type = 'Botanical Products Retail'
+        assign local_description = 'Take-home kava powder, kratom, THC products, and botanical supplies in Cape Coral, FL. Stock up on your favorites for home use. Serving Southwest Florida with quality botanical products.'
+      else
+        assign local_keywords = 'kava bar cape coral, kratom cape coral, thc products fort myers, botanical drinks southwest florida'
+        assign service_type = 'Botanical Beverage Service'
+        assign local_description = 'Premium botanical products and beverages in Cape Coral, FL. Serving Southwest Florida with quality kava, kratom, and THC products.'
+    endcase
+  %}
+  
+  <!-- Enhanced Collection Meta Tags -->
+  <meta name="keywords" content="{{ local_keywords }}">
+  <meta name="geo.region" content="US-FL">
+  <meta name="geo.placename" content="Cape Coral">
+  
+  <!-- Collection-Specific Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "{{ service_type }}",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "WTF | Welcome To Florida",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1520 SE 46th Ln, Unit B",
+        "addressLocality": "Cape Coral",
+        "addressRegion": "FL",
+        "postalCode": "33904",
+        "addressCountry": "US"
+      },
+      "telephone": "(239) 955-0314",
+      "url": "{{ shop.secure_url }}"
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Cape Coral",
+        "containedInPlace": {
+          "@type": "State",
+          "name": "Florida"
+        }
+      },
+      {
+        "@type": "City",
+        "name": "Fort Myers",
+        "containedInPlace": {
+          "@type": "State",
+          "name": "Florida"
+        }
+      },
+      {
+        "@type": "City",
+        "name": "Lehigh Acres",
+        "containedInPlace": {
+          "@type": "State",
+          "name": "Florida"
+        }
+      },
+      {
+        "@type": "City",
+        "name": "North Fort Myers",
+        "containedInPlace": {
+          "@type": "State",
+          "name": "Florida"
+        }
+      }
+    ],
+    "description": "{{ local_description | escape }}",
+    "url": "{{ collection.url | prepend: shop.secure_url }}",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "{{ collection.title }}",
+      "itemListElement": [
+        {% for product in collection.products limit: 10 %}
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "{{ product.title | escape }}",
+              "url": "{{ product.url | prepend: shop.secure_url }}",
+              "image": "{% if product.featured_image %}{{ product.featured_image | image_url: width: 600 }}{% endif %}"
+            },
+            "price": "{{ product.price | money_without_currency }}",
+            "priceCurrency": "USD"
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    }
+  }
+  </script>
+  
+  <!-- Collection Breadcrumb Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "{{ shop.secure_url }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "{{ collection.title }}",
+        "item": "{{ collection.url | prepend: shop.secure_url }}"
+      }
+    ]
+  }
+  </script>
+{% endif %}
