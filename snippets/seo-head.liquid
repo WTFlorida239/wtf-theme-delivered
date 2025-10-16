@@ -103,6 +103,18 @@
 {%- comment %} Canonical URL (strip variants/UTM) {%- endcomment -%}
 <link rel="canonical" href="{{ canonical_url }}">
 
+{%- comment -%} Hreflang alternates (Markets/locales) {%- endcomment -%}
+{%- if shop.published_locales and shop.published_locales.size > 1 -%}
+  {%- for locale in shop.published_locales -%}
+    <link rel="alternate"
+          hreflang="{{ locale.iso_code | replace: '_','-' | downcase }}"
+          href="{{ canonical_url | within: locale }}">
+  {%- endfor -%}
+  <link rel="alternate"
+        hreflang="x-default"
+        href="{{ canonical_url | within: shop.primary_locale }}">
+{%- endif -%}
+
 {%- comment %} Robots {%- endcomment -%}
 <meta name="robots" content="{{ robots_content }}">
 
