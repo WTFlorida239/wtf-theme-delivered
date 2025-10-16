@@ -1,16 +1,26 @@
 {%- comment -%}
-  Central SEO & Social Head Meta System
+  Central SEO & Social Head Meta System (MAX)
 
   Usage: {% render 'seo-head' %}
 
-  Features:
-  - Dynamic title/description per template type
-  - Canonical URLs with variant/query handling
-  - Hreflang alternates (Markets/locales)
-  - Open Graph + Twitter Cards (+ locale alternates)
-  - Geo/local meta tags
-  - Robots meta control (utility pages + pagination)
-  - Fallbacks from metafields/settings
+  Includes:
+  - Dynamic <title> / meta description
+  - Canonical + hreflang (Markets/locales)
+  - Robots (utility pages + pagination)
+  - Open Graph + Twitter (with locale alternates)
+  - Geo/local metas
+  - JSON-LD:
+      * Organization
+      * LocalBusiness (homepage or when address is present)
+      * WebSite + SearchAction
+      * BreadcrumbList
+      * Product (with Offers, brand, GTIN/SKU, AggregateRating if available)
+      * Collection as ItemList
+      * Article (BlogPosting)
+      * FAQPage (only when FAQ data exists)
+  Notes:
+  - Uses shop/settings/metafields when available; falls back sanely.
+  - Avoids duplicate robots; schema blocks are uniquely typed to reduce duplication risk.
 {%- endcomment -%}
 
 {%- liquid
@@ -81,10 +91,8 @@
   ############################
   # ROBOTS
   ############################
-  # Default allow indexing
   assign robots_content = "index,follow"
 
-  # Utility/Thin pages to noindex but follow links
   assign is_utility_page = false
   if template.name == 'search'
     assign is_utility_page = true
@@ -104,7 +112,6 @@
     assign is_utility_page = true
   endif
 
-  # Optional: allow template suffix to force noindex (e.g., page.noindex.json)
   if template.suffix == 'noindex'
     assign is_utility_page = true
   endif
@@ -113,7 +120,6 @@
     assign robots_content = "noindex,follow"
   endif
 
-  # Paginated pages (page > 1) → noindex,follow to avoid duplicate snippets
   if current_page and current_page > 1
     assign robots_content = "noindex,follow"
   endif
@@ -121,12 +127,10 @@
   ############################
   # SOCIAL IMAGE
   ############################
-  # Prefer the most relevant entity image, fall back to theme setting (logo/og_default)
   assign og_img = settings.og_default
   if og_img == blank
     assign og_img = settings.logo
   endif
-
   if template.name contains 'product' and product.featured_image
     assign og_img = product.featured_image
   elsif template.name contains 'collection' and collection.image
@@ -134,6 +138,53 @@
   elsif template.name contains 'article' and article.image
     assign og_img = article.image
   endif
+
+  ############################
+  # DATA FOR JSON-LD (common)
+  ############################
+  # Address pieces (prefer shop metafields if present, then settings)
+  assign addr_line1  = shop.metafields.wtf.address.line1 | default: settings.store_address_1
+  assign addr_line2  = shop.metafields.wtf.address.line2 | default: settings.store_address_2
+  assign addr_city   = shop.metafields.wtf.address.city  | default: settings.store_city
+  assign addr_region = shop.metafields.wtf.address.region | default: settings.store_state
+  assign addr_zip    = shop.metafields.wtf.address.postalCode | default: settings.store_zip
+  assign addr_country= shop.metafields.wtf.address.country | default: 'US'
+
+  assign phone_main  = shop.metafields.wtf.phone | default: settings.store_phone | default: shop.phone
+  assign email_main  = shop.metafields.wtf.email | default: settings.store_email | default: shop.customer_email | default: shop.email
+
+  # Coordinates (Cape Coral defaults)
+  assign lat = shop.metafields.wtf.location.latitude  | default: 26.5629
+  assign lng = shop.metafields.wtf.location.longitude | default: -81.9495
+
+  # Social "sameAs" links from metafields if present
+  assign same_as = ''
+  if shop.metafields.social.instagram != blank
+    assign same_as = same_as | append: shop.metafields.social.instagram | append: '||'
+  endif
+  if shop.metafields.social.facebook != blank
+    assign same_as = same_as | append: shop.metafields.social.facebook | append: '||'
+  endif
+  if shop.metafields.social.twitter != blank
+    assign same_as = same_as | append: shop.metafields.social.twitter | append: '||'
+  endif
+  if shop.metafields.social.youtube != blank
+    assign same_as = same_as | append: shop.metafields.social.youtube | append: '||'
+  endif
+  if shop.metafields.social.tiktok != blank
+    assign same_as = same_as | append: shop.metafields.social.tiktok | append: '||'
+  endif
+
+  # Opening hours (expects a metafield JSON or text like "Mon-Fri 08:00-22:00")
+  assign hours_struct = shop.metafields.wtf.hours.value
+
+  # Product identifiers (optional)
+  assign gtin_field = product.metafields.seo.gtin | default: product.selected_or_first_available_variant.barcode
+  assign sku_field  = product.selected_or_first_available_variant.sku | default: product.sku
+
+  # Aggregate rating (optional metafields)
+  assign rating_value = product.metafields.reviews.rating_value
+  assign rating_count = product.metafields.reviews.rating_count
 -%}
 
 {%- comment %} Title & Description {%- endcomment -%}
@@ -161,8 +212,8 @@
 {%- comment %} Geo/Local Meta Tags {%- endcomment -%}
 <meta name="geo.region" content="US-FL">
 <meta name="geo.placename" content="Cape Coral">
-<meta name="geo.position" content="26.5629;-81.9495">
-<meta name="ICBM" content="26.5629, -81.9495">
+<meta name="geo.position" content="{{ lat }};{{ lng }}">
+<meta name="ICBM" content="{{ lat }}, {{ lng }}">
 
 {%- comment %} Open Graph {%- endcomment -%}
 <meta property="og:site_name" content="{{ shop.name }}">
@@ -187,10 +238,6 @@
 
 {%- comment %} OG Image (1200x630 for social) {%- endcomment -%}
 {%- if og_img -%}
-  {%- comment -%}
-    image_url works for Image objects and image_picker settings.
-    Always request 1200x630 for social cards; crop center for consistency.
-  {%- endcomment -%}
   <meta property="og:image" content="{{ og_img | image_url: width: 1200, height: 630, crop: 'center' }}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -209,17 +256,6 @@
   <meta name="twitter:image:alt" content="{{ page_title | escape }}">
 {%- endif -%}
 
-{%- comment %} Additional Meta for Local Business (homepage emphasis) {%- endcomment -%}
-{%- if template.name == 'index' -%}
-  <meta property="business:contact_data:street_address" content="1520 SE 46th Ln, Unit B">
-  <meta property="business:contact_data:locality" content="Cape Coral">
-  <meta property="business:contact_data:region" content="FL">
-  <meta property="business:contact_data:postal_code" content="33904">
-  <meta property="business:contact_data:country_name" content="USA">
-  <meta property="place:location:latitude" content="26.5629">
-  <meta property="place:location:longitude" content="-81.9495">
-{%- endif -%}
-
 {%- comment %} Alternate for Mobile (optional) {%- endcomment -%}
 <link rel="alternate" media="only screen and (max-width: 640px)" href="{{ canonical_url }}">
 
@@ -229,3 +265,263 @@
 <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+{%- comment -%}
+  ============================
+  JSON-LD BLOCKS (MAX)
+  ============================
+{%- endcomment -%}
+
+{%- comment -%} Organization {%- endcomment -%}
+<script type="application/ld+json" id="ld-org">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  "url": {{ shop.url | json }},
+  {% if settings.logo != blank %}
+  "logo": {{ settings.logo | image_url: width: 600 | json }},
+  {% endif %}
+  {% if email_main != blank %}"email": {{ email_main | json }},{% endif %}
+  {% if phone_main != blank %}"telephone": {{ phone_main | json }},{% endif %}
+  "sameAs": [{% if same_as != '' %}{% assign same_list = same_as | split: '||' %}{% for s in same_list %}{% if s != blank %}{{ s | json }}{% if forloop.last == false %},{% endif %}{% endif %}{% endfor %}{% endif %}]
+}
+</script>
+
+{%- comment -%} LocalBusiness (show on home or whenever address known) {%- endcomment -%}
+{%- if addr_line1 != blank and addr_city != blank and phone_main != blank -%}
+<script type="application/ld+json" id="ld-localbusiness">
+{
+  "@context": "https://schema.org",
+  "@type": "BarOrPub",
+  "name": {{ shop.name | json }},
+  "image": [{% if settings.og_default != blank %}{{ settings.og_default | image_url: width: 1200 | json }}{% else %}{{ settings.logo | image_url: width: 600 | json }}{% endif %}],
+  "url": {{ shop.url | json }},
+  "telephone": {{ phone_main | json }},
+  {% if email_main != blank %}"email": {{ email_main | json }},{% endif %}
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": {{ addr_line1 | append: ' ' | append: (addr_line2 | default: '') | strip | json }},
+    "addressLocality": {{ addr_city | json }},
+    "addressRegion": {{ addr_region | json }},
+    "postalCode": {{ addr_zip | json }},
+    "addressCountry": {{ addr_country | json }}
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": {{ lat }}, "longitude": {{ lng }} },
+  {% if hours_struct %}
+  "openingHoursSpecification": {{ hours_struct | json }},
+  {% endif %}
+  "priceRange": "$$"
+}
+</script>
+{%- endif -%}
+
+{%- comment -%} WebSite + SearchAction {%- endcomment -%}
+<script type="application/ld+json" id="ld-website">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ shop.name | json }},
+  "url": {{ shop.url | json }},
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {{ shop.url | append: "/search?q={search_term_string}" | json }},
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+{%- comment -%} BreadcrumbList (contextual) {%- endcomment -%}
+{%- capture breadcrumb_items -%}{%- endcapture -%}
+{%- assign crumb_index = 1 -%}
+{%- capture breadcrumb_items -%}
+{
+  "@type": "ListItem",
+  "position": {{ crumb_index }},
+  "name": "Home",
+  "item": {{ shop.url | json }}
+}
+{%- endcapture -%}
+{%- assign crumb_index = crumb_index | plus: 1 -%}
+
+{%- if template.name contains 'collection' and collection -%}
+  {%- capture breadcrumb_items -%}
+    {{ breadcrumb_items }},
+    {
+      "@type": "ListItem",
+      "position": {{ crumb_index }},
+      "name": {{ collection.title | json }},
+      "item": {{ shop.url | append: collection.url | json }}
+    }
+  {%- endcapture -%}
+  {%- assign crumb_index = crumb_index | plus: 1 -%}
+{%- endif -%}
+
+{%- if template.name contains 'product' and product -%}
+  {%- if collection and collection.title -%}
+    {%- capture breadcrumb_items -%}
+      {{ breadcrumb_items }},
+      {
+        "@type": "ListItem",
+        "position": {{ crumb_index }},
+        "name": {{ collection.title | json }},
+        "item": {{ shop.url | append: collection.url | json }}
+      }
+    {%- endcapture -%}
+    {%- assign crumb_index = crumb_index | plus: 1 -%}
+  {%- endif -%}
+  {%- capture breadcrumb_items -%}
+    {{ breadcrumb_items }},
+    {
+      "@type": "ListItem",
+      "position": {{ crumb_index }},
+      "name": {{ product.title | json }},
+      "item": {{ shop.url | append: product.url | json }}
+    }
+  {%- endcapture -%}
+  {%- assign crumb_index = crumb_index | plus: 1 -%}
+{%- endif -%}
+
+{%- if template.name contains 'article' and article -%}
+  {%- capture breadcrumb_items -%}
+    {{ breadcrumb_items }},
+    {
+      "@type": "ListItem",
+      "position": {{ crumb_index }},
+      "name": {{ article.title | json }},
+      "item": {{ shop.url | append: article.url | json }}
+    }
+  {%- endcapture -%}
+  {%- assign crumb_index = crumb_index | plus: 1 -%}
+{%- endif -%}
+
+{%- if template.name contains 'page' and page -%}
+  {%- capture breadcrumb_items -%}
+    {{ breadcrumb_items }},
+    {
+      "@type": "ListItem",
+      "position": {{ crumb_index }},
+      "name": {{ page.title | json }},
+      "item": {{ shop.url | append: page.url | json }}
+    }
+  {%- endcapture -%}
+  {%- assign crumb_index = crumb_index | plus: 1 -%}
+{%- endif -%}
+
+<script type="application/ld+json" id="ld-breadcrumbs">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{{ breadcrumb_items }}]
+}
+</script>
+
+{%- comment -%} Product {%- endcomment -%}
+{%- if template.name contains 'product' and product -%}
+<script type="application/ld+json" id="ld-product">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | strip | truncate: 500 | json }},
+  {% if product.featured_image %}
+  "image": [{{ product.featured_image | image_url: width: 1200 | json }}],
+  {% endif %}
+  {% if product.vendor %}"brand": { "@type": "Brand", "name": {{ product.vendor | json }} },{% endif %}
+  {% if gtin_field %}"gtin13": {{ gtin_field | json }},{% endif %}
+  {% if sku_field %}"sku": {{ sku_field | json }},{% endif %}
+  "url": {{ shop.url | append: product.url | json }},
+  {% if rating_value and rating_count %}
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ rating_value }},
+    "reviewCount": {{ rating_count }}
+  },
+  {% endif %}
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": {{ shop.currency | json }},
+    "price": {{ product.price | money_without_currency | json }},
+    "url": {{ shop.url | append: product.url | json }},
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+  }
+}
+</script>
+{%- endif -%}
+
+{%- comment -%} Collection as ItemList {%- endcomment -%}
+{%- if template.name contains 'collection' and collection -%}
+<script type="application/ld+json" id="ld-collection">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": {{ collection.title | json }},
+  "url": {{ shop.url | append: collection.url | json }},
+  "numberOfItems": {{ collection.products_count }},
+  "itemListElement": [
+    {%- for prod in collection.products limit: 24 -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "url": {{ shop.url | append: prod.url | json }},
+        "name": {{ prod.title | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+{%- comment -%} Article (BlogPosting) {%- endcomment -%}
+{%- if template.name contains 'article' and article -%}
+<script type="application/ld+json" id="ld-article">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ article.title | json }},
+  "description": {{ meta_desc | json }},
+  "url": {{ shop.url | append: article.url | json }},
+  {% if article.image %}"image": [{{ article.image | image_url: width: 1200 | json }}],{% endif %}
+  "datePublished": {{ article.published_at | date: "%Y-%m-%dT%H:%M:%S%:z" | json }},
+  "dateModified": {{ article.updated_at | date: "%Y-%m-%dT%H:%M:%S%:z" | json }},
+  "author": {
+    "@type": "Person",
+    "name": {{ article.author | json }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }}{% if settings.logo %},
+    "logo": { "@type": "ImageObject", "url": {{ settings.logo | image_url: width: 600 | json }} }{% endif %}
+  }
+}
+</script>
+{%- endif -%}
+
+{%- comment -%} FAQPage (only when FAQ data exists and is visible on page) {%- endcomment -%}
+{%- assign faq_items = nil -%}
+{%- if template.name contains 'product' and product.metafields.faq.items != blank -%}
+  {%- assign faq_items = product.metafields.faq.items -%}
+{%- elsif template.name contains 'page' and page.metafields.faq.items != blank -%}
+  {%- assign faq_items = page.metafields.faq.items -%}
+{%- endif -%}
+
+{%- if faq_items and faq_items.size > 0 -%}
+<script type="application/ld+json" id="ld-faq">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for qa in faq_items -%}
+      {
+        "@type": "Question",
+        "name": {{ qa.question | default: qa.q | json }},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {{ qa.answer | default: qa.a | json }}
+        }
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
