@@ -316,7 +316,7 @@
 </script>
 {%- endif -%}
 
-{%- comment -%} WebSite + SearchAction {%- endcomment -%}
+{%- comment -%} WebSite + SearchAction (enhanced with query suggestions) {%- endcomment -%}
 <script type="application/ld+json" id="ld-website">
 {
   "@context": "https://schema.org",
@@ -325,7 +325,10 @@
   "url": {{ shop.url | json }},
   "potentialAction": {
     "@type": "SearchAction",
-    "target": {{ shop.url | append: "/search?q={search_term_string}" | json }},
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": {{ shop.url | append: "/search?q={search_term_string}" | json }}
+    },
     "query-input": "required name=search_term_string"
   }
 }
