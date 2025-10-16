@@ -8,16 +8,45 @@
   assign logo_image = section.settings.logo_image | default: 'WTFLogo.png' | asset_url
   assign button_link = section.settings.button_link | default: 'tel:(239) 955-0314'
   assign button_label = section.settings.button_label | default: 'Order Now'
-  assign hero_alt = section.settings.hero_image_alt | default: section.settings.heading | default: shop.name
+  assign hero_alt = section.settings.hero_image_alt | default: section.settings.heading | default: shop.name | append: ' - Kava Bar Cape Coral'
   assign logo_alt = section.settings.logo_alt_text | default: shop.name
+  
+  # Generate hero image URL for preload
+  if section.settings.hero_image
+    assign hero_preload_url = section.settings.hero_image | image_url: width: 1920
+    assign hero_img_width = section.settings.hero_image.width
+    assign hero_img_height = section.settings.hero_image.height
+  else
+    assign hero_preload_url = 'wtf_storefront_hero_original.png' | asset_url
+    assign hero_img_width = 1920
+    assign hero_img_height = 1080
+  endif
 %}
+
+{%- comment -%} Hero Image Preload for LCP Optimization {%- endcomment -%}
+<link rel="preload" as="image" href="{{ hero_preload_url }}" fetchpriority="high">
 
 <section class="home-hero">
   <div class="home-hero__media">
     {% if section.settings.hero_image %}
-      {{ section.settings.hero_image | image_url: width: 1920 | image_tag: alt: hero_alt, loading: 'eager', decoding: 'async', fetchpriority: 'high' }}
+      {% render 'responsive-image',
+        image: section.settings.hero_image,
+        alt: hero_alt,
+        sizes: '100vw',
+        loading: 'eager',
+        fetchpriority: 'high',
+        class: 'home-hero__image',
+        width: 1920
+      %}
     {% else %}
-      <img src="{{ 'wtf_storefront_hero_original.png' | asset_url }}" alt="{{ hero_alt }}" width="800" height="400" loading="eager" decoding="async" fetchpriority="high" />
+      <img src="{{ 'wtf_storefront_hero_original.png' | asset_url }}" 
+           alt="{{ hero_alt }}" 
+           width="{{ hero_img_width }}" 
+           height="{{ hero_img_height }}" 
+           loading="eager" 
+           decoding="async" 
+           fetchpriority="high"
+           class="home-hero__image" />
     {% endif %}
   </div>
 

@@ -33,6 +33,7 @@
 {%- liquid
   # Set defaults
   assign loading_attr = loading | default: 'lazy'
+  assign fetchpriority_attr = fetchpriority | default: 'auto'
   assign sizes_attr = sizes | default: '100vw'
   assign alt_text = alt | default: image.alt | default: ''
   assign css_class = class | default: ''
@@ -91,6 +92,7 @@
     alt="{{ alt_text | escape }}"
     loading="{{ loading_attr }}"
     decoding="async"
+    fetchpriority="{{ fetchpriority_attr }}"
     width="{{ image.width }}"
     height="{{ image.height }}"
     style="aspect-ratio: {{ image.width }} / {{ image.height }}; object-fit: cover;"
