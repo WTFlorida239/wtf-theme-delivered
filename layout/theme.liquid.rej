@@ -1,0 +1,13 @@
+--- layout/theme.liquid
++++ layout/theme.liquid
+@@ -85,6 +85,10 @@
+       {% render 'product-schema', product: product %}
+     {% endif %}
+     
++    {% if template contains 'collection' %}
++      {% render 'collection-seo-boost', collection: collection %}
++    {% endif %}
++    
+     {% if template == 'index' or template contains 'page' %}
+       {% render 'events-schema' %}
+       {% render 'faq-schema' %}

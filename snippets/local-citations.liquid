@@ -1,0 +1,71 @@
+{% comment %}
+  Local Business Citations
+  Structured NAP (Name, Address, Phone) for local SEO
+  
+  Usage: {% render 'local-citations' %}
+{% endcomment %}
+
+<div class="local-citations" itemscope itemtype="https://schema.org/LocalBusiness">
+  <meta itemprop="name" content="WTF | Welcome To Florida">
+  <meta itemprop="alternateName" content="WTF Swag">
+  <meta itemprop="alternateName" content="WTF Cape Coral">
+  <meta itemprop="alternateName" content="WTF Kava Bar">
+  
+  <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+    <meta itemprop="streetAddress" content="1520 SE 46th Ln, Unit B">
+    <meta itemprop="addressLocality" content="Cape Coral">
+    <meta itemprop="addressRegion" content="FL">
+    <meta itemprop="postalCode" content="33904">
+    <meta itemprop="addressCountry" content="US">
+  </div>
+  
+  <meta itemprop="telephone" content="(239) 955-0314">
+  <meta itemprop="email" content="info@wtfswag.com">
+  <meta itemprop="url" content="{{ shop.secure_url }}">
+  
+  <div itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates">
+    <meta itemprop="latitude" content="26.5629">
+    <meta itemprop="longitude" content="-81.9495">
+  </div>
+  
+  <meta itemprop="priceRange" content="$$">
+  <meta itemprop="servesCuisine" content="Botanical Beverages">
+  
+  <!-- Service Keywords for Local SEO -->
+  <meta itemprop="knowsAbout" content="Kava Bar">
+  <meta itemprop="knowsAbout" content="Kratom Tea">
+  <meta itemprop="knowsAbout" content="THC Beverages">
+  <meta itemprop="knowsAbout" content="Delta-9 THC">
+  <meta itemprop="knowsAbout" content="Hemp Products">
+  <meta itemprop="knowsAbout" content="Botanical Drinks">
+  <meta itemprop="knowsAbout" content="Sober Nightlife">
+  <meta itemprop="knowsAbout" content="Wellness Lounge">
+  
+  <!-- Area Served -->
+  <meta itemprop="areaServed" content="Cape Coral, FL">
+  <meta itemprop="areaServed" content="Fort Myers, FL">
+  <meta itemprop="areaServed" content="Lehigh Acres, FL">
+  <meta itemprop="areaServed" content="North Fort Myers, FL">
+  <meta itemprop="areaServed" content="Southwest Florida">
+  <meta itemprop="areaServed" content="Lee County, FL">
+  
+  <!-- Business Hours -->
+  <meta itemprop="openingHours" content="Mo-Th 12:00-22:00">
+  <meta itemprop="openingHours" content="Fr-Sa 12:00-23:00">
+  <meta itemprop="openingHours" content="Su 12:00-22:00">
+  
+  <!-- Social Profiles -->
+  <link itemprop="sameAs" href="https://www.facebook.com/p/WTF-Welcome-to-Florida-61566655386481/">
+  <link itemprop="sameAs" href="https://www.instagram.com/wtfswagbrand/">
+  <link itemprop="sameAs" href="https://www.tiktok.com/@wtf.welcome.to.fl">
+  
+  <!-- Images -->
+  <link itemprop="image" href="{{ 'WTFLogo.png' | asset_url }}">
+  <link itemprop="logo" href="{{ 'WTFLogo.png' | asset_url }}">
+</div>
+
+<style>
+  .local-citations {
+    display: none;
+  }
+</style>

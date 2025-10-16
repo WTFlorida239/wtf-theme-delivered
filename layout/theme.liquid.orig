@@ -86,10 +86,6 @@
       {% render 'product-schema', product: product %}
     {% endif %}
     
-    {% if template contains 'collection' %}
-      {% render 'collection-seo-boost', collection: collection %}
-    {% endif %}
-    
     {% if template == 'index' or template contains 'page' %}
       {% render 'events-schema' %}
       {% render 'faq-schema' %}
