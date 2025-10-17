@@ -363,20 +363,29 @@
 
         const formData = new FormData(productForm);
 
-        fetch('/cart/add.js', {
-          method: 'POST',
-          body: formData
+        // Use WTFCartAPI for consistent cart operations
+        const variantId = formData.get('id');
+        const quantity = formData.get('quantity') || 1;
+        const properties = {};
+        
+        // Extract properties from formData
+        for (const [key, value] of formData.entries()) {
+          if (key.startsWith('properties[')) {
+            const propName = key.replace('properties[', '').replace(']', '');
+            properties[propName] = value;
+          }
+        }
+        
+        window.WTFCartAPI.addToCart({
+          id: variantId,
+          quantity: quantity,
+          properties: properties
         })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
           .then(() => {
+            // Legacy event for backwards compatibility
             productForm.dispatchEvent(new CustomEvent('wtf:product:added', {
               bubbles: true,
-              detail: { variantId: formData.get('id'), quantity: formData.get('quantity') || 1 }
+              detail: { variantId: variantId, quantity: quantity }
             }));
           })
           .catch(error => {

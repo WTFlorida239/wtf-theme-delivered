@@ -283,6 +283,32 @@
       renderCart(cart);
     });
 
+    // Listen for wtf:cart:update events (from builders)
+    document.addEventListener('wtf:cart:update', async function(event){
+      if (event && event.detail && event.detail.items) {
+        renderCart(event.detail);
+        updateCartCount(event.detail.item_count);
+      } else {
+        const cart = await getCart();
+        renderCart(cart);
+        updateCartCount(cart.item_count);
+      }
+    });
+
+    // Listen for wtf:cart:add events (from builders) and open drawer
+    document.addEventListener('wtf:cart:add', async function(event){
+      if (event && event.detail && event.detail.cart) {
+        renderCart(event.detail.cart);
+        updateCartCount(event.detail.cart.item_count);
+        open();
+      } else {
+        const cart = await getCart();
+        renderCart(cart);
+        updateCartCount(cart.item_count);
+        open();
+      }
+    });
+
     // Expose minimal API
     window.WTF_CART = Object.assign(window.WTF_CART || {}, {
       open,
