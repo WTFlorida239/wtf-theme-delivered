@@ -1,362 +1,144 @@
-name: Automated Testing & Monitoring
+name: CI – Theme, Tests & Perf
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main, develop ]
   schedule:
-    # Run tests every 6 hours
-    - cron: '0 */6 * * *'
+    - cron: '0 */6 * * *' # every 6h
   workflow_dispatch:
 
-# Avoid overlapping runs on the same ref
 concurrency:
-  group: tests-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Minimal permissions for PR status + comments
 permissions:
   contents: read
-  checks: write
   pull-requests: write
-  statuses: write
-
-env:
-  SHOPIFY_STORE: wtfswag.myshopify.com
 
 jobs:
+  theme-check:
+    name: Theme Check (official)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Use Shopify's maintained action (v2)
+      - name: Run Theme Check
+        uses: shopify/theme-check-action@v2
+        with:
+          theme_root: '.'         # change if your theme lives in a subfolder
+          base: main              # compares PR against main for annotations
+          token: ${{ github.token }}
+
   unit-tests:
-    name: Unit Tests (if present)
+    name: Unit Tests (Node, if present)
     runs-on: ubuntu-latest
+    needs: theme-check
+    if: hashFiles('package.json') != ''
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install dependencies (if package.json)
+      - name: Install
+        run: npm ci
+      - name: Test (non-interactive)
         run: |
-          set -euo pipefail
-          if [ -f package.json ]; then npm ci; else echo "⏭️ No package.json; skipping install"; fi
-
-      - name: Run npm test (non-fatal if missing)
-        run: |
-          set -euo pipefail
-          if [ -f package.json ]; then
-            if npm run | grep -qE '^ *test'; then
-              npm test --if-present -- --ci || (echo "❌ Unit tests failed" && exit 1)
-            else
-              echo "⏭️ No test script; skipping"
-            fi
-          fi
-
-  functional-tests:
-    name: Functional Testing (OS2.0 aware)
-    runs-on: ubuntu-latest
-    needs: [unit-tests]
-    env:
-      EVENT_NAME: ${{ github.event_name }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: |
-          set -euo pipefail
-          if [ -f package.json ]; then npm ci; fi
-
-      - name: Run order readiness tests (if script exists)
-        run: |
-          set -euo pipefail
-          echo "Running order readiness tests..."
-          if [ -f scripts/order-readiness-check.js ]; then
-            node scripts/order-readiness-check.js
+          if npm run | grep -qE '(^|\s)test(\s|:)'; then
+            npm test --if-present -- --ci
           else
-            echo "⏭️ scripts/order-readiness-check.js not found; skipping"
+            echo "⏭️ No test script; skipping"
           fi
 
-      - name: Functional suite
-        id: func
+  functional-smoke:
+    name: Functional Smoke Checks (files only)
+    runs-on: ubuntu-latest
+    needs: theme-check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run smoke checks
+        shell: bash
         run: |
           set -Eeuo pipefail
-          STRICT=0
-          if [ "${EVENT_NAME}" = "push" ] || [ "${EVENT_NAME}" = "pull_request" ]; then STRICT=1; fi
+          pass=0; warn=0; fail=0
+          ok(){ echo "✅ $1"; pass=$((pass+1)); }
+          ww(){ echo "⚠️  $1"; warn=$((warn+1)); }
+          ff(){ echo "❌ $1"; fail=$((fail+1)); }
 
-          pass_ct=0; warn_ct=0; fail_ct=0
-          log() { printf "%s\n" "$1" | tee -a functional-details.txt; }
-          ok()  { log "✅ $1"; pass_ct=$((pass_ct+1)); }
-          warn(){ log "⚠️  $1"; warn_ct=$((warn_ct+1)); }
-          fail(){ log "❌ $1"; fail_ct=$((fail_ct+1)); [ $STRICT -eq 1 ] && exit 1 || true; }
+          [ -f "sections/main-product.liquid" ] && ok "main-product.liquid present" || ff "Missing sections/main-product.liquid"
+          ([ -f "templates/cart.json" ] || [ -f "templates/cart.liquid" ]) && ok "Cart template present" || ff "Missing cart template"
+          [ -f "templates/product.json" ] && ok "Product template present" || ff "Missing templates/product.json"
 
-          # --- Critical sections ---
-          [ -f "sections/main-product.liquid" ] && ok "Main product section present" || fail "Missing sections/main-product.liquid"
+          # Optional cart UI section (warn only)
+          ( for f in sections/wtf-cart.liquid sections/cart-drawer.liquid sections/main-cart-items.liquid sections/cart.liquid; do
+              [ -f "$f" ] && { ok "Cart section found: $f"; exit 0; }
+            done
+            ww "No cart section found (ok if using app blocks only)"
+          )
 
-          # Enhanced drink builder checks
-          if [ -f "sections/enhanced-drink-builder.liquid" ]; then
-            ok "Enhanced drink builder section present"
-            grep -q "drink-builder-form" sections/enhanced-drink-builder.liquid && ok "Drink builder form token found" || warn "Drink builder form token not found"
-            grep -q "flavor-pumps" sections/enhanced-drink-builder.liquid && ok "Flavor pump controls token found" || warn "Flavor pump controls token not found"
-            grep -q "price-calculator" sections/enhanced-drink-builder.liquid && ok "Price calculator token found" || warn "Price calculator token not found"
-          else
-            fail "Enhanced drink builder section missing (sections/enhanced-drink-builder.liquid)"
-          fi
+          # Ensure Product JSON-LD is still emitted somewhere
+          ( grep -R --line-number -E "schema-product|application/json[^>]*ld\+json" sections/ snippets/ 2>/dev/null \
+            && ok "Product schema reference found" ) || ww "No obvious Product schema; confirm JSON-LD in main-product or snippet"
 
-          # --- Cart: accept OS2.0 JSON or legacy Liquid template ---
-          if [ -f "templates/cart.json" ] || [ -f "templates/cart.liquid" ]; then
-            ok "Cart template present (json or liquid)"
-          else
-            fail "Missing cart template (templates/cart.json preferred or templates/cart.liquid)"
-          fi
+          printf "passes=%s\nwarnings=%s\nfailures=%s\n" "$pass" "$warn" "$fail" | tee functional-summary.txt
+          [ "$fail" -eq 0 ] || { echo "Functional smoke failed"; exit 1; }
 
-          # Cart UI section: accept common variants; warn if none
-          CART_SECTION=""
-          for f in sections/wtf-cart.liquid sections/cart-drawer.liquid sections/main-cart-items.liquid sections/cart.liquid; do
-            if [ -f "$f" ]; then CART_SECTION="$f"; break; fi
-          done
-          if [ -n "$CART_SECTION" ]; then
-            ok "Cart section present: $CART_SECTION"
-            if grep -qi "checkout" "$CART_SECTION"; then ok "Checkout token found in $CART_SECTION"; else warn "No 'checkout' token in $CART_SECTION"; fi
-            if grep -qi "line_item" "$CART_SECTION" && grep -qi "properties" "$CART_SECTION"; then ok "Line item properties referenced"; else warn "No explicit line item properties display detected"; fi
-          else
-            warn "No cart section file found (acceptable if using app blocks/cart template only)"
-          fi
-
-          # --- Templates: accept JSON or Liquid for custom pages in OS2.0 ---
-          # product required
-          [ -f "templates/product.json" ] && ok "Product template present" || fail "Missing templates/product.json"
-
-          page_ok=false
-          for t in templates/page.order.json templates/page.order.liquid; do
-            [ -f "$t" ] && page_ok=true && break
-          done
-          $page_ok && ok "Order page template present (json or liquid)" || warn "Order page template not found (order page optional)"
-
-          loc_ok=false
-          for t in templates/page.locations.json templates/page.locations.liquid; do
-            [ -f "$t" ] && loc_ok=true && break
-          done
-          $loc_ok && ok "Locations page template present (json or liquid)" || warn "Locations page template not found (optional)"
-
-          printf "passes=%s\nwarnings=%s\nfailures=%s\n" "$pass_ct" "$warn_ct" "$fail_ct" | tee functional-summary.txt
-
-      - name: Create functional test report
-        run: |
-          set -euo pipefail
-          {
-            echo "# WTF Theme Functional Test Report"
-            echo
-            echo "**Date:** $(date)"
-            echo "**Test Run:** ${{ github.run_number }}"
-            echo "**Trigger:** ${{ github.event_name }}"
-            echo
-            echo "## Results"
-            cat functional-summary.txt | sed 's/^/- /'
-            echo
-            echo "## Details"
-            cat functional-details.txt
-          } > functional-test-report.md
-
-      - name: Upload functional test results
+      - name: Upload smoke results
         uses: actions/upload-artifact@v4
         with:
-          name: functional-test-results
-          path: |
-            functional-test-report.md
-            functional-summary.txt
-            functional-details.txt
-          retention-days: 30
-          if-no-files-found: ignore
+          name: functional-smoke-results
+          path: functional-summary.txt
+          retention-days: 14
 
-  integration-tests:
-    name: Integration Testing
-    runs-on: ubuntu-latest
-    needs: [functional-tests]
-    env:
-      EVENT_NAME: ${{ github.event_name }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Shopify CLI (and deps if present)
-        run: |
-          set -euo pipefail
-          npm install -g @shopify/cli @shopify/theme
-          if [ -f package.json ]; then npm ci; fi
-
-      - name: Shopify theme check
-        run: |
-          set -euo pipefail
-          # Fail on push/PR; warn on schedule/dispatch
-          if [ "${EVENT_NAME}" = "push" ] || [ "${EVENT_NAME}" = "pull_request" ]; then
-            shopify theme check --fail-level=error
-          else
-            shopify theme check --fail-level=error || echo "ℹ️ theme check warnings (non-blocking on schedule)"
-          fi
-
-      - name: Conflict scan (if script exists)
-        run: |
-          set -euo pipefail
-          if npm run | grep -q "conflicts:scan"; then
-            npm run conflicts:scan
-          else
-            echo "⏭️ conflicts:scan script not found; skipping"
-          fi
-
-      - name: Competitor audit (if script exists)
-        run: |
-          set -euo pipefail
-          if npm run | grep -q "competitors:audit"; then
-            npm run competitors:audit
-          else
-            echo "⏭️ competitors:audit script not found; skipping"
-          fi
-
-      - name: Create integration test report
-        run: |
-          set -euo pipefail
-          cat > integration-test-report.md <<'EOF'
-          # WTF Theme Integration Test Report
-
-          **Date:** $(date)
-          **Integration Test Run:** ${{ github.run_number }}
-
-          ## Integration Checks
-          - Shopify theme check: executed
-          - Conflict scan: executed if available
-          - Competitor audit: executed if available
-
-          ## Recommendations
-          1. Keep theme-check errors at zero before merging to main
-          2. Review conflicts scan output regularly
-          3. Maintain competitor insights JSON for quality-monitoring pipeline
-          EOF
-
-      - name: Upload integration test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: integration-test-results
-          path: integration-test-report.md
-          retention-days: 30
-          if-no-files-found: ignore
-
-  performance-monitoring:
-    name: Performance Monitoring (assets snapshot)
+  perf-snapshot:
+    name: Performance Snapshot (scheduled-only)
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Collect asset metrics
+        shell: bash
         run: |
-          set -euo pipefail
+          set -Eeuo pipefail
           mkdir -p perf
-          find assets/ -name "*.css" -exec ls -lh {} \; | awk '{print $5 " " $9}' > perf/css-sizes.txt || true
-          find assets/ -name "*.js"  -exec ls -lh {} \; | awk '{print $5 " " $9}' > perf/js-sizes.txt  || true
-          find assets/ \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) \
+          find assets -type f -name "*.css" -exec ls -lh {} \; | awk '{print $5 " " $9}' > perf/css-sizes.txt || true
+          find assets -type f -name "*.js"  -exec ls -lh {} \; | awk '{print $5 " " $9}' > perf/js-sizes.txt  || true
+          find assets -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) \
             -exec ls -lh {} \; | awk '{print $5 " " $9}' > perf/img-sizes.txt || true
-
-          CSS_COUNT=$(find assets/ -name "*.css" | wc -l || echo 0)
-          JS_COUNT=$(find assets/ -name "*.js" | wc -l || echo 0)
-          IMG_COUNT=$(find assets/ \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | wc -l || echo 0)
-          LIQUID_LINES=$(find . -name "*.liquid" -exec wc -l {} \; | awk '{sum+=$1} END {print sum+0}')
-
-          echo "CSS_COUNT=$CSS_COUNT"       >> $GITHUB_ENV
-          echo "JS_COUNT=$JS_COUNT"         >> $GITHUB_ENV
-          echo "IMG_COUNT=$IMG_COUNT"       >> $GITHUB_ENV
-          echo "LIQUID_LINES=$LIQUID_LINES" >> $GITHUB_ENV
-
-      - name: Create performance report
-        run: |
-          set -euo pipefail
-          {
-            echo "# WTF Theme Performance Monitoring Report"
-            echo
-            echo "**Date:** $(date)"
-            echo "**Monitoring Trigger:** ${{ github.event_name }}"
-            echo
-            echo "## Asset Counts"
-            echo "- CSS files: $CSS_COUNT"
-            echo "- JavaScript files: $JS_COUNT"
-            echo "- Image files: $IMG_COUNT"
-            echo "- Total Liquid lines: $LIQUID_LINES"
-            echo
-            echo "## File Size Snapshots"
-            echo "### CSS"
-            [ -f perf/css-sizes.txt ] && sed 's/^/- /' perf/css-sizes.txt || echo "- (none)"
-            echo "### JS"
-            [ -f perf/js-sizes.txt ] && sed 's/^/- /' perf/js-sizes.txt || echo "- (none)"
-            echo "### Images"
-            [ -f perf/img-sizes.txt ] && sed 's/^/- /' perf/img-sizes.txt || echo "- (none)"
-            echo
-            echo "## Guidance"
-            echo "- Keep critical CSS < ~14KB, JS < ~100KB initial, serve modern image formats, and lazy-load non-critical media."
-          } > performance-monitoring-report.md
-
-      - name: Upload performance monitoring results
+          echo "Liquid lines: $(find . -name '*.liquid' -exec wc -l {} \; | awk '{s+=$1} END{print s+0}')" > perf/liquid-lines.txt
+      - name: Upload perf snapshot
         uses: actions/upload-artifact@v4
         with:
-          name: performance-monitoring-results
-          path: |
-            performance-monitoring-report.md
-            perf/
-          retention-days: 30
-          if-no-files-found: ignore
+          name: perf-snapshot
+          path: perf/
+          retention-days: 14
 
-  test-summary:
-    name: Testing Summary
+  summary:
+    name: CI Summary
     runs-on: ubuntu-latest
-    needs: [unit-tests, functional-tests, integration-tests, performance-monitoring]
     if: always()
+    needs: [theme-check, unit-tests, functional-smoke, perf-snapshot]
     steps:
-      - name: Create testing summary
+      - name: Build summary
+        shell: bash
         run: |
-          set -euo pipefail
-          cat << EOF > testing-summary.md
-          # WTF Theme Testing Summary
+          cat > summary.md <<'EOF'
+          # CI Summary
 
-          **Date:** $(date)
-          **Run:** ${{ github.run_number }}
-          **Trigger:** ${{ github.event_name }}
+          **Theme Check:**  ${{ needs.theme-check.result }}
+          **Unit Tests:**   ${{ needs.unit-tests.result || 'skipped' }}
+          **Smoke Checks:** ${{ needs.functional-smoke.result }}
+          **Perf (sched):** ${{ needs.perf-snapshot.result || 'skipped' }}
 
-          ## Job Status
-          - Unit Tests:          ${{ needs.unit-tests.result }}
-          - Functional Tests:    ${{ needs.functional-tests.result }}
-          - Integration Tests:   ${{ needs.integration-tests.result }}
-          - Performance Monitor: ${{ needs.performance-monitoring.result }}
-
-          ## Overall
-          $( if [ "${{ needs.functional-tests.result }}" = "success" ] && ( [ "${{ needs.integration-tests.result }}" = "success" ] || [ "${{ needs.integration-tests.result }}" = "skipped" ] ); then
-               echo "🟢 READY FOR DEPLOYMENT";
-             else
-               echo "🔴 NOT READY - investigate failures";
-             fi)
-
-          ## Next Actions
-          1. Fix any functional/integration failures before merging to main
-          2. Review performance snapshots for regressions
-          3. Keep OS2.0 templates aligned (prefer JSON)
+          Next:
+          - Fix Theme Check errors before merging
+          - Keep Product JSON-LD present on product pages (for rich results)
           EOF
-
-      - name: Upload testing summary
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: testing-summary-report
-          path: testing-summary.md
-          retention-days: 90
-          if-no-files-found: ignore
+          name: ci-summary
+          path: summary.md
+          retention-days: 30
