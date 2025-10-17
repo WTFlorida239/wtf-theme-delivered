@@ -306,26 +306,18 @@
       const addBtn = $('#wtf-add-to-cart');
       if (addBtn) { addBtn.disabled = true; addBtn.setAttribute('aria-busy', 'true'); }
 
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: this.variantId,       // ✅ VARIANT ID required by Shopify
-          quantity: 1,
-          properties
-          // NOTE: price cannot be overridden here; Shopify uses the variant's price
-        })
+      window.WTFCartAPI.addToCart({
+        id: this.variantId,
+        quantity: 1,
+        properties
       })
-        .then(r => r.json())
         .then(() => {
           this.toast('Added to cart!', 'success');
           this.bumpCartCount();
-          // Dispatch cart:added event for cart drawer
-          document.dispatchEvent(new CustomEvent('cart:added', { detail: { properties } }));
         })
         .catch(err => {
           console.error(err);
-          this.toast('Add to cart failed. Check variant ID.', 'error');
+          this.toast(err?.message || 'Add to cart failed. Check variant ID.', 'error');
         })
         .finally(() => {
           if (addBtn) { addBtn.disabled = false; addBtn.removeAttribute('aria-busy'); }
@@ -333,13 +325,10 @@
     }
 
     bumpCartCount() {
-      fetch('/cart.js')
-        .then(r => r.json())
+      window.WTFCartAPI.getCart()
         .then(cart => {
           const count = $('#cart-count');
           if (count) count.textContent = cart.item_count;
-          // Open drawer if your drawer listens to this event:
-          document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: { cart } }));
         })
         .catch(() => {});
     }

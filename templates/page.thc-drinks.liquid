@@ -288,8 +288,19 @@
       }
     </style>
 
+    {% assign thc_variant_id = page.metafields.custom.thc_drinks_variant_id | default: settings.thc_drinks_variant_id | default: 0 %}
+    {% assign thc_variant_map = page.metafields.custom.thc_drinks_variant_map %}
+    {% if thc_variant_map == blank %}
+      {% assign thc_variant_map = settings.thc_drinks_variant_map %}
+    {% endif %}
+    {% assign thc_product_handle = page.metafields.custom.thc_drinks_product_handle | default: settings.thc_drinks_product_handle %}
     <script>
-      window.THC_DRINKS_VARIANT_ID = {{ page.metafields.custom.thc_drinks_variant_id | default: settings.thc_drinks_variant_id | json }};
+      window.THC_DRINKS_VARIANT_ID = {{ thc_variant_id | json }};
+      window.THC_DRINKS_CONFIG = {
+        productHandle: {{ thc_product_handle | json }},
+        variantMap: {{ thc_variant_map | json }},
+        fallbackVariantId: {{ thc_variant_id | json }}
+      };
     </script>
 
 <div class="header">WTF | Welcome To Florida</div>
@@ -410,64 +421,152 @@
     </div>
 
     <script>
-      // ——— Currency formatter ———
       const moneyFmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
-
-      // ——— State ———
+      const config = window.THC_DRINKS_CONFIG || {};
+      const rootUrl = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+      const normalizedRoot = rootUrl.endsWith('/') ? rootUrl : `${rootUrl}/`;
+      const fallbackVariantIdRaw = Number(config.fallbackVariantId || window.THC_DRINKS_VARIANT_ID || 0);
+      const normalizedVariantMap = parseVariantMap(config.variantMap);
       let selectedSize = null;
       let selectedFlavor = null;
+      let selectedVariantId = Number.isInteger(fallbackVariantIdRaw) && fallbackVariantIdRaw > 0 ? fallbackVariantIdRaw : null;
+      let currentVariant = null;
       let basePrice = 15.0;
+      const variantIndex = new Map();
+      const optionIndex = new Map();
+      let productData = null;
+      let productFetchAttempted = false;
+      const sizePrices = {};
 
-      // Size to price mapping
-      const sizePrices = {
-        'Regular': 15.00,
-        'Large': 20.00,
-        'Gallon': 120.00
-      };
-
-      // ——— Init ———
       document.addEventListener('DOMContentLoaded', () => {
+        hydrateSizePriceMap();
         wireOptionButtons();
         updateCartCount();
         updateUI();
+
+        if (config.productHandle) {
+          ensureProductData().then(() => {
+            if (selectedVariantId && variantIndex.has(selectedVariantId)) {
+              currentVariant = variantIndex.get(selectedVariantId);
+              if (currentVariant && typeof currentVariant.price === 'number') {
+                basePrice = currentVariant.price / 100;
+                updateUI();
+              }
+            }
+          });
+        }
       });
 
-      function wireOptionButtons() {
-        // Size buttons
+      function hydrateSizePriceMap() {
         document.querySelectorAll('#size-options .option-button').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#size-options .option-button').forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedSize = btn.dataset.size;
-            basePrice = sizePrices[selectedSize] || 15.0;
-            updateUI();
-          });
+          const size = btn.dataset.size;
+          const price = parseFloat(btn.dataset.price || '0');
+          if (size && !Number.isNaN(price)) {
+            sizePrices[size] = price;
+          }
+        });
+      }
+
+      function parseVariantMap(raw) {
+        if (!raw) return {};
+        let data = raw;
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data);
+          } catch (error) {
+            console.warn('THC Drinks: invalid variant map JSON', error);
+            data = {};
+          }
+        }
+        if (data == null || typeof data !== 'object' || Array.isArray(data)) return {};
+        const map = {};
+        Object.keys(data).forEach((key) => {
+          const value = Number(data[key]);
+          if (!Number.isInteger(value) || value <= 0) return;
+          map[key] = value;
+          map[key.toLowerCase()] = value;
+        });
+        return map;
+      }
+
+      function wireOptionButtons() {
+        document.querySelectorAll('#size-options .option-button').forEach((btn) => {
+          btn.addEventListener('click', () => handleSizeClick(btn));
         });
 
-        // Flavor buttons
         document.querySelectorAll('.flavor-button').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('.flavor-button').forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedFlavor = btn.dataset.flavor;
-            updateUI();
-          });
+          btn.addEventListener('click', () => handleFlavorClick(btn));
         });
+      }
+
+      async function handleSizeClick(btn) {
+        document.querySelectorAll('#size-options .option-button').forEach((b) => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedSize = btn.dataset.size;
+
+        try {
+          const variant = await resolveVariantForSize(selectedSize);
+          if (variant && typeof variant.price === 'number') {
+            basePrice = variant.price / 100;
+          } else if (sizePrices[selectedSize]) {
+            basePrice = sizePrices[selectedSize];
+          }
+
+          currentVariant = variant || null;
+          selectedVariantId = variant ? Number(variant.id) : null;
+
+          if (selectedVariantId && Number.isInteger(selectedVariantId) && selectedVariantId > 0) {
+            btn.dataset.variantId = String(selectedVariantId);
+          } else {
+            btn.dataset.variantId = '';
+          }
+        } catch (error) {
+          console.warn('THC Drinks: failed to resolve variant for size', error);
+          currentVariant = null;
+          selectedVariantId = null;
+        }
+
+        updateUI();
+      }
+
+      function handleFlavorClick(btn) {
+        document.querySelectorAll('.flavor-button').forEach((b) => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedFlavor = btn.dataset.flavor;
+        updateUI();
+      }
+
+      function computeDisplayPrice() {
+        if (currentVariant && typeof currentVariant.price === 'number') {
+          return currentVariant.price / 100;
+        }
+        if (selectedSize && sizePrices[selectedSize]) {
+          return sizePrices[selectedSize];
+        }
+        if (selectedVariantId && variantIndex.has(selectedVariantId)) {
+          const variant = variantIndex.get(selectedVariantId);
+          if (variant && typeof variant.price === 'number') {
+            return variant.price / 100;
+          }
+        }
+        return basePrice;
       }
 
       function updateUI() {
         const priceEl = document.getElementById('product-price');
         const btnEl = document.getElementById('add-to-cart-btn');
+        const displayPrice = computeDisplayPrice();
 
-        // Update price display
-        priceEl.textContent = moneyFmt.format(basePrice);
+        priceEl.textContent = moneyFmt.format(displayPrice);
 
-        // Update button state
-        const canAdd = selectedSize && selectedFlavor;
+        const variantValid = Number.isInteger(selectedVariantId) && selectedVariantId > 0;
+        const canAdd = Boolean(selectedSize && selectedFlavor && variantValid);
         btnEl.disabled = !canAdd;
-        
+
         if (canAdd) {
-          btnEl.textContent = `Add to Cart - ${moneyFmt.format(basePrice)}`;
+          btnEl.textContent = `Add to Cart - ${moneyFmt.format(displayPrice)}`;
+        } else if (selectedSize && !variantValid) {
+          btnEl.textContent = 'Size unavailable. Choose another option';
         } else {
           const missing = [];
           if (!selectedSize) missing.push('Size');
@@ -478,18 +577,20 @@
 
       function changeQuantity(delta) {
         const input = document.getElementById('quantity');
-        const newVal = Math.max(1, Math.min(50, parseInt(input.value) + delta));
+        const current = parseInt(input.value, 10) || 1;
+        const newVal = Math.max(1, Math.min(50, current + delta));
         input.value = newVal;
         updateUI();
       }
 
       async function updateCartCount() {
+        const counter = document.getElementById('cart-count');
+        if (!counter || !window.WTFCartAPI) return;
         try {
-          const res = await fetch('/cart.js');
-          const cart = await res.json();
-          document.getElementById('cart-count').textContent = cart.item_count;
-        } catch (err) {
-          console.warn('Cart count update failed:', err);
+          const cart = await window.WTFCartAPI.getCart();
+          counter.textContent = cart.item_count;
+        } catch (error) {
+          console.warn('Cart count update failed:', error);
         }
       }
 
@@ -499,70 +600,47 @@
         btn.textContent = 'Adding...';
         btn.disabled = true;
 
-        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const quantity = Math.max(1, parseInt(document.getElementById('quantity').value, 10) || 1);
         const comments = document.getElementById('order-comments').value.trim();
-        const variantId = window.THC_DRINKS_VARIANT_ID;
+        const variantId = Number(selectedVariantId);
+
+        if (!Number.isInteger(variantId) || variantId <= 0) {
+          alert('Please choose a size before adding to cart.');
+          btn.textContent = original;
+          btn.disabled = false;
+          return;
+        }
 
         const properties = {
           Size: selectedSize,
           Flavor: selectedFlavor
         };
-        if (comments) properties.Comments = comments;
+        if (comments) {
+          properties.Comments = comments;
+        }
 
         try {
-          if (variantId) {
-            const body = new URLSearchParams();
-            body.set('id', String(variantId));
-            body.set('quantity', String(quantity));
-            for (const k in properties) body.set(`properties[${k}]`, String(properties[k]));
-
-            const res = await fetch('/cart/add.js', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                Accept: 'application/json',
-              },
-              credentials: 'same-origin',
-              body,
-            });
-
-            if (!res.ok) {
-              let msg = 'Add to cart failed';
-              try {
-                const data = await res.json();
-                msg = data.description || data.message || msg;
-              } catch {}
-              throw new Error(msg);
-            }
-          } else {
-            // Fallback: store cart locally for dev/preview modes
-            const order = {
-              id: 'thc-drinks-' + Date.now() + '-' + Math.random().toString(36).slice(2),
-              product: 'THC Drinks',
-              ...properties,
-              quantity,
-              price: (basePrice * quantity).toFixed(2),
-              timestamp: new Date().toISOString(),
-            };
-            let cart = [];
-            try {
-              cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
-            } catch {}
-            cart.push(order);
-            localStorage.setItem('wtf-cart', JSON.stringify(cart));
-          }
+          await window.WTFCartAPI.addToCart({
+            id: variantId,
+            quantity,
+            properties
+          });
 
           await updateCartCount();
 
           const success = document.getElementById('success-message');
+          const displayPrice = computeDisplayPrice();
           success.innerHTML = `✅ <strong>Added to cart!</strong><br>
              🍹 THC Drink — <strong>${properties.Size}</strong><br>
              🍓 Flavor: ${properties.Flavor}<br>
-             🔢 Qty: ${quantity}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
+             🔢 Qty: ${quantity}<br>
+             💵 Subtotal: ${moneyFmt.format(displayPrice * quantity)}${properties.Comments ? `<br>💬 ${properties.Comments}` : ''}`;
           success.classList.add('show');
           success.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-          document.dispatchEvent(new CustomEvent('thc-drinks:added', { detail: { variantId, ...properties, quantity } }));
+          document.dispatchEvent(new CustomEvent('thc-drinks:added', {
+            detail: { variantId, ...properties, quantity }
+          }));
         } catch (err) {
           console.error('Add to cart error:', err);
           alert('❌ ' + (err && err.message ? err.message : 'Error adding to cart. Please try again.'));
@@ -570,8 +648,73 @@
           setTimeout(() => {
             btn.textContent = original;
             btn.disabled = false;
-            document.getElementById('success-message').classList.remove('show');
+            const success = document.getElementById('success-message');
+            success.classList.remove('show');
           }, 4000);
         }
+      }
+
+      async function resolveVariantForSize(size) {
+        if (!size) return null;
+        const normalizedKey = size.trim().toLowerCase();
+        const mappedId = normalizedVariantMap[size] || normalizedVariantMap[normalizedKey];
+
+        if (mappedId) {
+          const numericId = Number(mappedId);
+          if (Number.isInteger(numericId) && numericId > 0) {
+            if (!variantIndex.has(numericId)) {
+              await ensureProductData();
+            }
+            return variantIndex.get(numericId) || { id: numericId };
+          }
+        }
+
+        await ensureProductData();
+
+        if (optionIndex.has(normalizedKey)) {
+          return optionIndex.get(normalizedKey);
+        }
+
+        return null;
+      }
+
+      async function ensureProductData() {
+        if (productData || productFetchAttempted) {
+          return productData;
+        }
+
+        productFetchAttempted = true;
+        const handle = (config.productHandle || '').trim();
+        if (!handle) {
+          return null;
+        }
+
+        const url = `${normalizedRoot}products/${encodeURIComponent(handle)}.js`;
+
+        try {
+          const response = await fetch(url, { credentials: 'same-origin' });
+          if (!response.ok) {
+            throw new Error(`Failed to load product JSON (${response.status})`);
+          }
+
+          productData = await response.json();
+
+          if (Array.isArray(productData?.variants)) {
+            productData.variants.forEach((variant) => {
+              const idNum = Number(variant.id);
+              if (Number.isInteger(idNum)) {
+                variantIndex.set(idNum, variant);
+              }
+              if (variant.option1) {
+                optionIndex.set(variant.option1.trim().toLowerCase(), variant);
+              }
+            });
+          }
+        } catch (error) {
+          console.warn('THC Drinks: unable to load product data', error);
+          productData = null;
+        }
+
+        return productData;
       }
     </script>

@@ -684,7 +684,7 @@ class WTF2AcceptIntegration {
    * Clear cart after successful payment
    */
   async clearCart() {
-    await fetch('/cart/clear.js', { method: 'POST' });
+    await window.WTFCartAPI.clearCart();
     document.dispatchEvent(new CustomEvent('cart:cleared'));
   }
 

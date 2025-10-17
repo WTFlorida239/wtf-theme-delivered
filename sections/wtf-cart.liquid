@@ -510,15 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
-    const formData = new FormData();
-    formData.append('id', variantId);
-    formData.append('quantity', quantity);
-    
-    fetch('/cart/change.js', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
+    window.WTFCartAPI.updateCart({ id: Number(variantId), quantity })
     .then(cart => {
       updateCartDisplay(cart);
     })
@@ -530,15 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function removeItem(variantId) {
-    const formData = new FormData();
-    formData.append('id', variantId);
-    formData.append('quantity', 0);
-    
-    fetch('/cart/change.js', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
+    window.WTFCartAPI.updateCart({ id: Number(variantId), quantity: 0 })
     .then(cart => {
       if (cart.item_count === 0) {
         location.reload();

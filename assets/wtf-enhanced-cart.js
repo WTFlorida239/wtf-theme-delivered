@@ -111,65 +111,35 @@ class WTFCart {
       // Backup cart data before submission
       this.backupCartData(cartData);
 
-      // Prepare form data for Shopify
-      const formData = this.prepareFormData(cartData);
-      
-      // Log form data for debugging
       console.log('Cart data being submitted:', cartData);
-      console.log('FormData entries:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value}`);
-      }
 
-      // Check if we have a variant ID (required for Shopify)
       if (!cartData.variantId) {
         throw new Error('Product variant ID is required');
       }
 
-      // Add to cart via Shopify API
-      const response = await fetch('/cart/add.js', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        credentials: 'same-origin'
+      // Attach metadata before sending
+      cartData.properties['Order ID'] = cartData.orderId;
+      cartData.properties['Added At'] = cartData.timestamp;
+
+      const addedItem = await window.WTFCartAPI.addToCart({
+        id: cartData.variantId,
+        quantity: cartData.quantity,
+        properties: cartData.properties
       });
 
-      console.log('Cart add response status:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Cart add error response:', errorData);
-        
-        // Handle specific Shopify errors
-        if (response.status === 422) {
-          throw new Error(errorData.description || 'Product variant not found or unavailable');
-        } else if (response.status === 404) {
-          throw new Error('Product not found');
-        } else {
-          throw new Error(errorData.description || errorData.message || `Failed to add item to cart (${response.status})`);
-        }
-      }
-
-      const addedItem = await response.json();
       console.log('Item successfully added:', addedItem);
-      
+
       // Get updated cart to ensure consistency
       const cart = await this.getCart();
       console.log('Updated cart:', cart);
-      
+
       // Clear backup since submission was successful
       this.clearCartBackup();
-      
+
       // Update UI
       this.updateCartCount(cart.item_count);
       this.showSuccessMessage(this.formatSuccessMessage(cartData));
-      
-      // Dispatch events for other components
-      this.dispatchCartEvents(cart, addedItem, cartData);
-      
+
       // Reset form if it's a drink builder
       this.resetForm(form);
       
@@ -201,8 +171,14 @@ class WTFCart {
 
   extractCartData(form) {
     const formData = new FormData(form);
+    const variantFromForm = formData.get('id');
+    let resolvedVariantId = variantFromForm ? Number(variantFromForm) : null;
+    if (!Number.isInteger(resolvedVariantId) || resolvedVariantId <= 0) {
+      resolvedVariantId = null;
+    }
+
     const data = {
-      variantId: formData.get('id'),
+      variantId: resolvedVariantId,
       quantity: parseInt(formData.get('quantity') || '1', 10),
       properties: {},
       timestamp: new Date().toISOString(),
@@ -223,20 +199,23 @@ class WTFCart {
     if (!data.variantId) {
       const variantInput = form.querySelector('[data-variant-id]');
       if (variantInput) {
-        data.variantId = variantInput.dataset.variantId;
+        const candidate = Number(variantInput.dataset.variantId);
+        if (Number.isInteger(candidate) && candidate > 0) {
+          data.variantId = candidate;
+        }
       }
-      
+
       // Check for global variant IDs for drink builders
       if (!data.variantId && window.KAVA_DRINKS_VARIANT_ID) {
-        data.variantId = window.KAVA_DRINKS_VARIANT_ID;
+        data.variantId = Number(window.KAVA_DRINKS_VARIANT_ID);
         data.properties['Product Type'] = 'Kava Drink';
       }
       if (!data.variantId && window.KRATOM_TEAS_VARIANT_ID) {
-        data.variantId = window.KRATOM_TEAS_VARIANT_ID;
+        data.variantId = Number(window.KRATOM_TEAS_VARIANT_ID);
         data.properties['Product Type'] = 'Kratom Tea';
       }
       if (!data.variantId && window.THC_DRINKS_VARIANT_ID) {
-        data.variantId = window.THC_DRINKS_VARIANT_ID;
+        data.variantId = Number(window.THC_DRINKS_VARIANT_ID);
         data.properties['Product Type'] = 'THC Drink';
       }
     }
@@ -245,35 +224,17 @@ class WTFCart {
   }
 
   validateCartData(data) {
-    if (!data.variantId) {
+    if (!Number.isInteger(data.variantId) || data.variantId <= 0) {
       console.warn('No variant ID provided');
       return false;
     }
-    
-    if (data.quantity < 1 || data.quantity > 50) {
+
+    if (!Number.isInteger(data.quantity) || data.quantity < 1 || data.quantity > 50) {
       console.warn('Invalid quantity:', data.quantity);
       return false;
     }
 
     return true;
-  }
-
-  prepareFormData(cartData) {
-    const formData = new FormData();
-    
-    formData.set('id', String(cartData.variantId));
-    formData.set('quantity', String(cartData.quantity));
-    
-    // Add all properties
-    Object.entries(cartData.properties).forEach(([key, value]) => {
-      formData.set(`properties[${key}]`, String(value));
-    });
-
-    // Add metadata
-    formData.set('properties[Order ID]', cartData.orderId);
-    formData.set('properties[Added At]', cartData.timestamp);
-
-    return formData;
   }
 
   generateOrderId() {
@@ -419,45 +380,19 @@ class WTFCart {
   }
 
   async updateCartItem(variantId, quantity) {
-    const formData = new FormData();
-    formData.append('id', variantId);
-    formData.append('quantity', quantity);
-
-    const response = await fetch('/cart/change.js', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      credentials: 'same-origin'
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update cart');
+    const numericId = Number(variantId);
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      throw new Error('Invalid variant id for cart update');
     }
 
-    const cart = await response.json();
+    const cart = await window.WTFCartAPI.updateCart({ id: numericId, quantity });
     this.updateCartDisplay(cart);
-    this.dispatchCartEvents(cart);
-    
+
     return cart;
   }
 
   async getCart() {
-    const response = await fetch('/cart.js', {
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      credentials: 'same-origin'
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch cart');
-    }
-
-    return await response.json();
+    return window.WTFCartAPI.getCart();
   }
 
   updateCartCount(count) {
@@ -638,29 +573,6 @@ class WTFCart {
     }
   }
 
-  dispatchCartEvents(cart, addedItem = null, cartData = null) {
-    // Dispatch multiple events for compatibility
-    const eventDetail = { 
-      cart, 
-      last_added: addedItem,
-      cart_data: cartData
-    };
-
-    const events = [
-      new CustomEvent('wtf:cart:update', { detail: eventDetail }),
-      new CustomEvent('cart:updated', { detail: cart }),
-      new CustomEvent('wtf:cart:open', { detail: eventDetail })
-    ];
-
-    if (addedItem) {
-      events.push(new CustomEvent('cart:added', { detail: { item: addedItem, cart, cart_data: cartData } }));
-    }
-
-    events.forEach(event => {
-      document.dispatchEvent(event);
-      console.log(`Dispatched event: ${event.type}`, event.detail);
-    });
-  }
 }
 
 // Initialize when DOM is ready - but only if not already initialized

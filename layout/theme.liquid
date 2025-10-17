@@ -495,8 +495,6 @@
     {% endif %}
 
     {%- comment %} Persistent Cart Management {%- endcomment %}
-    {{ 'persistent-cart.js' | asset_url | script_tag }}
-
     {%- comment %} Pricing Validation System {%- endcomment %}
     {{ 'pricing-validation.js' | asset_url | script_tag }}
 
@@ -531,8 +529,6 @@
     <script src="{{ 'analytics-guard.js' | asset_url }}" defer></script>
     <script src="{{ 'lightspeed-guard.js' | asset_url }}" defer></script>
     {%- comment -%} Console hardening shims {%- endcomment -%}
-    <script src="{{ 'analytics-guard.js' | asset_url }}" defer></script>
-    <script src="{{ 'lightspeed-guard.js' | asset_url }}" defer></script>
     <script src="{{ 'safe-define.js' | asset_url }}" defer></script>
     <script src="{{ 'postmessage-guard.js' | asset_url }}" defer></script>
     {%- comment -%} If persistent-cart references still exist temporarily {%- endcomment -%}

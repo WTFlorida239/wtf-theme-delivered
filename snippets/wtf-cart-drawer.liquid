@@ -131,20 +131,10 @@
       }
     }
 
-    function broadcastCart(cart, extraDetail){
-      var detail = { cart: cart };
-      if (extraDetail && typeof extraDetail === 'object') {
-        for (var key in extraDetail) {
-          if (Object.prototype.hasOwnProperty.call(extraDetail, key)) {
-            detail[key] = extraDetail[key];
-          }
-        }
-      }
-      document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: detail }));
-      document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
-    }
-
     async function getCart(){
+      if (window.WTFCartAPI && typeof window.WTFCartAPI.getCart === 'function') {
+        return window.WTFCartAPI.getCart();
+      }
       const res = await fetch(ROOT + 'cart.js', { credentials:'same-origin' });
       return res.json();
     }
@@ -223,13 +213,16 @@
     }
 
     async function changeLine(line, quantity){
-      var form = new FormData();
-      form.set('line', String(line));
-      form.set('quantity', String(quantity));
-      await fetch(ROOT + 'cart/change.js', { method:'POST', credentials:'same-origin', body: form });
+      if (window.WTFCartAPI && typeof window.WTFCartAPI.updateCart === 'function') {
+        await window.WTFCartAPI.updateCart({ line: Number(line), quantity: Number(quantity) });
+      } else {
+        var form = new FormData();
+        form.set('line', String(line));
+        form.set('quantity', String(quantity));
+        await fetch(ROOT + 'cart/change.js', { method:'POST', credentials:'same-origin', body: form });
+      }
       const cart = await getCart();
       renderCart(cart);
-      broadcastCart(cart);
     }
 
     function open(){ el.setAttribute('aria-hidden','false'); el.querySelector('.wtf-cart-drawer__panel').focus(); }
@@ -316,7 +309,6 @@
       refresh: async function(){
         const cart = await getCart();
         renderCart(cart);
-        broadcastCart(cart);
       }
     });
 

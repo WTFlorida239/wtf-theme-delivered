@@ -104,48 +104,28 @@
   ns.toast = toast;
 
   /* ----------------------- Cart API ----------------------- */
+  function requireCartAPI() {
+    if (!window.WTFCartAPI) {
+      throw new Error('WTFCartAPI is not available');
+    }
+    return window.WTFCartAPI;
+  }
+
   const Cart = {
     async get() {
-      const res = await fetch('/cart.js', { credentials: 'same-origin' });
-      if (!res.ok) throw new Error('Cart fetch failed');
-      return res.json();
+      return requireCartAPI().getCart();
     },
     async add({ id, quantity = 1, properties }) {
-      if (!id) throw new Error('Variant ID missing');
-      const body = { items: [{ id: Number(id), quantity: Number(quantity) || 1, ...(properties ? { properties } : {}) }] };
-      const res = await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || 'Add to cart failed');
-      }
-      return res.json(); // returns the added items payload
+      return requireCartAPI().addToCart({ id, quantity, properties });
     },
     async change(lineOrKey, quantity) {
-      const body = typeof lineOrKey === 'number'
+      const payload = typeof lineOrKey === 'number'
         ? { line: lineOrKey, quantity }
         : { id: lineOrKey, quantity };
-      const res = await fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error('Cart change failed');
-      return res.json();
+      return requireCartAPI().updateCart(payload);
     },
     async clear() {
-      const res = await fetch('/cart/clear.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        credentials: 'same-origin',
-      });
-      if (!res.ok) throw new Error('Cart clear failed');
-      return res.json();
+      return requireCartAPI().clearCart();
     },
   };
   ns.Cart = Cart;
@@ -190,11 +170,6 @@
     try {
       const payload = buttonToCartPayload(btn);
       await Cart.add(payload);
-      // Fetch fresh cart and dispatch standard DOM events for compatibility
-      const cart = await Cart.get();
-      document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: { cart } }));
-      document.dispatchEvent(new CustomEvent('cart:added', { detail: { cart } }));
-      // Attempt to open drawer if present
       try { if (window.WTF_CART && typeof window.WTF_CART.open === 'function') window.WTF_CART.open(); } catch(_) {}
 
       toast('Added to cart', 'success');
@@ -221,10 +196,6 @@
     try {
       const payload = formToCartPayload(form);
       await Cart.add(payload);
-      // Fetch fresh cart and dispatch standard DOM events for compatibility
-      const cart = await Cart.get();
-      document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: { cart } }));
-      document.dispatchEvent(new CustomEvent('cart:added', { detail: { cart } }));
       try { if (window.WTF_CART && typeof window.WTF_CART.open === 'function') window.WTF_CART.open(); } catch(_) {}
 
       toast('Added to cart', 'success');
