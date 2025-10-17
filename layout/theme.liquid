@@ -298,12 +298,12 @@
     {%- comment %} Analytics / pixels {%- endcomment %}
     {%- render 'wtf-analytics' -%}
 
-    {%- comment %}
+    {%- comment -%}
       -------------------------------------------------------------------------------------
       WTF INTEGRATION SCRIPTS
       Core functionality for Shopify, Lightspeed POS, 2accept payments, and webhooks
       -------------------------------------------------------------------------------------
-    {%- endcomment %}
+    {%- endcomment -%}
 
     {%- comment %} WTF Cart API - Unified cart operations {%- endcomment %}
     <script src="{{ 'wtf-cart-api.js' | asset_url }}" defer></script>
@@ -527,7 +527,9 @@
       </script>
     {% endif %}
 
-    <!-- 21+ Age Gate Banner -->
     {% render 'age-gate-banner' %}
+    <script src="{{ 'analytics-guard.js' | asset_url }}" defer></script>
+    <script src="{{ 'lightspeed-guard.js' | asset_url }}" defer></script>
+
   </body>
 </html>
