@@ -95,17 +95,18 @@ const checks = [
   {
     id: 'seo-structured-data',
     description: 'Product schema JSON-LD is in place for PDP rich results.',
-    file: 'snippets/enhanced-meta-tags.liquid',
+    file: 'snippets/seo-head.liquid',
     tests: [
       {
         description: 'Contains "@type": "Product" JSON-LD block',
         test: (content) => /"@type"\s*:\s*"Product"/.test(content),
-        fix: 'Add a Product JSON-LD block inside enhanced-meta-tags.liquid.'
+        fix: 'Add a Product JSON-LD block inside seo-head.liquid so PDPs qualify for rich results.'
       },
       {
-        description: 'Contains LocalBusiness schema for local SEO',
-        test: (content) => /"@type"\s*:\s*"LocalBusiness"/.test(content),
-        fix: 'Embed LocalBusiness structured data for WTF Cape Coral.'
+        description: 'Contains LocalBusiness-style schema for local SEO',
+        test: (content) => /"@type"\s*:\s*"LocalBusiness"/.test(content)
+          || /"@type"\s*:\s*"BarOrPub"/.test(content),
+        fix: 'Ensure seo-head.liquid outputs a LocalBusiness (or BarOrPub) JSON-LD block for WTF Cape Coral.'
       }
     ]
   },
@@ -115,14 +116,16 @@ const checks = [
     file: 'layout/theme.liquid',
     tests: [
       {
-        description: 'Renders enhanced-meta-tags snippet',
-        test: (content) => /\{\%\s*render\s+'enhanced-meta-tags'\s*\%\}/.test(content),
-        fix: 'Include {% render "enhanced-meta-tags" %} inside <head>.'
+        description: 'Loads centralized SEO head snippet',
+        test: (content) => /\{\%\s*render\s+'seo-head'\s*\%\}/.test(content)
+          || /\{\%\s*render\s+'enhanced-meta-tags'\s*\%\}/.test(content),
+        fix: 'Include {% render "seo-head" %} inside <head> (or the legacy enhanced-meta-tags snippet as a fallback).'
       },
       {
-        description: 'Renders structured-data snippet',
-        test: (content) => /\{\%\s*render\s+'structured-data'\s*\%\}/.test(content),
-        fix: 'Include {% render "structured-data" %} inside <head>.'
+        description: 'Loads structured data snippet (directly or via seo-head)',
+        test: (content) => /\{\%\s*render\s+'seo-head'\s*\%\}/.test(content)
+          || /\{\%\s*render\s+'structured-data'\s*\%\}/.test(content),
+        fix: 'Render {% render "seo-head" %} (preferred) or {% render "structured-data" %} inside <head> to expose JSON-LD.'
       }
     ]
   }
