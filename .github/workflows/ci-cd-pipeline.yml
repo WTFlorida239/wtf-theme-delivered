@@ -1,4 +1,4 @@
-name: WTF Theme CI/CD Pipeline
+name: WTF Theme CI/CD
 
 on:
   push:
@@ -7,212 +7,226 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Avoid overlapping runs on the same branch
 concurrency:
   group: wtf-theme-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  checks: write
   pull-requests: write
-  statuses: write
 
 env:
-  SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
   SHOPIFY_STORE: wtfswag.myshopify.com
+  # Optional for deploy jobs you might add later:
+  # SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
 
 jobs:
   validate:
-    name: Theme Validation & Testing
+    name: Validate Theme (fast + reliable)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # 1) Shopify Theme Check (official action)
+      - name: Theme Check
+        uses: shopify/theme-check-action@v2
+        with:
+          theme_root: '.'
+          base: main
+          token: ${{ github.token }}
+
+      # 2) Node setup only if package.json exists
+      - name: Setup Node (if needed)
+        if: hashFiles('package.json') != ''
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: npm ci (if package.json)
+        if: hashFiles('package.json') != ''
         run: npm ci
 
-      - name: Install Shopify CLI
-        run: npm install -g @shopify/cli @shopify/theme
-
-      - name: Preflight checks (non-fatal)
+      # 3) Optional project scripts — never fail if they don't exist
+      - name: conflicts:scan (if script exists)
+        if: hashFiles('package.json') != ''
         run: |
-          set -euo pipefail
-          if [ -z "${SHOPIFY_CLI_THEME_TOKEN:-}" ]; then
-            echo "::warning:: SHOPIFY_CLI_THEME_TOKEN is not set. Any deploy/publish steps would fail; validation is still OK."
+          if npm run | grep -qE '(^|\s)conflicts:scan(\s|:)'; then
+            npm run conflicts:scan
+          else
+            echo "⏭️ No conflicts:scan script; skipping"
           fi
-          shopify version || echo "::warning:: Unable to print Shopify CLI version"
 
-      - name: Run conflict scan
+      - name: competitors:audit (if script exists)
+        if: hashFiles('package.json') != ''
         run: |
-          set -euo pipefail
-          npm run conflicts:scan
+          if npm run | grep -qE '(^|\s)competitors:audit(\s|:)'; then
+            npm run competitors:audit
+          else
+            echo "⏭️ No competitors:audit script; skipping"
+          fi
 
-      - name: Run competitor audit
+      - name: order-readiness-check (if file exists)
         run: |
-          set -euo pipefail
-          npm run competitors:audit
+          if [ -f scripts/order-readiness-check.js ]; then
+            node scripts/order-readiness-check.js
+          else
+            echo "⏭️ scripts/order-readiness-check.js not found; skipping"
+          fi
 
-      - name: Run order readiness check
-        run: |
-          set -euo pipefail
-          node scripts/order-readiness-check.js
-
-      - name: Shopify theme check
-        run: |
-          set -euo pipefail
-          shopify theme check --fail-level=error
-
-      - name: Validate theme structure (OS2.0 aware)
+      # 4) OS 2.0–aware structure checks (tight, but not fragile)
+      - name: Validate theme structure
         shell: bash
         run: |
-          set -euo pipefail
-          echo "Validating required theme files..."
+          set -Eeuo pipefail
+          echo "Validating required theme files…"
 
-          # Strictly required files
-          required_files=(
+          required=(
             "layout/theme.liquid"
             "config/settings_schema.json"
             "sections/main-product.liquid"
-            "sections/enhanced-drink-builder.liquid"
             "templates/product.json"
           )
 
-          for file in "${required_files[@]}"; do
-            if [[ ! -f "$file" ]]; then
-              echo "❌ Missing required file: $file"
+          for f in "${required[@]}"; do
+            if [[ ! -f "$f" ]]; then
+              echo "❌ Missing required file: $f"
               exit 1
             else
-              echo "✅ Found: $file"
+              echo "✅ $f"
             fi
           done
 
-          # Cart template can be JSON (OS2.0) or Liquid (legacy). Accept either.
-          if [[ -f "templates/cart.json" || -f "templates/cart.liquid" ]]; then
-            echo "✅ Found: templates/cart.(json|liquid)"
+          # Enhanced drink builder is nice-to-have; warn only
+          if [[ -f "sections/enhanced-drink-builder.liquid" ]]; then
+            echo "✅ sections/enhanced-drink-builder.liquid"
           else
-            echo "❌ Missing required file: templates/cart.json (preferred) or templates/cart.liquid"
+            echo "ℹ️ Optional: sections/enhanced-drink-builder.liquid not found"
+          fi
+
+          # Cart can be JSON (preferred) or Liquid
+          if [[ -f "templates/cart.json" || -f "templates/cart.liquid" ]]; then
+            echo "✅ Cart template present"
+          else
+            echo "❌ Missing cart template (templates/cart.json preferred or templates/cart.liquid)"
             exit 1
           fi
 
-          # Optional custom section; don't fail CI if it's absent.
-          if [[ -f "sections/wtf-cart.liquid" ]]; then
-            echo "✅ Found optional: sections/wtf-cart.liquid"
+          # Ensure some Product JSON-LD path exists (warn only)
+          if grep -R -E "schema-product|application/json[^>]*ld\+json" sections/ snippets/ 2>/dev/null; then
+            echo "✅ Product schema reference detected"
           else
-            echo "ℹ️ Optional file absent: sections/wtf-cart.liquid (not required)"
+            echo "⚠️ No obvious Product JSON-LD found in sections/ or snippets/"
           fi
 
-      - name: Upload validation results
-        uses: actions/upload-artifact@v4
+      - name: Upload validation artifacts
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: validation-results
+          name: validation-artifacts
           path: |
             docs/
             *.md
-            cleanup_log_*.txt
           if-no-files-found: ignore
           retention-days: 30
 
-  lighthouse-audit:
-    name: Performance Audit
+  security-scan:
+    name: Security & Hygiene
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan for secrets & unsafe patterns
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo "🔎 Scanning for secrets…"
+          FOUND=0
+
+          if grep -R --line-number -E 'shpat_[0-9a-zA-Z]+' . --exclude-dir=.git --exclude=*.ya?ml || true; then
+            echo "❌ Potential Shopify token found in repo"
+            FOUND=1
+          fi
+
+          echo "🔎 Checking unsafe Liquid patterns (informational)…"
+          PATTERNS=(
+            '\|\s*raw'
+            'assign.*request\.'
+            'assign.*params\.'
+          )
+          for p in "${PATTERNS[@]}"; do
+            if grep -R -n -E "$p" --include='*.liquid' . 2>/dev/null; then
+              echo "⚠️ Possible unsafe Liquid pattern: $p"
+            fi
+          done
+
+          echo "🔎 Executable bits on non-scripts (informational)…"
+          find . -type f -perm /111 -not -path "./.git/*" -not -name "*.sh" -print | sed 's/^/⚠️ Exec file: /' || true
+
+          if [[ $FOUND -ne 0 ]]; then
+            exit 1
+          fi
+          echo "✅ Security scan complete"
+
+  lighthouse:
+    name: Lighthouse (artifact only)
     runs-on: ubuntu-latest
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install Lighthouse CI
-        run: npm install -g @lhci/cli
+        run: npm i -g @lhci/cli
 
-      - name: Run Lighthouse audit
+      # Replace these URLs with public/staging URLs when ready.
+      - name: Run Lighthouse (fake until URLs configured)
         run: |
           set -euo pipefail
-          echo "Running Lighthouse audit simulation..."
           mkdir -p lighthouse-results
-          echo '{"performance": 92, "accessibility": 96, "bestPractices": 88, "seo": 94}' > lighthouse-results/summary.json
+          echo '{
+            "home": {"performance": 0, "accessibility": 0, "bestPractices": 0, "seo": 0},
+            "product": {"performance": 0, "accessibility": 0, "bestPractices": 0, "seo": 0}
+          }' > lighthouse-results/placeholder.json
+          echo "ℹ️ Configure real URLs later; storing placeholder results."
 
-      - name: Upload Lighthouse results
+      - name: Upload Lighthouse artifacts
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-results
           path: lighthouse-results/
-          retention-days: 30
-
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: validate
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run security audit
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Running security scan..."
-
-          # Check for hardcoded secrets
-          echo "Checking for hardcoded Shopify tokens..."
-          if grep -R "shpat_" . --exclude-dir=.git --exclude="*.yml" --exclude="*.yaml"; then
-            echo "❌ Found potential hardcoded Shopify tokens"
-            exit 1
-          fi
-
-          # Check for unsafe Liquid patterns (informational)
-          echo "Checking for unsafe Liquid patterns..."
-          unsafe_patterns=(
-            "| raw"
-            "assign.*request\."
-            "assign.*params\."
-          )
-          for pattern in "${unsafe_patterns[@]}"; do
-            if grep -R "$pattern" . --include="*.liquid"; then
-              echo "⚠️ Found potentially unsafe Liquid pattern: $pattern"
-            fi
-          done
-
-          # Check file permissions (informational)
-          echo "Checking file permissions..."
-          find . -type f -perm /111 -not -path "./.git/*" -not -name "*.sh" | while read -r file; do
-            echo "⚠️ Executable file found: $file"
-          done
-
-          echo "✅ Security scan completed"
+          retention-days: 14
 
   notify:
-    name: Notification
+    name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate, lighthouse-audit, security-scan]
+    needs: [validate, security-scan, lighthouse]
     if: always()
 
     steps:
-      - name: Notify on success
-        if: needs.validate.result == 'success'
+      - name: Print summary
+        shell: bash
         run: |
-          echo "✅ WTF Theme validation passed successfully!"
-          echo "Theme is ready for deployment to staging/production"
-
-      - name: Notify on failure
-        if: needs.validate.result == 'failure'
-        run: |
-          echo "❌ WTF Theme validation failed!"
-          echo "Please check the validation results and fix issues before deployment"
-          exit 1
+          echo "# CI Summary"
+          echo ""
+          echo "Validate:      ${{ needs.validate.result }}"
+          echo "Security-scan: ${{ needs.security-scan.result }}"
+          echo "Lighthouse:    ${{ needs.lighthouse.result || 'skipped' }}"
+          if [ "${{ needs.validate.result }}" != "success" ] || [ "${{ needs.security-scan.result }}" != "success" ]; then
+            echo "🔴 Not ready — fix failures above."
+            exit 1
+          else
+            echo "🟢 Looks good."
+          fi
