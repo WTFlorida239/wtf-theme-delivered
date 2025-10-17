@@ -10,13 +10,7 @@
   - Cart count synced from Shopify (fallback to 0 if API fails)
 {% endcomment %}
 
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Fun Stuff - WTF | Welcome To Florida</title>
-    <style>
+<style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; line-height: 1.6; }
       .header { background: #ff6600; color: white; padding: 15px 0; text-align: center; font-size: 24px; font-weight: bold; }
@@ -51,20 +45,15 @@
       .info-box { background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; color: #333; font-size: 14px; line-height: 1.4; }
       @media (max-width: 768px) { .product-grid { grid-template-columns: 1fr; } .option-grid { grid-template-columns: repeat(2, 1fr); } .product-details { padding: 20px; } }
     </style>
-  </head>
-  <body
-    {%- comment -%}
-      Calculate the variant id we'll add to cart.
-      Prefer page metafield wtf.variant_id; fallback to theme setting fun_stuff_variant_id.
-    {%- endcomment -%}
-    {%- assign fun_variant_id = 0 -%}
-    {%- if page.metafields.wtf.variant_id.value -%}
-      {%- assign fun_variant_id = page.metafields.wtf.variant_id.value | plus: 0 -%}
-    {%- elsif settings.fun_stuff_variant_id -%}
-      {%- assign fun_variant_id = settings.fun_stuff_variant_id | plus: 0 -%}
-    {%- endif -%}
-    data-variant-id="{{ fun_variant_id }}"
-  >
+
+  {%- assign fun_variant_id = 0 -%}
+  {%- if page.metafields.wtf.variant_id.value -%}
+    {%- assign fun_variant_id = page.metafields.wtf.variant_id.value | plus: 0 -%}
+  {%- elsif settings.fun_stuff_variant_id -%}
+    {%- assign fun_variant_id = settings.fun_stuff_variant_id | plus: 0 -%}
+  {%- endif -%}
+
+  <div class="fun-stuff-page" data-variant-id="{{ fun_variant_id }}">
     <div class="header">WTF | Welcome To Florida</div>
     <div class="cart-status" id="cart-status">Cart: <span id="cart-count">0</span> items</div>
 
@@ -327,5 +316,5 @@
         }
       })();
     </script>
-  </body>
-</html>
+  </div>
+  

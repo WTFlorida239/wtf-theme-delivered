@@ -41,6 +41,11 @@
     if collection.metafields.seo.title != blank
       assign page_title = collection.metafields.seo.title
     endif
+  elsif template.name == 'blog'
+    assign page_title = blog.title | append: " | " | append: shop.name
+    if blog.metafields.seo.title != blank
+      assign page_title = blog.metafields.seo.title
+    endif
   elsif template.name contains 'article'
     assign page_title = article.title | append: " | " | append: shop.name | append: " Blog"
   elsif template.name contains 'page'
@@ -75,6 +80,12 @@
     elsif collection.description != blank
       assign meta_desc = collection.description
     endif
+  elsif template.name == 'blog'
+    if blog.metafields.seo.description != blank
+      assign meta_desc = blog.metafields.seo.description
+    elsif blog.description != blank
+      assign meta_desc = blog.description
+    endif
   elsif template.name contains 'article'
     if article.excerpt != blank
       assign meta_desc = article.excerpt
@@ -87,6 +98,96 @@
     elsif page.content != blank
       assign meta_desc = page.content
     endif
+  endif
+
+  if template.name contains 'page'
+    assign page_template_suffix = template.suffix | default: ''
+    case page_template_suffix
+      when 'menu'
+        if page.metafields.seo.title == blank
+          assign page_title = "Menu | WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "WTF | Welcome To Florida Menu - Licensed THC beverages, edibles, kava drinks, kratom teas, flower, pre-rolls, and mushroom chocolate bars. Lab-tested, 21+ only. Order online or visit us in Cape Coral."
+        endif
+      when 'about-wtf'
+        if page.metafields.seo.title == blank
+          assign page_title = "About WTF | Welcome To Florida - Our Story & Mission"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Learn about WTF (Welcome To Florida) - Cape Coral's premier kava bar and kratom lounge. Discover our story, mission, and commitment to premium botanical beverages and sober-friendly community experiences."
+        endif
+      when 'faq'
+        if page.metafields.seo.title == blank
+          assign page_title = "FAQ - WTF | Welcome To Florida | Kava Bar & Kratom Lounge Questions"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Frequently asked questions about WTF (Welcome To Florida) kava bar, kratom teas, THC products, and botanical beverages in Cape Coral, Florida."
+        endif
+      when 'kava-bar-cape-coral'
+        if page.metafields.seo.title == blank
+          assign page_title = "Best Kava Bar in Cape Coral, Florida | WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Cape Coral's premier kava bar offering custom kava drinks, kratom teas, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida with the best kava bar experience."
+        endif
+      when 'thc-drinks'
+        if page.metafields.seo.title == blank
+          assign page_title = "THC Drinks - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Shop lab-tested Delta-9 THC drinks in multiple sizes and flavors at WTF | Welcome To Florida. 21+ only with valid ID for pickup in Cape Coral."
+        endif
+      when 'thc-shots'
+        if page.metafields.seo.title == blank
+          assign page_title = "THC Shots - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Explore concentrated THC shots from WTF | Welcome To Florida. Potent, lab-tested hemp-derived options for responsible 21+ enjoyment in Cape Coral."
+        endif
+      when 'kava-drinks'
+        if page.metafields.seo.title == blank
+          assign page_title = "Kava Drinks - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Discover signature kava drinks at WTF | Welcome To Florida with customizable sizes, strains, and flavor boosts for a premium Cape Coral experience."
+        endif
+      when 'kratom-teas'
+        if page.metafields.seo.title == blank
+          assign page_title = "Kratom Teas - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Browse fresh-brewed kratom teas featuring Green, Red, White, and Yellow strains served at WTF | Welcome To Florida in Cape Coral."
+        endif
+      when 'draft-pours'
+        if page.metafields.seo.title == blank
+          assign page_title = "Draft Pours - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Chilled botanical draft pours, kombucha, and cold brew options available on tap at WTF | Welcome To Florida's Cape Coral lounge."
+        endif
+      when 'canned-drinks'
+        if page.metafields.seo.title == blank
+          assign page_title = "Canned Drinks - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Grab-and-go canned botanical drinks, THC seltzers, and sober-friendly beverages from WTF | Welcome To Florida in Cape Coral."
+        endif
+      when 'take-home-items'
+        if page.metafields.seo.title == blank
+          assign page_title = "Take Home Items - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Take home WTF favorites including prerolls, edibles, and specialty botanical items. Lab-tested selections available for 21+ pickup in Cape Coral."
+        endif
+      when 'fun-stuff'
+        if page.metafields.seo.title == blank
+          assign page_title = "Fun Stuff - WTF | Welcome To Florida"
+        endif
+        if page.metafields.seo.description == blank
+          assign meta_desc = "Limited-run drops, novelty botanicals, and seasonal specials curated by WTF | Welcome To Florida. Age restrictions may apply."
+        endif
+    endcase
   endif
 
   assign meta_desc_base = meta_desc | strip_html | strip | strip_newlines | replace: '  ', ' ' | replace: '  ', ' ' | replace: '  ', ' '

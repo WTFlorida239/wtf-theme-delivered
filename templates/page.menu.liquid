@@ -7,17 +7,6 @@
   Usage: Assign to /pages/menu in Shopify admin
 {% endcomment %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WTF | Welcome To Florida Menu - Licensed THC beverages, edibles, kava drinks, kratom teas, flower, pre-rolls, and mushroom chocolate bars. Lab-tested, 21+ only. Order online or visit us in Cape Coral.">
-  <meta name="keywords" content="WTF menu, THC drinks Cape Coral, cannabis edibles Florida, kava bar menu, kratom tea menu, THC beverages, WTF products">
-  <title>Menu | WTF | Welcome To Florida</title>
-</head>
-<body>
-
 <main id="main-content" class="page-width" role="main">
   
   <!-- Menu Hero -->
@@ -236,127 +225,6 @@
 </main>
 
 <!-- Menu Schema -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Menu",
-  "name": "WTF | Welcome To Florida Menu",
-  "description": "Licensed, lab-tested THC products, kava drinks, kratom teas, and botanical beverages. 21+ only.",
-  "url": "{{ shop.secure_url }}/pages/menu",
-  "provider": {
-    "@type": "BarOrPub",
-    "@id": "{{ shop.secure_url }}/#localbusiness"
-  },
-  "hasMenuSection": [
-    {
-      "@type": "MenuSection",
-      "name": "THC Beverages",
-      "description": "Hemp-derived Delta-9 THC drinks. Lab-tested, licensed, 21+.",
-      "hasMenuItem": [
-        {
-          "@type": "MenuItem",
-          "name": "THC Drinks",
-          "description": "Lab-tested hemp-derived Delta-9 THC beverages in various potencies."
-        },
-        {
-          "@type": "MenuItem",
-          "name": "THC Shots",
-          "description": "Concentrated THC shots. Lab-tested and licensed."
-        }
-      ]
-    },
-    {
-      "@type": "MenuSection",
-      "name": "Edibles",
-      "description": "THC-infused edibles. Lab-tested, 21+.",
-      "hasMenuItem": [
-        {
-          "@type": "MenuItem",
-          "name": "THC Cookies"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "THC Gummies"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "Infused Candy"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "THC Syrups"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "THC-Infused Coffee"
-        }
-      ]
-    },
-    {
-      "@type": "MenuSection",
-      "name": "Custom Kava Drinks",
-      "description": "Handcrafted kava beverages. Premium Pacific Island kava, 21+.",
-      "hasMenuItem": [
-        {
-          "@type": "MenuItem",
-          "name": "Custom Kava Drink",
-          "description": "Build your perfect kava drink with custom size, strength, and flavor."
-        }
-      ]
-    },
-    {
-      "@type": "MenuSection",
-      "name": "Custom Kratom Teas",
-      "description": "Premium kratom teas in green, red, white, and yellow strains. 21+.",
-      "hasMenuItem": [
-        {
-          "@type": "MenuItem",
-          "name": "Green Kratom Tea"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "Red Kratom Tea"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "White Kratom Tea"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "Yellow Kratom Tea"
-        }
-      ]
-    },
-    {
-      "@type": "MenuSection",
-      "name": "Flower & Pre-Rolls",
-      "description": "Premium cannabis flower and pre-rolls. Lab-tested, licensed, 21+.",
-      "hasMenuItem": [
-        {
-          "@type": "MenuItem",
-          "name": "Cannabis Flower"
-        },
-        {
-          "@type": "MenuItem",
-          "name": "Pre-Rolled Cannabis"
-        }
-      ]
-    },
-    {
-      "@type": "MenuSection",
-      "name": "Mushroom Chocolate Bars",
-      "description": "Premium mushroom-infused chocolate. Lab-tested, 21+.",
-      "hasMenuItem": [
-        {
-          "@type": "MenuItem",
-          "name": "Mushroom Chocolate Bars"
-        }
-      ]
-    }
-  ]
-}
-</script>
-
 <style>
   .menu-hero {
     background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
@@ -512,7 +380,4 @@
     }
   }
 </style>
-
-</body>
-</html>
 
