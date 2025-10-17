@@ -18,8 +18,14 @@
     "store_state": "Florida",
     "store_zip": "33904",
     "store_hours": "{\n  \"heading\": \"WTF Store Hours\",\n  \"schedule\": [\n    {\n      \"day\": \"Sunday - Thursday\",\n      \"hours\": \"8:00 AM - 8:00 PM\"\n    },\n    {\n      \"day\": \"Friday & Saturday\",\n      \"hours\": \"8:00 AM - 10:00 PM\"\n    }\n  ],\n  \"note\": \"Please check our socials for the most up-to-date holiday or seasonal hours.\"\n}",
+    "cart_count_strategy": "shopify_only",
     "thc_drinks_variant_id": -6,
     "enable_console_logs": true,
+    "social_facebook_link": "https://www.facebook.com/profile.php?id=61566655386481",
+    "social_instagram_link": "https://www.instagram.com/wtfswagbrand/",
+    "social_youtube_link": "https://www.youtube.com/@wtfswagbrand",
+    "social_tiktok_link": "https://www.tiktok.com/@wtf.welcome.to.fl",
+    "social_google_link": "https://www.google.com/search?q=WTF+%7C+Welcome+To+Florida&stick=H4sIAAAAAAAA_-NgU1I1qLCwSEkyTrOwMEm1MLVIMUmxMqhIM0sySjRLSrI0M0gyNzOwWMQqER7iplCjEJ6ak5yfm6oQkq_glpNflJmSCAC4tG_7RAAAAA&hl=en&mat=CWW30CXrkkIMElYBTVDHnuV72Kn7q2aIShNCRjxTos_f8zd7h3D9IfNXcy4D2RcYiCjjqHeBgiXhUdJIsksiNDZqFl6yfA7W8jFYLYGmL0SG5w7GEY42hzsgbaXUhQUo8Q&authuser=1",
     "google_analytics_id": "G-5TC3FGDNKK",
     "facebook_pixel_id": "1418044596222679",
     "order": [
@@ -75,61 +81,9 @@
           "logo": "shopify://shop_images/Official_WTF_LOGO_700x1050_background_for_arryved_ff0f7b83-c121-4393-aae6-9ba2bc20a088.png",
           "menu": "main-menu",
           "show_search": true,
-          "sticky_header": true
+          "sticky_header": true,
+          "show_social_icons": true
         }
-      },
-      "footer": {
-        "type": "footer",
-        "settings": {
-          "logo": null,
-          "logo_alt": "WTF | Welcome To Florida",
-          "heading": "WTF | Welcome To Florida",
-          "description": "Cape Coral's Premier Kava Bar & Kratom Lounge",
-          "address": "1520 SE 46th Ln, Unit B, Cape Coral, FL 33904",
-          "phone": "(239) 955-0314",
-          "email": "info@wtfswag.com",
-          "hours": "Daily 8am–10pm",
-          "background_color": "#0f172a",
-          "text_color": "#f8f9fa",
-          "heading_color": "#ffffff",
-          "link_color": "#ff6600",
-          "show_payment_icons": true,
-          "show_local_citations": true,
-          "bottom_menu": "",
-          "copyright_text": ""
-        },
-        "blocks": {
-          "footer_contact": {
-            "type": "contact",
-            "settings": {
-              "heading": "Visit & Contact",
-              "address": "",
-              "phone": "",
-              "email": ""
-            }
-          },
-          "footer_hours": {
-            "type": "hours",
-            "settings": {
-              "heading": "Hours",
-              "use_hours_metafield": true,
-              "hours_text": ""
-            }
-          },
-          "footer_social": {
-            "type": "social",
-            "settings": {
-              "heading": "Follow WTF",
-              "icon_style": "footer",
-              "icon_size": "medium"
-            }
-          }
-        },
-        "block_order": [
-          "footer_contact",
-          "footer_hours",
-          "footer_social"
-        ]
       }
     },
     "content_for_index": []
