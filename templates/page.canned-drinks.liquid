@@ -482,19 +482,13 @@
 
       async function updateCartCount() {
         try {
-          const res = await fetch('/cart.js', { credentials: 'same-origin' });
-          if (res.ok) {
-            const cart = await res.json();
-            document.getElementById('cart-count').textContent = cart.item_count || 0;
-            return;
+          if (!window.WTFCartAPI || typeof window.WTFCartAPI.getCart !== 'function') {
+            throw new Error('WTFCartAPI unavailable');
           }
-        } catch (e) {
-          console.log('Shopify cart fetch failed, falling back to localStorage');
-        }
-        try {
-          const local = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
-          document.getElementById('cart-count').textContent = local.length;
-        } catch {
+          const cart = await window.WTFCartAPI.getCart();
+          document.getElementById('cart-count').textContent = cart.item_count || 0;
+        } catch (error) {
+          console.warn('Cart count update failed:', error);
           document.getElementById('cart-count').textContent = '0';
         }
       }
@@ -527,43 +521,35 @@
 
         const variantId = typeof window.CANNED_VARIANT_ID === 'number' ? window.CANNED_VARIANT_ID : null;
 
+        if (!variantId) {
+          alert('This page is not configured yet. Please set a product variant in the theme settings.');
+          button.textContent = originalText;
+          button.disabled = false;
+          return;
+        }
+
         try {
-          if (variantId) {
-            // Send line item properties (Brand/Flavor) to Shopify
-            const body = new URLSearchParams();
-            body.set('id', String(variantId));
-            body.set('quantity', String(quantity));
-            body.set('properties[Brand]', selectedBrand);
-            body.set('properties[Flavor]', selectedFlavor);
-            if (comments) body.set('properties[Comments]', comments);
-
-            const res = await fetch('/cart/add.js', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                Accept: 'application/json',
-              },
-              body,
-              credentials: 'same-origin',
-            });
-
-            if (!res.ok) {
-              const err = await res.text();
-              throw new Error(err || 'Add to cart failed');
-            }
-          } else {
-            // Local fallback cart
-            let cart = [];
-            try {
-              cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
-            } catch {
-              cart = [];
-            }
-            cart.push(order);
-            localStorage.setItem('wtf-cart', JSON.stringify(cart));
+          const cartAPI = window.WTFCartAPI;
+          if (!cartAPI || typeof cartAPI.addToCart !== 'function') {
+            throw new Error('Cart service unavailable');
           }
 
-          await updateCartCount();
+          const properties = {
+            Brand: selectedBrand,
+            Flavor: selectedFlavor,
+          };
+          if (comments) {
+            properties.Comments = comments;
+          }
+
+          await cartAPI.addToCart({
+            id: variantId,
+            quantity,
+            properties,
+          });
+
+          const cart = await cartAPI.getCart();
+          document.getElementById('cart-count').textContent = cart.item_count || 0;
 
           const successMsg = document.getElementById('success-message');
           const total = order.unitPrice * order.quantity;

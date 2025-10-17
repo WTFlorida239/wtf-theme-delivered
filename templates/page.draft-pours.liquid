@@ -256,14 +256,18 @@
 
       async function updateCartCount() {
         try {
-          const res = await fetch('/cart.js', { credentials: 'same-origin' });
-          if (res.ok) {
-            const cart = await res.json();
-            const countEl = document.getElementById('cart-count');
-            countEl.textContent = cart.item_count || 0;
-            countEl.parentElement.setAttribute('aria-live', 'polite');
+          if (!window.WTFCartAPI || typeof window.WTFCartAPI.getCart !== 'function') {
+            throw new Error('WTFCartAPI unavailable');
           }
-        } catch (e) {}
+          const cart = await window.WTFCartAPI.getCart();
+          const countEl = document.getElementById('cart-count');
+          countEl.textContent = cart.item_count || 0;
+          countEl.parentElement.setAttribute('aria-live', 'polite');
+        } catch (error) {
+          console.warn('Draft pours cart count failed:', error);
+          const countEl = document.getElementById('cart-count');
+          countEl.textContent = '0';
+        }
       }
 
       function validateSelections() {
@@ -290,49 +294,25 @@
         if (comments) properties.Comments = comments;
 
         try {
-          if (variantId) {
-            const body = new URLSearchParams();
-            body.set('id', String(variantId));
-            body.set('quantity', String(quantity));
-            for (const k in properties) body.set(`properties[${k}]`, String(properties[k]));
-
-            const res = await fetch('/cart/add.js', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                Accept: 'application/json',
-              },
-              credentials: 'same-origin',
-              body,
-            });
-
-            if (!res.ok) {
-              let msg = 'Add to cart failed';
-              try {
-                const data = await res.json();
-                msg = data.description || data.message || msg;
-              } catch {}
-              throw new Error(msg);
-            }
-          } else {
-            // Fallback: store cart locally for dev/preview modes
-            const order = {
-              id: 'draft-' + Date.now() + '-' + Math.random().toString(36).slice(2),
-              product: 'Draft Pours',
-              ...properties,
-              quantity,
-              price: (basePrice * quantity).toFixed(2),
-              timestamp: new Date().toISOString(),
-            };
-            let cart = [];
-            try {
-              cart = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
-            } catch {}
-            cart.push(order);
-            localStorage.setItem('wtf-cart', JSON.stringify(cart));
+          const cartAPI = window.WTFCartAPI;
+          if (!cartAPI || typeof cartAPI.addToCart !== 'function') {
+            throw new Error('Cart service unavailable');
           }
 
-          await updateCartCount();
+          if (!variantId) {
+            throw new Error('Draft pours variant is not configured.');
+          }
+
+          await cartAPI.addToCart({
+            id: variantId,
+            quantity,
+            properties,
+          });
+
+          const cart = await cartAPI.getCart();
+          const countEl = document.getElementById('cart-count');
+          countEl.textContent = cart.item_count || 0;
+          countEl.parentElement.setAttribute('aria-live', 'polite');
 
           const success = document.getElementById('success-message');
           success.innerHTML = `✅ <strong>Added to cart!</strong><br>

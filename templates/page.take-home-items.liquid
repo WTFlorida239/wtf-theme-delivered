@@ -1,11 +1,11 @@
 {% comment %}
   templates/page.take-home-items.liquid
-  - AJAX add-to-cart via /cart/add.js
+  - Cart operations powered by WTFCartAPI
   - Reads variant id from:
       1) page metafield (optional): namespace "wtf", key "take_home_variant_id"
       2) theme setting: settings.take_home_variant_id
   - Captures line item properties: Category, Comments
-  - Cart count synced from Shopify (fallback to localStorage)
+  - Cart count synced from Shopify via WTFCartAPI (fallback to 0 on error)
   - Validation + consolidated price math + live button text
 
   Metafield suggestion (Resource: Page):
@@ -433,24 +433,23 @@
       }
 
       async function fetchCartCountFromShopify() {
-        try {
-          const res = await fetch('/cart.js', { credentials: 'same-origin' });
-          if (!res.ok) throw new Error('cart.js failed');
-          const cart = await res.json();
-          return cart.item_count || 0;
-        } catch (e) {
-          // Fallback to localStorage (if you still store local shadow cart elsewhere)
-          try {
-            const ls = JSON.parse(localStorage.getItem('wtf-cart') || '[]');
-            return Array.isArray(ls) ? ls.length : 0;
-          } catch { return 0; }
+        if (!window.WTFCartAPI || typeof window.WTFCartAPI.getCart !== 'function') {
+          throw new Error('WTFCartAPI unavailable');
         }
+        const cart = await window.WTFCartAPI.getCart();
+        return cart.item_count || 0;
       }
 
       async function updateCartCountBadge() {
-        const count = await fetchCartCountFromShopify();
-        const node = document.getElementById('cart-count');
-        if (node) node.textContent = count;
+        try {
+          const count = await fetchCartCountFromShopify();
+          const node = document.getElementById('cart-count');
+          if (node) node.textContent = count;
+        } catch (error) {
+          console.warn('Cart badge update failed:', error);
+          const node = document.getElementById('cart-count');
+          if (node) node.textContent = '0';
+        }
       }
 
       function successToast(html) {
@@ -483,30 +482,25 @@
 
         const comments = (document.getElementById('order-comments')?.value || '').trim();
 
-        // Build payload for /cart/add.js
-        const payload = {
-          id: Number(TAKE_HOME_VARIANT_ID),
-          quantity: quantity,
-          properties: {
-            'Category': selectedCategory.label,
-            'Comments': comments || undefined
-          }
-        };
+        const cartAPI = window.WTFCartAPI;
+        if (!cartAPI || typeof cartAPI.addToCart !== 'function') {
+          alert('Cart service unavailable. Please refresh and try again.');
+          btn.textContent = original;
+          btn.disabled = false;
+          return;
+        }
+
+        const properties = { Category: selectedCategory.label };
+        if (comments) {
+          properties.Comments = comments;
+        }
 
         try {
-          const res = await fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(payload),
-            credentials: 'same-origin'
+          await cartAPI.addToCart({
+            id: Number(TAKE_HOME_VARIANT_ID),
+            quantity: quantity,
+            properties
           });
-
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.description || 'Add to cart failed');
-          }
-
-          const line = await res.json();
 
           // Update cart badge from Shopify
           await updateCartCountBadge();
