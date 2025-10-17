@@ -50,29 +50,23 @@
   
   # Generate srcset widths
   assign widths = '320,640,960,1280,1920' | split: ','
-  assign webp_srcset_parts = '' | split: ''
-  assign fallback_srcset_parts = '' | split: ''
-
+  assign srcset_parts = '' | split: ''
+  
   for width_str in widths
     assign width_int = width_str | plus: 0
     if width_int <= max_width
       if max_height
-        assign webp_url = image | image_url: width: width_int, height: max_height, crop: 'center', format: 'webp'
-        assign fallback_url = image | image_url: width: width_int, height: max_height, crop: 'center'
+        assign img_url = image | image_url: width: width_int, height: max_height, crop: 'center'
       else
-        assign webp_url = image | image_url: width: width_int, format: 'webp'
-        assign fallback_url = image | image_url: width: width_int
+        assign img_url = image | image_url: width: width_int
       endif
-      assign webp_srcset_part = webp_url | append: ' ' | append: width_str | append: 'w'
-      assign fallback_srcset_part = fallback_url | append: ' ' | append: width_str | append: 'w'
-      assign webp_srcset_parts = webp_srcset_parts | push: webp_srcset_part
-      assign fallback_srcset_parts = fallback_srcset_parts | push: fallback_srcset_part
+      assign srcset_part = img_url | append: ' ' | append: width_str | append: 'w'
+      assign srcset_parts = srcset_parts | push: srcset_part
     endif
   endfor
-
-  assign webp_srcset_string = webp_srcset_parts | join: ', '
-  assign fallback_srcset_string = fallback_srcset_parts | join: ', '
-
+  
+  assign srcset_string = srcset_parts | join: ', '
+  
   # Fallback src (use largest available or specified max_width)
   if max_height
     assign fallback_src = image | image_url: width: max_width, height: max_height, crop: 'center'
@@ -86,14 +80,14 @@
   {%- comment -%} WebP source for modern browsers {%- endcomment -%}
   <source
     type="image/webp"
-    srcset="{{ webp_srcset_string }}"
+    srcset="{{ srcset_string }}"
     sizes="{{ sizes_attr }}"
   >
   
   {%- comment -%} Fallback img tag {%- endcomment -%}
   <img
     src="{{ fallback_src }}"
-    srcset="{{ fallback_srcset_string }}"
+    srcset="{{ srcset_string }}"
     sizes="{{ sizes_attr }}"
     alt="{{ alt_text | escape }}"
     loading="{{ loading_attr }}"
