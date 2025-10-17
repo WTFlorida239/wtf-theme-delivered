@@ -74,6 +74,17 @@
           "show_search": true,
           "sticky_header": true
         }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {
+          "heading": "WTF | Welcome To Florida",
+          "description": "Cape Coral's Premier Kava Bar & Kratom Lounge",
+          "address": "1520 SE 46th Ln, Unit B, Cape Coral, FL 33904",
+          "phone": "(239) 955-0314",
+          "email": "info@wtfswag.com",
+          "hours": "Daily 8am–10pm"
+        }
       }
     },
     "content_for_index": []
