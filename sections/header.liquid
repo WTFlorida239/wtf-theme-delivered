@@ -95,13 +95,28 @@
 
   {% if section.settings.show_search %}
     <div class="header__search-drawer" style="display: none;">
-      <div class="header__search-form">
-        <form action="{{ routes.search_url }}" method="get" role="search">
-          <input type="search" 
-                 name="q" 
-                 placeholder="Search products..." 
-                 class="header__search-input"
-                 autocomplete="off">
+      <div class="header__search-form predictive-search" data-predictive-search>
+        <form
+          action="{{ routes.search_url }}"
+          method="get"
+          role="search"
+          data-predictive-search-form
+          novalidate
+        >
+          <input
+            type="search"
+            name="q"
+            placeholder="Search products..."
+            class="header__search-input"
+            autocomplete="off"
+            data-predictive-search-input
+            aria-autocomplete="list"
+            aria-controls="predictive-search-results"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            enterkeyhint="search"
+            spellcheck="false"
+          >
           <button type="submit" class="header__search-submit">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <circle cx="11" cy="11" r="8"/>
@@ -109,6 +124,13 @@
             </svg>
           </button>
         </form>
+        <div
+          class="predictive-search-results"
+          id="predictive-search-results"
+          data-predictive-search-results
+          role="listbox"
+          aria-hidden="true"
+        ></div>
       </div>
     </div>
   {% endif %}
