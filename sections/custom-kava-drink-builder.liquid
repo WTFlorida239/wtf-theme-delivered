@@ -922,15 +922,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Submit via AJAX
     const formData = new FormData(form);
     
-    fetch('/cart/add.js', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
+    // Use WTFCartAPI for consistent cart operations
+    const variantId = formData.get('id');
+    const quantity = formData.get('quantity') || 1;
+    const properties = {};
+    
+    // Extract properties from formData
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith('properties[')) {
+        const propName = key.replace('properties[', '').replace(']', '');
+        properties[propName] = value;
       }
+    }
+    
+    window.WTFCartAPI.addToCart({
+      id: variantId,
+      quantity: quantity,
+      properties: properties
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(() => {
       buttonText.textContent = '{{ section.settings.button_success | default: "Added!" }}';
       showStatus('Added to cart successfully!', 'success');
       
@@ -944,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Error:', error);
       buttonText.textContent = originalText;
       submitButton.disabled = false;
-      showStatus('{{ section.settings.error_message | default: "Something went wrong. Please try again." }}', 'error');
+      showStatus(error.message || '{{ section.settings.error_message | default: "Something went wrong. Please try again." }}', 'error');
     });
   });
 
