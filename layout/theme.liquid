@@ -219,9 +219,7 @@
     </main>
 
     {%- comment %} Footer {%- endcomment %}
-    <div id="shopify-section-footer">
-      {% render 'footer' %}
-    </div>
+    {% section 'footer' %}
 
     {%- comment %} Cart Drawer {%- endcomment %}
     {%- render 'wtf-cart-drawer' -%}

@@ -1,0 +1,284 @@
+{% comment %}
+  Collection product grid with accessible quick add controls
+{% endcomment %}
+
+{% liquid
+  assign products_per_page = section.settings.products_per_page | default: 24
+  assign show_vendor = section.settings.show_vendor
+  assign view_label = section.settings.view_label | default: 'View product'
+  assign add_label = section.settings.add_label | default: 'Quick add'
+  assign empty_state = section.settings.empty_state | default: 'More products are steeping. Check back soon!'
+%}
+
+{% paginate collection.products by products_per_page %}
+<section class="collection-grid" aria-labelledby="CollectionGridTitle-{{ section.id }}">
+  <div class="collection-grid__inner page-width">
+    <header class="collection-grid__header">
+      <h2 id="CollectionGridTitle-{{ section.id }}" class="collection-grid__title visually-hidden">
+        {{ collection.title | default: 'Collection products' }}
+      </h2>
+      {% if collection.description != blank and section.settings.show_description_above_grid %}
+        <div class="collection-grid__description rte">{{ collection.description }}</div>
+      {% endif %}
+    </header>
+
+    {% if collection.products_count > 0 %}
+      <div class="collection-grid__list" role="list">
+        {% for product in collection.products %}
+          {% liquid
+            assign featured_media = product.featured_media
+            assign fetch_priority = 'auto'
+            if paginate.current_page == 1 and forloop.index0 < 2
+              assign fetch_priority = 'high'
+            endif
+          %}
+          <article class="collection-grid__item" role="listitem" data-product-id="{{ product.id }}">
+            <a class="collection-grid__link" href="{{ product.url }}" aria-label="{{ view_label }}: {{ product.title }}">
+              {% if featured_media %}
+                {% render 'responsive-image', image: featured_media, alt: featured_media.alt | default: product.title, sizes: '(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 25vw', class: 'collection-grid__image', loading: 'lazy', fetchpriority: fetch_priority %}
+              {% endif %}
+              <div class="collection-grid__info">
+                <h3 class="collection-grid__product-title">{{ product.title }}</h3>
+                {% if show_vendor and product.vendor != blank %}
+                  <p class="collection-grid__vendor">{{ product.vendor }}</p>
+                {% endif %}
+                <p class="collection-grid__price" aria-live="polite">
+                  <span class="collection-grid__price-current">{{ product.price | money }}</span>
+                  {% if product.compare_at_price > product.price %}
+                    <span class="collection-grid__price-compare">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                </p>
+              </div>
+            </a>
+            {% if product.available %}
+              <form method="post" action="{{ routes.cart_add_url }}" class="collection-grid__form" data-wtf-ajax>
+                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                <button type="submit" class="collection-grid__button">{{ add_label }}</button>
+              </form>
+            {% else %}
+              <span class="collection-grid__sold-out" role="status">{{ 'products.product.sold_out' | t }}</span>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="collection-grid__empty" role="status">{{ empty_state }}</div>
+    {% endif %}
+
+    {% if paginate.pages > 1 %}
+      <nav class="collection-grid__pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+        <ul class="collection-grid__pagination-list">
+          {% if paginate.previous %}
+            <li><a href="{{ paginate.previous.url }}" rel="prev">{{ 'general.pagination.previous' | t }}</a></li>
+          {% endif %}
+          {% for part in paginate.parts %}
+            <li>
+              {% if part.is_link %}
+                <a href="{{ part.url }}">{{ part.title }}</a>
+              {% elsif part.title == paginate.current_page %}
+                <span aria-current="page">{{ part.title }}</span>
+              {% else %}
+                <span>{{ part.title }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+          {% if paginate.next %}
+            <li><a href="{{ paginate.next.url }}" rel="next">{{ 'general.pagination.next' | t }}</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</section>
+{% endpaginate %}
+
+<style>
+  .collection-grid__list {
+    display: grid;
+    gap: 2.4rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .collection-grid__item {
+    background: #fff;
+    border-radius: 1.6rem;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  .collection-grid__item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.12);
+  }
+
+  .collection-grid__link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .collection-grid__image {
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .collection-grid__info {
+    padding: 1.6rem 1.8rem 1rem;
+  }
+
+  .collection-grid__product-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 0.6rem;
+  }
+
+  .collection-grid__vendor {
+    font-size: 1.2rem;
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0 0 0.8rem;
+  }
+
+  .collection-grid__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .collection-grid__price-compare {
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 1.3rem;
+  }
+
+  .collection-grid__form {
+    margin: auto 1.8rem 1.8rem;
+  }
+
+  .collection-grid__button {
+    width: 100%;
+    background: #ff6600;
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 999px;
+    padding: 0.9rem 1.4rem;
+    cursor: pointer;
+    transition: background 150ms ease;
+  }
+
+  .collection-grid__button:hover,
+  .collection-grid__button:focus {
+    background: #ff7a1a;
+  }
+
+  .collection-grid__sold-out {
+    margin: auto 1.8rem 1.8rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .collection-grid__empty {
+    padding: 3rem;
+    text-align: center;
+    background: rgba(255, 102, 0, 0.08);
+    border-radius: 1.6rem;
+    font-weight: 600;
+  }
+
+  .collection-grid__pagination {
+    margin-top: 3rem;
+  }
+
+  .collection-grid__pagination-list {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .collection-grid__pagination-list a,
+  .collection-grid__pagination-list span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.2rem;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .collection-grid__pagination-list a {
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+  }
+
+  .collection-grid__pagination-list a:hover,
+  .collection-grid__pagination-list a:focus {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .collection-grid__pagination-list span[aria-current] {
+    background: #ff6600;
+    color: #fff;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection product grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description_above_grid",
+      "label": "Show collection description above grid",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "view_label",
+      "label": "View product link label",
+      "default": "View product"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Quick add button label",
+      "default": "Quick add"
+    },
+    {
+      "type": "textarea",
+      "id": "empty_state",
+      "label": "Empty state text",
+      "default": "More products are steeping. Check back soon!"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection product grid"
+    }
+  ]
+}
+{% endschema %}
