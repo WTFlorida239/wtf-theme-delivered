@@ -1,193 +1,447 @@
-{% comment %}
-  Footer Section - WTF Theme
-  Basic footer with contact info and links
-{% endcomment %}
+{%- comment -%}
+  Footer section for WTF | Welcome To Florida
+  - Provides configurable brand, navigation, contact, hours, social, and signup content
+  - Uses Shopify section schema for Theme Editor compatibility
+  - Emits optional local citation snippet for local SEO coverage
+{%- endcomment -%}
 
-<footer class="footer">
-  <div class="page-width">
-    <div class="footer__content">
-      <div class="footer__section footer__section--branding">
-        <div class="footer__branding">
-          <img src="{{ 'WTFLogo.png' | asset_url }}" 
-               alt="{{ shop.name }}"
-               class="footer__logo"
-               width="80"
-               height="80">
-          <div class="footer__brand-text">
-            <h3 class="footer__heading">{{ section.settings.heading | default: 'WTF | Welcome To Florida' }}</h3>
-            <p class="footer__text">{{ section.settings.description | default: 'Cape Coral\'s Premier Kava Bar' }}</p>
+{%- liquid
+  assign heading = section.settings.heading | default: shop.name
+  assign description = section.settings.description
+  assign background_color = section.settings.background_color | default: settings.color_background | default: '#0f172a'
+  assign text_color = section.settings.text_color | default: '#f8f8f8'
+  assign heading_color = section.settings.heading_color | default: settings.color_text | default: '#ffffff'
+  assign link_color = section.settings.link_color | default: settings.color_primary | default: '#ff6600'
+  assign show_payment_icons = section.settings.show_payment_icons
+  assign show_local_citations = section.settings.show_local_citations
+  assign bottom_menu = section.settings.bottom_menu
+  assign contact_address = section.settings.address
+  assign contact_phone = section.settings.phone | default: settings.store_phone | default: shop.phone
+  assign contact_email = section.settings.email | default: settings.store_email | default: shop.customer_email | default: shop.email
+  assign hours_fallback = section.settings.hours | default: 'Daily 8am–10pm'
+  assign hours_metafield = null
+  if shop.metafields.wtf != blank and shop.metafields.wtf.hours and shop.metafields.wtf.hours.value != blank
+    assign hours_metafield = shop.metafields.wtf.hours.value
+  endif
+{%- endliquid -%}
+
+<footer
+  id="Footer-{{ section.id }}"
+  class="footer"
+  role="contentinfo"
+  data-section-id="{{ section.id }}"
+  data-section-type="footer"
+>
+  <div class="footer__inner">
+    <div class="footer__top page-width">
+      <div class="footer__brand">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo | image_url: width: 320 | image_tag:
+            class: 'footer__logo',
+            widths: '160,200,240,320',
+            sizes: '(min-width: 990px) 200px, 160px',
+            alt: section.settings.logo_alt | default: heading,
+            loading: 'lazy'
+          }}
+        {%- else -%}
+          <span class="footer__store-name">{{ heading }}</span>
+        {%- endif -%}
+
+        {%- if description != blank -%}
+          <p class="footer__description">{{ description }}</p>
+        {%- endif -%}
+
+        {%- if show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+          <div class="footer__payments" role="list" aria-label="Accepted payment methods">
+            {%- for type in shop.enabled_payment_types -%}
+              {{ type | payment_type_svg_tag: class: 'footer__payment-icon' }}
+            {%- endfor -%}
           </div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="footer__blocks">
+          {%- for block in section.blocks -%}
+            <div class="footer-block footer-block--{{ block.type }}" {{ block.shopify_attributes }}>
+              {%- case block.type -%}
+                {%- when 'menu' -%}
+                  {%- if block.settings.heading != blank -%}
+                    <p class="footer__heading">{{ block.settings.heading }}</p>
+                  {%- endif -%}
+                  {%- assign menu_handle = block.settings.menu -%}
+                  {%- if menu_handle != blank and linklists[menu_handle] and linklists[menu_handle].links.size > 0 -%}
+                    <ul class="footer-menu" role="list">
+                      {%- for link in linklists[menu_handle].links -%}
+                        <li class="footer-menu__item">
+                          <a href="{{ link.url }}" class="footer-menu__link">{{ link.title }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+
+                {%- when 'text' -%}
+                  {%- if block.settings.heading != blank -%}
+                    <p class="footer__heading">{{ block.settings.heading }}</p>
+                  {%- endif -%}
+                  {%- if block.settings.content != blank -%}
+                    <div class="footer__richtext rte">{{ block.settings.content }}</div>
+                  {%- endif -%}
+
+                {%- when 'contact' -%}
+                  {%- assign block_address = block.settings.address | default: contact_address -%}
+                  {%- assign block_phone = block.settings.phone | default: contact_phone -%}
+                  {%- assign block_email = block.settings.email | default: contact_email -%}
+                  {%- if block.settings.heading != blank -%}
+                    <p class="footer__heading">{{ block.settings.heading }}</p>
+                  {%- endif -%}
+                  <div class="footer__contact">
+                    {%- if block_address != blank -%}
+                      <address class="footer__text footer__text--address">{{ block_address | newline_to_br }}</address>
+                    {%- endif -%}
+                    {%- if block_phone != blank -%}
+                      {%- liquid
+                        assign phone_href = block_phone | replace: '(', '' | replace: ')', '' | replace: ' ', '' | replace: '-', '' | replace: '.', ''
+                        if phone_href == ''
+                          assign phone_href = ''
+                        elsif phone_href | slice: 0, 1 == '+'
+                          assign phone_href = phone_href
+                        else
+                          assign phone_href = phone_href | prepend: '+1'
+                        endif
+                      -%}
+                      <p class="footer__text footer__text--phone">
+                        <a href="tel:{{ phone_href }}">{{ block_phone }}</a>
+                      </p>
+                    {%- endif -%}
+                    {%- if block_email != blank -%}
+                      <p class="footer__text footer__text--email">
+                        <a href="mailto:{{ block_email | strip }}">{{ block_email }}</a>
+                      </p>
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'hours' -%}
+                  {%- if block.settings.heading != blank -%}
+                    <p class="footer__heading">{{ block.settings.heading }}</p>
+                  {%- endif -%}
+                  {%- assign use_metafield = block.settings.use_hours_metafield -%}
+                  {%- if use_metafield and hours_metafield != null and hours_metafield.schedule != blank -%}
+                    <dl class="footer__hours">
+                      {%- for entry in hours_metafield.schedule -%}
+                        <div class="footer__hours-row">
+                          <dt class="footer__text footer__text--hours-day">{{ entry.day }}</dt>
+                          <dd class="footer__text footer__text--hours-time">{{ entry.hours }}</dd>
+                        </div>
+                      {%- endfor -%}
+                    </dl>
+                    {%- if hours_metafield.note != blank -%}
+                      <p class="footer__text footer__text--hours-note">{{ hours_metafield.note }}</p>
+                    {%- endif -%}
+                  {%- elsif block.settings.hours_text != blank -%}
+                    <p class="footer__text footer__text--hours">{{ block.settings.hours_text | newline_to_br }}</p>
+                  {%- else -%}
+                    <p class="footer__text footer__text--hours">{{ hours_fallback }}</p>
+                  {%- endif -%}
+
+                {%- when 'newsletter' -%}
+                  {%- if block.settings.heading != blank -%}
+                    <p class="footer__heading">{{ block.settings.heading }}</p>
+                  {%- endif -%}
+                  {%- if block.settings.subheading != blank -%}
+                    <p class="footer__text footer__text--subheading">{{ block.settings.subheading }}</p>
+                  {%- endif -%}
+                  {% form 'customer', id: 'FooterNewsletter-{{ section.id }}-{{ forloop.index }}', class: 'footer__newsletter-form' %}
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    <div class="footer__newsletter-fields">
+                      <label class="visually-hidden" for="FooterNewsletterEmail-{{ section.id }}-{{ forloop.index }}">
+                        {{ block.settings.heading | default: 'Email' }}
+                      </label>
+                      <input
+                        id="FooterNewsletterEmail-{{ section.id }}-{{ forloop.index }}"
+                        type="email"
+                        name="contact[email]"
+                        value="{{ form.email }}"
+                        class="footer__newsletter-input"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        autocomplete="email"
+                        placeholder="{{ block.settings.placeholder | default: 'Enter your email' }}"
+                        required
+                      >
+                      <button type="submit" class="footer__newsletter-button">
+                        {{ block.settings.button_label | default: 'Subscribe' }}
+                      </button>
+                    </div>
+                    {%- if form.errors -%}
+                      <div class="footer__newsletter-feedback footer__newsletter-feedback--error">
+                        {{ form.errors | default_errors }}
+                      </div>
+                    {%- elsif form.posted_successfully? -%}
+                      <p class="footer__newsletter-feedback footer__newsletter-feedback--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+                    {%- endif -%}
+                  {% endform %}
+
+                {%- when 'social' -%}
+                  {%- if block.settings.heading != blank -%}
+                    <p class="footer__heading">{{ block.settings.heading }}</p>
+                  {%- endif -%}
+                  <div class="footer__social">
+                    {%- render 'social-media-icons', style: block.settings.icon_style, size: block.settings.icon_size -%}
+                  </div>
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
         </div>
-      </div>
-
-      <div class="footer__section">
-        <h4 class="footer__subheading">Contact</h4>
-        <p class="footer__text">
-          {{ section.settings.address | default: '1520 SE 46th Ln, Unit B, Cape Coral, FL 33904' }}<br>
-          <a href="tel:{{ section.settings.phone | default: '(239) 955-0314' }}">{{ section.settings.phone | default: '(239) 955-0314' }}</a><br>
-          <a href="mailto:{{ section.settings.email | default: 'info@wtfswag.com' }}">{{ section.settings.email | default: 'info@wtfswag.com' }}</a>
-        </p>
-      </div>
-
-      <div class="footer__section">
-        <h4 class="footer__subheading">Hours</h4>
-        <p class="footer__text">{{ section.settings.hours | default: 'Daily 8am–10pm' }}</p>
-      </div>
-
-      <div class="footer__section">
-        <h4 class="footer__subheading">Follow Us</h4>
-        <div class="footer__social">
-          {% render 'social-media-icons', style: 'footer', size: 'medium' %}
-        </div>
-      </div>
+      {%- endif -%}
     </div>
 
     <div class="footer__bottom">
-      <p class="footer__copyright">
-        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
-      </p>
+      <div class="footer__bottom-inner page-width">
+        <p class="footer__copyright">
+          {%- if section.settings.copyright_text != blank -%}
+            {{ section.settings.copyright_text }}
+          {%- else -%}
+            &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
+          {%- endif -%}
+        </p>
+
+        {%- if bottom_menu != blank and linklists[bottom_menu] and linklists[bottom_menu].links.size > 0 -%}
+          <ul class="footer__secondary-nav" role="list">
+            {%- for link in linklists[bottom_menu].links -%}
+              <li class="footer__secondary-nav-item">
+                <a href="{{ link.url }}" class="footer__secondary-nav-link">{{ link.title }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      {%- if show_local_citations -%}
+        <div class="footer__local-citations page-width">
+          {%- render 'local-citations' -%}
+        </div>
+      {%- endif -%}
     </div>
   </div>
 </footer>
 
 <style>
-  .footer {
-    background: #f8f8f8;
-    padding: 4rem 0 2rem;
-    margin-top: 4rem;
+  #Footer-{{ section.id }} {
+    --footer-bg: {{ background_color }};
+    --footer-text: {{ text_color }};
+    --footer-heading: {{ heading_color }};
+    --footer-link: {{ link_color }};
   }
 
-  .footer__content {
+  #Footer-{{ section.id }} .footer__inner {
+    background: var(--footer-bg);
+    color: var(--footer-text);
+  }
+
+  #Footer-{{ section.id }} .footer__top {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 3rem;
-    margin-bottom: 3rem;
+    padding: 3rem 0 2rem;
   }
 
-  .footer__section {
-    max-width: 400px;
-  }
-
-  .footer__heading {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-
-  .footer__subheading {
-    font-size: 1.4rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-
-  .footer__text {
-    color: #666;
-    line-height: 1.6;
-  }
-
-  .footer__text a {
-    color: #ff6900;
-    text-decoration: none;
-  }
-
-  .footer__text a:hover {
-    text-decoration: underline;
-  }
-
-  .footer__branding {
+  #Footer-{{ section.id }} .footer__brand {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 320px;
   }
 
-  .footer__logo {
-    flex-shrink: 0;
-    aspect-ratio: 1;
+  #Footer-{{ section.id }} .footer__logo {
+    max-width: 200px;
     height: auto;
   }
 
-  .footer__social {
+  #Footer-{{ section.id }} .footer__store-name {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--footer-heading);
+  }
+
+  #Footer-{{ section.id }} .footer__description {
+    margin: 0;
+    color: var(--footer-text);
+    line-height: 1.6;
+  }
+
+  #Footer-{{ section.id }} .footer__payments {
     display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  #Footer-{{ section.id }} .footer__payment-icon {
+    width: 40px;
+    height: auto;
+    filter: brightness(0) invert(1);
+  }
+
+  #Footer-{{ section.id }} .footer__blocks {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  #Footer-{{ section.id }} .footer__heading {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--footer-heading);
+    margin: 0 0 1rem;
+  }
+
+  #Footer-{{ section.id }} .footer__text {
+    margin: 0 0 0.75rem;
+    color: var(--footer-text);
+    line-height: 1.6;
+  }
+
+  #Footer-{{ section.id }} .footer__text a,
+  #Footer-{{ section.id }} .footer-menu__link,
+  #Footer-{{ section.id }} .footer__secondary-nav-link {
+    color: var(--footer-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  #Footer-{{ section.id }} .footer__text a:hover,
+  #Footer-{{ section.id }} .footer-menu__link:hover,
+  #Footer-{{ section.id }} .footer__secondary-nav-link:hover {
+    text-decoration: underline;
+  }
+
+  #Footer-{{ section.id }} .footer-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  #Footer-{{ section.id }} .footer__contact address {
+    font-style: normal;
+  }
+
+  #Footer-{{ section.id }} .footer__hours {
+    margin: 0;
+    padding: 0;
+  }
+
+  #Footer-{{ section.id }} .footer__hours-row {
+    display: flex;
+    justify-content: space-between;
     gap: 1rem;
+  }
+
+  #Footer-{{ section.id }} .footer__newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  #Footer-{{ section.id }} .footer__newsletter-fields {
+    display: flex;
+    gap: 0.75rem;
     flex-wrap: wrap;
   }
 
-  .footer__social a {
-    display: inline-block;
-    padding: 0.5rem;
-    background: #ff6900;
-    color: white;
-    border-radius: 50%;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+  #Footer-{{ section.id }} .footer__newsletter-input {
+    flex: 1 1 220px;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--footer-text);
   }
 
-  .footer__social a:hover {
-    background: #e55a00;
+  #Footer-{{ section.id }} .footer__newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
   }
 
-  .footer__bottom {
-    text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid #ddd;
+  #Footer-{{ section.id }} .footer__newsletter-button {
+    flex: 0 0 auto;
+    padding: 0.75rem 1.75rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--footer-link);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, filter 0.2s ease;
   }
 
-  .footer__copyright {
-    color: #666;
+  #Footer-{{ section.id }} .footer__newsletter-button:hover,
+  #Footer-{{ section.id }} .footer__newsletter-button:focus {
+    filter: brightness(0.9);
+  }
+
+  #Footer-{{ section.id }} .footer__newsletter-feedback {
     margin: 0;
+    font-size: 0.95rem;
   }
 
-  @media (max-width: 768px) {
-    .footer {
-      padding: 2rem 0 1rem;
+  #Footer-{{ section.id }} .footer__newsletter-feedback--error {
+    color: #ffb4a6;
+  }
+
+  #Footer-{{ section.id }} .footer__newsletter-feedback--success {
+    color: #a7f3d0;
+  }
+
+  #Footer-{{ section.id }} .footer__bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  #Footer-{{ section.id }} .footer__bottom-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem 0;
+  }
+
+  #Footer-{{ section.id }} .footer__secondary-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #Footer-{{ section.id }} .footer__local-citations {
+    padding: 1.5rem 0 2.5rem;
+  }
+
+  @media (min-width: 990px) {
+    #Footer-{{ section.id }} .footer__top {
+      grid-template-columns: minmax(250px, 1fr) minmax(0, 2fr);
+      align-items: start;
     }
 
-    .footer__content {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .footer__branding {
-      flex-direction: column;
-      text-align: center;
+    #Footer-{{ section.id }} .footer__bottom-inner {
+      flex-direction: row;
       align-items: center;
-    }
-
-    .footer__heading {
-      font-size: 1.5rem;
-    }
-
-    .footer__subheading {
-      font-size: 1.2rem;
+      justify-content: space-between;
     }
   }
 
-  @media (max-width: 480px) {
-    .footer {
-      padding: 1.5rem 0 1rem;
+  @media (max-width: 600px) {
+    #Footer-{{ section.id }} .footer__top {
+      padding: 2.5rem 0 1.5rem;
+      gap: 2.5rem;
     }
 
-    .footer__content {
-      gap: 1.5rem;
+    #Footer-{{ section.id }} .footer__newsletter-fields {
+      flex-direction: column;
     }
 
-    .footer__heading {
-      font-size: 1.8rem;
-    }
-
-    .footer__subheading {
-      font-size: 1.1rem;
-    }
-
-    .footer__text {
-      font-size: 0.95rem;
-    }
-
-    .footer__logo {
-      width: 60px;
-      height: 60px;
+    #Footer-{{ section.id }} .footer__newsletter-button {
+      width: 100%;
     }
   }
 </style>
@@ -196,8 +450,19 @@
 {
   "name": "Footer",
   "tag": "section",
-  "class": "section",
+  "class": "section footer-section",
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "logo_alt",
+      "label": "Logo alt text",
+      "default": "WTF | Welcome To Florida"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -208,31 +473,239 @@
       "type": "textarea",
       "id": "description",
       "label": "Description",
-      "default": "Cape Coral's Premier Kava Bar"
+      "default": "Cape Coral's Premier Kava Bar & Kratom Lounge"
     },
     {
       "type": "text",
       "id": "address",
-      "label": "Address",
+      "label": "Default address",
       "default": "1520 SE 46th Ln, Unit B, Cape Coral, FL 33904"
     },
     {
       "type": "text",
       "id": "phone",
-      "label": "Phone",
+      "label": "Default phone",
       "default": "(239) 955-0314"
     },
     {
       "type": "text",
       "id": "email",
-      "label": "Email",
+      "label": "Default email",
       "default": "info@wtfswag.com"
     },
     {
       "type": "text",
       "id": "hours",
-      "label": "Hours",
+      "label": "Default hours",
       "default": "Daily 8am–10pm"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#ff6600"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment icons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_local_citations",
+      "label": "Show local citations snippet",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "bottom_menu",
+      "label": "Secondary menu"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Custom copyright text",
+      "default": ""
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Explore"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Rich text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "contact",
+      "name": "Contact info",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Visit & Contact"
+        },
+        {
+          "type": "textarea",
+          "id": "address",
+          "label": "Address"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "Phone"
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "Email"
+        }
+      ]
+    },
+    {
+      "type": "hours",
+      "name": "Hours",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Hours"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_hours_metafield",
+          "label": "Use WTF hours metafield when available",
+          "default": true
+        },
+        {
+          "type": "textarea",
+          "id": "hours_text",
+          "label": "Fallback hours text"
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter signup",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Stay in the loop"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Get drops, events, and exclusive pours before anyone else."
+        },
+        {
+          "type": "text",
+          "id": "placeholder",
+          "label": "Input placeholder",
+          "default": "Enter your email"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Subscribe"
+        }
+      ]
+    },
+    {
+      "type": "social",
+      "name": "Social icons",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Follow WTF"
+        },
+        {
+          "type": "select",
+          "id": "icon_style",
+          "label": "Icon style",
+          "default": "footer",
+          "options": [
+            { "value": "footer", "label": "Footer" },
+            { "value": "header", "label": "Header" },
+            { "value": "plain", "label": "Plain" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon_size",
+          "label": "Icon size",
+          "default": "medium",
+          "options": [
+            { "value": "small", "label": "Small" },
+            { "value": "medium", "label": "Medium" },
+            { "value": "large", "label": "Large" }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Footer",
+      "category": "Footer",
+      "blocks": [
+        { "type": "contact" },
+        { "type": "hours" },
+        { "type": "social" }
+      ]
     }
   ]
 }
