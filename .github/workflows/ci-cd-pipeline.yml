@@ -3,8 +3,30 @@ name: WTF Theme CI/CD
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - "**/*.liquid"
+      - "config/**"
+      - "assets/**"
+      - "locales/**"
+      - "templates/**"
+      - "sections/**"
+      - "snippets/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/wtf-theme-ci.yml"
   pull_request:
     branches: [ main ]
+    paths:
+      - "**/*.liquid"
+      - "config/**"
+      - "assets/**"
+      - "locales/**"
+      - "templates/**"
+      - "sections/**"
+      - "snippets/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/wtf-theme-ci.yml"
   workflow_dispatch:
 
 concurrency:
@@ -17,8 +39,7 @@ permissions:
 
 env:
   SHOPIFY_STORE: wtfswag.myshopify.com
-  # Optional for deploy jobs you might add later:
-  # SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+  # SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }} # (only needed if you add deploys later)
 
 jobs:
   validate:
@@ -29,15 +50,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1) Shopify Theme Check (official action)
+      # 1) Shopify Theme Check (official; no CLI install)
       - name: Theme Check
+        id: themecheck
         uses: shopify/theme-check-action@v2
         with:
           theme_root: '.'
           base: main
           token: ${{ github.token }}
 
-      # 2) Node setup only if package.json exists
+      # 2) Node only if package.json exists
       - name: Setup Node (if needed)
         if: hashFiles('package.json') != ''
         uses: actions/setup-node@v4
@@ -49,7 +71,7 @@ jobs:
         if: hashFiles('package.json') != ''
         run: npm ci
 
-      # 3) Optional project scripts — never fail if they don't exist
+      # 3) Optional project scripts — skip if missing
       - name: conflicts:scan (if script exists)
         if: hashFiles('package.json') != ''
         run: |
@@ -76,8 +98,9 @@ jobs:
             echo "⏭️ scripts/order-readiness-check.js not found; skipping"
           fi
 
-      # 4) OS 2.0–aware structure checks (tight, but not fragile)
+      # 4) OS 2.0–aware file checks
       - name: Validate theme structure
+        id: files
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -93,13 +116,14 @@ jobs:
           for f in "${required[@]}"; do
             if [[ ! -f "$f" ]]; then
               echo "❌ Missing required file: $f"
+              echo "missing=true" >> $GITHUB_OUTPUT
               exit 1
             else
               echo "✅ $f"
             fi
           done
 
-          # Enhanced drink builder is nice-to-have; warn only
+          # Optional section (warn only)
           if [[ -f "sections/enhanced-drink-builder.liquid" ]]; then
             echo "✅ sections/enhanced-drink-builder.liquid"
           else
@@ -111,15 +135,50 @@ jobs:
             echo "✅ Cart template present"
           else
             echo "❌ Missing cart template (templates/cart.json preferred or templates/cart.liquid)"
+            echo "missing=true" >> $GITHUB_OUTPUT
             exit 1
           fi
 
-          # Ensure some Product JSON-LD path exists (warn only)
+          # Warn if no obvious JSON-LD path for product
           if grep -R -E "schema-product|application/json[^>]*ld\+json" sections/ snippets/ 2>/dev/null; then
             echo "✅ Product schema reference detected"
           else
             echo "⚠️ No obvious Product JSON-LD found in sections/ or snippets/"
           fi
+
+      # 5) Summaries (PR + job)
+      - name: Write step summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## WTF Theme – Validation Summary"
+            echo ""
+            echo "- Theme Check: **${{ steps.themecheck.outcome }}**"
+            echo "- Structure check: **${{ steps.files.outcome }}**"
+            echo ""
+            echo "_Ensure Product JSON-LD renders on product pages for SEO rich results._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '### ✅ WTF Theme – Validation Summary',
+              '',
+              `- Theme Check: **${{ steps.themecheck.outcome }}**`,
+              `- Structure check: **${{ steps.files.outcome }}**`,
+              '',
+              '_Ensure Product JSON-LD renders on product pages for SEO rich results._'
+            ].join('\n');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
 
       - name: Upload validation artifacts
         if: always()
@@ -191,8 +250,9 @@ jobs:
       - name: Install Lighthouse CI
         run: npm i -g @lhci/cli
 
-      # Replace these URLs with public/staging URLs when ready.
-      - name: Run Lighthouse (fake until URLs configured)
+      # Replace these with real public/staging URLs when ready.
+      - name: Run Lighthouse (placeholder)
+        continue-on-error: true
         run: |
           set -euo pipefail
           mkdir -p lighthouse-results
