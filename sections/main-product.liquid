@@ -148,6 +148,10 @@
   </div>
 </div>
 
+{% if request.page_type == 'product' and product %}
+  {%- render 'schema-product', product: product -%}
+{% endif %}
+
 <style>
   .product__container {
     display: grid;

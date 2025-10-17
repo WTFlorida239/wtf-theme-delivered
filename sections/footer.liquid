@@ -42,12 +42,14 @@
       </div>
     </div>
 
-    <div class="footer__bottom">
-      <p class="footer__copyright">
-        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
-      </p>
-    </div>
+  <div class="footer__bottom">
+    <p class="footer__copyright">
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
+    </p>
   </div>
+
+  {%- render 'local-citations' -%}
+</div>
 </footer>
 
 <style>
