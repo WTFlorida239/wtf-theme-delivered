@@ -42,9 +42,40 @@ env:
   # SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }} # (only needed if you add deploys later)
 
 jobs:
+  changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      theme: ${{ steps.filter.outputs.theme }}
+      node:  ${{ steps.filter.outputs.node }}
+      wf:    ${{ steps.filter.outputs.workflow }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Paths filter
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            theme:
+              - '**/*.liquid'
+              - 'config/**'
+              - 'assets/**'
+              - 'locales/**'
+              - 'templates/**'
+              - 'sections/**'
+              - 'snippets/**'
+            node:
+              - 'package.json'
+              - 'package-lock.json'
+            workflow:
+              - '.github/workflows/wtf-theme-ci.yml'
+
   validate:
     name: Validate Theme (fast + reliable)
     runs-on: ubuntu-latest
+    needs: changes
+    # Run if any theme or node files changed, or if manually dispatched
+    if: ${{ needs.changes.outputs.theme == 'true' || needs.changes.outputs.node == 'true' || github.event_name == 'workflow_dispatch' }}
 
     steps:
       - name: Checkout
@@ -194,7 +225,9 @@ jobs:
   security-scan:
     name: Security & Hygiene
     runs-on: ubuntu-latest
-    needs: validate
+    needs: [changes, validate]
+    # Also skip if nothing relevant changed (unless manually run)
+    if: ${{ (needs.changes.outputs.theme == 'true' || needs.changes.outputs.node == 'true' || github.event_name == 'workflow_dispatch') && always() }}
 
     steps:
       - name: Checkout
@@ -235,8 +268,8 @@ jobs:
   lighthouse:
     name: Lighthouse (artifact only)
     runs-on: ubuntu-latest
-    needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [changes, validate]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.theme == 'true' }}
 
     steps:
       - name: Checkout
@@ -272,7 +305,7 @@ jobs:
   notify:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate, security-scan, lighthouse]
+    needs: [changes, validate, security-scan, lighthouse]
     if: always()
 
     steps:
@@ -281,12 +314,20 @@ jobs:
         run: |
           echo "# CI Summary"
           echo ""
-          echo "Validate:      ${{ needs.validate.result }}"
-          echo "Security-scan: ${{ needs.security-scan.result }}"
+          echo "Changes gate:"
+          echo " - theme: ${{ needs.changes.outputs.theme }}"
+          echo " - node : ${{ needs.changes.outputs.node }}"
+          echo " - wf   : ${{ needs.changes.outputs.wf }}"
+          echo ""
+          echo "Validate:      ${{ needs.validate.result || 'skipped' }}"
+          echo "Security-scan: ${{ needs.security-scan.result || 'skipped' }}"
           echo "Lighthouse:    ${{ needs.lighthouse.result || 'skipped' }}"
-          if [ "${{ needs.validate.result }}" != "success" ] || [ "${{ needs.security-scan.result }}" != "success" ]; then
-            echo "🔴 Not ready — fix failures above."
+          if [ "${{ needs.validate.result }}" != "success" ] && [ "${{ needs.validate.result }}" != "skipped" ]; then
+            echo "🔴 Not ready — fix validation failures."
+            exit 1
+          elif [ "${{ needs.security-scan.result }}" = "failure" ]; then
+            echo "🔴 Not ready — fix security failures."
             exit 1
           else
-            echo "🟢 Looks good."
+            echo "🟢 Looks good (or no relevant changes)."
           fi
