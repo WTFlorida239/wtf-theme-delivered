@@ -1,0 +1,178 @@
+{% comment %}
+  Shopify product recommendations section
+{% endcomment %}
+
+{% liquid
+  assign heading = section.settings.heading | default: 'You may also like'
+  assign products_to_show = section.settings.products_to_show | default: 4
+  assign show_vendor = section.settings.show_vendor
+%}
+
+<section
+  class="product-recommendations"
+  aria-labelledby="ProductRecommendationsTitle-{{ section.id }}"
+>
+  <div class="product-recommendations__inner page-width">
+    {% if recommendations.performed and recommendations.products_count > 0 %}
+      <header class="product-recommendations__header">
+        <h2 id="ProductRecommendationsTitle-{{ section.id }}" class="product-recommendations__title">{{ heading }}</h2>
+      </header>
+      <div class="product-recommendations__grid" role="list">
+        {% for product in recommendations.products limit: products_to_show %}
+          {% assign featured_media = product.featured_media %}
+          <article class="product-recommendations__item" role="listitem">
+            <a class="product-recommendations__link" href="{{ product.url }}">
+              {% if featured_media %}
+                {% render 'responsive-image', image: featured_media, alt: featured_media.alt | default: product.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-recommendations__image', loading: 'lazy' %}
+              {% endif %}
+              <h3 class="product-recommendations__product-title">{{ product.title }}</h3>
+            </a>
+            {% if show_vendor and product.vendor != blank %}
+              <p class="product-recommendations__vendor">{{ product.vendor }}</p>
+            {% endif %}
+            <p class="product-recommendations__price">
+              <span class="product-recommendations__price-current">{{ product.price | money }}</span>
+              {% if product.compare_at_price > product.price %}
+                <span class="product-recommendations__price-compare">{{ product.compare_at_price | money }}</span>
+              {% endif %}
+            </p>
+          </article>
+        {% endfor %}
+      </div>
+    {% elsif recommendations.performed %}
+      <div class="product-recommendations__empty" role="status">{{ 'products.product.recommendations_empty' | t }}</div>
+    {% else %}
+      <div class="product-recommendations__skeleton" aria-hidden="true"></div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .product-recommendations {
+    padding: 3.2rem 0;
+  }
+
+  .product-recommendations__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .product-recommendations__title {
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .product-recommendations__grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .product-recommendations__item {
+    background: #fff;
+    border-radius: 1.6rem;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
+    padding: 1.6rem;
+    text-align: center;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  .product-recommendations__item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .product-recommendations__link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .product-recommendations__image {
+    border-radius: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .product-recommendations__product-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .product-recommendations__vendor {
+    font-size: 1.2rem;
+    color: rgba(0, 0, 0, 0.55);
+    margin: 0.4rem 0 0;
+  }
+
+  .product-recommendations__price {
+    margin: 1rem 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    font-weight: 700;
+  }
+
+  .product-recommendations__price-compare {
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  .product-recommendations__empty {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .product-recommendations__skeleton {
+    height: 200px;
+    border-radius: 1.2rem;
+    background: linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0.12), rgba(0,0,0,0.05));
+    background-size: 400% 100%;
+    animation: recommendations-skeleton 1.4s ease infinite;
+  }
+
+  @keyframes recommendations-skeleton {
+    0% {
+      background-position: 0% 0;
+    }
+    100% {
+      background-position: -135% 0;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product recommendations",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product recommendations"
+    }
+  ]
+}
+{% endschema %}

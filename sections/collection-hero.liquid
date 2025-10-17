@@ -1,0 +1,153 @@
+{% comment %}
+  Collection hero section for WTF theme
+  Provides accessible heading, optional collection image, and back link
+{% endcomment %}
+
+{% liquid
+  assign show_back_link = section.settings.show_back_link
+  assign back_label = section.settings.back_label | default: 'Back'
+  assign back_url = section.settings.back_url | default: routes.collections_url | default: routes.root_url
+  assign show_description = section.settings.show_description
+  assign fallback_description = section.settings.fallback_description
+  assign hero_media = collection.image
+  assign hero_alt = hero_media.alt | default: collection.title | default: page_title
+%}
+
+<section class="collection-hero" aria-labelledby="CollectionHeroTitle-{{ section.id }}">
+  <div class="collection-hero__inner page-width">
+    {% if show_back_link %}
+      <a class="collection-hero__back" href="{{ back_url }}">{{ back_label }}</a>
+    {% endif %}
+    <div class="collection-hero__grid">
+      <div class="collection-hero__content">
+        <p class="collection-hero__eyebrow">{{ 'collections.general.collection_label' | t }}</p>
+        <h1 id="CollectionHeroTitle-{{ section.id }}" class="collection-hero__title">
+          {{ collection.title | default: page_title | default: shop.name }}
+        </h1>
+        {% if show_description %}
+          <div class="collection-hero__description rte">
+            {% if collection.description != blank %}
+              {{ collection.description }}
+            {% elsif fallback_description != blank %}
+              <p>{{ fallback_description }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      {% if hero_media %}
+        <div class="collection-hero__media">
+          {% render 'responsive-image', image: hero_media, alt: hero_alt, sizes: '(max-width: 768px) 100vw, 40vw', class: 'collection-hero__image', loading: 'lazy' %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .collection-hero {
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.08), rgba(255, 153, 0, 0.05));
+    padding: 3.2rem 0 2.4rem;
+  }
+
+  .collection-hero__inner {
+    display: grid;
+    gap: 2.4rem;
+  }
+
+  .collection-hero__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: #ff6600;
+    text-decoration: none;
+  }
+
+  .collection-hero__grid {
+    display: grid;
+    gap: 2.4rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    align-items: center;
+  }
+
+  .collection-hero__title {
+    font-size: clamp(2.4rem, 4vw, 3.6rem);
+    font-weight: 800;
+    margin: 0 0 1.2rem;
+  }
+
+  .collection-hero__eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0 0 0.6rem;
+  }
+
+  .collection-hero__description {
+    color: rgba(0, 0, 0, 0.75);
+    max-width: 60ch;
+  }
+
+  .collection-hero__media {
+    justify-self: end;
+  }
+
+  .collection-hero__image {
+    border-radius: 1.6rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (max-width: 768px) {
+    .collection-hero {
+      padding: 2.4rem 0 1.6rem;
+    }
+
+    .collection-hero__media {
+      order: -1;
+      justify-self: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_back_link",
+      "label": "Show back link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "back_label",
+      "label": "Back link label",
+      "default": "← Back to menu"
+    },
+    {
+      "type": "url",
+      "id": "back_url",
+      "label": "Back link URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "fallback_description",
+      "label": "Fallback description",
+      "default": "Discover handcrafted beverages, edibles, and botanicals curated for Cape Coral."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection hero"
+    }
+  ]
+}
+{% endschema %}

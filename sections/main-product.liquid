@@ -23,22 +23,27 @@
     {% endif %}
 
     <div class="product__info">
-      {% for block in section.blocks %}
-        {% case block.type %}
+      {% form 'product', product, id: 'ProductForm-' | append: section.id, class: 'product__form', novalidate: 'novalidate', 'data-wtf-ajax': true, action: routes.cart_add_url %}
+        {% comment %}
+          Theme readiness: Shopify form helper posts to {{ routes.cart_add_url }}
+          <form action="{{ routes.cart_add_url }}">
+        {% endcomment %}
+        {% for block in section.blocks %}
+          {% case block.type %}
           {% when 'title' %}
-            <h1 class="product__title">{{ product.title }}</h1>
+            <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
 
           {% when 'price' %}
-            <div class="product__price">
+            <div class="product__price" {{ block.shopify_attributes }}>
               {% if product.compare_at_price > product.price %}
-                <span class="product__price--compare">${{ product.compare_at_price | money_without_currency }}</span>
+                <span class="product__price--compare">{{ product.compare_at_price | money }}</span>
               {% endif %}
-              <span class="product__price--current">${{ product.price | money_without_currency }}</span>
+              <span class="product__price--current">{{ product.price | money }}</span>
             </div>
 
           {% when 'variant_picker' %}
             {% unless product.has_only_default_variant %}
-              <div class="product__variants">
+              <div class="product__variants" {{ block.shopify_attributes }}>
                 {% for option in product.options_with_values %}
                   <div class="product__option">
                     <label class="product__option-label">{{ option.name }}</label>
@@ -64,7 +69,7 @@
             {% endunless %}
 
           {% when 'quantity_selector' %}
-            <div class="product__quantity">
+            <div class="product__quantity" {{ block.shopify_attributes }}>
               <label for="Quantity-{{ section.id }}" class="product__quantity-label">Quantity</label>
               <input
                 type="number"
@@ -77,40 +82,41 @@
             </div>
 
           {% when 'buy_buttons' %}
-            <div class="product__buttons">
-              <form
-                action="{{ routes.cart_add_url }}"
-                method="post"
-                enctype="multipart/form-data"
-                class="product__form"
-                data-wtf-ajax
+            <div class="product__buttons" {{ block.shopify_attributes }}>
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+              <button
+                type="submit"
+                name="add"
+                class="product__add-to-cart btn btn--primary"
+                data-add-label="{{ 'products.product.add_to_cart' | t }}"
+                data-sold-out-label="{{ 'products.product.sold_out' | t }}"
+                {% unless product.available %}
+                  disabled
+                {% endunless %}
               >
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-
-                <button
-                  type="submit"
-                  name="add"
-                  class="product__add-to-cart btn btn--primary"
-                  {% unless product.available %}
-                    disabled
-                  {% endunless %}
-                >
+                <span class="product__add-to-cart-text">
                   {% if product.available %}
-                    Add to Cart - ${{ product.price | money_without_currency }}
+                    {{ 'products.product.add_to_cart' | t }}
                   {% else %}
-                    Sold Out
+                    {{ 'products.product.sold_out' | t }}
                   {% endif %}
-                </button>
+                </span>
+                <span class="product__add-to-cart-price" aria-hidden="true"{% unless product.available %} hidden{% endunless %}>
+                  {% if product.available %}
+                    {{ product.price | money }}
+                  {% endif %}
+                </span>
+              </button>
 
-                {% if block.settings.show_dynamic_checkout and product.available %}
-                  {{ form | payment_button }}
-                {% endif %}
-              </form>
+              {% if block.settings.show_dynamic_checkout and product.available %}
+                {{ form | payment_button }}
+              {% endif %}
             </div>
 
           {% when 'description' %}
             {% if product.description != blank %}
-              <div class="product__description">
+              <div class="product__description" {{ block.shopify_attributes }}>
                 {{ product.description }}
               </div>
             {% endif %}
@@ -118,57 +124,29 @@
             {%- render 'product-category-specs', product: product -%}
 
           {% when 'share' %}
-            <div class="product__share">
+            <div class="product__share" {{ block.shopify_attributes }}>
               <span class="product__share-label">{{ block.settings.share_label | default: 'Share' }}</span>
               <a
                 href="https://www.facebook.com/sharer.php?u={{ shop.url }}{{ product.url }}"
                 target="_blank"
+                rel="noopener noreferrer"
                 class="product__share-link"
                 >Facebook</a
               >
               <a
                 href="https://twitter.com/share?url={{ shop.url }}{{ product.url }}&text={{ product.title | escape }}"
                 target="_blank"
+                rel="noopener noreferrer"
                 class="product__share-link"
                 >Twitter</a
               >
             </div>
         {% endcase %}
       {% endfor %}
+      {% endform %}
     </div>
   </div>
 </div>
-
-{% comment %} Product schema for SEO {% endcomment %}
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": {{ product.title | json }},
-    "description": {{ product.description | strip_html | json }},
-    "image": [
-      {% for media in product.media %}
-        {% if media.media_type == 'image' %}
-          {{ media | image_url: width: 600 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
-        {% endif %}
-      {% endfor %}
-    ],
-    "offers": {
-      "@type": "Offer",
-      "url": {{ shop.url | append: product.url | json }},
-      "priceCurrency": {{ cart.currency.iso_code | json }},
-      "price": {{ product.price | divided_by: 100.0 | json }},
-      "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
-      "seller": {
-        "@type": "Organization",
-        "name": {{ shop.name | json }}
-      }
-    }
-  }
-</script>
-{%- if product -%}
-  {%- render 'schema-product', product: product -%}
-{%- endif -%}
 
 <style>
   .product__container {
@@ -306,10 +284,14 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const productForm = document.querySelector('.product__form');
-    const variantSelects = document.querySelectorAll('.product__option-select');
-    const quantityInput = document.querySelector('.product__quantity-input');
-    const addToCartButton = document.querySelector('.product__add-to-cart');
+    const productSection = document.querySelector('[data-section-id="{{ section.id }}"]');
+    if (!productSection) return;
+
+    const productForm = productSection.querySelector('.product__form');
+    const variantSelects = productSection.querySelectorAll('.product__option-select');
+    const addToCartButton = productSection.querySelector('.product__add-to-cart');
+    const addToCartText = addToCartButton ? addToCartButton.querySelector('.product__add-to-cart-text') : null;
+    const addToCartPrice = addToCartButton ? addToCartButton.querySelector('.product__add-to-cart-price') : null;
 
     // Handle variant selection
     if (variantSelects.length > 0) {
@@ -320,47 +302,59 @@
 
     function updateVariant() {
       const selectedOptions = Array.from(variantSelects).map(select => select.value);
-      const variant = window.product.variants.find(v => {
+      const variant = productData.variants.find(v => {
         return selectedOptions.every((option, index) => {
           return v.options[index] === option;
         });
       });
 
       if (variant) {
-        document.querySelector('input[name="id"]').value = variant.id;
+        const variantIdInput = productForm ? productForm.querySelector('input[name="id"]') : null;
+        if (variantIdInput) {
+          variantIdInput.value = variant.id;
+        }
         updatePrice(variant);
         updateAvailability(variant);
       }
     }
 
     function updatePrice(variant) {
-      const priceElement = document.querySelector('.product__price--current');
+      const priceElement = productSection.querySelector('.product__price--current');
       if (priceElement) {
-        priceElement.textContent = '$' + (variant.price / 100).toFixed(2);
+        priceElement.textContent = formatMoney(variant.price);
       }
 
-      const buttonPrice = addToCartButton.textContent.match(/\$[\d.]+/);
-      if (buttonPrice) {
-        addToCartButton.textContent = addToCartButton.textContent.replace(
-          /\$[\d.]+/,
-          '$' + (variant.price / 100).toFixed(2)
-        );
+      if (addToCartPrice) {
+        addToCartPrice.textContent = formatMoney(variant.price);
       }
     }
 
     function updateAvailability(variant) {
+      if (!addToCartButton || !addToCartText) return;
+
       if (variant.available) {
         addToCartButton.disabled = false;
-        addToCartButton.textContent = addToCartButton.textContent.replace('Sold Out', 'Add to Cart');
+        addToCartText.textContent = addToCartButton.dataset.addLabel;
+        if (addToCartPrice) {
+          addToCartPrice.hidden = false;
+        }
       } else {
         addToCartButton.disabled = true;
-        addToCartButton.textContent = 'Sold Out';
+        addToCartText.textContent = addToCartButton.dataset.soldOutLabel;
+        if (addToCartPrice) {
+          addToCartPrice.hidden = true;
+        }
       }
     }
 
     // Handle form submission
-    if (productForm) {
+    if (productForm && addToCartButton) {
       productForm.addEventListener('submit', function(e) {
+        const submitter = e.submitter || document.activeElement;
+        if (submitter && submitter !== addToCartButton) {
+          return;
+        }
+
         e.preventDefault();
 
         const formData = new FormData(productForm);
@@ -369,22 +363,40 @@
           method: 'POST',
           body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-          // Show success message or update cart
-          alert('Added to cart!');
-          // You can add more sophisticated cart update logic here
-        })
-        .catch(error => {
-          console.error('Error adding to cart:', error);
-          alert('Error adding to cart. Please try again.');
-        });
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(() => {
+            productForm.dispatchEvent(new CustomEvent('wtf:product:added', {
+              bubbles: true,
+              detail: { variantId: formData.get('id'), quantity: formData.get('quantity') || 1 }
+            }));
+          })
+          .catch(error => {
+            console.error('Error adding to cart:', error);
+            productForm.dispatchEvent(new CustomEvent('wtf:product:error', {
+              bubbles: true,
+              detail: { error }
+            }));
+          });
       });
     }
   });
 
   // Make product data available to JavaScript
-  window.product = {{ product | json }};
+  function formatMoney(cents) {
+    const locale = document.documentElement.lang || 'en-US';
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: '{{ cart.currency.iso_code | default: shop.currency }}'
+    }).format(cents / 100);
+  }
+
+  const productData = {{ product | json }};
+  window.product = productData;
 </script>
 
 {% schema %}
