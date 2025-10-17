@@ -140,6 +140,32 @@
 </div>
 
 {% comment %} Product schema for SEO {% endcomment %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "description": {{ product.description | strip_html | json }},
+    "image": [
+      {% for media in product.media %}
+        {% if media.media_type == 'image' %}
+          {{ media | image_url: width: 600 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
+        {% endif %}
+      {% endfor %}
+    ],
+    "offers": {
+      "@type": "Offer",
+      "url": {{ shop.url | append: product.url | json }},
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "price": {{ product.price | divided_by: 100.0 | json }},
+      "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+      "seller": {
+        "@type": "Organization",
+        "name": {{ shop.name | json }}
+      }
+    }
+  }
+</script>
 {%- if product -%}
   {%- render 'schema-product', product: product -%}
 {%- endif -%}
