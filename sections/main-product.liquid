@@ -23,13 +23,18 @@
     {% endif %}
 
     <div class="product__info">
-      {% for block in section.blocks %}
-        {% case block.type %}
+      {% form 'product', product, id: 'ProductForm-' | append: section.id, class: 'product__form', novalidate: 'novalidate', 'data-wtf-ajax': true, action: routes.cart_add_url %}
+        {% comment %}
+          Theme readiness: Shopify form helper posts to {{ routes.cart_add_url }}
+          <form action="{{ routes.cart_add_url }}">
+        {% endcomment %}
+        {% for block in section.blocks %}
+          {% case block.type %}
           {% when 'title' %}
-            <h1 class="product__title">{{ product.title }}</h1>
+            <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
 
           {% when 'price' %}
-            <div class="product__price">
+            <div class="product__price" {{ block.shopify_attributes }}>
               {% if product.compare_at_price > product.price %}
                 <span class="product__price--compare">{{ product.compare_at_price | money }}</span>
               {% endif %}
@@ -38,7 +43,7 @@
 
           {% when 'variant_picker' %}
             {% unless product.has_only_default_variant %}
-              <div class="product__variants">
+              <div class="product__variants" {{ block.shopify_attributes }}>
                 {% for option in product.options_with_values %}
                   <div class="product__option">
                     <label class="product__option-label">{{ option.name }}</label>
@@ -64,7 +69,7 @@
             {% endunless %}
 
           {% when 'quantity_selector' %}
-            <div class="product__quantity">
+            <div class="product__quantity" {{ block.shopify_attributes }}>
               <label for="Quantity-{{ section.id }}" class="product__quantity-label">Quantity</label>
               <input
                 type="number"
@@ -77,47 +82,41 @@
             </div>
 
           {% when 'buy_buttons' %}
-            <div class="product__buttons">
-              {% form 'product', product, id: 'ProductForm-' | append: section.id, class: 'product__form', novalidate: 'novalidate', 'data-wtf-ajax': true %}
-                {% comment %}
-                  Theme readiness: Shopify form helper posts to {{ routes.cart_add_url }}
-                  <form action="{{ routes.cart_add_url }}">
-                {% endcomment %}
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <div class="product__buttons" {{ block.shopify_attributes }}>
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
 
-                <button
-                  type="submit"
-                  name="add"
-                  class="product__add-to-cart btn btn--primary"
-                  data-add-label="{{ 'products.product.add_to_cart' | t }}"
-                  data-sold-out-label="{{ 'products.product.sold_out' | t }}"
-                  {% unless product.available %}
-                    disabled
-                  {% endunless %}
-                >
-                  <span class="product__add-to-cart-text">
-                    {% if product.available %}
-                      {{ 'products.product.add_to_cart' | t }}
-                    {% else %}
-                      {{ 'products.product.sold_out' | t }}
-                    {% endif %}
-                  </span>
-                  <span class="product__add-to-cart-price" aria-hidden="true"{% unless product.available %} hidden{% endunless %}>
-                    {% if product.available %}
-                      {{ product.price | money }}
-                    {% endif %}
-                  </span>
-                </button>
+              <button
+                type="submit"
+                name="add"
+                class="product__add-to-cart btn btn--primary"
+                data-add-label="{{ 'products.product.add_to_cart' | t }}"
+                data-sold-out-label="{{ 'products.product.sold_out' | t }}"
+                {% unless product.available %}
+                  disabled
+                {% endunless %}
+              >
+                <span class="product__add-to-cart-text">
+                  {% if product.available %}
+                    {{ 'products.product.add_to_cart' | t }}
+                  {% else %}
+                    {{ 'products.product.sold_out' | t }}
+                  {% endif %}
+                </span>
+                <span class="product__add-to-cart-price" aria-hidden="true"{% unless product.available %} hidden{% endunless %}>
+                  {% if product.available %}
+                    {{ product.price | money }}
+                  {% endif %}
+                </span>
+              </button>
 
-                {% if block.settings.show_dynamic_checkout and product.available %}
-                  {{ form | payment_button }}
-                {% endif %}
-              {% endform %}
+              {% if block.settings.show_dynamic_checkout and product.available %}
+                {{ form | payment_button }}
+              {% endif %}
             </div>
 
           {% when 'description' %}
             {% if product.description != blank %}
-              <div class="product__description">
+              <div class="product__description" {{ block.shopify_attributes }}>
                 {{ product.description }}
               </div>
             {% endif %}
@@ -125,7 +124,7 @@
             {%- render 'product-category-specs', product: product -%}
 
           {% when 'share' %}
-            <div class="product__share">
+            <div class="product__share" {{ block.shopify_attributes }}>
               <span class="product__share-label">{{ block.settings.share_label | default: 'Share' }}</span>
               <a
                 href="https://www.facebook.com/sharer.php?u={{ shop.url }}{{ product.url }}"
@@ -144,6 +143,7 @@
             </div>
         {% endcase %}
       {% endfor %}
+      {% endform %}
     </div>
   </div>
 </div>
