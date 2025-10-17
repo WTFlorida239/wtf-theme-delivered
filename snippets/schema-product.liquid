@@ -1,149 +1,68 @@
 {%- comment -%}
-  Enhanced Product Schema with Compliance
-  
-  Features:
-  - Complete Product schema
-  - aggregateRating (if reviews exist)
-  - Multiple offers (variants)
-  - Compliance disclaimers
-  - No medical/therapeutic claims
-  
-  Usage: {% render 'schema-product', product: product %}
+  Product JSON-LD (variant-aware)
+  Reads optional review metafields if present:
+  - product.metafields.reviews.rating_value
+  - product.metafields.reviews.rating_count
 {%- endcomment -%}
-
-{%- if template.name contains 'product' and product -%}
 {%- liquid
-  # Calculate aggregate rating if reviews exist
-  assign has_reviews = false
-  assign review_count = 0
-  assign rating_value = 0
-  
-  if product.metafields.reviews.rating_count and product.metafields.reviews.rating_count > 0
-    assign has_reviews = true
-    assign review_count = product.metafields.reviews.rating_count
-    assign rating_value = product.metafields.reviews.rating_value | default: 4.5
-  endif
-  
-  # Determine product category for compliance
-  assign is_thc = false
-  assign is_kratom = false
-  assign is_kava = false
-  
-  if product.title contains 'THC' or product.title contains 'Delta' or product.tags contains 'THC'
-    assign is_thc = true
-  elsif product.title contains 'Kratom' or product.tags contains 'Kratom'
-    assign is_kratom = true
-  elsif product.title contains 'Kava' or product.tags contains 'Kava'
-    assign is_kava = true
+  assign currency = shop.currency
+  if localization and localization.country and localization.country.currency
+    assign currency = localization.country.currency.iso_code
   endif
 -%}
-
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": {{ product.title | json }},
-  "image": [
-    {%- for img in product.images -%}
-      {{ img | image_url: width: 1200 | json }}{% unless forloop.last %},{% endunless %}
-    {%- endfor -%}
-  ],
-  "description": {{ product.description | strip_html | truncate: 500 | json }},
-  {%- if product.first_available_variant.sku != blank -%}
-  "sku": {{ product.first_available_variant.sku | json }},
-  {%- endif -%}
-  {%- if product.first_available_variant.barcode != blank -%}
-  "gtin": {{ product.first_available_variant.barcode | json }},
-  {%- endif -%}
-  "brand": {
-    "@type": "Brand",
-    "name": {{ product.vendor | default: shop.name | json }}
-  },
-  {%- if has_reviews -%}
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": {{ rating_value | json }},
-    "reviewCount": {{ review_count | json }},
-    "bestRating": "5",
-    "worstRating": "1"
-  },
-  {%- endif -%}
-  "offers": {
-    {%- if product.variants.size > 1 -%}
-    "@type": "AggregateOffer",
-    "lowPrice": {{ product.price_min | money_without_currency | replace: ',', '' | json }},
-    "highPrice": {{ product.price_max | money_without_currency | replace: ',', '' | json }},
-    "priceCurrency": {{ cart.currency.iso_code | json }},
-    "offerCount": {{ product.variants.size | json }},
-    "offers": [
-      {%- for variant in product.variants -%}
-      {
-        "@type": "Offer",
-        "name": {{ variant.title | json }},
-        "price": {{ variant.price | money_without_currency | replace: ',', '' | json }},
-        "priceCurrency": {{ cart.currency.iso_code | json }},
-        "availability": "{{ variant.available | default: false | ternary: 'https://schema.org/InStock', 'https://schema.org/OutOfStock' }}",
-        "url": {{ variant.url | prepend: shop.secure_url | json }},
-        {%- if variant.sku != blank -%}
-        "sku": {{ variant.sku | json }},
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "description": {{ product.description | strip_html | json }},
+    "image": [
+      {%- for media in product.media -%}
+        {%- if media.media_type == 'image' -%}
+          {{ media | image_url: width: 1200 | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
         {%- endif -%}
-        "seller": {
-          "@type": "Organization",
-          "name": {{ shop.name | json }}
-        }
-      }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ],
+    "brand": {
+      "@type": "Brand",
+      "name": {{ shop.name | json }}
+    },
+    {%- if product.selected_or_first_available_variant.sku != blank -%}
+    "sku": {{ product.selected_or_first_available_variant.sku | json }},
+    {%- endif -%}
+    "offers": [
+      {%- for v in product.variants -%}
+        {
+          "@type": "Offer",
+          "url": {{ shop.url | append: product.url | append: '?variant=' | append: v.id | json }},
+          "priceCurrency": {{ currency | json }},
+          "price": {{ v.price | divided_by: 100.0 | json }},
+          "availability": "{{ v.available | default: false | if: true, 'https://schema.org/InStock', 'https://schema.org/OutOfStock' }}",
+          "itemCondition": "https://schema.org/NewCondition",
+          "seller": {
+            "@type": "Organization",
+            "name": {{ shop.name | json }}
+          }
+          {%- if v.compare_at_price and v.compare_at_price > v.price -%}
+          ,"priceValidUntil": "{{ 'now' | date: '%Y' | plus: 1 }}-12-31"
+          {%- endif -%}
+          {%- if v.barcode and v.barcode.size >= 12 and v.barcode.size <= 14 -%}
+          ,"gtin13": {{ v.barcode | json }}
+          {%- endif -%}
+          {%- if v.sku != blank -%}
+          ,"sku": {{ v.sku | json }}
+          {%- endif -%}
+        }{%- unless forloop.last -%},{%- endunless -%}
       {%- endfor -%}
     ]
-    {%- else -%}
-    "@type": "Offer",
-    "price": {{ product.price | money_without_currency | replace: ',', '' | json }},
-    "priceCurrency": {{ cart.currency.iso_code | json }},
-    "availability": "{{ product.available | default: false | ternary: 'https://schema.org/InStock', 'https://schema.org/OutOfStock' }}",
-    "url": {{ canonical_url | json }},
-    "priceValidUntil": "{{ 'now' | date: '%s' | plus: 31536000 | date: '%Y-%m-%d' }}",
-    "seller": {
-      "@type": "Organization",
-      "name": {{ shop.name | json }}
+    {%- assign rating_val = product.metafields.reviews.rating_value -%}
+    {%- assign rating_cnt = product.metafields.reviews.rating_count -%}
+    {%- if rating_val and rating_cnt and rating_cnt != 0 -%}
+    ,"aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": {{ rating_val | json }},
+      "reviewCount": {{ rating_cnt | json }}
     }
     {%- endif -%}
-  },
-  {%- if is_thc or is_kratom or is_kava -%}
-  "additionalProperty": [
-    {
-      "@type": "PropertyValue",
-      "name": "Age Restriction",
-      "value": "21+"
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "Compliance",
-      "value": "Lab-tested. Licensed. Not FDA-approved. No medical claims."
-    }
-    {%- if is_thc -%}
-    ,{
-      "@type": "PropertyValue",
-      "name": "THC Source",
-      "value": "Hemp-derived Delta-9 THC"
-    }
-    {%- endif -%}
-  ],
-  {%- endif -%}
-  "category": "{{ product.type | default: 'Botanical Beverages' }}",
-  {%- if product.metafields.seo.keywords != blank -%}
-  "keywords": {{ product.metafields.seo.keywords | json }},
-  {%- endif -%}
-  "url": {{ canonical_url | json }},
-  "potentialAction": {
-    "@type": "BuyAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": {{ canonical_url | json }},
-      "actionPlatform": [
-        "http://schema.org/DesktopWebPlatform",
-        "http://schema.org/MobileWebPlatform"
-      ]
-    }
   }
-}
 </script>
-{%- endif -%}
