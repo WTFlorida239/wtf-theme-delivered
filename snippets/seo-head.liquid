@@ -58,33 +58,63 @@
   ############################
   # DESCRIPTION
   ############################
-  assign meta_desc = page_description | default: shop.description | strip_html | strip | truncate: 155
+  assign meta_desc_source = page_description | default: shop.description | strip_html | strip
+  assign meta_desc = meta_desc_source
 
   if template.name == 'index'
     assign meta_desc = "Cape Coral's premier kava bar offering custom kava drinks, kratom teas, THC beverages, and sober nightlife. Located at 1520 SE 46th Ln, serving Cape Coral, Fort Myers, and Southwest Florida."
   elsif template.name contains 'product'
     if product.metafields.seo.description != blank
-      assign meta_desc = product.metafields.seo.description | strip_html | strip | truncate: 155
+      assign meta_desc = product.metafields.seo.description
     elsif product.description != blank
-      assign meta_desc = product.description | strip_html | strip | truncate: 155
+      assign meta_desc = product.description
     endif
   elsif template.name contains 'collection'
     if collection.metafields.seo.description != blank
-      assign meta_desc = collection.metafields.seo.description | strip_html | strip | truncate: 155
+      assign meta_desc = collection.metafields.seo.description
     elsif collection.description != blank
-      assign meta_desc = collection.description | strip_html | strip | truncate: 155
+      assign meta_desc = collection.description
     endif
   elsif template.name contains 'article'
     if article.excerpt != blank
-      assign meta_desc = article.excerpt | strip_html | strip | truncate: 155
+      assign meta_desc = article.excerpt
     elsif article.content != blank
-      assign meta_desc = article.content | strip_html | strip | truncate: 155
+      assign meta_desc = article.content
     endif
   elsif template.name contains 'page'
     if page.metafields.seo.description != blank
-      assign meta_desc = page.metafields.seo.description | strip_html | strip | truncate: 155
+      assign meta_desc = page.metafields.seo.description
     elsif page.content != blank
-      assign meta_desc = page.content | strip_html | strip | truncate: 155
+      assign meta_desc = page.content
+    endif
+  endif
+
+  assign meta_desc_base = meta_desc | strip_html | strip | strip_newlines | replace: '  ', ' ' | replace: '  ', ' ' | replace: '  ', ' '
+  assign meta_desc_truncated = meta_desc_base | truncate: 160, ''
+  assign meta_desc_words = meta_desc_truncated | split: ' '
+  assign meta_desc_builder = ''
+  for meta_word in meta_desc_words
+    assign meta_word_clean = meta_word | strip
+    if meta_word_clean == ''
+      continue
+    endif
+    if meta_desc_builder == ''
+      assign candidate_desc = meta_word_clean
+    else
+      assign candidate_desc = meta_desc_builder | append: ' ' | append: meta_word_clean
+    endif
+    if candidate_desc.size > 155
+      break
+    endif
+    assign meta_desc_builder = candidate_desc
+  endfor
+  if meta_desc_builder == ''
+    assign meta_desc = meta_desc_base | truncate: 155
+  else
+    if meta_desc_builder.size < meta_desc_base.size
+      assign meta_desc = meta_desc_builder | append: '…'
+    else
+      assign meta_desc = meta_desc_builder
     endif
   endif
 
@@ -175,8 +205,84 @@
     assign same_as = same_as | append: shop.metafields.social.tiktok | append: '||'
   endif
 
+  assign same_links = same_as | split: '||'
+  capture same_as_json
+  endcapture
+  for social_link in same_links
+    assign social_trimmed = social_link | strip
+    if social_trimmed == ''
+      continue
+    endif
+    capture same_as_json
+      {{ same_as_json }}{% unless same_as_json == '' %},{% endunless %}{{ social_trimmed | json }}
+    endcapture
+  endfor
+
+  assign same_as_json = same_as_json | strip
+
+  assign twitter_site_handle = shop.metafields.social.twitter_handle
+  if twitter_site_handle != blank
+    assign twitter_site_handle = twitter_site_handle | strip
+  endif
+  if twitter_site_handle != blank and twitter_site_handle contains '@'
+    assign twitter_site_handle = twitter_site_handle | remove: '@'
+  endif
+
   # Opening hours (expects a metafield JSON or text like "Mon-Fri 08:00-22:00")
   assign hours_struct = shop.metafields.wtf.hours.value
+  assign default_hours_json = '{"monday":{"open":"08:00","close":"22:00"},"tuesday":{"open":"08:00","close":"22:00"},"wednesday":{"open":"08:00","close":"22:00"},"thursday":{"open":"08:00","close":"22:00"},"friday":{"open":"08:00","close":"23:00"},"saturday":{"open":"08:00","close":"23:00"},"sunday":{"open":"10:00","close":"22:00"}}'
+  if hours_struct == blank
+    assign hours_struct = default_hours_json | parse_json
+  endif
+
+  assign hours_days = 'monday|tuesday|wednesday|thursday|friday|saturday|sunday' | split: '|'
+  assign opening_hours_spec = ''
+  for day_key in hours_days
+    assign hours_entry = hours_struct[day_key]
+    assign open_time = hours_entry.open | default: hours_entry.opens
+    assign close_time = hours_entry.close | default: hours_entry.closes
+    assign closed_flag = hours_entry.closed | default: hours_entry.is_closed
+
+    if closed_flag == true or closed_flag == 'true'
+      continue
+    endif
+
+    if open_time == blank or close_time == blank
+      continue
+    endif
+
+    if open_time == 'Closed' or close_time == 'Closed'
+      continue
+    endif
+
+    case day_key
+      when 'monday'
+        assign schema_day = 'Monday'
+      when 'tuesday'
+        assign schema_day = 'Tuesday'
+      when 'wednesday'
+        assign schema_day = 'Wednesday'
+      when 'thursday'
+        assign schema_day = 'Thursday'
+      when 'friday'
+        assign schema_day = 'Friday'
+      when 'saturday'
+        assign schema_day = 'Saturday'
+      when 'sunday'
+        assign schema_day = 'Sunday'
+    endcase
+
+    capture opening_hours_spec
+      {{ opening_hours_spec }}{% unless opening_hours_spec == '' %},{% endunless %}{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "https://schema.org/{{ schema_day }}",
+        "opens": "{{ open_time }}",
+        "closes": "{{ close_time }}"
+      }
+    endcapture
+  endfor
+
+  assign opening_hours_spec = opening_hours_spec | strip
 
   # Product identifiers (optional)
   assign gtin_field = product.metafields.seo.gtin | default: product.selected_or_first_available_variant.barcode
@@ -185,6 +291,23 @@
   # Aggregate rating (optional metafields)
   assign rating_value = product.metafields.reviews.rating_value
   assign rating_count = product.metafields.reviews.rating_count
+
+  if product
+    assign primary_variant = product.selected_or_first_available_variant
+    assign primary_variant_price = primary_variant.price | default: product.price
+    assign primary_variant_available = primary_variant.available | default: product.available
+  endif
+
+  assign locale_fallback = request.locale.iso_code | default: shop.primary_locale.iso_code | default: 'en-US'
+  assign locale_clean = locale_fallback | replace: '_', '-' | downcase
+  assign locale_parts = locale_clean | split: '-'
+  assign locale_lang = locale_parts[0]
+  assign locale_region = locale_parts[1] | default: '' | upcase
+  if locale_region != ''
+    assign og_locale_value = locale_lang | append: '_' | append: locale_region
+  else
+    assign og_locale_value = locale_lang
+  endif
 -%}
 
 {%- comment %} Title & Description {%- endcomment -%}
@@ -221,18 +344,26 @@
 <meta property="og:description" content="{{ meta_desc | escape }}">
 <meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:type" content="{% if template.name contains 'product' %}product{% elsif template.name contains 'article' %}article{% else %}website{% endif %}">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="{{ og_locale_value }}">
 {%- if shop.published_locales and shop.published_locales.size > 1 -%}
   {%- for locale in shop.published_locales -%}
-    {%- assign og_locale = locale.iso_code | replace: '_','-' | replace: 'en','en_US' -%}
-    <meta property="og:locale:alternate" content="{{ og_locale }}">
+    {%- assign locale_option = locale.iso_code | replace: '_', '-' | downcase -%}
+    {%- assign locale_parts = locale_option | split: '-' -%}
+    {%- assign alt_lang = locale_parts[0] -%}
+    {%- assign alt_region = locale_parts[1] | default: '' | upcase -%}
+    {%- if alt_region != '' -%}
+      {%- assign og_locale_alt = alt_lang | append: '_' | append: alt_region -%}
+    {%- else -%}
+      {%- assign og_locale_alt = alt_lang -%}
+    {%- endif -%}
+    <meta property="og:locale:alternate" content="{{ og_locale_alt }}">
   {%- endfor -%}
 {%- endif -%}
 
 {%- if template.name contains 'product' -%}
-  <meta property="product:price:amount" content="{{ product.price | money_without_currency }}">
+  <meta property="product:price:amount" content="{{ primary_variant_price | default: product.price | money_without_currency }}">
   <meta property="product:price:currency" content="{{ shop.currency }}">
-  <meta property="product:availability" content="{% if product.available %}in stock{% else %}out of stock{% endif %}">
+  <meta property="product:availability" content="{% if primary_variant_available %}in stock{% else %}out of stock{% endif %}">
   <meta property="product:brand" content="{{ product.vendor | default: shop.name }}">
 {%- endif -%}
 
@@ -242,14 +373,15 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="{{ page_title | escape }}">
+  <meta property="og:image:secure_url" content="{{ og_img | image_url: width: 1200, height: 630, crop: 'center' }}">
 {%- endif -%}
 
 {%- comment %} Twitter Cards {%- endcomment -%}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page_title }}">
 <meta name="twitter:description" content="{{ meta_desc | escape }}">
-{%- if shop.metafields.social.twitter_handle -%}
-  <meta name="twitter:site" content="@{{ shop.metafields.social.twitter_handle }}">
+{%- if twitter_site_handle != blank -%}
+  <meta name="twitter:site" content="@{{ twitter_site_handle }}">
 {%- endif -%}
 {%- if og_img -%}
   <meta name="twitter:image" content="{{ og_img | image_url: width: 1200, height: 630, crop: 'center' }}">
@@ -277,14 +409,16 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": {{ shop.url | append: '#organization' | json }},
   "name": {{ shop.name | json }},
   "url": {{ shop.url | json }},
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
   {% if settings.logo != blank %}
   "logo": {{ settings.logo | image_url: width: 600 | json }},
   {% endif %}
   {% if email_main != blank %}"email": {{ email_main | json }},{% endif %}
   {% if phone_main != blank %}"telephone": {{ phone_main | json }},{% endif %}
-  "sameAs": [{% if same_as != '' %}{% assign same_list = same_as | split: '||' %}{% for s in same_list %}{% if s != blank %}{{ s | json }}{% if forloop.last == false %},{% endif %}{% endif %}{% endfor %}{% endif %}]
+  "sameAs": [{% if same_as_json != '' %}{{ same_as_json }}{% endif %}]
 }
 </script>
 
@@ -294,10 +428,12 @@
 {
   "@context": "https://schema.org",
   "@type": "BarOrPub",
+  "@id": {{ shop.url | append: '#localbusiness' | json }},
   "name": {{ shop.name | json }},
   "image": [{% if settings.og_default != blank %}{{ settings.og_default | image_url: width: 1200 | json }}{% else %}{{ settings.logo | image_url: width: 600 | json }}{% endif %}],
   "url": {{ shop.url | json }},
   "telephone": {{ phone_main | json }},
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
   {% if email_main != blank %}"email": {{ email_main | json }},{% endif %}
   "address": {
     "@type": "PostalAddress",
@@ -308,9 +444,13 @@
     "addressCountry": {{ addr_country | json }}
   },
   "geo": { "@type": "GeoCoordinates", "latitude": {{ lat }}, "longitude": {{ lng }} },
-  {% if hours_struct %}
-  "openingHoursSpecification": {{ hours_struct | json }},
+  {% if opening_hours_spec != '' %}
+  "openingHoursSpecification": [{{ opening_hours_spec }}],
   {% endif %}
+  {% if same_as_json != '' %}
+  "sameAs": [{{ same_as_json }}],
+  {% endif %}
+  "parentOrganization": { "@id": {{ shop.url | append: '#organization' | json }} },
   "priceRange": "$$"
 }
 </script>
@@ -321,8 +461,10 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": {{ shop.url | append: '#website' | json }},
   "name": {{ shop.name | json }},
   "url": {{ shop.url | json }},
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
@@ -415,6 +557,8 @@
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
+  "@id": {{ shop.url | append: '#breadcrumbs' | json }},
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
   "itemListElement": [{{ breadcrumb_items }}]
 }
 </script>
@@ -425,11 +569,14 @@
 {
   "@context": "https://schema.org",
   "@type": "Product",
+  "@id": {{ shop.url | append: product.url | append: '#product' | json }},
   "name": {{ product.title | json }},
   "description": {{ product.description | strip_html | strip | truncate: 500 | json }},
   {% if product.featured_image %}
   "image": [{{ product.featured_image | image_url: width: 1200 | json }}],
   {% endif %}
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
+  "mainEntityOfPage": { "@type": "WebPage", "@id": {{ shop.url | append: product.url | json }} },
   {% if product.vendor %}"brand": { "@type": "Brand", "name": {{ product.vendor | json }} },{% endif %}
   {% if gtin_field %}"gtin13": {{ gtin_field | json }},{% endif %}
   {% if sku_field %}"sku": {{ sku_field | json }},{% endif %}
@@ -444,9 +591,11 @@
   "offers": {
     "@type": "Offer",
     "priceCurrency": {{ shop.currency | json }},
-    "price": {{ product.price | money_without_currency | json }},
+    "price": {{ primary_variant_price | default: product.price | money_without_currency | json }},
     "url": {{ shop.url | append: product.url | json }},
-    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+    "availability": "{% if primary_variant_available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": { "@type": "Organization", "@id": {{ shop.url | append: '#organization' | json }} }
   }
 }
 </script>
@@ -460,6 +609,7 @@
   "@type": "ItemList",
   "name": {{ collection.title | json }},
   "url": {{ shop.url | append: collection.url | json }},
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
   "numberOfItems": {{ collection.products_count }},
   "itemListElement": [
     {%- for prod in collection.products limit: 24 -%}
@@ -481,9 +631,12 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
+  "@id": {{ shop.url | append: article.url | append: '#article' | json }},
   "headline": {{ article.title | json }},
   "description": {{ meta_desc | json }},
   "url": {{ shop.url | append: article.url | json }},
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
+  "mainEntityOfPage": { "@type": "WebPage", "@id": {{ shop.url | append: article.url | json }} },
   {% if article.image %}"image": [{{ article.image | image_url: width: 1200 | json }}],{% endif %}
   "datePublished": {{ article.published_at | date: "%Y-%m-%dT%H:%M:%S%:z" | json }},
   "dateModified": {{ article.updated_at | date: "%Y-%m-%dT%H:%M:%S%:z" | json }},
@@ -493,6 +646,7 @@
   },
   "publisher": {
     "@type": "Organization",
+    "@id": {{ shop.url | append: '#organization' | json }},
     "name": {{ shop.name | json }}{% if settings.logo %},
     "logo": { "@type": "ImageObject", "url": {{ settings.logo | image_url: width: 600 | json }} }{% endif %}
   }
@@ -513,6 +667,7 @@
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  "inLanguage": {{ locale_fallback | replace: '_', '-' | json }},
   "mainEntity": [
     {%- for qa in faq_items -%}
       {
