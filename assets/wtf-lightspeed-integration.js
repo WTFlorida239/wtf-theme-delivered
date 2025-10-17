@@ -554,14 +554,7 @@ class WTFLightspeedIntegration {
     }
 
     try {
-      await fetch('/cart/change.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify({ id: lineKey, quantity: 0 })
-      });
+      await window.WTFCartAPI.updateCart({ id: lineKey, quantity: 0 });
     } catch (error) {
       console.error('WTF Lightspeed: Failed to remove item from cart:', error);
     }

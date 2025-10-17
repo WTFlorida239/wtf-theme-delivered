@@ -34,62 +34,36 @@ if (!customElements.get('wtf-product-form')) {
         if (spinner) spinner.classList.remove('hidden');
 
         const formData = new FormData(this.form);
-        
-        // Use AJAX add to cart
-        fetch(`${window.routes?.cart_add_url || '/cart/add.js'}`, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: formData
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.status && response.status !== 200) {
-              // Error response
-              this.handleErrorMessage(response.description || response.message || 'Unable to add to cart');
-              this.error = true;
-              return;
-            }
+        const payload = { quantity: 1, properties: {} };
 
-            // Success - fetch updated cart
-            return fetch('/cart.js', {
-              headers: { 'Accept': 'application/json' }
-            })
-              .then(r => r.json())
-              .then(cartData => {
-                // Dispatch wtf:cart:update event for WTF analytics
-                document.dispatchEvent(new CustomEvent('wtf:cart:update', {
-                  detail: cartData
-                }));
+        formData.forEach((value, key) => {
+          if (key === 'id') {
+            payload.id = value;
+          } else if (key === 'quantity') {
+            const parsed = parseInt(value || '1', 10);
+            payload.quantity = Number.isInteger(parsed) && parsed > 0 ? parsed : 1;
+          } else if (key.startsWith('properties[') && key.endsWith(']')) {
+            const propKey = key.slice('properties['.length, -1);
+            if (propKey) payload.properties[propKey] = value;
+          }
+        });
 
-                // Also dispatch wtf:cart:add for analytics
-                document.dispatchEvent(new CustomEvent('wtf:cart:add', {
-                  detail: {
-                    item: response,
-                    cart: cartData
-                  }
-                }));
-
-                // Update cart count if element exists
-                this.updateCartCount(cartData.item_count);
-
-                // Show success message or open drawer
-                this.showSuccessMessage();
-
-                this.error = false;
-              });
+        window.WTFCartAPI.addToCart(payload)
+          .then(() => window.WTFCartAPI.getCart())
+          .then((cartData) => {
+            this.updateCartCount(cartData.item_count);
+            this.showSuccessMessage();
+            this.error = false;
           })
           .catch((e) => {
             console.error('[WTF Product Form] Error:', e);
-            this.handleErrorMessage('Unable to add to cart. Please try again.');
+            this.handleErrorMessage(e?.message || 'Unable to add to cart. Please try again.');
             this.error = true;
           })
           .finally(() => {
             this.submitButton.classList.remove('loading');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
-            
+
             const spinner = this.querySelector('.loading__spinner');
             if (spinner) spinner.classList.add('hidden');
           });

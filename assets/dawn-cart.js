@@ -77,21 +77,7 @@ class CartItems extends HTMLElement {
   updateQuantity(line, quantity, event) {
     this.enableLoading(line);
 
-    const body = JSON.stringify({
-      line,
-      quantity,
-      sections_url: window.location.pathname,
-    });
-
-    fetch(`${window.routes?.cart_change_url || '/cart/change.js'}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body
-    })
-      .then((response) => response.json())
+    window.WTFCartAPI.updateCart({ line, quantity })
       .then((cartData) => {
         // Dispatch wtf:cart:update event
         document.dispatchEvent(new CustomEvent('wtf:cart:update', {
@@ -108,7 +94,7 @@ class CartItems extends HTMLElement {
         console.error('[WTF Cart] Quantity update error:', error);
         const errors = document.getElementById('cart-errors') || document.getElementById('CartDrawer-CartErrors');
         if (errors) {
-          errors.textContent = 'Unable to update cart. Please try again.';
+          errors.textContent = error?.message || 'Unable to update cart. Please try again.';
         }
       })
       .finally(() => {

@@ -19,6 +19,39 @@
   'use strict';
 
   const ROOT = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+  const JSON_HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+
+  function toPositiveInteger(value, { allowZero = false, label = 'value' } = {}) {
+    const num = Number(value);
+    if (!Number.isInteger(num) || (!allowZero && num <= 0) || (allowZero && num < 0)) {
+      throw new Error(`Invalid ${label}`);
+    }
+    return num;
+  }
+
+  function normalizeProperties(properties) {
+    if (!properties) return undefined;
+    const normalized = {};
+    Object.keys(properties).forEach((key) => {
+      const value = properties[key];
+      if (value === null || value === undefined || value === '') return;
+      normalized[key] = String(value);
+    });
+    return Object.keys(normalized).length ? normalized : undefined;
+  }
+
+  function safeDispatch(name, detail) {
+    try {
+      document.dispatchEvent(new CustomEvent(name, { detail }));
+    } catch (error) {
+      if (window.WTFConfig && window.WTFConfig.get && window.WTFConfig.get('development.enableConsoleLogging')) {
+        console.warn(`[WTFCartAPI] Failed to dispatch ${name}:`, error);
+      }
+    }
+  }
 
   /**
    * Fetch current cart state
@@ -46,27 +79,13 @@
    * @param {Object} item - Optional item that was just added
    */
   function dispatchCartEvents(cart, item) {
-    // Dispatch wtf:cart:update event
-    document.dispatchEvent(new CustomEvent('wtf:cart:update', {
-      detail: cart
-    }));
-
-    // If item was added, dispatch wtf:cart:add event
-    if (item) {
-      document.dispatchEvent(new CustomEvent('wtf:cart:add', {
-        detail: { item: item, cart: cart }
-      }));
+    if (cart) {
+      safeDispatch('wtf:cart:update', cart);
+      safeDispatch('cart:updated', cart);
     }
-
-    // Legacy events for backwards compatibility
-    document.dispatchEvent(new CustomEvent('cart:updated', {
-      detail: cart
-    }));
-
     if (item) {
-      document.dispatchEvent(new CustomEvent('cart:added', {
-        detail: { item: item, cart: cart }
-      }));
+      safeDispatch('wtf:cart:add', { item, cart });
+      safeDispatch('cart:added', { item, cart });
     }
   }
 
@@ -76,43 +95,46 @@
    * @returns {Promise<Object>} Added item object
    */
   async function addToCart(params) {
-    const { id, quantity = 1, properties = {}, selling_plan } = params;
+    const { id, quantity = 1, properties, selling_plan } = params || {};
+    const vid = toPositiveInteger(id, { label: 'variant id' });
+    const qty = toPositiveInteger(quantity || 1, { label: 'quantity' });
+    const normalizedProps = normalizeProperties(properties);
 
-    if (!id) {
-      throw new Error('Variant ID is required');
+    const payload = {
+      id: vid,
+      quantity: qty
+    };
+
+    if (normalizedProps) {
+      payload.properties = normalizedProps;
     }
 
-    // Build request body
-    const body = new FormData();
-    body.set('id', String(id));
-    body.set('quantity', String(quantity));
-
-    // Add properties
-    for (const key in properties) {
-      if (properties[key] !== null && properties[key] !== undefined && properties[key] !== '') {
-        body.set(`properties[${key}]`, String(properties[key]));
-      }
-    }
-
-    // Add selling plan if present
     if (selling_plan) {
-      body.set('selling_plan', String(selling_plan));
+      payload.selling_plan = String(selling_plan);
     }
 
-    // Add to cart
-    const response = await fetch(ROOT + 'cart/add.js', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin',
-      body: body
-    });
+    let response;
+
+    try {
+      response = await fetch(ROOT + 'cart/add.js', {
+        method: 'POST',
+        headers: JSON_HEADERS,
+        credentials: 'same-origin',
+        body: JSON.stringify(payload)
+      });
+    } catch (networkError) {
+      throw new Error(networkError?.message || 'Network error while adding to cart');
+    }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.description || errorData.message || 'Failed to add item to cart';
-      throw new Error(errorMessage);
+      let err = 'Failed to add item to cart';
+      try {
+        const data = await response.json();
+        err = data?.description || data?.message || err;
+      } catch (parseError) {
+        // ignore JSON parse errors for HTML/text responses
+      }
+      throw new Error(err);
     }
 
     const item = await response.json();
@@ -132,20 +154,48 @@
    * @returns {Promise<Object>} Updated cart object
    */
   async function updateCart(params) {
-    const response = await fetch(ROOT + 'cart/change.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify(params)
-    });
+    const payload = {};
+
+    if (params == null || typeof params !== 'object') {
+      throw new Error('Invalid cart update payload');
+    }
+
+    if (Object.prototype.hasOwnProperty.call(params, 'line')) {
+      payload.line = toPositiveInteger(params.line, { label: 'cart line', allowZero: false });
+    }
+
+    if (Object.prototype.hasOwnProperty.call(params, 'id')) {
+      payload.id = toPositiveInteger(params.id, { label: 'variant id' });
+    }
+
+    if (Object.prototype.hasOwnProperty.call(params, 'quantity')) {
+      payload.quantity = toPositiveInteger(params.quantity, { label: 'quantity', allowZero: true });
+    }
+
+    if (!('line' in payload) && !('id' in payload)) {
+      throw new Error('Cart update requires a line or variant id');
+    }
+
+    let response;
+
+    try {
+      response = await fetch(ROOT + 'cart/change.js', {
+        method: 'POST',
+        headers: JSON_HEADERS,
+        credentials: 'same-origin',
+        body: JSON.stringify(payload)
+      });
+    } catch (networkError) {
+      throw new Error(networkError?.message || 'Network error while updating cart');
+    }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.description || errorData.message || 'Failed to update cart';
-      throw new Error(errorMessage);
+      let err = 'Failed to update cart';
+      try {
+        const data = await response.json();
+        err = data?.description || data?.message || err;
+      } catch {}
+      throw new Error(err);
     }
 
     const cart = await response.json();
@@ -170,13 +220,17 @@
    * @returns {Promise<Object>} Empty cart object
    */
   async function clearCart() {
-    const response = await fetch(ROOT + 'cart/clear.js', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
+    let response;
+
+    try {
+      response = await fetch(ROOT + 'cart/clear.js', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+      });
+    } catch (networkError) {
+      throw new Error(networkError?.message || 'Network error while clearing cart');
+    }
 
     if (!response.ok) {
       throw new Error('Failed to clear cart');
@@ -198,10 +252,7 @@
   async function updateCartAttributes(attributes) {
     const response = await fetch(ROOT + 'cart/update.js', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
+      headers: JSON_HEADERS,
       credentials: 'same-origin',
       body: JSON.stringify({ attributes: attributes })
     });
@@ -226,10 +277,7 @@
   async function updateCartNote(note) {
     const response = await fetch(ROOT + 'cart/update.js', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
+      headers: JSON_HEADERS,
       credentials: 'same-origin',
       body: JSON.stringify({ note: note })
     });
