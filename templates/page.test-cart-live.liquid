@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Cart Test - {{ shop.name }}</title>
-    <style>
+<style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f8f9fa;
@@ -162,9 +156,7 @@
             margin-top: 1rem;
         }
     </style>
-</head>
-<body>
-    <div class="container">
+<div class="container">
         <div class="header">
             <h1>🧪 Live Cart Functionality Test</h1>
             <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Testing cart persistence and AJAX operations on {{ shop.name }}</p>
@@ -365,5 +357,3 @@ Time: ${new Date().toLocaleTimeString()}`;
         // Auto-refresh cart data every 30 seconds
         setInterval(refreshCartData, 30000);
     </script>
-</body>
-</html>

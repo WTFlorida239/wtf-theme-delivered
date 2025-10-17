@@ -25,13 +25,7 @@
 {% assign take_home_variant_id = page.metafields.wtf.take_home_variant_id | default: settings.take_home_variant_id %}
 {% assign take_home_variant_id = take_home_variant_id | strip %}
 
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Take Home Items - WTF | Welcome To Florida</title>
-    <style>
+<style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
 
       body {
@@ -281,9 +275,7 @@
         .product-details { padding: 20px; }
       }
     </style>
-  </head>
-  <body>
-    <div class="header">WTF | Welcome To Florida</div>
+  <div class="header">WTF | Welcome To Florida</div>
     <div class="cart-status" id="cart-status">Cart: <span id="cart-count">0</span> items</div>
 
     <div class="container">
@@ -546,5 +538,4 @@
         document.getElementById('add-to-cart-btn').addEventListener('click', addToCartAJAX);
       });
     </script>
-  </body>
-</html>
+  

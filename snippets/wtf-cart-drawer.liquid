@@ -115,19 +115,46 @@
       return (cents/100).toLocaleString(undefined,{style:'currency',currency:'USD'}); // fallback
     }
 
+    function updateCartCount(count){
+      var value = Number(count || 0);
+      var targets = document.querySelectorAll('[data-cart-count]');
+      for (var i = 0; i < targets.length; i++) {
+        var node = targets[i];
+        node.textContent = value;
+        if (node.hasAttribute('aria-live') === false) {
+          node.setAttribute('aria-live', 'polite');
+          node.setAttribute('aria-atomic', 'true');
+        }
+        if ('hidden' in node) {
+          node.hidden = value === 0;
+        }
+      }
+    }
+
+    function broadcastCart(cart, extraDetail){
+      var detail = { cart: cart };
+      if (extraDetail && typeof extraDetail === 'object') {
+        for (var key in extraDetail) {
+          if (Object.prototype.hasOwnProperty.call(extraDetail, key)) {
+            detail[key] = extraDetail[key];
+          }
+        }
+      }
+      document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: detail }));
+      document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+    }
+
     async function getCart(){
       const res = await fetch(ROOT + 'cart.js', { credentials:'same-origin' });
       return res.json();
     }
 
     function renderCart(cart){
-      // header badge fallback
-      document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
-
       itemsContainer.innerHTML = '';
-      if(cart.item_count === 0){
+      if(!cart || cart.item_count === 0){
         emptyBox.hidden = false;
         subtotalEl.textContent = formatMoney(0);
+        updateCartCount(0);
         return;
       }
       emptyBox.hidden = true;
@@ -186,6 +213,7 @@
       });
 
       subtotalEl.textContent = formatMoney(cart.total_price);
+      updateCartCount(cart.item_count);
     }
 
     function escapeHtml(s){
@@ -201,6 +229,7 @@
       await fetch(ROOT + 'cart/change.js', { method:'POST', credentials:'same-origin', body: form });
       const cart = await getCart();
       renderCart(cart);
+      broadcastCart(cart);
     }
 
     function open(){ el.setAttribute('aria-hidden','false'); el.querySelector('.wtf-cart-drawer__panel').focus(); }
@@ -229,25 +258,47 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 
     // Open & refresh when something gets added
-    document.addEventListener('cart:added', async function(){
-      const cart = await getCart();
+    document.addEventListener('cart:added', async function(event){
+      var cart = event && event.detail && event.detail.cart ? event.detail.cart : null;
+      if (!cart) {
+        cart = await getCart();
+      }
       renderCart(cart);
       open();
     });
 
     // Keep in sync if other code emits updates
-    document.addEventListener('cart:updated', async function(){
+    document.addEventListener('cart:updated', async function(event){
+      if (event && event.detail && typeof event.detail === 'object') {
+        if (event.detail.items) {
+          renderCart(event.detail);
+          return;
+        }
+        if (event.detail.cart && event.detail.cart.items) {
+          renderCart(event.detail.cart);
+          return;
+        }
+      }
       const cart = await getCart();
       renderCart(cart);
     });
 
     // Expose minimal API
     window.WTF_CART = Object.assign(window.WTF_CART || {}, {
-      open, close, refresh: async function(){ renderCart(await getCart()); }
+      open,
+      close,
+      refresh: async function(){
+        const cart = await getCart();
+        renderCart(cart);
+        broadcastCart(cart);
+      }
     });
 
     // Hydrate on first paint (so it's ready if user opens manually)
-    getCart().then(renderCart);
+    getCart().then(function(cart){
+      renderCart(cart);
+      broadcastCart(cart);
+    });
   })();
 </script>
 

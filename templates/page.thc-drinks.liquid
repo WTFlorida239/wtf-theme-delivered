@@ -1,11 +1,4 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>THC Drinks - WTF | Welcome To Florida</title>
-
-    <style>
+<style>
       /* ——— Base / Layout ——— */
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { 
@@ -298,10 +291,8 @@
     <script>
       window.THC_DRINKS_VARIANT_ID = {{ page.metafields.custom.thc_drinks_variant_id | default: settings.thc_drinks_variant_id | json }};
     </script>
-  </head>
 
-  <body>
-    <div class="header">WTF | Welcome To Florida</div>
+<div class="header">WTF | Welcome To Florida</div>
     <div class="cart-status" id="cart-status" aria-live="polite">
       Cart: <span id="cart-count">{{ cart.item_count }}</span> items
     </div>
@@ -584,5 +575,3 @@
         }
       }
     </script>
-  </body>
-</html>
