@@ -1,0 +1,223 @@
+{% comment %}
+  Manual upsell grid for PDPs
+{% endcomment %}
+
+<section class="product-upsell" aria-labelledby="ProductUpsellTitle-{{ section.id }}">
+  <div class="product-upsell__inner page-width">
+    <div class="product-upsell__header">
+      {% if section.settings.heading != blank %}
+        <h2 id="ProductUpsellTitle-{{ section.id }}" class="product-upsell__title">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <p class="product-upsell__subtitle">{{ section.settings.subheading }}</p>
+      {% endif %}
+    </div>
+
+    <div class="product-upsell__grid" role="list">
+      {% for block in section.blocks %}
+        {% assign product_obj = block.settings.product %}
+        {% if product_obj %}
+          <article class="product-upsell__item" role="listitem" {{ block.shopify_attributes }}>
+            <a class="product-upsell__link" href="{{ product_obj.url }}">
+              {% if product_obj.featured_media %}
+                {% render 'responsive-image', image: product_obj.featured_media, alt: product_obj.featured_media.alt | default: product_obj.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-upsell__image', loading: 'lazy' %}
+              {% endif %}
+              <h3 class="product-upsell__product-title">{{ block.settings.title | default: product_obj.title }}</h3>
+            </a>
+            {% if block.settings.caption != blank %}
+              <p class="product-upsell__caption">{{ block.settings.caption }}</p>
+            {% endif %}
+            <p class="product-upsell__price">
+              <span class="product-upsell__price-current">{{ product_obj.price | money }}</span>
+              {% if product_obj.compare_at_price > product_obj.price %}
+                <span class="product-upsell__price-compare">{{ product_obj.compare_at_price | money }}</span>
+              {% endif %}
+            </p>
+            {% if product_obj.available %}
+              <form method="post" action="{{ routes.cart_add_url }}" class="product-upsell__form" data-wtf-ajax>
+                <input type="hidden" name="id" value="{{ product_obj.selected_or_first_available_variant.id }}">
+                <button type="submit" class="product-upsell__button">
+                  {{ block.settings.button_label | default: section.settings.button_label | default: 'Add to cart' }}
+                </button>
+              </form>
+            {% else %}
+              <span class="product-upsell__sold-out" role="status">{{ 'products.product.sold_out' | t }}</span>
+            {% endif %}
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .product-upsell {
+    padding: 3.2rem 0;
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.06), rgba(255, 153, 0, 0.08));
+  }
+
+  .product-upsell__header {
+    text-align: center;
+    margin-bottom: 2.4rem;
+  }
+
+  .product-upsell__title {
+    font-size: clamp(2rem, 3.2vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+  }
+
+  .product-upsell__subtitle {
+    color: rgba(0, 0, 0, 0.65);
+    max-width: 60ch;
+    margin: 0 auto;
+  }
+
+  .product-upsell__grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .product-upsell__item {
+    background: #fff;
+    border-radius: 1.6rem;
+    padding: 1.8rem;
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .product-upsell__link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-upsell__image {
+    border-radius: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .product-upsell__product-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .product-upsell__caption {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .product-upsell__price {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .product-upsell__price-compare {
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .product-upsell__form {
+    margin-top: auto;
+  }
+
+  .product-upsell__button {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    background: #ff6600;
+    color: #fff;
+    padding: 0.9rem 1.6rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 150ms ease;
+  }
+
+  .product-upsell__button:hover,
+  .product-upsell__button:focus {
+    background: #ff7a1a;
+  }
+
+  .product-upsell__sold-out {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.55);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product upsell grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Perfect pairings"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Customers also love these house specials."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Default button label",
+      "default": "Add to cart"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Override title"
+        },
+        {
+          "type": "textarea",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Product upsell grid",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
