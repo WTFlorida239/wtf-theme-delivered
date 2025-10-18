@@ -11,28 +11,6 @@
   "sections": {
     "hero": {
       "type": "home-hero",
-      "blocks": {
-        "hero-social-1": {
-          "type": "social_link",
-          "settings": {
-            "label": "📘",
-            "url": "https://www.facebook.com/",
-            "open_in_new_tab": true
-          }
-        },
-        "hero-social-2": {
-          "type": "social_link",
-          "settings": {
-            "label": "📷",
-            "url": "https://www.instagram.com/",
-            "open_in_new_tab": true
-          }
-        }
-      },
-      "block_order": [
-        "hero-social-1",
-        "hero-social-2"
-      ],
       "settings": {
         "hero_image": "shopify://shop_images/IMG_5074_2.heic",
         "hero_image_alt": "The storefront of WTF in Florida, featuring a bright teal facade, a 'Welcome to Florida' flamingo sign in the window, and a mini-golf putting green out front.",
@@ -148,7 +126,7 @@
           "settings": {
             "title": "Kava (16oz)",
             "description": "Traditional kava blend",
-            "price": "9.00",
+            "price": "10.00",
             "item_image": "shopify://shop_images/kava_drinks_150x150_ed3c8ea3-4375-4e23-961e-232981840fdf.png",
             "fallback_emoji": "🍃",
             "product_id": ""
@@ -182,6 +160,7 @@
             "title": "Draft Pour (16oz)",
             "description": "Rotating tap selection",
             "price": "12.00",
+            "item_image": "shopify://shop_images/wtf_drafts_150x150_d9b5baf2-57b4-4a52-afd8-022d83caf284.png",
             "fallback_emoji": "🍃",
             "product_id": ""
           }
