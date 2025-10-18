@@ -150,30 +150,77 @@
 
   /**
    * Update cart line item
-   * @param {Object} params - { line: 1, quantity: 2 } or { id: variantId, quantity: 2 }
+   * @param {Object} params - { line: 1, quantity: 2 }, { id: variantId, quantity: 2 }, or { key: cartKey, quantity: 2 }
    * @returns {Promise<Object>} Updated cart object
    */
   async function updateCart(params) {
-    const payload = {};
-
     if (params == null || typeof params !== 'object') {
       throw new Error('Invalid cart update payload');
     }
 
+    const payload = {};
+    const hasQuantity = Object.prototype.hasOwnProperty.call(params, 'quantity');
+    let keyCandidate = null;
+
     if (Object.prototype.hasOwnProperty.call(params, 'line')) {
-      payload.line = toPositiveInteger(params.line, { label: 'cart line', allowZero: false });
+      try {
+        payload.line = toPositiveInteger(params.line, { label: 'cart line', allowZero: false });
+      } catch (error) {
+        const fallbackKey = String(params.line ?? '').trim();
+        if (fallbackKey) {
+          keyCandidate = fallbackKey;
+        } else {
+          throw error;
+        }
+      }
     }
 
     if (Object.prototype.hasOwnProperty.call(params, 'id')) {
-      payload.id = toPositiveInteger(params.id, { label: 'variant id' });
+      try {
+        payload.id = toPositiveInteger(params.id, { label: 'variant id' });
+      } catch (error) {
+        const fallbackKey = String(params.id ?? '').trim();
+        if (fallbackKey) {
+          keyCandidate = keyCandidate || fallbackKey;
+        } else {
+          throw error;
+        }
+      }
     }
 
-    if (Object.prototype.hasOwnProperty.call(params, 'quantity')) {
+    if (Object.prototype.hasOwnProperty.call(params, 'key')) {
+      const fallbackKey = String(params.key ?? '').trim();
+      if (fallbackKey) {
+        keyCandidate = keyCandidate || fallbackKey;
+      }
+    }
+
+    if (hasQuantity) {
       payload.quantity = toPositiveInteger(params.quantity, { label: 'quantity', allowZero: true });
     }
 
     if (!('line' in payload) && !('id' in payload)) {
-      throw new Error('Cart update requires a line or variant id');
+      if (!keyCandidate) {
+        throw new Error('Cart update requires a line, variant id, or key');
+      }
+
+      const cart = await getCart();
+      const items = Array.isArray(cart?.items) ? cart.items : [];
+      const normalizedKey = keyCandidate;
+
+      const index = items.findIndex((item) => {
+        if (!item) return false;
+        if (item.key && String(item.key).trim() === normalizedKey) return true;
+        if (item.id != null && String(item.id).trim() === normalizedKey) return true;
+        if (item.variant_id != null && String(item.variant_id).trim() === normalizedKey) return true;
+        return false;
+      });
+
+      if (index === -1) {
+        throw new Error('Unable to resolve cart line from key');
+      }
+
+      payload.line = index + 1;
     }
 
     let response;
@@ -292,33 +339,47 @@
       throw new Error('Invalid cart removal target');
     }
 
+    const isRecoverableUpdateError = (error) => {
+      if (!error || !error.message) return false;
+      const message = error.message.toLowerCase();
+      return (
+        message.includes('invalid variant id') ||
+        message.includes('invalid cart line') ||
+        message.includes('requires a line') ||
+        message.includes('unable to resolve cart line')
+      );
+    };
+
     if (descriptor.variantId != null) {
-      return updateCart({ id: descriptor.variantId, quantity: 0 });
+      try {
+        return await updateCart({ id: descriptor.variantId, quantity: 0 });
+      } catch (error) {
+        if (!descriptor.key && descriptor.line == null) {
+          throw error;
+        }
+
+        if (!isRecoverableUpdateError(error)) {
+          throw error;
+        }
+      }
     }
 
     if (descriptor.line != null) {
-      return updateCart({ line: descriptor.line, quantity: 0 });
+      try {
+        return await updateCart({ line: descriptor.line, quantity: 0 });
+      } catch (error) {
+        if (!descriptor.key) {
+          throw error;
+        }
+
+        if (!isRecoverableUpdateError(error)) {
+          throw error;
+        }
+      }
     }
 
     if (descriptor.key) {
-      const cart = await getCart();
-      const index = cart.items.findIndex((item) => item && item.key === descriptor.key);
-
-      if (index !== -1) {
-        const item = cart.items[index];
-        if (item?.variant_id) {
-          try {
-            const variantId = toPositiveInteger(item.variant_id, { label: 'variant id' });
-            return updateCart({ id: variantId, quantity: 0 });
-          } catch (error) {
-            // fall through to line-based removal
-          }
-        }
-
-        return updateCart({ line: index + 1, quantity: 0 });
-      }
-
-      throw new Error('Unable to locate cart item for removal');
+      return updateCart({ key: descriptor.key, quantity: 0 });
     }
 
     throw new Error('Unable to resolve cart removal target');

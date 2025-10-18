@@ -10,6 +10,7 @@
 - Legacy helpers proxy to the API and rely on the standard `wtf:cart:update` / `wtf:cart:add` events that `WTFCartAPI` emits.
 - THC drinks page resolves the active variant id per size before calling `WTFCartAPI.addToCart`, preventing invalid variant submissions.
 - Safety guards added for quantity/variant validation, JSON payloads, and error surfacing to eliminate Shopify 422 responses.
+- `WTFCartAPI.updateCart` gracefully falls back to resolving cart keys into line indexes when variants aren't available, keeping removals resilient during inventory syncs.
 
 ## Follow-up
 - Populate `page.metafields.custom.thc_drinks_variant_map` (JSON) or `settings.thc_drinks_product_handle` with the authoritative variant ids for each size.
