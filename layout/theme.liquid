@@ -178,6 +178,9 @@
       })();
     </script>
 
+    {%- comment %} Load Error Prevention (MUST load before other scripts) {%- endcomment %}
+    <script src="{{ 'wtf-error-prevention.js' | asset_url }}"></script>
+    
     {%- comment %} Load WTF Configuration Manager {%- endcomment %}
     <script src="{{ 'wtf-config.js' | asset_url }}" defer></script>
 
@@ -323,9 +326,19 @@
     <script src="{{ 'wtf-upselling.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-analytics.js' | asset_url }}" defer></script>
 
-    {%- comment %} Integration Scripts {%- endcomment %}
-    <script src="{{ 'wtf-lightspeed-integration.js' | asset_url }}" defer></script>
-    <script src="{{ 'wtf-2accept-integration.js' | asset_url }}" defer></script>
+    {%- comment %} Integration Scripts (conditionally loaded) {%- endcomment %}
+    {% if settings.lightspeed_enable_sync and settings.lightspeed_account_id != blank %}
+      <script src="{{ 'wtf-lightspeed-integration.js' | asset_url }}" defer></script>
+    {% else %}
+      <script>console.info('[WTF] Lightspeed integration disabled (not configured)');</script>
+    {% endif %}
+    
+    {% if settings.twoaccept_public_key != blank %}
+      <script src="{{ 'wtf-2accept-integration.js' | asset_url }}" defer></script>
+    {% else %}
+      <script>console.info('[WTF] 2Accept integration disabled (not configured)');</script>
+    {% endif %}
+    
     <script src="{{ 'wtf-webhook-handler.js' | asset_url }}" defer></script>
 
     {%- comment %} Cart count hydrator (single source of truth) {%- endcomment %}
@@ -484,13 +497,24 @@
     {%- comment %} Custom checkout integration {%- endcomment %}
     {% if template contains 'cart' or template contains 'checkout' %}
       <script>
-        // Initialize custom checkout if enabled
-        if (window.WTF2Accept && window.WTFConfig.get('features.enableCustomCheckout')) {
-          document.addEventListener('wtf:system:ready', function () {
-            // Set up custom checkout flow
-            console.log('Custom checkout initialized');
-          });
-        }
+        // Initialize custom checkout if enabled (with safe guards)
+        (function() {
+          if (!window.WTF_FEATURES || !window.WTF_FEATURES.twoaccept) {
+            console.info('[WTF] 2Accept integration disabled, skipping custom checkout');
+            return;
+          }
+          
+          if (window.WTF2Accept && typeof window.WTFConfig?.get === 'function' && window.WTFConfig.get('features.enableCustomCheckout')) {
+            document.addEventListener('wtf:system:ready', function () {
+              try {
+                // Set up custom checkout flow
+                console.log('[WTF] Custom checkout initialized');
+              } catch (error) {
+                console.warn('[WTF] Custom checkout init failed:', error);
+              }
+            });
+          }
+        })();
       </script>
     {% endif %}
 
