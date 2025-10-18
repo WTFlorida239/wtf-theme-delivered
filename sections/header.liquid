@@ -75,14 +75,17 @@
       {% endif %}
 
       <div class="header__cart">
-        <a href="{{ routes.cart_url }}" class="header__cart-link" aria-label="Cart">
+        <button type="button" class="header__cart-link" aria-label="Open cart" data-cart-open>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <circle cx="9" cy="21" r="1"/>
             <circle cx="20" cy="21" r="1"/>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
           </svg>
           <span class="header__cart-count" data-cart-count>{{ cart.item_count }}</span>
-        </a>
+        </button>
+        <noscript>
+          <a href="{{ routes.cart_url }}" class="header__cart-link" aria-label="View cart">Cart ({{ cart.item_count }})</a>
+        </noscript>
       </div>
 
       <button type="button" class="header__mobile-toggle" aria-label="Menu">
@@ -502,8 +505,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Handle cart icon click - open drawer
+  const cartButton = document.querySelector('[data-cart-open]');
+  if (cartButton) {
+    cartButton.addEventListener('click', function() {
+      if (window.WTF_CART && typeof window.WTF_CART.open === 'function') {
+        window.WTF_CART.open();
+      } else {
+        // Fallback: navigate to cart page if drawer not available
+        window.location.href = '{{ routes.cart_url }}';
+      }
+    });
+  }
+  
   // Update cart count when cart changes
   document.addEventListener('cart:updated', function(event) {
+    const cartCount = document.querySelector('[data-cart-count]');
+    if (cartCount && event.detail && event.detail.item_count !== undefined) {
+      cartCount.textContent = event.detail.item_count;
+    }
+  });
+  
+  // Also listen for wtf:cart:update events
+  document.addEventListener('wtf:cart:update', function(event) {
     const cartCount = document.querySelector('[data-cart-count]');
     if (cartCount && event.detail && event.detail.item_count !== undefined) {
       cartCount.textContent = event.detail.item_count;
