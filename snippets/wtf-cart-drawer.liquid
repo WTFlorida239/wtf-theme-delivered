@@ -322,8 +322,13 @@
 
     // Hydrate on first paint (so it's ready if user opens manually)
     getCart().then(function(cart){
+      console.log('[WTF Cart] Hydrated on page load:', cart);
+      console.log('[WTF Cart] Item count:', cart.item_count);
+      console.log('[WTF Cart] Items:', cart.items);
       renderCart(cart);
       broadcastCart(cart);
+    }).catch(function(error){
+      console.error('[WTF Cart] Failed to hydrate:', error);
     });
   })();
 </script>
