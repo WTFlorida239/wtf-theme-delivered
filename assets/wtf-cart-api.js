@@ -208,11 +208,120 @@
 
   /**
    * Remove item from cart
-   * @param {number} line - Line index (1-based)
+   * @param {number|string|Object} target - Line index, cart key, variant id, or cart item descriptor
    * @returns {Promise<Object>} Updated cart object
    */
-  async function removeFromCart(line) {
-    return updateCart({ line: line, quantity: 0 });
+  async function removeFromCart(target) {
+    if (target == null) {
+      throw new Error('Cart removal target required');
+    }
+
+    const descriptor = {
+      line: null,
+      variantId: null,
+      key: null
+    };
+
+    function applyCandidate(candidate) {
+      if (!candidate || typeof candidate !== 'object') {
+        return;
+      }
+
+      if (descriptor.line == null && Object.prototype.hasOwnProperty.call(candidate, 'line')) {
+        try {
+          descriptor.line = toPositiveInteger(candidate.line, { label: 'cart line' });
+        } catch (error) {
+          descriptor.line = null;
+        }
+      }
+
+      if (descriptor.variantId == null) {
+        const maybeVariant =
+          candidate.id ??
+          candidate.variantId ??
+          candidate.variant_id;
+
+        if (maybeVariant != null) {
+          try {
+            descriptor.variantId = toPositiveInteger(maybeVariant, { label: 'variant id' });
+          } catch (error) {
+            descriptor.variantId = null;
+          }
+        }
+      }
+
+      if (!descriptor.key && candidate.key) {
+        const keyString = String(candidate.key).trim();
+        if (keyString) {
+          descriptor.key = keyString;
+        }
+      }
+    }
+
+    const isNumericString = (value) => {
+      if (typeof value !== 'string') return false;
+      const trimmed = value.trim();
+      if (trimmed === '') return false;
+      const num = Number(trimmed);
+      return Number.isInteger(num);
+    };
+
+    if (typeof target === 'number') {
+      descriptor.line = toPositiveInteger(target, { label: 'cart line' });
+    } else if (typeof target === 'string') {
+      const trimmed = target.trim();
+      if (trimmed === '') {
+        throw new Error('Invalid cart removal target');
+      }
+
+      if (isNumericString(trimmed)) {
+        try {
+          descriptor.line = toPositiveInteger(trimmed, { label: 'cart line' });
+        } catch (error) {
+          descriptor.key = trimmed;
+        }
+      } else {
+        descriptor.key = trimmed;
+      }
+    } else if (typeof target === 'object') {
+      applyCandidate(target);
+      if (target.item) {
+        applyCandidate(target.item);
+      }
+    } else {
+      throw new Error('Invalid cart removal target');
+    }
+
+    if (descriptor.variantId != null) {
+      return updateCart({ id: descriptor.variantId, quantity: 0 });
+    }
+
+    if (descriptor.line != null) {
+      return updateCart({ line: descriptor.line, quantity: 0 });
+    }
+
+    if (descriptor.key) {
+      const cart = await getCart();
+      const index = cart.items.findIndex((item) => item && item.key === descriptor.key);
+
+      if (index !== -1) {
+        const item = cart.items[index];
+        if (item?.variant_id) {
+          try {
+            const variantId = toPositiveInteger(item.variant_id, { label: 'variant id' });
+            return updateCart({ id: variantId, quantity: 0 });
+          } catch (error) {
+            // fall through to line-based removal
+          }
+        }
+
+        return updateCart({ line: index + 1, quantity: 0 });
+      }
+
+      throw new Error('Unable to locate cart item for removal');
+    }
+
+    throw new Error('Unable to resolve cart removal target');
   }
 
   /**

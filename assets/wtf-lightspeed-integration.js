@@ -331,7 +331,7 @@ class WTFLightspeedIntegration {
       const availability = await this.checkItemAvailability(item.variant_id);
 
       if (!availability.available) {
-        await this.removeFromCart(item.key);
+        await this.removeFromCart({ key: item.key, variantId: item.variant_id });
         this.showStockAlert(item.title, availability.message);
         return;
       }
@@ -548,13 +548,30 @@ class WTFLightspeedIntegration {
     }
   }
 
-  async removeFromCart(lineKey) {
-    if (!lineKey) {
+  async removeFromCart(reference) {
+    if (!reference) {
       return;
     }
 
     try {
-      await window.WTFCartAPI.updateCart({ id: lineKey, quantity: 0 });
+      const api = window.WTFCartAPI;
+
+      if (!api || typeof api.removeFromCart !== 'function') {
+        return;
+      }
+
+      let target = reference;
+
+      if (typeof reference !== 'object') {
+        const numericReference = Number(reference);
+        if (Number.isInteger(numericReference)) {
+          target = numericReference;
+        } else {
+          target = { key: reference };
+        }
+      }
+
+      await api.removeFromCart(target);
     } catch (error) {
       console.error('WTF Lightspeed: Failed to remove item from cart:', error);
     }
