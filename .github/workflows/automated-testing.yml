@@ -24,13 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Use Shopify's maintained action (v2)
+      # Shopify-maintained action
       - name: Run Theme Check
         uses: shopify/theme-check-action@v2
         with:
-          theme_root: '.'         # change if your theme lives in a subfolder
-          base: main              # compares PR against main for annotations
-          token: ${{ github.token }}
+          theme_root: '.'          # change if theme is in a subfolder
+          base: main               # compare PR against main for annotations
+          token: ${{ secrets.GITHUB_TOKEN }}   # ✅ use the correct token context
 
   unit-tests:
     name: Unit Tests (Node, if present)
@@ -73,10 +73,11 @@ jobs:
           [ -f "templates/product.json" ] && ok "Product template present" || ff "Missing templates/product.json"
 
           # Optional cart UI section (warn only)
-          ( for f in sections/wtf-cart.liquid sections/cart-drawer.liquid sections/main-cart-items.liquid sections/cart.liquid; do
-              [ -f "$f" ] && { ok "Cart section found: $f"; exit 0; }
+          ( found=0
+            for f in sections/wtf-cart.liquid sections/cart-drawer.liquid sections/main-cart-items.liquid sections/cart.liquid; do
+              if [ -f "$f" ]; then ok "Cart section found: $f"; found=1; break; fi
             done
-            ww "No cart section found (ok if using app blocks only)"
+            [ "$found" -eq 1 ] || ww "No cart section found (ok if using app blocks only)"
           )
 
           # Ensure Product JSON-LD is still emitted somewhere
@@ -96,7 +97,7 @@ jobs:
   perf-snapshot:
     name: Performance Snapshot (scheduled-only)
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
       - name: Collect asset metrics
