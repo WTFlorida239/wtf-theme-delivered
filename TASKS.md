@@ -1,51 +1,45 @@
-# WTF Theme – Launch Task Board
+# WTF Theme – Production Task Board
 
-> All tasks have been completed and the repository is now fully consolidated and operational.
+> Maintain this board as the single source of truth for automation upkeep, theme hardening, and follow-up work. Update statuses whenever a task is started, completed, or re-scoped.
 
-## 1. Automation & Tooling ✅ COMPLETE
-- [x] **Competitor Signal Audit Script**
-- [x] **Merge Conflict Scanner**
-- [x] **Pre-commit Automation Bundle**
-- [x] **Theme Quality Automation**
-- [x] **CI/CD Pipeline Enhancement**
-- [x] **Development Environment Setup**
-- [x] **Schema Regression Tests**
-- [x] **Lighthouse Threshold Alerts**
+## Status Legend
+- [ ] Not started
+- [~] In progress / needs follow-up
+- [x] Complete
 
-## 2. Theme Polish & UX ✅ COMPLETE
-- [x] **Drink Builder Performance Pass**
-- [x] **Accessibility Sweep**
-- [x] **Preset Recipes**
+## 0. Operational Snapshot
+- **Phase**: 4 – Production Hardening & Sustainment
+- **Theme health**: Passing theme-check, order readiness audit, and CI workflows.
+- **Open risks**: Lighthouse performance improvements (21 non-blocking suggestions) and ongoing competitor monitoring.
 
-## 3. Commerce Operations ✅ COMPLETE
-- [x] **Lightspeed Sync Dry Run**
-- [x] **2Accept Gateway QA**
-- [x] **Inventory Safety Nets**
+## 1. Active Automation Upkeep
+- [ ] **Verify workflow integrity** – Run `npm run health:check` and confirm all GitHub Actions use the latest shared steps. Document results in `docs/status/workflow-health-log.md` (create/update as needed).
+- [ ] **Order readiness smoke** – Execute `node scripts/order-readiness-check.js --ci` after major cart/builder updates and capture output in PR QA notes.
+- [ ] **Competitor signal snapshot** – Schedule `npm run competitors:audit` (weekly) and update `/docs/competitor-insights.json` with notable deltas and action items.
+- [ ] **Lighthouse regression watch** – Review nightly `quality-monitoring.yml` artifacts; file follow-up issues here when performance drops below target.
+- [ ] **Pre-commit enforcement review** – Audit `.githooks/pre-commit` quarterly to ensure commands match documented standards in `AGENTS.md`.
 
-## 4. SEO & Content ✅ COMPLETE
-- [x] **Local Business Schema Refresh**
-- [x] **Events Calendar Integration**
-- [x] **Competitor Comparison Landing Page**
-- [x] **Loyalty Countermeasures**
-- [x] **Event Schema Automation**
+## 2. Near-Term Enhancements
+- [ ] **Automation reporting rollup** – Create `docs/automation/status.md` summarizing workflow coverage, manual triggers, and owner assignments.
+- [ ] **Schema regression coverage** – Extend `scripts/order-readiness-check.js` to validate JSON-LD payloads against competitor baseline.
+- [ ] **Accessibility regression smoke** – Evaluate adding pa11y CLI to CI (document trade-offs, update ADR if adopted).
+- [ ] **Performance budget alerts** – Define Lighthouse performance budgets and integrate thresholds into `quality-monitoring.yml` outputs.
 
-## 5. Analytics & Reporting ✅ COMPLETE
-- [x] **GA4 + Pixel Validation**
-- [x] **Performance Dashboard**
-- [x] **Launch Readiness Review**
+## 3. Monitoring Cadence
+| Area | Check | Frequency | Owner | Notes |
+| --- | --- | --- | --- | --- |
+| Theme validation | `npm run theme:check` | Before each PR | Theme Engineer | Block merges on Liquid errors. |
+| Cart & builder | `node scripts/order-readiness-check.js --ci` | Weekly + post-feature | Commerce Engineer | Ensures drink builder + cart flows remain stable. |
+| Competitor insights | `npm run competitors:audit` | Weekly | SEO Specialist | Update insights doc and JSON-LD strategies. |
+| Workflow health | `npm run health:check` | Monthly | DevOps | Confirms automation parity with documentation. |
+| Lighthouse CI | `quality-monitoring.yml` artifacts | Nightly | Performance Engineer | Log regressions in this board. |
 
-## 6. Hardening & Documentation ✅ COMPLETE
-- [x] **Theme Audit & Validation**
-- [x] **Error Resolution**
-- [x] **Performance Optimization**
-- [x] **JSON Validation**
-- [x] **Reference Integrity**
-- [x] **Naming Convention Standardization**
-- [x] **Quality Automation Implementation**
-- [x] **Documentation Overhaul**
-- [x] **Development Workflow Enhancement**
-- [x] **Repository Hardening**
+## 4. Completed Milestones
+- [x] Theme audit & validation
+- [x] Schema regression tests
+- [x] Drink builder performance pass
+- [x] 2Accept gateway QA + Lightspeed sync dry run
+- [x] Documentation overhaul & naming convention standardization
+- [x] Quality automation implementation (44 automated corrections applied)
 
----
-**Hardening Summary**: The theme has undergone comprehensive hardening with 44 total automated corrections applied, all critical errors resolved, complete documentation updates, standardized naming conventions, and robust CI/CD automation. The repository is now production-ready with zero theme-check errors and only 21 non-blocking performance suggestions remaining.
-
+Keep this board updated alongside PRs. Close tasks only after documentation and automation updates are merged.

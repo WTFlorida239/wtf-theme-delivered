@@ -1,66 +1,69 @@
-# WTF Theme Ops Handbook
+# WTF Theme Ops Handbook — Phase 4 Production Hardening
 
-## 1. Mission & Launch Focus
-- Deliver a production-ready Shopify theme for **WTF | Welcome To Florida** with a frictionless drink builder, POS-ready catalog, and compliant payment stack.
-- Current milestone: **Phase 4 – Hardening & Production Readiness**. We have completed comprehensive theme auditing, implemented quality automation, standardized naming conventions, and updated all documentation for production deployment.
-- Always keep accessibility (WCAG 2.1 AA), performance (90+ Lighthouse), and SEO (rich structured data) as non-negotiable requirements.
-
-## 1.1. Recent Hardening Improvements
-- **Theme Quality Automation**: Implemented comprehensive CI/CD workflows including theme-check validation, JSON validation, accessibility testing, and security scanning.
-- **Development Standards**: Established consistent naming conventions across all files, documented in `NAMING_CONVENTIONS.md`.
-- **Pre-commit Hooks**: Added automated quality checks that run before every commit to prevent issues from entering the codebase.
-- **Documentation Overhaul**: Updated README.md, AGENTS.md, and TASKS.md to reflect current architecture and procedures.
+## 1. Orientation & Scope
+- This repository contains the production Shopify theme for **WTF | Welcome To Florida**. All changes must preserve hardening standards set in Phase 4.
+- Before modifying anything, review:
+  - [`README.md`](README.md) for environment setup & deploy workflow.
+  - [`WTF_Site_Config.md`](WTF_Site_Config.md) for theme settings, installed apps, and integration constraints.
+  - [`local-kava-bars-database - Sheet1.csv`](local-kava-bars-database%20-%20Sheet1.csv) when benchmarking competitors for performance, UX, or structured data.
+- Keep accessibility (WCAG 2.1 AA), performance (90+ Lighthouse), and SEO (comprehensive JSON-LD) as non-negotiable requirements.
 
 ## 2. Sources of Truth
 | Artifact | Purpose |
 | --- | --- |
-| [`README.md`](README.md) | Ground-level orientation, setup, and workflow summary. |
-| [`WTF_Site_Config.md`](WTF_Site_Config.md) | Storefront configuration, brand, and integration constraints. |
-| [`local-kava-bars-database - Sheet1.csv`](local-kava-bars-database%20-%20Sheet1.csv) | Competitor benchmark data. Use it when making UX, SEO, or performance decisions. |
-| `/docs/` | ADRs, deployment guides, QA checklists, metafield dictionaries. |
-| `/scripts/order-readiness-check.js` | Automated storefront readiness audit executed in CI. |
+| `/docs/` | ADRs, QA checklists, runbooks, metafield dictionaries. Update the relevant ADR when introducing architectural changes or third-party integrations. |
+| `/scripts/` | Automation entry points. Every script must stay idempotent and CI-safe. |
+| `NAMING_CONVENTIONS.md` | Required naming rules for Liquid, assets, and metafields. |
+| `TECHNICAL_DOCUMENTATION.md` | Engineering reference for builder flows and integrations. |
+| `TASKS.md` | Live task board; update whenever scope, automation status, or follow-up work changes. |
 
-When modifying files inside a subdirectory, check for additional `AGENTS.md` files (none exist today) and follow their rules.
+## 3. Non-Negotiable Delivery Standards
+1. **Performance first** – optimize Liquid loops, defer non-critical scripts, and prefer lightweight vanilla JS/Alpine snippets.
+2. **Accessibility always** – manage focus, label interactive components, and validate against WCAG 2.1 AA.
+3. **SEO excellence** – produce rich JSON-LD schemas for homepage, products, collections, FAQs, and local business data.
+4. **Operational safety** – no regressions to checkout, POS, or inventory workflows. Respect existing metafield namespaces (`wtf.settings`).
+5. **Documentation parity** – reflect behavior, automation, and dependency shifts in `README.md`, `/docs`, and `TASKS.md`.
 
-## 3. Automation & Quality Gates
-| Automation | Trigger | What it must do |
-| --- | --- | --- |
-| **Theme Quality Check (theme-quality-check.yml)** | PR + pushes to `main`, `develop`, `hardening/*` | Comprehensive quality validation including theme-check with auto-correct, JSON validation, Liquid syntax checking, asset optimization review, accessibility patterns, and naming convention enforcement. |
-| **CI/CD Pipeline (ci-cd-pipeline.yml)** | PR + pushes to `main`, `develop` | Install dependencies, run conflict scan, competitor audit, order readiness check, theme validation, and security scanning. |
-| **Theme Check (automated-testing.yml)** | PR + `main` | Execute `shopify theme check` against Liquid templates with error-level failure threshold. |
-| **Lighthouse CI (quality-monitoring.yml)** | Nightly + manual dispatch | Audits storefront Performance, Best Practices, Accessibility, SEO. Export results to the PR as artifacts. |
-| **Security & Dependencies (security-dependency-management.yml)** | PR + scheduled | Vulnerability scanning, dependency updates, security header validation, and compliance checking. |
-| **Pre-commit Hooks (.githooks/pre-commit)** | Every commit | Local quality validation including theme-check, JSON validation, large file detection, secret scanning, and required file verification. |
-| **Order Readiness Audit** | PR + `main` | Runs `node scripts/order-readiness-check.js --ci` to confirm cart, builder, and schema outputs remain launch-ready. |
-| **Preview Deploy** | PR merge queue | Publishes preview theme using Shopify CLI with password-protected access. |
-| **Production Deploy** | Release tags | Pushes theme bundle to the live store after approvals. |
-| **Competitor Signal Snapshot** | Manual + scheduled (`npm run competitors:audit`) | Parse the CSV dataset, validate doc parity, surface schema/performance deltas, write `docs/competitor-insights.json`, and attach findings to PRs. _Implementation progress tracked in `TASKS.md`._ |
-| **Merge Conflict Scan** | Pre-commit (`npm run conflicts:scan`) | Fail fast when merge conflict markers remain anywhere in the repo. |
+## 4. Automation & Quality Gates
+| Workflow | Trigger | Manual Command | Notes |
+| --- | --- | --- | --- |
+| Theme Quality Check (`.github/workflows/theme-quality-check.yml`) | PRs & pushes to `main`, `develop`, `hardening/*` | `npm run theme:check` | Runs Shopify theme-check with fail-on-error, JSON validation, and Liquid linting. |
+| CI/CD Pipeline (`ci-cd-pipeline.yml`) | PRs & pushes to `main`, `develop` | `npm run order:readiness` | Installs deps, runs competitor audit, security scan, and order readiness checks. |
+| Automated Testing (`automated-testing.yml`) | PRs & `main` | `shopify theme check --fail-level=error` | Guardrail workflow; mirror changes here when updating lint rules. |
+| Lighthouse CI (`quality-monitoring.yml`) | Nightly + manual dispatch | _N/A (handled via GitHub workflow)_ | Review artifacts; capture regressions in `TASKS.md`. |
+| Security & Dependency Audit (`security-dependency-management.yml`) | PRs + scheduled | _N/A_ | Includes dependency updates, secret scans, and header validation. |
+| Order Readiness Audit | PRs & `main` | `node scripts/order-readiness-check.js --ci` | Validates cart, builder paths, schema output. Update script if flows change. |
+| Competitor Signal Snapshot | Manual + scheduled (`npm run competitors:audit`) | `npm run competitors:audit` | Parses competitor CSV, writes `/docs/competitor-insights.json`, and posts deltas to PRs. |
+| Merge Conflict Scan | Pre-commit | `npm run conflicts:scan` | Fails if conflict markers remain. Required before commit. |
+| Pre-commit Hooks (`.githooks/pre-commit`) | Every commit | _Runs automatically_ | Executes theme-check, JSON validation, secret scanning, large file detection. |
+| Health Check (`scripts/github-actions-health-check.js`) | Manual | `npm run health:check` | Confirms workflow files are current and enforced. |
 
-> ✅ Before committing: Pre-commit hooks automatically run quality checks including `shopify theme check`, JSON validation, security scanning, and file verification. For manual validation, run `./setup-dev.sh` to ensure proper development environment setup.  
-> If a script is missing, note the gap in the PR body and create a follow-up in `TASKS.md`.
+> ⚙️ When adding or updating automation, revise this table, document commands in `README.md`, and create/close tasks in `TASKS.md`.
 
-## 4. Role Guides
-- **Architect Agent**: Maintain ADRs (`/docs/adr/`), validate metafield strategy, and own integration trade-offs (Shopify Functions vs. Hydrogen). Any new dependency or architectural shift requires an ADR and updates to `README.md`.
-- **Theme/Liquid Agent**: Touch only Liquid/JSON/CSS needed for the acceptance criteria. Respect translation strings, use snippets to limit nesting, and wire metafields under the `wtf.settings` namespace. Provide accessibility annotations and focus management.
-- **Hydrogen/Headless Agent**: Build Storefront API integrations using edge-ready patterns. Cache responsibly, keep queries colocated, and add unit or component tests.
-- **Payments & POS Agent**: Configure 2Accept + Lightspeed syncs. Record secrets/env requirements in `/docs/runbooks/payments.md`. Provide mocks for automated tests.
-- **Discounts & Upsell Agent**: Ship Shopify Functions with tests, config via metafields, and documentation updates.
-- **Social Wall Agent**: Aggregate IG/YT/TikTok feeds with caching + graceful fallback. Keep rate limits in mind.
+## 5. Day-to-Day Workflow
+1. **Plan** – Align with `TASKS.md`. Capture new work, automation findings, or regressions immediately.
+2. **Implement** – Commit on `main` with small, focused changes. Follow naming rules and keep Liquid logic modular via snippets.
+3. **Validate** – Run relevant `npm` scripts and Shopify CLI checks locally. Address failing hooks before pushing.
+4. **Document** – Update reference docs, metafield dictionaries, and changelog notes (PR body + `TASKS.md`).
+5. **Handoff** – Provide QA notes, Lighthouse deltas, and outstanding follow-ups in the PR description.
 
-## 5. Delivery Cadence & Expectations
-1. **Plan** – Align with `TASKS.md` and update it when scope evolves.
-2. **Implement** – Small, reviewable commits directly on `main` (no feature branches in this environment). Keep commit messages imperative and scoped.
-3. **Verify** – Run the automation suite locally, gather Lighthouse data when UI changes are made, and attach evidence in the PR.
-4. **Document** – Update `README.md`, `WTF_Site_Config.md`, or `/docs` when behavior, dependencies, or configuration changes.
-5. **Handoff** – Each PR must include manual QA notes and highlight any follow-up tasks in `TASKS.md`.
+## 6. Implementation Standards
+- **Liquid & JSON**: Use section & snippet compositions, guard against empty states, and load metafields via `wtf.settings`. Keep loops lean.
+- **JavaScript**: Prefer vanilla JS or Alpine.js. Lazy-load heavy logic using `requestIdleCallback` or `IntersectionObserver`. Never import jQuery.
+- **CSS/SCSS**: Scope styles, reuse theme tokens from `config/settings_data.json`, and avoid blocking fonts. Use logical properties for RTL compatibility.
+- **Data & SEO**: Emit JSON-LD via `<script type="application/ld+json">` with full schema coverage. Sync structured data with competitor insights.
+- **Testing Artifacts**: When fixing automated tests, update fixtures and document behavior changes in `/docs/testing/` if applicable.
 
-## 6. Launch Criteria Snapshot
-- Shopify payments + 2Accept gateway verified in staging & production.
-- Lightspeed Retail inventory sync operational with fallback messaging.
-- Drink builder supports Dunkin-style customization, price diffs, and line-item properties across all entry points (PDP, quick add, cart).
-- Structured data (JSON-LD) covers homepage, products, collections, FAQs, and local business schema referencing the latest competitor insights.
-- Analytics plan implemented (GA4 + Meta pixel) with consent compliance.
-- A11y + performance regression suite passing for home, PDP, builder flows.
+## 7. QA & Validation Checklist
+- `npm install` (first run) to ensure dependencies are present.
+- `npm run conflicts:scan` before staging changes.
+- `npm run theme:check` and `node scripts/order-readiness-check.js` for Liquid/cart validation.
+- Capture Lighthouse results for UI-impacting changes; attach artifacts to the PR.
+- Verify JSON outputs (`config/*.json`, section schema) with a formatter before commit.
 
-Keep this handbook updated as processes evolve. If you add or modify automation, mirror the change here, update `README.md`, and capture outstanding work in `TASKS.md`.
+## 8. Documentation & Communication
+- Update `TASKS.md` with status changes, automation follow-ups, and links to PRs.
+- Note any missing scripts or automation gaps in PR bodies and create follow-up tasks.
+- Keep `README.md`, `WTF_Site_Config.md`, and relevant `/docs` pages synchronized with code changes.
+
+Staying disciplined with these guidelines keeps the WTF theme production-ready, auditable, and ahead of competitors on performance and SEO.
