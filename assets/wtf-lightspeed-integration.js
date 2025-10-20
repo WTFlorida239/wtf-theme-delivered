@@ -131,8 +131,8 @@ class WTFLightspeedIntegration {
     if (this.listenersBound || !this.ready) {
       return;
     }
-    document.addEventListener('cart:added', this.boundHandlers.cartAdded);
-    document.addEventListener('cart:updated', this.boundHandlers.cartUpdated);
+    document.addEventListener('wtf:cart:add', this.boundHandlers.cartAdded);
+    document.addEventListener('wtf:cart:update', this.boundHandlers.cartUpdated);
     this.listenersBound = true;
   }
 
@@ -140,8 +140,8 @@ class WTFLightspeedIntegration {
     if (!this.listenersBound) {
       return;
     }
-    document.removeEventListener('cart:added', this.boundHandlers.cartAdded);
-    document.removeEventListener('cart:updated', this.boundHandlers.cartUpdated);
+    document.removeEventListener('wtf:cart:add', this.boundHandlers.cartAdded);
+    document.removeEventListener('wtf:cart:update', this.boundHandlers.cartUpdated);
     this.listenersBound = false;
   }
 

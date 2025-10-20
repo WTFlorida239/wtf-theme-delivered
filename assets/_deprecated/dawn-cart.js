@@ -1,4 +1,9 @@
 /**
+ * DEPRECATED – superseded by wtf-cart-api.js and wtf-cart-ui.js.
+ * This file is no longer included in theme.liquid and will be removed in a future release.
+ */
+
+/**
  * WTF Cart - Adapted from Dawn
  * Simplified cart management with wtf:cart:update event dispatching
  */
@@ -259,4 +264,3 @@ class CartDrawer extends HTMLElement {
 }
 
 customElements.define('cart-drawer', CartDrawer);
-

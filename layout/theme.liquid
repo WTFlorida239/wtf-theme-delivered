@@ -282,14 +282,12 @@
     <script src="{{ 'constants.js'      | asset_url }}" defer></script>
     <script src="{{ 'pubsub.js'         | asset_url }}" defer></script>
     <script src="{{ 'fetch-config.js'   | asset_url }}" defer></script>
-    <script src="{{ 'dawn-cart.js'      | asset_url }}" defer></script>
-    <script src="{{ 'dawn-product-form.js' | asset_url }}" defer></script>
+    <script src="{{ 'product-form.js' | asset_url }}" defer></script>
 
     {%- comment -%} 5) Cart stack: API → UI → bridge → enhancements {%- endcomment -%}
     {{ 'wtf-cart-api.js' | asset_url | script_tag | replace: '<script', '<script defer' }}
     {{ 'wtf-cart-ui.js'  | asset_url | script_tag | replace: '<script', '<script defer' }}
     <script src="{{ 'wtf-cart-event-bridge.js' | asset_url }}" defer></script>
-    <script src="{{ 'wtf-enhanced-cart.js'      | asset_url }}" defer></script>
     <script src="{{ 'wtf-variants.js'           | asset_url }}" defer></script>
     <script src="{{ 'wtf-drink-builder-enhanced.js' | asset_url }}" defer></script>
     <script src="{{ 'wtf-upselling.js'          | asset_url }}" defer></script>
@@ -338,7 +336,7 @@
         // Cart backup
         try {
           const key = 'wtf-cart-backup';
-          document.addEventListener('cart:updated', (e) => localStorage.setItem(key, JSON.stringify(e.detail)));
+          document.addEventListener('wtf:cart:update', (e) => localStorage.setItem(key, JSON.stringify(e.detail)));
         } catch {}
 
         // Age verification trigger for THC pages (modal defined below)

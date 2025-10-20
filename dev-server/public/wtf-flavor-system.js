@@ -321,7 +321,7 @@
           this.toast('Added to cart!', 'success');
           this.bumpCartCount();
           // Dispatch cart:added event for cart drawer
-          document.dispatchEvent(new CustomEvent('cart:added', { detail: { properties } }));
+          document.dispatchEvent(new CustomEvent('wtf:cart:add', { detail: { properties } }));
         })
         .catch(err => {
           console.error(err);

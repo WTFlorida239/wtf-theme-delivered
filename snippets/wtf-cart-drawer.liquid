@@ -258,7 +258,7 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 
     // Open & refresh when something gets added
-    document.addEventListener('cart:added', async function(event){
+    document.addEventListener('wtf:cart:update', async function(event){
       var cart = event && event.detail && event.detail.cart ? event.detail.cart : null;
       if (!cart) {
         cart = await getCart();
@@ -268,7 +268,7 @@
     });
 
     // Keep in sync if other code emits updates
-    document.addEventListener('cart:updated', async function(event){
+    document.addEventListener('wtf:cart:update', async function(event){
       if (event && event.detail && typeof event.detail === 'object') {
         if (event.detail.items) {
           renderCart(event.detail);
@@ -281,18 +281,6 @@
       }
       const cart = await getCart();
       renderCart(cart);
-    });
-
-    // Listen for wtf:cart:update events (from builders)
-    document.addEventListener('wtf:cart:update', async function(event){
-      if (event && event.detail && event.detail.items) {
-        renderCart(event.detail);
-        updateCartCount(event.detail.item_count);
-      } else {
-        const cart = await getCart();
-        renderCart(cart);
-        updateCartCount(cart.item_count);
-      }
     });
 
     // Listen for wtf:cart:add events (from builders) and open drawer

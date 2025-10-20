@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Update cart count when cart changes
-  document.addEventListener('cart:updated', function(event) {
+  document.addEventListener('wtf:cart:update', function(event) {
     const cartCount = document.querySelector('[data-cart-count]');
     if (cartCount && event.detail && event.detail.item_count !== undefined) {
       cartCount.textContent = event.detail.item_count;

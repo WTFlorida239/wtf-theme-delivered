@@ -139,7 +139,7 @@
         const cart = await WTFCart.get();
         
         // Dispatch events
-        document.dispatchEvent(new CustomEvent('cart:added', { 
+        document.dispatchEvent(new CustomEvent('wtf:cart:add', {
           detail: { line, cart, item: line } 
         }));
         
@@ -298,7 +298,7 @@
     init(opts = {}) {
       if (opts.onChange && typeof opts.onChange === 'function') {
         document.addEventListener('cart:refreshed', opts.onChange);
-        document.addEventListener('cart:added', opts.onChange);
+        document.addEventListener('wtf:cart:add', opts.onChange);
         document.addEventListener('cart:changed', opts.onChange);
       }
 

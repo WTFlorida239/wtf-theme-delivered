@@ -216,7 +216,7 @@ class WTF2AcceptIntegration {
     });
 
     // Listen for cart updates to update payment amounts
-    document.addEventListener('cart:updated', (event) => {
+    document.addEventListener('wtf:cart:update', (event) => {
       this.updatePaymentAmount(event.detail.total_price);
     });
   }
