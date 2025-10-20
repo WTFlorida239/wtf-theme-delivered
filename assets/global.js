@@ -155,7 +155,7 @@
     try {
       const cart = await Cart.get();
       updateCartCountDisplay(cart.item_count || 0);
-      bus.emit('cart:updated', cart);
+      bus.emit('wtf:cart:update', cart);
       return cart;
     } catch (e) {
       console.warn('Cart fetch failed, using fallback count', e);
@@ -193,7 +193,7 @@
       // Fetch fresh cart and dispatch standard DOM events for compatibility
       const cart = await Cart.get();
       document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: { cart } }));
-      document.dispatchEvent(new CustomEvent('cart:added', { detail: { cart } }));
+      document.dispatchEvent(new CustomEvent('wtf:cart:add', { detail: { cart } }));
       // Attempt to open drawer if present
       try { if (window.WTF_CART && typeof window.WTF_CART.open === 'function') window.WTF_CART.open(); } catch(_) {}
 
@@ -224,7 +224,7 @@
       // Fetch fresh cart and dispatch standard DOM events for compatibility
       const cart = await Cart.get();
       document.dispatchEvent(new CustomEvent('wtf:cart:update', { detail: { cart } }));
-      document.dispatchEvent(new CustomEvent('cart:added', { detail: { cart } }));
+      document.dispatchEvent(new CustomEvent('wtf:cart:add', { detail: { cart } }));
       try { if (window.WTF_CART && typeof window.WTF_CART.open === 'function') window.WTF_CART.open(); } catch(_) {}
 
       toast('Added to cart', 'success');

@@ -391,7 +391,7 @@
   // ---------------------------
   // Main controller
   // ---------------------------
-  const WTFAnalytics = {
+  const WTFAnalytics = window.WTFAnalytics || {
     async init() {
       initConfig();
 

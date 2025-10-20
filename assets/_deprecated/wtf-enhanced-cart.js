@@ -1,3 +1,8 @@
+/**
+ * DEPRECATED – superseded by wtf-cart-api.js and wtf-cart-ui.js.
+ * This file is no longer included in theme.liquid and will be removed in a future release.
+ */
+
 /* WTF Enhanced AJAX Cart System - UNIFIED VERSION
    - Handles all cart operations with proper persistence
    - Supports line item properties for custom drinks

@@ -161,7 +161,7 @@
           })
           .then(item => {
             // Dispatch success event
-            document.dispatchEvent(new CustomEvent('cart:added', { 
+            document.dispatchEvent(new CustomEvent('wtf:cart:add', {
               detail: { item } 
             }));
             return item;

@@ -50,8 +50,8 @@
     const detail = { cart, last_added: item };
     document.dispatchEvent(new CustomEvent("wtf:cart:update", { detail }));
     // Back-compat generic events used by other components
-    document.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
-    document.dispatchEvent(new CustomEvent("cart:added", { detail: { item, cart } }));
+    document.dispatchEvent(new CustomEvent("wtf:cart:update", { detail: cart }));
+    document.dispatchEvent(new CustomEvent("wtf:cart:add", { detail: { item, cart } }));
     // Open drawer if available
     try { if (window.WTF_CART && typeof window.WTF_CART.open === 'function') window.WTF_CART.open(); } catch(e) {}
     // Legacy signal some projects used

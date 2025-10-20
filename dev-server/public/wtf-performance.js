@@ -248,7 +248,7 @@
       });
 
       // Measure cart updates
-      document.addEventListener('cart:updated', (e) => {
+      document.addEventListener('wtf:cart:update', (e) => {
         const updateTime = performance.now() - (e.detail.startTime || 0);
         this.recordMetric('CART_UPDATE', updateTime);
       });

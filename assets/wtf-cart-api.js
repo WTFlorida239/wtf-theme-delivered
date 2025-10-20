@@ -50,6 +50,9 @@
     if (item) safeDispatch('wtf:cart:add', { item, cart });
 
     // legacy compatibility
+    if (window.WTF_DEBUG) {
+      console.log('[WTF Cart API] Dispatching legacy events: cart:updated, cart:added');
+    }
     safeDispatch('cart:updated', cart);
     if (item) safeDispatch('cart:added', { item, cart });
   }

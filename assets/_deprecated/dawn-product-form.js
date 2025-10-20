@@ -1,4 +1,10 @@
 /**
+ * DEPRECATED – superseded by wtf-cart-api.js and wtf-cart-ui.js.
+ * This file is no longer included in theme.liquid and will be removed in a future release.
+ * A new version of this file (assets/product-form.js) will be created to replace this one.
+ */
+
+/**
  * WTF Product Form - Adapted from Dawn
  * Handles AJAX add-to-cart with wtf:cart:update event dispatching
  */
@@ -143,4 +149,3 @@ if (!customElements.get('wtf-product-form')) {
     }
   );
 }
-
