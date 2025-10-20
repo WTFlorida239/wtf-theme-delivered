@@ -1,154 +1,129 @@
-/* assets/wtf-cart-ui.js
-   Binds header/cart badges to the authoritative cart state.
-   - Works with WTFCartAPI events from your current API file:
-       • 'wtf:cart:update' (detail: cart or {cart})
-       • 'wtf:cart:add'    (detail: { item, cart })
-       • legacy: 'cart:updated' (detail: cart or {cart})
-   - Hydrates on load: uses server-rendered Liquid value first, then Ajax read.
-   - Resilient to header re-renders: re-applies the last known count.
+/* WTF Cart UI – tiny controller for quantity & remove
+   - Uses /cart/change.js with line (preferred) or item key fallback
+   - Dispatches window 'cart:updated' on success
+   - Robust against duplicate variants with different properties
 */
-(function () {
-  'use strict';
+(() => {
+  const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
 
-  // ---------- Config ----------
-  var COUNT_SELECTOR = '[data-cart-count]';
-  var LABEL_SELECTOR = '[data-cart-label]';
-  var ROOT = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-  // ---------- State ----------
-  var lastCount = 0;
-
-  // ---------- DOM helpers ----------
-  function q(sel) { return document.querySelector(sel); }
-
-  function getBubble() { return q(COUNT_SELECTOR); }
-  function getLabel()  { return q(LABEL_SELECTOR); }
-
-  function setAria(count) {
-    var bubble = getBubble();
-    if (!bubble) return;
-    // Keep it accessible
-    bubble.setAttribute('aria-live', 'polite');
-    bubble.setAttribute('aria-atomic', 'true');
-    bubble.setAttribute('role', 'status');
+  function moneyFromCents(cents) {
+    return (cents / 100).toFixed(2);
   }
 
-  function renderCount(n) {
-    n = Number.isFinite(n) ? n : 0;
-    lastCount = n;
-
-    var bubble = getBubble();
-    var label  = getLabel();
-
-    if (bubble) {
-      bubble.textContent = String(n);
-      // If your theme hides the badge at 0, keep this behavior
-      if ('hidden' in bubble) bubble.hidden = n === 0;
-      bubble.title = n === 1 ? '1 item in cart' : (n + ' items in cart');
+  async function changeLine({ line, quantity, key }) {
+    const form = new FormData();
+    if (Number.isFinite(line)) {
+      form.append('line', String(line)); // 1-based index
+    } else if (key) {
+      form.append('id', key); // line item key fallback
+    } else {
+      throw new Error('Missing line/key for cart change');
     }
+    form.append('quantity', String(quantity));
 
-    if (label) {
-      label.textContent = 'Cart: ' + n + ' item' + (n === 1 ? '' : 's');
-    }
-
-    document.documentElement.classList.toggle('has-cart-items', n > 0);
-  }
-
-  // Re-apply count if the header/badge gets re-rendered by Shopify sections
-  function observeHeaderMounts() {
-    var obs = new MutationObserver(function (muts) {
-      for (var i = 0; i < muts.length; i++) {
-        var m = muts[i];
-        if (m.type === 'childList' && (m.addedNodes && m.addedNodes.length)) {
-          // If a new badge/label appears, refresh its value
-          if (getBubble() || getLabel()) {
-            setAria(lastCount);
-            renderCount(lastCount);
-          }
-        }
-      }
+    const res = await fetch(root + 'cart/change.js', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' },
+      body: form
     });
-    try {
-      obs.observe(document.documentElement, { childList: true, subtree: true });
-    } catch {}
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
   }
 
-  // ---------- Cart sources ----------
-  function countFromEventDetail(detail) {
-    if (!detail) return 0;
-    // Accept either a raw cart or {cart}
-    var cart = detail.cart || detail;
-    return Number(cart && cart.item_count || 0);
-  }
+  function syncDom(cart) {
+    // Title count
+    const title = $('.cart-title');
+    if (title) {
+      title.textContent = `Your Cart (${cart.item_count} ${cart.item_count === 1 ? 'item' : 'items'})`;
+    }
 
-  async function hydrateFromAjax() {
-    // Prefer your WTFCartAPI if present, otherwise do a direct fetch
-    try {
-      if (window.WTFCartAPI && typeof window.WTFCartAPI.getCart === 'function') {
-        var cart = await window.WTFCartAPI.getCart();
-        renderCount(Number(cart && cart.item_count || 0));
+    // Subtotal
+    const subtotalEl = $('[data-cart-subtotal]');
+    if (subtotalEl) subtotalEl.textContent = `$${moneyFromCents(cart.total_price)}`;
+
+    // Each item
+    const domItems = $$('.cart-item');
+    domItems.forEach((el) => {
+      const key = el.dataset.key;
+      const server = cart.items.find((i) => i.key === key);
+      if (!server) {
+        el.remove();
         return;
       }
-    } catch {}
-    // Fallback direct read (no-store + cache buster)
-    try {
-      var res = await fetch(ROOT + 'cart.js?ts=' + Date.now(), { cache: 'no-store', credentials: 'same-origin' });
-      if (res.ok) {
-        var c = await res.json();
-        renderCount(Number(c && c.item_count || 0));
+      const qtyInput = el.querySelector('.qty-input');
+      if (qtyInput && Number(qtyInput.value) !== server.quantity) {
+        qtyInput.value = server.quantity;
       }
-    } catch {}
-  }
-
-  // ---------- Event wiring ----------
-  function wireEvents() {
-    // Primary: your hardened API
-    document.addEventListener('wtf:cart:update', function (e) {
-      renderCount(countFromEventDetail(e.detail));
+      const priceEl = el.querySelector('.cart-item__price--final');
+      if (priceEl) priceEl.textContent = `$${moneyFromCents(server.final_line_price)}`;
     });
 
-    document.addEventListener('wtf:cart:add', function (e) {
-      var c = e && e.detail && e.detail.cart;
-      renderCount(Number(c && c.item_count || 0));
-    });
-
-    // Legacy compatibility (some scripts may dispatch this)
-    document.addEventListener('cart:updated', function (e) {
-      renderCount(countFromEventDetail(e.detail));
-    });
-
-    // Optional: if other parts of the app fire this generic signal
-    document.addEventListener('wtf:cart:changed', function (e) {
-      var cart = e && e.detail && e.detail.cart;
-      if (cart) renderCount(Number(cart.item_count || 0));
-    });
-  }
-
-  // ---------- Boot ----------
-  window.addEventListener('DOMContentLoaded', function () {
-    // 1) Use the server-rendered value immediately (avoids visible “pop”)
-    var bubble = getBubble();
-    var serverCount = 0;
-    if (bubble && bubble.textContent) {
-      var n = parseInt(String(bubble.textContent).trim(), 10);
-      if (Number.isFinite(n)) serverCount = n;
+    if (cart.item_count === 0) {
+      // Reload to render the empty state cleanly
+      window.location.reload();
     }
-    setAria(serverCount);
-    renderCount(serverCount);
+  }
 
-    // 2) Hydrate from authoritative Ajax
-    hydrateFromAjax();
+  // Event delegation for buttons
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
 
-    // 3) Wire event listeners
-    wireEvents();
+    const action = btn.dataset.action;
+    const line = Number(btn.dataset.line);
+    const key = btn.dataset.key;
 
-    // 4) Keep badge in sync if header is re-rendered
-    observeHeaderMounts();
+    // Resolve input for this line
+    const itemEl = btn.closest('.cart-item');
+    const input = itemEl ? itemEl.querySelector('.qty-input') : null;
+    let qty = input ? Number(input.value) || 1 : 1;
+
+    try {
+      if (action === 'increase') {
+        qty = Math.min(99, qty + 1);
+        if (input) input.value = qty;
+        const cart = await changeLine({ line, quantity: qty, key });
+        syncDom(cart);
+        window.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+      } else if (action === 'decrease') {
+        qty = Math.max(1, qty - 1);
+        if (input) input.value = qty;
+        const cart = await changeLine({ line, quantity: qty, key });
+        syncDom(cart);
+        window.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+      } else if (action === 'remove') {
+        const cart = await changeLine({ line, quantity: 0, key });
+        syncDom(cart);
+        window.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+      }
+    } catch (err) {
+      console.error('Cart action failed:', err);
+      window.location.reload(); // last-resort recovery
+    }
   });
 
-  // Optional: expose a tiny helper for debugging
-  window.WTFCartUI = {
-    refresh: hydrateFromAjax,
-    set: renderCount
-  };
+  // Manual quantity edits
+  document.addEventListener('change', async (e) => {
+    const input = e.target.closest('.qty-input');
+    if (!input) return;
+
+    const line = Number(input.dataset.line);
+    const key = input.dataset.key;
+    let qty = Number(input.value) || 1;
+    qty = Math.min(99, Math.max(1, qty));
+    input.value = qty;
+
+    try {
+      const cart = await changeLine({ line, quantity: qty, key });
+      syncDom(cart);
+      window.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+    } catch (err) {
+      console.error('Cart update failed:', err);
+      window.location.reload();
+    }
+  });
 })();
