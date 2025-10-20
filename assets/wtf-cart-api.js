@@ -19,14 +19,11 @@
    * @returns {Promise<Object>} Cart object
    */
   async function getCart() {
-    const res = await fetch(`${ROOT}cart.js`, {
-      async function getCart() {
-+    const res = await fetch(`${ROOT}cart.js?ts=${Date.now()}`, {
+    const res = await fetch(`${ROOT}cart.js?ts=${Date.now()}`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       credentials: 'same-origin',
-      credentials: 'same-origin',
-+      cache: 'no-store',
+      cache: 'no-store',
     });
     if (!res.ok) throw new Error('Failed to fetch cart');
     return res.json();
