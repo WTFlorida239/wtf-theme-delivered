@@ -22,10 +22,38 @@
   const nav = document.querySelector('[data-mobile-nav]');
   if (nav) {
     const summary = nav.querySelector('summary.site-header__nav-toggle');
-    if (summary) {
-      nav.addEventListener('toggle', () => {
-        summary.setAttribute('aria-expanded', nav.open ? 'true' : 'false');
-      });
+    const setAriaExpanded = (isOpen) => {
+      if (summary) {
+        summary.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      }
+    };
+
+    const mobileMedia = window.matchMedia('(max-width: 768px)');
+    const applyResponsiveNavState = (isMobile) => {
+      if (isMobile) {
+        if (nav.open) {
+          nav.open = false;
+        }
+        setAriaExpanded(false);
+      } else {
+        if (!nav.open) {
+          nav.open = true;
+        }
+        setAriaExpanded(true);
+      }
+    };
+
+    applyResponsiveNavState(mobileMedia.matches);
+
+    const mediaListener = (event) => applyResponsiveNavState(event.matches);
+    if (typeof mobileMedia.addEventListener === 'function') {
+      mobileMedia.addEventListener('change', mediaListener);
+    } else if (typeof mobileMedia.addListener === 'function') {
+      mobileMedia.addListener(mediaListener);
     }
+
+    nav.addEventListener('toggle', () => {
+      setAriaExpanded(nav.open);
+    });
   }
 })();
