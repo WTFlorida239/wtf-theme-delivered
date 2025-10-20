@@ -1,6 +1,6 @@
 {% comment %}
   Main product section for WTF theme
-  Handles product display, variants, and add to cart functionality
+  Handles product display, variants, chips (strain/flavor/ice), and add to cart
 {% endcomment %}
 
 <div class="product" data-section-id="{{ section.id }}" data-section-type="product" data-product-id="{{ product.id }}">
@@ -25,9 +25,9 @@
     <div class="product__info">
       {% form 'product', product, id: 'ProductForm-' | append: section.id, class: 'product__form', novalidate: 'novalidate', 'data-wtf-ajax': true, action: routes.cart_add_url %}
         {% comment %}
-          Theme readiness: Shopify form helper posts to {{ routes.cart_add_url }}
-          <form action="{{ routes.cart_add_url }}">
+          Shopify form helper posts to {{ routes.cart_add_url }}
         {% endcomment %}
+
         {% for block in section.blocks %}
           {% case block.type %}
           {% when 'title' %}
@@ -67,6 +67,86 @@
                 {% endfor %}
               </div>
             {% endunless %}
+
+            {%- comment -%}
+              🔹 WTF Chips — Strain / Flavor / Ice
+              - Saved as line item properties
+              - Reads metafields if present; otherwise uses defaults
+            {%- endcomment -%}
+
+            {%- assign strains = product.metafields.custom.strains | default: blank -%}
+            {%- if strains == blank -%}
+              {%- assign strains = "Green,Red,Yellow,White,Half & Half" | split: "," -%}
+            {%- endif -%}
+
+            {%- assign flavors = product.metafields.custom.flavors | default: blank -%}
+            {%- if flavors == blank -%}
+              {%- assign flavors = "Orange,Strawberry,Key Lime,Vanilla,Grape,Raspberry,Mango,Cherry" | split: "," -%}
+            {%- endif -%}
+
+            {%- assign ice_levels = product.metafields.custom.ice_levels | default: blank -%}
+            {%- if ice_levels == blank -%}
+              {%- assign ice_levels = "No Ice,Light Ice,Regular Ice,Extra Ice" | split: "," -%}
+            {%- endif -%}
+
+            <div class="product__customizations">
+              <!-- Strain chips (property: wtf_strain) -->
+              <div class="wtf-chips" data-chip-group="wtf_strain">
+                <p class="wtf-chips__label">Strain</p>
+                <div class="wtf-chips__row">
+                  {% for s in strains %}
+                    {% assign val = s | strip %}
+                    <button type="button"
+                            class="wtf-chip"
+                            data-chip
+                            data-prop="wtf_strain"
+                            data-value="{{ val | escape }}"
+                            aria-pressed="false">
+                      {{ val }}
+                    </button>
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="properties[wtf_strain]" value="" data-chip-input="wtf_strain">
+              </div>
+
+              <!-- Flavor chips (property: wtf_flavor) -->
+              <div class="wtf-chips" data-chip-group="wtf_flavor">
+                <p class="wtf-chips__label">Flavor</p>
+                <div class="wtf-chips__row">
+                  {% for f in flavors %}
+                    {% assign val = f | strip %}
+                    <button type="button"
+                            class="wtf-chip"
+                            data-chip
+                            data-prop="wtf_flavor"
+                            data-value="{{ val | escape }}"
+                            aria-pressed="false">
+                      {{ val }}
+                    </button>
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="properties[wtf_flavor]" value="" data-chip-input="wtf_flavor">
+              </div>
+
+              <!-- Ice chips (property: wtf_ice) -->
+              <div class="wtf-chips" data-chip-group="wtf_ice">
+                <p class="wtf-chips__label">Ice</p>
+                <div class="wtf-chips__row">
+                  {% for i in ice_levels %}
+                    {% assign val = i | strip %}
+                    <button type="button"
+                            class="wtf-chip"
+                            data-chip
+                            data-prop="wtf_ice"
+                            data-value="{{ val | escape }}"
+                            aria-pressed="false">
+                      {{ val }}
+                    </button>
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="properties[wtf_ice]" value="" data-chip-input="wtf_ice">
+              </div>
+            </div>
 
           {% when 'quantity_selector' %}
             <div class="product__quantity" {{ block.shopify_attributes }}>
@@ -161,128 +241,41 @@
     margin: 0 auto;
     padding: 2rem;
   }
+  .product__media { position: sticky; top: 2rem; }
+  .product__image { width: 100%; height: auto; border-radius: 8px; }
+  .product__title { font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; }
+  .product__price { font-size: 1.5rem; margin-bottom: 1.5rem; }
+  .product__price--compare { text-decoration: line-through; color: #999; margin-right: 0.5rem; }
+  .product__price--current { color: #ff6600; font-weight: bold; }
 
-  .product__media {
-    position: sticky;
-    top: 2rem;
+  .product__option { margin-bottom: 1rem; }
+  .product__option-label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+  .product__option-select, .product__quantity-input {
+    width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 4px; font-size: 1rem;
   }
 
-  .product__image {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
+  .product__customizations { margin: 1.25rem 0 1.5rem; }
+  .wtf-chips { margin-bottom: 1rem; }
+  .wtf-chips__label { font-weight: 700; margin-bottom: .5rem; }
+  .wtf-chips__row { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .wtf-chip { padding: .5rem .75rem; border: 1.5px solid #ddd; border-radius: 999px; background: #fff; cursor: pointer; }
+  .wtf-chip[aria-pressed="true"] { border-color: #ff6600; background: #fff6ef; }
 
-  .product__title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    color: #333;
-  }
+  .product__quantity { margin-bottom: 1.5rem; }
+  .product__quantity-label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+  .product__add-to-cart { width: 100%; padding: 1rem; background: #ff6600; color: #fff; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease; }
+  .product__add-to-cart:hover:not(:disabled) { background: #e55a00; }
+  .product__add-to-cart:disabled { background: #ccc; cursor: not-allowed; }
 
-  .product__price {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .product__price--compare {
-    text-decoration: line-through;
-    color: #999;
-    margin-right: 0.5rem;
-  }
-
-  .product__price--current {
-    color: #ff6600;
-    font-weight: bold;
-  }
-
-  .product__option {
-    margin-bottom: 1rem;
-  }
-
-  .product__option-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-
-  .product__option-select,
-  .product__quantity-input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-
-  .product__quantity {
-    margin-bottom: 1.5rem;
-  }
-
-  .product__quantity-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-
-  .product__add-to-cart {
-    width: 100%;
-    padding: 1rem;
-    background: #ff6600;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .product__add-to-cart:hover:not(:disabled) {
-    background: #e55a00;
-  }
-
-  .product__add-to-cart:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-
-  .product__description {
-    margin-top: 2rem;
-    line-height: 1.6;
-  }
-
-  .product__share {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #eee;
-  }
-
-  .product__share-label {
-    font-weight: bold;
-    margin-right: 1rem;
-  }
-
-  .product__share-link {
-    margin-right: 1rem;
-    color: #ff6600;
-    text-decoration: none;
-  }
-
-  .product__share-link:hover {
-    text-decoration: underline;
-  }
+  .product__description { margin-top: 2rem; line-height: 1.6; }
+  .product__share { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; }
+  .product__share-label { font-weight: bold; margin-right: 1rem; }
+  .product__share-link { margin-right: 1rem; color: #ff6600; text-decoration: none; }
+  .product__share-link:hover { text-decoration: underline; }
 
   @media (max-width: 768px) {
-    .product__container {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .product__media {
-      position: static;
-    }
+    .product__container { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+    .product__media { position: static; }
   }
 </style>
 
@@ -297,26 +290,55 @@
     const addToCartText = addToCartButton ? addToCartButton.querySelector('.product__add-to-cart-text') : null;
     const addToCartPrice = addToCartButton ? addToCartButton.querySelector('.product__add-to-cart-price') : null;
 
-    // Handle variant selection
-    if (variantSelects.length > 0) {
-      variantSelects.forEach(select => {
-        select.addEventListener('change', updateVariant);
+    // ---------- CHIP LOGIC (properties) ----------
+    const chipButtons = productSection.querySelectorAll('[data-chip]');
+    const chipInputs = {
+      wtf_strain: productSection.querySelector('[data-chip-input="wtf_strain"]'),
+      wtf_flavor: productSection.querySelector('[data-chip-input="wtf_flavor"]'),
+      wtf_ice: productSection.querySelector('[data-chip-input="wtf_ice"]')
+    };
+
+    function selectFirstIfEmpty(propKey) {
+      const group = productSection.querySelector('[data-chip-group="' + propKey + '"]');
+      if (!group) return;
+      const firstBtn = group.querySelector('[data-chip]');
+      const hidden = chipInputs[propKey];
+      if (firstBtn && hidden && !hidden.value) {
+        firstBtn.setAttribute('aria-pressed', 'true');
+        hidden.value = firstBtn.dataset.value || '';
+      }
+    }
+
+    chipButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const prop = btn.dataset.prop;
+        const val = btn.dataset.value || '';
+        const hidden = chipInputs[prop];
+        if (!prop || !hidden) return;
+        // unpress group
+        productSection.querySelectorAll('[data-chip][data-prop="' + prop + '"]').forEach(b => b.setAttribute('aria-pressed','false'));
+        // press this one
+        btn.setAttribute('aria-pressed','true');
+        hidden.value = val;
       });
+    });
+
+    // defaults
+    selectFirstIfEmpty('wtf_strain');
+    selectFirstIfEmpty('wtf_flavor');
+    selectFirstIfEmpty('wtf_ice');
+
+    // ---------- VARIANT LOGIC (unchanged) ----------
+    if (variantSelects.length > 0) {
+      variantSelects.forEach(select => select.addEventListener('change', updateVariant));
     }
 
     function updateVariant() {
       const selectedOptions = Array.from(variantSelects).map(select => select.value);
-      const variant = productData.variants.find(v => {
-        return selectedOptions.every((option, index) => {
-          return v.options[index] === option;
-        });
-      });
-
+      const variant = productData.variants.find(v => selectedOptions.every((option, index) => v.options[index] === option));
       if (variant) {
         const variantIdInput = productForm ? productForm.querySelector('input[name="id"]') : null;
-        if (variantIdInput) {
-          variantIdInput.value = variant.id;
-        }
+        if (variantIdInput) variantIdInput.value = variant.id;
         updatePrice(variant);
         updateAvailability(variant);
       }
@@ -324,82 +346,54 @@
 
     function updatePrice(variant) {
       const priceElement = productSection.querySelector('.product__price--current');
-      if (priceElement) {
-        priceElement.textContent = formatMoney(variant.price);
-      }
-
-      if (addToCartPrice) {
-        addToCartPrice.textContent = formatMoney(variant.price);
-      }
+      if (priceElement) priceElement.textContent = formatMoney(variant.price);
+      if (addToCartPrice) addToCartPrice.textContent = formatMoney(variant.price);
     }
 
     function updateAvailability(variant) {
       if (!addToCartButton || !addToCartText) return;
-
       if (variant.available) {
         addToCartButton.disabled = false;
         addToCartText.textContent = addToCartButton.dataset.addLabel;
-        if (addToCartPrice) {
-          addToCartPrice.hidden = false;
-        }
+        if (addToCartPrice) addToCartPrice.hidden = false;
       } else {
         addToCartButton.disabled = true;
         addToCartText.textContent = addToCartButton.dataset.soldOutLabel;
-        if (addToCartPrice) {
-          addToCartPrice.hidden = true;
-        }
+        if (addToCartPrice) addToCartPrice.hidden = true;
       }
     }
 
-    // Handle form submission
+    // Handle form submission with WTFCartAPI
     if (productForm && addToCartButton) {
       productForm.addEventListener('submit', function(e) {
         const submitter = e.submitter || document.activeElement;
-        if (submitter && submitter !== addToCartButton) {
-          return;
-        }
-
+        if (submitter && submitter !== addToCartButton) return;
         e.preventDefault();
 
         const formData = new FormData(productForm);
-
-        // Use WTFCartAPI for consistent cart operations
         const variantId = formData.get('id');
         const quantity = formData.get('quantity') || 1;
         const properties = {};
-        
-        // Extract properties from formData
         for (const [key, value] of formData.entries()) {
           if (key.startsWith('properties[')) {
             const propName = key.replace('properties[', '').replace(']', '');
-            properties[propName] = value;
+            if (value !== '') properties[propName] = value;
           }
         }
-        
-        window.WTFCartAPI.addToCart({
-          id: variantId,
-          quantity: quantity,
-          properties: properties
-        })
+
+        window.WTFCartAPI.addToCart({ id: variantId, quantity: quantity, properties: properties })
           .then(() => {
-            // Legacy event for backwards compatibility
-            productForm.dispatchEvent(new CustomEvent('wtf:product:added', {
-              bubbles: true,
-              detail: { variantId: variantId, quantity: quantity }
-            }));
+            productForm.dispatchEvent(new CustomEvent('wtf:product:added', { bubbles: true, detail: { variantId, quantity, properties } }));
           })
           .catch(error => {
             console.error('Error adding to cart:', error);
-            productForm.dispatchEvent(new CustomEvent('wtf:product:error', {
-              bubbles: true,
-              detail: { error }
-            }));
+            productForm.dispatchEvent(new CustomEvent('wtf:product:error', { bubbles: true, detail: { error } }));
           });
       });
     }
   });
 
-  // Make product data available to JavaScript
+  // Money helper
   function formatMoney(cents) {
     const locale = document.documentElement.lang || 'en-US';
     return new Intl.NumberFormat(locale, {
@@ -408,6 +402,7 @@
     }).format(cents / 100);
   }
 
+  // Make product data available to JavaScript
   const productData = {{ product | json }};
   window.product = productData;
 </script>
@@ -418,112 +413,36 @@
   "tag": "section",
   "class": "section",
   "settings": [
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        }
-      ],
-      "default": "background-1",
-      "label": "Color scheme"
-    },
-    {
-      "type": "select",
-      "id": "media_size",
-      "options": [
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "large",
-          "label": "Large"
-        }
-      ],
-      "default": "large",
-      "label": "Media size"
-    }
+    { "type": "select", "id": "color_scheme", "options": [
+      { "value": "background-1", "label": "Background 1" },
+      { "value": "background-2", "label": "Background 2" }
+    ], "default": "background-1", "label": "Color scheme" },
+    { "type": "select", "id": "media_size", "options": [
+      { "value": "small", "label": "Small" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "large", "label": "Large" }
+    ], "default": "large", "label": "Media size" }
   ],
   "blocks": [
-    {
-      "type": "title",
-      "name": "Title",
-      "limit": 1
-    },
-    {
-      "type": "price",
-      "name": "Price",
-      "limit": 1
-    },
-    {
-      "type": "variant_picker",
-      "name": "Variant picker",
-      "limit": 1,
+    { "type": "title", "name": "Title", "limit": 1 },
+    { "type": "price", "name": "Price", "limit": 1 },
+    { "type": "variant_picker", "name": "Variant picker", "limit": 1,
       "settings": [
-        {
-          "type": "select",
-          "id": "picker_type",
-          "options": [
-            {
-              "value": "dropdown",
-              "label": "Dropdown"
-            },
-            {
-              "value": "button",
-              "label": "Buttons"
-            }
-          ],
-          "default": "button",
-          "label": "Type"
-        }
+        { "type": "select", "id": "picker_type", "options": [
+          { "value": "dropdown", "label": "Dropdown" },
+          { "value": "button", "label": "Buttons" }
+        ], "default": "button", "label": "Type" }
       ]
     },
-    {
-      "type": "quantity_selector",
-      "name": "Quantity selector",
-      "limit": 1
-    },
-    {
-      "type": "buy_buttons",
-      "name": "Buy buttons",
-      "limit": 1,
+    { "type": "quantity_selector", "name": "Quantity selector", "limit": 1 },
+    { "type": "buy_buttons", "name": "Buy buttons", "limit": 1,
       "settings": [
-        {
-          "type": "checkbox",
-          "id": "show_dynamic_checkout",
-          "default": true,
-          "label": "Show dynamic checkout buttons"
-        }
+        { "type": "checkbox", "id": "show_dynamic_checkout", "default": true, "label": "Show dynamic checkout buttons" }
       ]
     },
-    {
-      "type": "description",
-      "name": "Description",
-      "limit": 1
-    },
-    {
-      "type": "share",
-      "name": "Share",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "text",
-          "id": "share_label",
-          "default": "Share",
-          "label": "Share label"
-        }
-      ]
+    { "type": "description", "name": "Description", "limit": 1 },
+    { "type": "share", "name": "Share", "limit": 1,
+      "settings": [ { "type": "text", "id": "share_label", "default": "Share", "label": "Share label" } ]
     }
   ]
 }
