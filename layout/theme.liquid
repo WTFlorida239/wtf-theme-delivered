@@ -14,38 +14,23 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
 
-    {%- comment -%}
-      -----
-      CENTRALIZED SEO
-      Replaces all ad-hoc <title>/meta/OG/Twitter/JSON-LD blocks.
-      -----
-    {%- endcomment -%}
+    {%- comment -%} CENTRALIZED SEO {%- endcomment -%}
     {% render 'seo-head' %}
 
-    {%- comment -%}
-      -----
-      CRITICAL CSS (inline) — improves LCP/FCP
-      Keep this BEFORE {{ content_for_header }} so Shopify/Apps load after.
-      -----
-    {%- endcomment -%}
-    <style>
-      {% render 'critical-css' %}
-    </style>
+    {%- comment -%} CRITICAL CSS (inline) — keep before content_for_header {%- endcomment -%}
+    <style>{% render 'critical-css' %}</style>
 
     {{ content_for_header }}
 
-    {%- comment %} Load Google Fonts {%- endcomment %}
+    {%- comment %} Google Fonts {%- endcomment %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    {%- comment %} Load main CSS {%- endcomment %}
+    {%- comment %} Main CSS {%- endcomment %}
     {{ 'base.css' | asset_url | stylesheet_tag }}
 
-    {%- comment %} Load WTF Configuration {%- endcomment %}
+    {%- comment %} WTF ENV + Config bootstrap (inline so later scripts can read immediately) {%- endcomment %}
     <script>
       (function() {
         const storeHours = {% if shop.metafields.wtf.hours.value %}{{ shop.metafields.wtf.hours.value }}{% else %}null{% endif %};
@@ -117,9 +102,7 @@
               enabled: true,
               domain: {{ shop.permanent_domain | json }},
               locationId: null,
-              endpoints: {
-                adminProxy: adminProxyPath
-              }
+              endpoints: { adminProxy: adminProxyPath }
             },
             lightspeed: {
               enabled: lightspeedEnabled,
@@ -156,10 +139,7 @@
             }
           },
           analytics: {
-            google: {
-              measurementId: {{ settings.google_analytics_id | json }},
-              enabled: {{ settings.google_analytics_id != blank | json }}
-            },
+            google: { measurementId: {{ settings.google_analytics_id | json }}, enabled: {{ settings.google_analytics_id != blank | json }} },
             googleAds: {{ settings.google_ads_id | json }},
             metaPixel: {{ settings.facebook_pixel_id | json }},
             tiktokPixel: {{ settings.tiktok_pixel_id | json }},
@@ -168,78 +148,52 @@
             clarityProjectId: {{ settings.clarity_project_id | json }},
             hotjarSiteId: {{ settings.hotjar_site_id | json }}
           },
-          endpoints: {
-            proxyBase: normalizedProxyBase,
-            shopifyAdminProxy: adminProxyPath
-          }
+          endpoints: { proxyBase: normalizedProxyBase, shopifyAdminProxy: adminProxyPath }
         };
 
         window.WTF_CONFIG_DATA = window.WTFConfig;
       })();
     </script>
 
-    {%- comment %} Load Error Prevention (MUST load before other scripts) {%- endcomment %}
+    {%- comment %} MUST load before other scripts (kept synchronous by design) {%- endcomment %}
     <script src="{{ 'wtf-error-prevention.js' | asset_url }}"></script>
-    
-    {%- comment %} Load WTF Configuration Manager {%- endcomment %}
     <script src="{{ 'wtf-config.js' | asset_url }}" defer></script>
 
     {%- if settings.predictive_search_enabled -%}
-      <link
-        rel="stylesheet"
-        href="{{ 'component-predictive-search.css' | asset_url }}"
-        media="print"
-        onload="this.media='all'"
-      >
+      <link rel="stylesheet" href="{{ 'component-predictive-search.css' | asset_url }}" media="print" onload="this.media='all'">
       <noscript>{{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}</noscript>
     {%- endif -%}
 
-    {%- comment -%}
-      NOTE: Removed legacy/duplicate SEO renders:
-      - seo-meta-tags / enhanced-meta-tags / structured-data
-      - brand-schema / local-business schema variants
-      - jsonld-* and product/collection/page-specific schema here
-      These should be handled inside 'seo-head' (conditionally).
-    {%- endcomment -%}
-
-    <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
-    </script>
+    <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
-    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
-      {{ 'accessibility.skip_to_text' | t }}
-    </a>
+    <a class="skip-to-content-link button visually-hidden" href="#MainContent">{{ 'accessibility.skip_to_text' | t }}</a>
 
-    {%- comment %} Page wrapper {%- endcomment %}
-    <div id="shopify-section-header">
-      {% section 'header' %}
-    </div>
+    <div id="shopify-section-header">{% section 'header' %}</div>
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
-    {%- comment %} Footer {%- endcomment %}
     {% section 'footer' %}
 
-    {%- comment %} Cart Drawer {%- endcomment %}
+    {%- comment %} Cart Drawer {%- endcomment -%}
     {%- render 'wtf-cart-drawer' -%}
 
-    {%- comment %} Modals and overlays {%- endcomment %}
-    <div id="wtf-modal-overlay" class="wtf-modal-overlay" style="display: none;"></div>
-    <div id="wtf-loading-overlay" class="wtf-loading-overlay" style="display: none;">
+    {%- comment %} Modals/overlays {%- endcomment -%}
+    <div id="wtf-modal-overlay" class="wtf-modal-overlay" style="display:none;"></div>
+    <div id="wtf-loading-overlay" class="wtf-loading-overlay" style="display:none;">
       <div class="wtf-loading-spinner"></div>
     </div>
 
-    {%- comment %} Accessibility announcements {%- endcomment %}
+    {%- comment %} Accessibility announcements {%- endcomment -%}
     <ul hidden>
       <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
       <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
     </ul>
 
-    {%- comment %} Global JavaScript variables {%- endcomment %}
+    {%- comment %} Global JS variables for legacy scripts {%- endcomment -%}
     <script>
       window.shopUrl = '{{ request.origin }}';
       window.routes = {
@@ -271,7 +225,7 @@
       <script src="{{ 'wtf-search.js' | asset_url }}" defer></script>
     {%- endif -%}
 
-    {%- comment %} Optional lightweight lazy loader for data-src images {%- endcomment %}
+    {%- comment %} Lightweight lazy loader {%- endcomment -%}
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         if ('IntersectionObserver' in window) {
@@ -291,144 +245,112 @@
       });
     </script>
 
-    {%- comment %} Expose product JSON on product templates for JS {%- endcomment %}
     {%- if template.name == 'product' and product -%}
-      <script>
-        window.WTF_PRODUCT_JSON = {{ product | json }};
-      </script>
+      <script>window.WTF_PRODUCT_JSON = {{ product | json }};</script>
     {%- endif -%}
 
-    {%- comment %} Analytics / pixels {%- endcomment %}
+    {%- comment %} Analytics / pixels (kept as your snippet) {%- endcomment -%}
     {%- render 'wtf-analytics' -%}
 
     {%- comment -%}
-      -------------------------------------------------------------------------------------
-      WTF INTEGRATION SCRIPTS
-      Core functionality for Shopify, Lightspeed POS, 2accept payments, and webhooks
-      -------------------------------------------------------------------------------------
+      ===========================
+      SCRIPT LOAD ORDER (BOTTOM)
+      ===========================
+      1) Hardening shims
+      2) Analytics shim
+      3) Integration guards
+      4) Dawn foundation (if used)
+      5) Cart API ➜ Cart UI ➜ Event bridge ➜ Enhancements
+      6) Pricing validation
+      7) Integrations (Lightspeed/2Accept/Webhooks)
+      8) App/system init + helpers
+      9) Dev tools
     {%- endcomment -%}
 
-    {%- comment %} WTF Cart API - Unified cart operations {%- endcomment %}
-    <script src="{{ 'wtf-cart-api.js' | asset_url }}" defer></script>
+    {%- comment -%} 1) Hardening shims {%- endcomment -%}
+    {{ 'safe-define.js'       | asset_url | script_tag | replace: '<script', '<script defer' }}
+    {{ 'postmessage-guard.js' | asset_url | script_tag | replace: '<script', '<script defer' }}
 
-    {%- comment %} Dawn Cart Foundation Scripts {%- endcomment %}
-    <script src="{{ 'constants.js' | asset_url }}" defer></script>
-    <script src="{{ 'pubsub.js' | asset_url }}" defer></script>
-    <script src="{{ 'fetch-config.js' | asset_url }}" defer></script>
-    <script src="{{ 'dawn-cart.js' | asset_url }}" defer></script>
+    {%- comment -%} 2) Analytics no-op shim (prevents missing method crashes) {%- endcomment -%}
+    {{ 'wtf-analytics-shim.js' | asset_url | script_tag | replace: '<script', '<script defer' }}
+
+    {%- comment -%} 3) Integration guards {%- endcomment -%}
+    {{ 'analytics-guard.js'  | asset_url | script_tag | replace: '<script', '<script defer' }}
+    {{ 'lightspeed-guard.js' | asset_url | script_tag | replace: '<script', '<script defer' }}
+
+    {%- comment -%} 4) Dawn foundation (only what you actually use) {%- endcomment -%}
+    <script src="{{ 'constants.js'      | asset_url }}" defer></script>
+    <script src="{{ 'pubsub.js'         | asset_url }}" defer></script>
+    <script src="{{ 'fetch-config.js'   | asset_url }}" defer></script>
+    <script src="{{ 'dawn-cart.js'      | asset_url }}" defer></script>
     <script src="{{ 'dawn-product-form.js' | asset_url }}" defer></script>
+
+    {%- comment -%} 5) Cart stack: API → UI → bridge → enhancements {%- endcomment -%}
+    {{ 'wtf-cart-api.js' | asset_url | script_tag | replace: '<script', '<script defer' }}
+    {{ 'wtf-cart-ui.js'  | asset_url | script_tag | replace: '<script', '<script defer' }}
     <script src="{{ 'wtf-cart-event-bridge.js' | asset_url }}" defer></script>
-
-    {%- comment %} Core WTF Scripts - Load enhanced cart first and prevent conflicts {%- endcomment %}
-    <script src="{{ 'wtf-enhanced-cart.js' | asset_url }}" defer></script>
-    <script src="{{ 'wtf-variants.js' | asset_url }}" defer></script>
+    <script src="{{ 'wtf-enhanced-cart.js'      | asset_url }}" defer></script>
+    <script src="{{ 'wtf-variants.js'           | asset_url }}" defer></script>
     <script src="{{ 'wtf-drink-builder-enhanced.js' | asset_url }}" defer></script>
-    <script src="{{ 'wtf-upselling.js' | asset_url }}" defer></script>
-    <script src="{{ 'wtf-analytics.js' | asset_url }}" defer></script>
+    <script src="{{ 'wtf-upselling.js'          | asset_url }}" defer></script>
+    <script src="{{ 'wtf-analytics.js'          | asset_url }}" defer></script>
 
-    {%- comment %} Integration Scripts (conditionally loaded) {%- endcomment %}
+    {%- comment %} 6) Pricing Validation System {%- endcomment -%}
+    {{ 'pricing-validation.js' | asset_url | script_tag | replace: '<script', '<script defer' }}
+
+    {%- comment %} 7) Integrations (conditional) {%- endcomment -%}
     {% if settings.lightspeed_enable_sync and settings.lightspeed_account_id != blank %}
       <script src="{{ 'wtf-lightspeed-integration.js' | asset_url }}" defer></script>
     {% else %}
       <script>console.info('[WTF] Lightspeed integration disabled (not configured)');</script>
     {% endif %}
-    
+
     {% if settings.twoaccept_public_key != blank %}
       <script src="{{ 'wtf-2accept-integration.js' | asset_url }}" defer></script>
     {% else %}
       <script>console.info('[WTF] 2Accept integration disabled (not configured)');</script>
     {% endif %}
-    
+
     <script src="{{ 'wtf-webhook-handler.js' | asset_url }}" defer></script>
 
-    {%- comment %} Cart count hydrator (single source of truth) {%- endcomment %}
+    {%- comment %} 8) System init & helpers {%- endcomment -%}
     <script>
-      (function () {
-        const cartCountElement = document.querySelector('[data-cart-count]');
-        if (!cartCountElement) return;
-
-        function setCartCount(count) {
-          const countNum = parseInt(count || 0, 10);
-          cartCountElement.textContent = countNum;
-          cartCountElement.hidden = countNum === 0;
-        }
-
-        // Fetch initial count
-        fetch('/cart.js')
-          .then((response) => response.json())
-          .then((cart) => setCartCount(cart.item_count))
-          .catch(() => {
-            /* Gracefully handle fetch error */
-          });
-
-        // Listen for custom cart update events
-        document.addEventListener('wtf:cart:update', (event) => {
-          const newCount = event.detail?.cart?.item_count ?? cartCountElement.textContent;
-          setCartCount(newCount);
-        });
-      })();
-    </script>
-
-    {%- comment %} Initialize WTF System {%- endcomment %}
-    <script>
+      // Cart count hydrator is handled by wtf-cart-ui.js; no duplicate listeners here.
       document.addEventListener('DOMContentLoaded', function () {
-        // Initialize WTF system with configuration
         if (window.WTFConfig) {
-          console.log('WTF System initialized with configuration:', window.WTFConfig.getStoreInfo());
+          console.log('WTF System initialized with configuration:', window.WTFConfig.getStoreInfo?.() || window.WTFConfig);
 
-          // Validate configuration
-          const validation = window.WTFConfig.validate();
-          if (!validation.isValid) {
-            console.warn('WTF Configuration issues:', validation.errors);
-          }
+          const validation = window.WTFConfig.validate?.();
+          if (validation && !validation.isValid) console.warn('WTF Configuration issues:', validation.errors);
 
-          // Dispatch system ready event
-          document.dispatchEvent(
-            new CustomEvent('wtf:system:ready', {
-              detail: {
-                config: window.WTFConfig,
-                integrations: {
-                  lightspeed: window.WTFConfig.isIntegrationEnabled('lightspeed'),
-                  twoaccept: window.WTFConfig.isIntegrationEnabled('twoaccept'),
-                  shopify: window.WTFConfig.isIntegrationEnabled('shopify'),
-                },
+          document.dispatchEvent(new CustomEvent('wtf:system:ready', {
+            detail: {
+              config: window.WTFConfig,
+              integrations: {
+                lightspeed: window.WTFConfig.isIntegrationEnabled?.('lightspeed'),
+                twoaccept:  window.WTFConfig.isIntegrationEnabled?.('twoaccept'),
+                shopify:    window.WTFConfig.isIntegrationEnabled?.('shopify'),
               },
-            })
-          );
+            },
+          }));
         }
 
-        // Initialize cart persistence
-        if (localStorage.getItem('wtf-cart-backup')) {
-          try {
-            const backupCart = JSON.parse(localStorage.getItem('wtf-cart-backup'));
-            // Restore cart if needed
-            console.log('Cart backup available:', backupCart);
-          } catch (e) {
-            localStorage.removeItem('wtf-cart-backup');
-          }
-        }
+        // Cart backup
+        try {
+          const key = 'wtf-cart-backup';
+          document.addEventListener('cart:updated', (e) => localStorage.setItem(key, JSON.stringify(e.detail)));
+        } catch {}
 
-        // Set up cart backup on changes
-        document.addEventListener('cart:updated', function (event) {
-          localStorage.setItem('wtf-cart-backup', JSON.stringify(event.detail));
-        });
-
-        // Age verification for THC products
-        if (window.WTFConfig && window.WTFConfig.get('customers.enableAgeVerification')) {
+        // Age verification trigger for THC pages (modal defined below)
+        if (window.WTFConfig?.get?.('customers.enableAgeVerification')) {
           const thcPages = ['/pages/thc-drinks', '/pages/thc-shots'];
-          if (thcPages.some((page) => window.location.pathname.includes(page))) {
-            // Check if age verification is needed
-            if (!sessionStorage.getItem('wtf-age-verified')) {
-              // Show age verification modal
-              setTimeout(() => {
-                showAgeVerificationModal();
-              }, 1000);
-            }
+          if (thcPages.some((p) => location.pathname.includes(p)) &&
+              !sessionStorage.getItem('wtf-age-verified')) {
+            setTimeout(() => showAgeVerificationModal(), 1000);
           }
         }
       });
 
-      // Age verification modal
       function showAgeVerificationModal() {
         const modal = document.createElement('div');
         modal.className = 'wtf-age-verification-modal';
@@ -441,120 +363,53 @@
               <button onclick="verifyAge(true)" class="wtf-btn-yes">Yes, I'm 21+</button>
               <button onclick="verifyAge(false)" class="wtf-btn-no">No, I'm under 21</button>
             </div>
-          </div>
-        `;
-
-        modal.style.cssText = `
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0,0,0,0.9);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          color: white;
-          text-align: center;
-        `;
-
+          </div>`;
+        Object.assign(modal.style, {
+          position:'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.9)',
+          display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000, color:'#fff', textAlign:'center'
+        });
         document.body.appendChild(modal);
       }
-
       function verifyAge(isOfAge) {
         const modal = document.querySelector('.wtf-age-verification-modal');
-        if (isOfAge) {
-          sessionStorage.setItem('wtf-age-verified', 'true');
-          if (modal) modal.remove();
-        } else {
-          window.location.href = '/';
-        }
+        if (isOfAge) { sessionStorage.setItem('wtf-age-verified','true'); modal?.remove(); }
+        else { location.href = '/'; }
       }
 
-      // Global error handler for integrations
+      // Global error handler
       window.addEventListener('error', function (event) {
-        if (window.WTFConfig && window.WTFConfig.get('development.enableConsoleLogging')) {
+        if (window.WTFConfig?.get?.('development.enableConsoleLogging')) {
           console.error('WTF System Error:', event.error);
         }
-
-        // Report critical errors
-        if (event.error && event.error.message && event.error.message.includes('WTF')) {
-          // This would integrate with error reporting service
+        if (event.error?.message?.includes('WTF')) {
           console.warn('WTF Integration Error detected:', event.error.message);
         }
       });
 
-      // Service worker registration for offline functionality
-      if ('serviceWorker' in navigator && window.WTFConfig && window.WTFConfig.get('features.enableOfflineMode')) {
-        navigator.serviceWorker
-          .register('/sw.js')
-          .then((registration) => console.log('SW registered:', registration))
-          .catch((error) => console.log('SW registration failed:', error));
+      // Optional offline mode
+      if ('serviceWorker' in navigator && window.WTFConfig?.get?.('features.enableOfflineMode')) {
+        navigator.serviceWorker.register('/sw.js')
+          .then((r) => console.log('SW registered:', r))
+          .catch((e) => console.log('SW registration failed:', e));
       }
     </script>
 
-    {%- comment %} Custom checkout integration {%- endcomment %}
-    {% if template contains 'cart' or template contains 'checkout' %}
-      <script>
-        // Initialize custom checkout if enabled (with safe guards)
-        (function() {
-          if (!window.WTF_FEATURES || !window.WTF_FEATURES.twoaccept) {
-            console.info('[WTF] 2Accept integration disabled, skipping custom checkout');
-            return;
-          }
-          
-          if (window.WTF2Accept && typeof window.WTFConfig?.get === 'function' && window.WTFConfig.get('features.enableCustomCheckout')) {
-            document.addEventListener('wtf:system:ready', function () {
-              try {
-                // Set up custom checkout flow
-                console.log('[WTF] Custom checkout initialized');
-              } catch (error) {
-                console.warn('[WTF] Custom checkout init failed:', error);
-              }
-            });
-          }
-        })();
-      </script>
-    {% endif %}
-
-    {%- comment %} Pricing Validation System {%- endcomment %}
-    {{ 'pricing-validation.js' | asset_url | script_tag }}
-
-    {%- comment %} Development tools {%- endcomment %}
+    {%- comment %} 9) Development tools (last) {%- endcomment -%}
     {% if settings.enable_debug_mode %}
-      <script>
-        // Development debugging tools
+      <script defer>
         window.WTF_DEBUG = {
           config: () => console.table(window.WTFConfig?.raw || window.WTF_CONFIG_DATA || {}),
-          integrations: () =>
-            console.log('Integrations:', {
-              lightspeed: !!window.WTFLightspeed,
-              twoaccept: !!window.WTF2Accept,
-              webhooks: !!window.WTFWebhooks,
-            }),
-          cart: () =>
-            fetch('/cart.js')
-              .then((r) => r.json())
-              .then(console.log),
-          clearStorage: () => {
-            localStorage.clear();
-            sessionStorage.clear();
-            console.log('Storage cleared');
-          },
+          integrations: () => console.log('Integrations:', {
+            lightspeed: !!window.WTFLightspeed,
+            twoaccept: !!window.WTF2Accept,
+            webhooks: !!window.WTFWebhooks,
+          }),
+          cart: () => fetch('/cart.js?ts=' + Date.now(), { cache: 'no-store' }).then(r=>r.json()).then(console.log),
+          clearStorage: () => { localStorage.clear(); sessionStorage.clear(); console.log('Storage cleared'); },
           persistentCart: () => window.debugCart && window.debugCart(),
         };
         console.log('WTF Debug tools available: WTF_DEBUG');
       </script>
     {% endif %}
-
-    {% render 'age-gate-banner' %}
-    <script src="{{ 'analytics-guard.js' | asset_url }}" defer></script>
-    <script src="{{ 'lightspeed-guard.js' | asset_url }}" defer></script>
-    {%- comment -%} Console hardening shims {%- endcomment -%}
-    <script src="{{ 'safe-define.js' | asset_url }}" defer></script>
-    <script src="{{ 'postmessage-guard.js' | asset_url }}" defer></script>
-
-
   </body>
 </html>
