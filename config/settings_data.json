@@ -92,6 +92,69 @@
           "sticky_header": true,
           "show_social_icons": true
         }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {
+          "logo": "shopify://shop_images/Official_WTF_LOGO_700x1050_background_for_arryved_ff0f7b83-c121-4393-aae6-9ba2bc20a088.png",
+          "logo_alt": "WTF | Welcome To Florida",
+          "heading": "WTF | Welcome To Florida",
+          "description": "Cape Coral's premier kava bar and kratom lounge.",
+          "address": "1520 SE 46th Ln, Unit B, Cape Coral, FL 33904",
+          "phone": "(239) 955-0314",
+          "email": "info@wtfswag.com",
+          "hours": "Daily 8am–10pm",
+          "background_color": "#0f172a",
+          "text_color": "#f8f8f8",
+          "heading_color": "#ffffff",
+          "link_color": "#ff6600",
+          "show_payment_icons": true,
+          "show_local_citations": true,
+          "bottom_menu": "",
+          "copyright_text": ""
+        },
+        "blocks": {
+          "contact_block": {
+            "type": "contact",
+            "settings": {
+              "heading": "Visit & Contact",
+              "address": "1520 SE 46th Ln, Unit B, Cape Coral, FL 33904",
+              "phone": "(239) 955-0314",
+              "email": "info@wtfswag.com"
+            }
+          },
+          "hours_block": {
+            "type": "hours",
+            "settings": {
+              "heading": "Hours",
+              "use_hours_metafield": true,
+              "hours_text": "Daily 8am–10pm"
+            }
+          },
+          "newsletter_block": {
+            "type": "newsletter",
+            "settings": {
+              "heading": "Stay in the loop",
+              "subheading": "Get drops, events, and exclusive pours before anyone else.",
+              "placeholder": "Enter your email",
+              "button_label": "Subscribe"
+            }
+          },
+          "social_block": {
+            "type": "social",
+            "settings": {
+              "heading": "Follow WTF",
+              "icon_style": "footer",
+              "icon_size": "medium"
+            }
+          }
+        },
+        "block_order": [
+          "contact_block",
+          "hours_block",
+          "newsletter_block",
+          "social_block"
+        ]
       }
     },
     "content_for_index": []
