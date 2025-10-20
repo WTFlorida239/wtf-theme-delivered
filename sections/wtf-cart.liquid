@@ -49,7 +49,7 @@
               {% endif %}
 
               {% if item.properties and item.properties.size > 0 %}
-                <div class="cart-item__properties">
+                <div class="cart-item__properties wtf-line__properties">
                   {% for property in item.properties %}
                     {% unless property.first contains '_' or property.last == blank %}
                       <div class="cart-item__property">
