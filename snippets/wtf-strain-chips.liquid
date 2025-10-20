@@ -1,0 +1,38 @@
+{% comment %}
+  WTF Strain Chips
+  - Renders strain/color chips as line item property (not a variant)
+  - Reads product.metafields.custom.strains (List of text). If empty, uses fallback.
+  - Requires an input name="properties[wtf_strain]" in the product form.
+{% endcomment %}
+
+{% assign strains = product.metafields.custom.strains | default: blank %}
+{% if strains == blank %}
+  {% assign strains = "Green,Red,Yellow,White,Half White,Half Green" | split: "," %}
+{% endif %}
+
+<div class="wtf-chips wtf-chips--strains" data-wtf-strain-chips>
+  <p class="wtf-chips__label">Choose strain</p>
+  <div class="wtf-chips__group" role="group" aria-label="Strain">
+    {% for s in strains %}
+      {% assign val = s | strip %}
+      <button type="button"
+              class="wtf-chip"
+              data-wtf-chip
+              data-chip-group="strain"
+              data-chip-value="{{ val | escape }}"
+              aria-pressed="false">
+        {{ val }}
+      </button>
+    {% endfor %}
+  </div>
+
+  {%- comment -%} This hidden input is what actually gets submitted to the cart {%- endcomment -%}
+  <input type="hidden" name="properties[wtf_strain]" value="" data-wtf-strain-input>
+</div>
+
+<style>
+.wtf-chips__label { margin-bottom:.5rem; font-weight:600; }
+.wtf-chips__group { display:flex; flex-wrap:wrap; gap:.5rem; }
+.wtf-chip { padding:.5rem .75rem; border:1px solid #ddd; border-radius:999px; background:#fff; cursor:pointer; }
+.wtf-chip[aria-pressed="true"] { border-color:#ff6600; background:#fff7f0; }
+</style>
