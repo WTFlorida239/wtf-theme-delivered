@@ -74,12 +74,9 @@ jobs:
     name: Validate Theme (fast + reliable)
     runs-on: ubuntu-latest
     needs: changes
-    # Run if any theme or node files changed, or if manually dispatched
     if: ${{ needs.changes.outputs.theme == 'true' || needs.changes.outputs.node == 'true' || github.event_name == 'workflow_dispatch' }}
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       # 1) Shopify Theme Check (official; no CLI install)
       - name: Theme Check
@@ -88,12 +85,11 @@ jobs:
         with:
           theme_root: '.'
           base: main
-          token: ${{ github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}   # ✅ correct token context
 
       # 2) Node only if package.json exists
-      - name: Setup Node (if needed)
+      - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
-        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -147,26 +143,17 @@ jobs:
           for f in "${required[@]}"; do
             if [[ ! -f "$f" ]]; then
               echo "❌ Missing required file: $f"
-              echo "missing=true" >> $GITHUB_OUTPUT
               exit 1
             else
               echo "✅ $f"
             fi
           done
 
-          # Optional section (warn only)
-          if [[ -f "sections/enhanced-drink-builder.liquid" ]]; then
-            echo "✅ sections/enhanced-drink-builder.liquid"
-          else
-            echo "ℹ️ Optional: sections/enhanced-drink-builder.liquid not found"
-          fi
-
           # Cart can be JSON (preferred) or Liquid
           if [[ -f "templates/cart.json" || -f "templates/cart.liquid" ]]; then
             echo "✅ Cart template present"
           else
             echo "❌ Missing cart template (templates/cart.json preferred or templates/cart.liquid)"
-            echo "missing=true" >> $GITHUB_OUTPUT
             exit 1
           fi
 
@@ -177,7 +164,7 @@ jobs:
             echo "⚠️ No obvious Product JSON-LD found in sections/ or snippets/"
           fi
 
-      # 5) Summaries (PR + job)
+      # 5) Summaries (job + PR safe-guarded)
       - name: Write step summary
         if: always()
         shell: bash
@@ -195,6 +182,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const body = [
               '### ✅ WTF Theme – Validation Summary',
@@ -226,13 +214,9 @@ jobs:
     name: Security & Hygiene
     runs-on: ubuntu-latest
     needs: [changes, validate]
-    # Also skip if nothing relevant changed (unless manually run)
-    if: ${{ (needs.changes.outputs.theme == 'true' || needs.changes.outputs.node == 'true' || github.event_name == 'workflow_dispatch') && always() }}
-
+    if: ${{ (needs.changes.result == 'success' && (needs.changes.outputs.theme == 'true' || needs.changes.outputs.node == 'true')) || github.event_name == 'workflow_dispatch' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Scan for secrets & unsafe patterns
         shell: bash
         run: |
@@ -269,21 +253,14 @@ jobs:
     name: Lighthouse (artifact only)
     runs-on: ubuntu-latest
     needs: [changes, validate]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.theme == 'true' }}
-
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.theme == 'true' && needs.validate.result == 'success' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install Lighthouse CI
         run: npm i -g @lhci/cli
-
-      # Replace these with real public/staging URLs when ready.
       - name: Run Lighthouse (placeholder)
         continue-on-error: true
         run: |
@@ -294,7 +271,6 @@ jobs:
             "product": {"performance": 0, "accessibility": 0, "bestPractices": 0, "seo": 0}
           }' > lighthouse-results/placeholder.json
           echo "ℹ️ Configure real URLs later; storing placeholder results."
-
       - name: Upload Lighthouse artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -307,7 +283,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, validate, security-scan, lighthouse]
     if: always()
-
     steps:
       - name: Print summary
         shell: bash
