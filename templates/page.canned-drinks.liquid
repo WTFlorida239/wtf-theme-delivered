@@ -1,7 +1,7 @@
 {%- comment -%}
-  Dynamic Canned Drinks Page with Storefront API
+  Dynamic Canned Drinks Page with Storefront API + Brand Normalization
   Loads products dynamically from the 'canned-drinks' collection via JavaScript
-  Page templates don't have access to collections object, so we use Storefront API
+  Filters and remaps brands to fix duplication and incorrect grouping
 {%- endcomment -%}
 
 <style>
@@ -120,6 +120,22 @@
 
 <script>
 (function() {
+  // Brand normalization configuration
+  const BRAND_NORMALIZATION = {
+    // Products to exclude (deprecated or duplicates)
+    excludedProducts: [
+      'White Rabbit Kratom Cans',
+      'Tea Time Kratom Cans',
+      'Botanical Brewing Cans'
+    ],
+    
+    // Vendor remapping for "WTF | Welcome To Florida" products
+    vendorRemapping: {
+      'Crank Cannabis Beverages': 'Crank Cannabis Beverages',
+      'Lumenade Cans': 'Lumenade'
+    }
+  };
+  
   // Global state
   let allProducts = [];
   let brandData = {};
@@ -138,6 +154,30 @@
     })
     .catch(e => console.error('Cart fetch error:', e));
   
+  // Normalize brand name based on vendor and product title
+  function normalizeBrand(product) {
+    const vendor = product.vendor || 'Unknown';
+    const title = product.title || '';
+    
+    // Check if product should be excluded
+    if (BRAND_NORMALIZATION.excludedProducts.includes(title)) {
+      return null; // Exclude this product
+    }
+    
+    // Check if vendor needs remapping
+    if (vendor === 'WTF | Welcome To Florida') {
+      // Check if this product has a remapping
+      if (BRAND_NORMALIZATION.vendorRemapping[title]) {
+        return BRAND_NORMALIZATION.vendorRemapping[title];
+      }
+      // If no remapping found, exclude it (likely deprecated)
+      return null;
+    }
+    
+    // Return vendor as-is for all other products
+    return vendor;
+  }
+  
   // Fetch products from Storefront API
   async function loadProducts() {
     try {
@@ -151,24 +191,39 @@
         return;
       }
       
-      // Group products by vendor
+      // Group products by normalized brand
       allProducts.forEach(product => {
-        const vendor = product.vendor || 'Unknown';
-        if (!brandData[vendor]) {
-          brandData[vendor] = {
+        const brand = normalizeBrand(product);
+        
+        // Skip excluded products
+        if (!brand) {
+          console.log('Excluding product:', product.title);
+          return;
+        }
+        
+        if (!brandData[brand]) {
+          brandData[brand] = {
             products: [],
             minPrice: Infinity
           };
         }
-        brandData[vendor].products.push(product);
+        brandData[brand].products.push(product);
         
         // Track min price for brand
         product.variants.forEach(variant => {
           const price = parseFloat(variant.price);
-          if (price < brandData[vendor].minPrice) {
-            brandData[vendor].minPrice = price;
+          if (price > 0 && price < brandData[brand].minPrice) {
+            brandData[brand].minPrice = price;
           }
         });
+      });
+      
+      // Remove brands with no valid products or zero prices
+      Object.keys(brandData).forEach(brand => {
+        if (brandData[brand].products.length === 0 || brandData[brand].minPrice === Infinity || brandData[brand].minPrice === 0) {
+          console.log('Removing brand with no valid products:', brand);
+          delete brandData[brand];
+        }
       });
       
       // Render brands
@@ -227,15 +282,21 @@
         if (product.variants.length > 1) {
           // Multi-variant product
           product.variants.forEach(variant => {
-            const button = createFlavorButton(variant.title, variant.id, variant.price, variant.available);
-            flavorGrid.appendChild(button);
+            // Skip zero-price variants
+            if (parseFloat(variant.price) > 0) {
+              const button = createFlavorButton(variant.title, variant.id, variant.price, variant.available);
+              flavorGrid.appendChild(button);
+            }
           });
         } else {
           // Single-variant product
           const variant = product.variants[0];
-          const flavorName = product.title.replace(brand, '').trim();
-          const button = createFlavorButton(flavorName, variant.id, variant.price, variant.available);
-          flavorGrid.appendChild(button);
+          // Skip zero-price products
+          if (parseFloat(variant.price) > 0) {
+            const flavorName = product.title.replace(brand, '').trim();
+            const button = createFlavorButton(flavorName, variant.id, variant.price, variant.available);
+            flavorGrid.appendChild(button);
+          }
         }
       });
       
