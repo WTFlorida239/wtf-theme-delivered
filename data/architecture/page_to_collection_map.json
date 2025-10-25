@@ -1,0 +1,87 @@
+{
+  "mapping_version": "1.0",
+  "generated_at": "2025-10-25T11:30:59Z",
+  "pages": {
+    "/pages/kratom-teas": {
+      "type": "single_product_configurator",
+      "product_id": "gid://shopify/Product/8533817950386",
+      "product_handle": "kratom-housemade",
+      "product_title": "Housemade Kratom Tea | Fresh Brewed Botanical Drink",
+      "variant_id": "gid://shopify/ProductVariant/45621382971570",
+      "price": "9.00",
+      "sku": "10350",
+      "notes": "Single product with size variants only. All customizations (strain, flavors, ice, sweetness) are line item properties."
+    },
+    "/pages/canned-drinks": {
+      "type": "smart_collection",
+      "collection_id": "gid://shopify/Collection/350522212530",
+      "collection_handle": "canned-drinks",
+      "collection_title": "Canned Drinks",
+      "rules": [
+        "Title contains 'can'",
+        "Title contains 'canned'",
+        "Title contains 'seltzer'",
+        "Tag equals 'can'"
+      ],
+      "notes": "Smart collection automatically includes all products matching rules. Force-include specific GIDs if needed."
+    },
+    "/pages/draft-pours": {
+      "type": "metaobject_tap_system",
+      "metaobject_definition_id": "gid://shopify/MetaobjectDefinition/11512414386",
+      "metaobject_type": "tap",
+      "max_active_taps": 8,
+      "keg_size_oz": 660.48,
+      "pour_sizes": ["16oz", "flight"],
+      "exclude_vendors": ["BBCO", "Botanical Brewing"],
+      "notes": "Tap metaobjects manage 8 active taps with keg tracking. Excludes BBCO/Botanical Brewing products. Inventory decrements on orders/paid webhook."
+    },
+    "/pages/kava-drinks": {
+      "type": "smart_collection",
+      "collection_handle": "kava-drinks",
+      "collection_title": "Kava Drinks",
+      "rules": [
+        "Tag equals 'kava'",
+        "Title contains 'kava'"
+      ],
+      "notes": "Smart collection for kava products. Collection already exists (handle was taken during creation attempt)."
+    },
+    "/pages/thc-drinks": {
+      "type": "smart_collection",
+      "collection_id": "gid://shopify/Collection/350522245298",
+      "collection_handle": "thc-drinks",
+      "collection_title": "THC Drinks",
+      "rules": [
+        "Tag equals 'thc'",
+        "Title contains 'thc'"
+      ],
+      "notes": "Smart collection for THC drink products (excludes shots)."
+    },
+    "/pages/thc-shots": {
+      "type": "smart_collection",
+      "collection_id": "gid://shopify/Collection/350522278066",
+      "collection_handle": "thc-shots",
+      "collection_title": "THC Shots",
+      "rules": [
+        "Tag equals 'thc'",
+        "Title contains 'shot'",
+        "Title contains '2oz'",
+        "Title contains '2 oz'"
+      ],
+      "notes": "Smart collection for THC shot products (2oz variants). Mirrors THC Drinks but shows only 2oz variants."
+    }
+  },
+  "implementation_notes": {
+    "kratom_teas": "Page uses existing custom-kratom-tea-builder.liquid section with wtf-kratom.js. Variants = size only. Line item properties = strain, flavors, ice, sweetness, notes.",
+    "canned_drinks": "Wire page to render collection using collection-on-page.liquid section or existing product grid.",
+    "draft_pours": "Create tap-grid.liquid section to fetch tap metaobjects where active=true, ordered by display_order. Show 8 cards with 'Add 16oz' and 'Add Flight' buttons.",
+    "kava_drinks": "Wire page to render kava-drinks collection with product cards.",
+    "thc_drinks": "Wire page to render thc-drinks collection with product cards.",
+    "thc_shots": "Wire page to render thc-shots collection, optionally filtering to show only 2oz variants."
+  },
+  "pos_mapping": {
+    "rule": "All customer-facing pages use the same Shopify product/variant that bartenders ring up in POS. No duplicate products.",
+    "source_of_truth": "Lightspeed Retail X → Shopify products (synced)",
+    "line_item_properties": "Used for customizations (strain, flavor, pour size, etc.) that don't require separate variants."
+  }
+}
+

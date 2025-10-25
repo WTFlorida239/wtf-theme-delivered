@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-10-25T11:30:59.192191",
+  "kratom_teas": {
+    "product_id": "gid://shopify/Product/8533817950386",
+    "title": "Housemade Kratom Tea | Fresh Brewed Botanical Drink \u2013 WTF | Welcome To Florida",
+    "handle": "kratom-housemade",
+    "variants": [
+      {
+        "id": "gid://shopify/ProductVariant/45621382971570",
+        "title": "Default Title",
+        "price": "9.00",
+        "sku": "10350"
+      }
+    ]
+  },
+  "canned_drinks": {
+    "collection_id": "gid://shopify/Collection/350522212530",
+    "created": true
+  },
+  "draft_pours": {
+    "tap_metaobject_id": "gid://shopify/MetaobjectDefinition/11512414386",
+    "created": true
+  },
+  "kava_drinks": {},
+  "thc_drinks": {
+    "collection_id": "gid://shopify/Collection/350522245298",
+    "created": true
+  },
+  "thc_shots": {
+    "collection_id": "gid://shopify/Collection/350522278066",
+    "created": true
+  },
+  "errors": [
+    "Kava Drinks errors: [{'field': ['handle'], 'message': 'Handle has already been taken'}]"
+  ]
+}
