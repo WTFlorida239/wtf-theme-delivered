@@ -258,13 +258,17 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 
     // Open & refresh when something gets added
+    // PATCH: Only open if explicitly requested via openDrawer flag
     document.addEventListener('wtf:cart:update', async function(event){
       var cart = event && event.detail && event.detail.cart ? event.detail.cart : null;
       if (!cart) {
         cart = await getCart();
       }
       renderCart(cart);
-      open();
+      // Only open if the event explicitly requests it
+      if (event && event.detail && event.detail.openDrawer === true) {
+        open();
+      }
     });
 
     // Keep in sync if other code emits updates
@@ -284,16 +288,21 @@
     });
 
     // Listen for wtf:cart:add events (from builders) and open drawer
+    // PATCH: Only open if explicitly requested via openDrawer flag
     document.addEventListener('wtf:cart:add', async function(event){
       if (event && event.detail && event.detail.cart) {
         renderCart(event.detail.cart);
         updateCartCount(event.detail.cart.item_count);
-        open();
+        // Only open if the event explicitly requests it (default: true for backwards compatibility)
+        var shouldOpen = event.detail.openDrawer !== false;
+        if (shouldOpen) open();
       } else {
         const cart = await getCart();
         renderCart(cart);
         updateCartCount(cart.item_count);
-        open();
+        // Only open if the event explicitly requests it (default: true for backwards compatibility)
+        var shouldOpen = event && event.detail && event.detail.openDrawer !== false;
+        if (shouldOpen) open();
       }
     });
 
@@ -309,12 +318,14 @@
     });
 
     // Hydrate on first paint (so it's ready if user opens manually)
+    // PATCH: Do NOT auto-open on page load
     getCart().then(function(cart){
       console.log('[WTF Cart] Hydrated on page load:', cart);
       console.log('[WTF Cart] Item count:', cart.item_count);
       console.log('[WTF Cart] Items:', cart.items);
       renderCart(cart);
       broadcastCart(cart);
+      // REMOVED: open(); - Cart should NOT auto-open on page load
     }).catch(function(error){
       console.error('[WTF Cart] Failed to hydrate:', error);
     });
