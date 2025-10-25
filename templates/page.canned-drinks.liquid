@@ -1,15 +1,8 @@
 {%- comment -%}
-  Dynamic Canned Drinks Page
-  Pulls all products from the 'canned-drinks' collection
-  Generates brand buttons and flavor sections dynamically
-  Uses real variant IDs for add-to-cart
+  Dynamic Canned Drinks Page with Storefront API
+  Loads products dynamically from the 'canned-drinks' collection via JavaScript
+  Page templates don't have access to collections object, so we use Storefront API
 {%- endcomment -%}
-
-{%- assign canned_collection = collections['canned-drinks'] -%}
-{%- assign all_products = canned_collection.products -%}
-
-{%- comment -%} Group products by vendor (brand) {%- endcomment -%}
-{%- assign brands = all_products | map: 'vendor' | uniq | sort -%}
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,6 +45,7 @@
   .success-message.show { display: block; }
   .cart-status { position: fixed; top: 20px; right: 20px; background: #ff6600; color: white; padding: 10px 15px; border-radius: 25px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 12px rgba(255,102,0,0.3); }
   .info-box { background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; color: #333; font-size: 14px; line-height: 1.4; }
+  .loading { text-align: center; padding: 40px; color: #666; }
   @media (max-width: 768px) { 
     .product-grid { grid-template-columns: 1fr; } 
     .brand-grid { grid-template-columns: repeat(2, 1fr); } 
@@ -59,47 +53,6 @@
     .product-details { padding: 20px; } 
   }
 </style>
-
-{%- comment -%} Generate dynamic product data for JavaScript {%- endcomment -%}
-<script>
-  // Dynamic brand prices from real products
-  const BRAND_PRICES = {
-    {% for brand in brands %}
-      {%- assign brand_products = all_products | where: 'vendor', brand -%}
-      {%- assign prices = brand_products | map: 'price' | sort -%}
-      {%- assign min_price = prices | first -%}
-      '{{ brand | escape }}': {{ min_price | money_without_currency }},
-    {% endfor %}
-  };
-  
-  // Dynamic product/variant mapping
-  const PRODUCT_DATA = {
-    {% for brand in brands %}
-      '{{ brand | escape }}': {
-        {% assign brand_products = all_products | where: 'vendor', brand %}
-        {% for product in brand_products %}
-          {% assign variants_data = product.variants %}
-          {% for variant in variants_data %}
-            '{{ variant.title | escape }}': {
-              variantId: '{{ variant.id }}',
-              price: {{ variant.price | money_without_currency }},
-              available: {{ variant.available | json }},
-              sku: '{{ variant.sku | escape }}'
-            },
-          {% endfor %}
-        {% endfor %}
-      },
-    {% endfor %}
-  };
-  
-  // Helper to format as currency
-  const fmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
-  
-  function priceForBrand(brand) {
-    const n = BRAND_PRICES.hasOwnProperty(brand) ? BRAND_PRICES[brand] : 10.0;
-    return Number.isFinite(n) ? n : 10.0;
-  }
-</script>
 
 <div class="header">WTF | Welcome To Florida</div>
 <div class="cart-status" id="cart-status">Cart: <span id="cart-count">0</span> items</div>
@@ -115,11 +68,10 @@
     <div class="product-details">
       <h1 class="product-title">Canned Drinks</h1>
 
-      <!-- Dynamically updated by selected brand -->
-      <div class="product-price" id="product-price">Select a brand to see price</div>
+      <div class="product-price" id="product-price">Loading...</div>
 
       <div class="price-placeholder">
-        💰 Prices are pulled live from Shopify product data. {{ brands.size }} brands available.
+        💰 Prices are pulled live from Shopify product data. Loading brands...
       </div>
 
       <p class="product-description">
@@ -128,65 +80,14 @@
 
       <div class="selection-section">
         <h3 class="section-title">🥤 Choose Your Brand</h3>
-        <div class="info-box">
-          <strong>{{ brands.size }} Premium Brands Available:</strong> Select a brand first, then choose from available flavors.
+        <div class="info-box" id="brands-info">
+          <div class="loading">⏳ Loading brands from collection...</div>
         </div>
-        <div class="brand-grid">
-          {% for brand in brands %}
-            <button type="button" class="brand-button" onclick="selectBrand('{{ brand | escape }}')">
-              {{ brand }}
-            </button>
-          {% endfor %}
-        </div>
+        <div class="brand-grid" id="brand-grid"></div>
       </div>
 
-      {%- comment -%} Dynamic flavor sections for each brand {%- endcomment -%}
-      {% for brand in brands %}
-        {%- assign brand_products = all_products | where: 'vendor', brand -%}
-        <div class="flavor-section" id="flavors-{{ brand | handleize }}">
-          <h4 class="section-title">🍋 Choose Your {{ brand }} Flavor</h4>
-          <div class="flavor-grid">
-            {% for product in brand_products %}
-              {% assign variants_data = product.variants %}
-              {% if variants_data.size > 1 %}
-                {%- comment -%} Multi-variant product - each variant is a flavor {%- endcomment -%}
-                {% for variant in variants_data %}
-                  <button
-                    type="button"
-                    class="flavor-button"
-                    data-variant-id="{{ variant.id }}"
-                    data-price="{{ variant.price | money_without_currency }}"
-                    data-sku="{{ variant.sku }}"
-                    onclick="selectFlavorWithVariant('{{ variant.title | escape }}', '{{ variant.id }}', {{ variant.price | money_without_currency }})"
-                    {% unless variant.available %}disabled{% endunless %}
-                  >
-                    {{ variant.title }}
-                    {% unless variant.available %}<br><small>(Sold Out)</small>{% endunless %}
-                  </button>
-                {% endfor %}
-              {% else %}
-                {%- comment -%} Single-variant product - use product title as flavor {%- endcomment -%}
-                {%- assign flavor = product.title | remove: brand | strip -%}
-                {%- assign variant = variants_data | first -%}
-                <button
-                  type="button"
-                  class="flavor-button"
-                  data-variant-id="{{ variant.id }}"
-                  data-price="{{ variant.price | money_without_currency }}"
-                  data-sku="{{ variant.sku }}"
-                  onclick="selectFlavorWithVariant('{{ flavor | escape }}', '{{ variant.id }}', {{ variant.price | money_without_currency }})"
-                  {% unless variant.available %}disabled{% endunless %}
-                >
-                  {{ flavor }}
-                  {% unless variant.available %}<br><small>(Sold Out)</small>{% endunless %}
-                </button>
-              {% endif %}
-            {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
+      <div id="flavor-sections-container"></div>
 
-      {%- comment -%} Quantity controls {%- endcomment -%}
       <div class="selection-section">
         <h3 class="section-title">📦 Quantity</h3>
         <div class="quantity-controls">
@@ -196,7 +97,6 @@
         </div>
       </div>
 
-      {%- comment -%} Comments {%- endcomment -%}
       <div class="selection-section">
         <h3 class="section-title">💬 Special Instructions (Optional)</h3>
         <textarea
@@ -207,7 +107,6 @@
         ></textarea>
       </div>
 
-      {%- comment -%} Add to cart button {%- endcomment -%}
       <button type="button" class="add-to-cart-btn" id="add-to-cart-btn" onclick="addToCart()" disabled>
         Select Brand & Flavor to Add to Cart
       </button>
@@ -220,12 +119,17 @@
 </div>
 
 <script>
-  // State management
+(function() {
+  // Global state
+  let allProducts = [];
+  let brandData = {};
   let selectedBrand = null;
   let selectedFlavor = null;
   let selectedVariantId = null;
   let selectedPrice = 0;
-
+  
+  const fmt = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
+  
   // Initialize cart count
   fetch('/cart.js')
     .then(r => r.json())
@@ -233,9 +137,134 @@
       document.getElementById('cart-count').textContent = cart.item_count;
     })
     .catch(e => console.error('Cart fetch error:', e));
-
+  
+  // Fetch products from Storefront API
+  async function loadProducts() {
+    try {
+      const response = await fetch('/collections/canned-drinks/products.json');
+      const data = await response.json();
+      
+      allProducts = data.products;
+      
+      if (allProducts.length === 0) {
+        document.getElementById('brands-info').innerHTML = '<strong>⚠️ No products found in collection</strong>';
+        return;
+      }
+      
+      // Group products by vendor
+      allProducts.forEach(product => {
+        const vendor = product.vendor || 'Unknown';
+        if (!brandData[vendor]) {
+          brandData[vendor] = {
+            products: [],
+            minPrice: Infinity
+          };
+        }
+        brandData[vendor].products.push(product);
+        
+        // Track min price for brand
+        product.variants.forEach(variant => {
+          const price = parseFloat(variant.price);
+          if (price < brandData[vendor].minPrice) {
+            brandData[vendor].minPrice = price;
+          }
+        });
+      });
+      
+      // Render brands
+      renderBrands();
+      
+    } catch (error) {
+      console.error('Error loading products:', error);
+      document.getElementById('brands-info').innerHTML = '<strong>❌ Error loading products. Please refresh the page.</strong>';
+    }
+  }
+  
+  // Render brand buttons
+  function renderBrands() {
+    const brands = Object.keys(brandData).sort();
+    const brandGrid = document.getElementById('brand-grid');
+    const brandsInfo = document.getElementById('brands-info');
+    
+    brandsInfo.innerHTML = `<strong>${brands.length} Premium Brands Available:</strong> Select a brand first, then choose from available flavors.`;
+    
+    brandGrid.innerHTML = '';
+    brands.forEach(brand => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'brand-button';
+      button.textContent = brand;
+      button.onclick = () => selectBrand(brand);
+      brandGrid.appendChild(button);
+    });
+    
+    // Render flavor sections (hidden initially)
+    renderFlavorSections();
+    
+    // Update price display
+    document.getElementById('product-price').textContent = 'Select a brand to see price';
+  }
+  
+  // Render flavor sections for all brands
+  function renderFlavorSections() {
+    const container = document.getElementById('flavor-sections-container');
+    container.innerHTML = '';
+    
+    Object.keys(brandData).forEach(brand => {
+      const section = document.createElement('div');
+      section.className = 'flavor-section';
+      section.id = `flavors-${brand.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+      
+      const title = document.createElement('h4');
+      title.className = 'section-title';
+      title.textContent = `🍋 Choose Your ${brand} Flavor`;
+      section.appendChild(title);
+      
+      const flavorGrid = document.createElement('div');
+      flavorGrid.className = 'flavor-grid';
+      
+      brandData[brand].products.forEach(product => {
+        if (product.variants.length > 1) {
+          // Multi-variant product
+          product.variants.forEach(variant => {
+            const button = createFlavorButton(variant.title, variant.id, variant.price, variant.available);
+            flavorGrid.appendChild(button);
+          });
+        } else {
+          // Single-variant product
+          const variant = product.variants[0];
+          const flavorName = product.title.replace(brand, '').trim();
+          const button = createFlavorButton(flavorName, variant.id, variant.price, variant.available);
+          flavorGrid.appendChild(button);
+        }
+      });
+      
+      section.appendChild(flavorGrid);
+      container.appendChild(section);
+    });
+  }
+  
+  // Create flavor button
+  function createFlavorButton(title, variantId, price, available) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'flavor-button';
+    button.dataset.variantId = variantId;
+    button.dataset.price = price;
+    
+    if (!available) {
+      button.disabled = true;
+      button.innerHTML = `${title}<br><small>(Sold Out)</small>`;
+    } else {
+      button.textContent = title;
+      button.onclick = () => selectFlavorWithVariant(title, variantId, parseFloat(price));
+    }
+    
+    return button;
+  }
+  
   // Brand selection
-  function selectBrand(brand) {
+  window.selectBrand = function(brand) {
     selectedBrand = brand;
     selectedFlavor = null;
     selectedVariantId = null;
@@ -254,22 +283,22 @@
     });
     
     // Show selected brand's flavors
-    const flavorSection = document.getElementById('flavors-' + brand.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    const flavorSection = document.getElementById(`flavors-${brand.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
     if (flavorSection) {
       flavorSection.classList.add('show');
     }
     
     // Update price display
-    const price = priceForBrand(brand);
+    const price = brandData[brand].minPrice;
     document.getElementById('product-price').textContent = fmt.format(price);
     
     // Disable add to cart until flavor selected
     document.getElementById('add-to-cart-btn').disabled = true;
     document.getElementById('add-to-cart-btn').textContent = 'Select a Flavor';
-  }
-
-  // Flavor selection with variant
-  function selectFlavorWithVariant(flavor, variantId, price) {
+  };
+  
+  // Flavor selection
+  window.selectFlavorWithVariant = function(flavor, variantId, price) {
     selectedFlavor = flavor;
     selectedVariantId = variantId;
     selectedPrice = price;
@@ -287,23 +316,23 @@
     const btn = document.getElementById('add-to-cart-btn');
     btn.disabled = false;
     btn.textContent = `Add to Cart — ${fmt.format(price)}`;
-  }
-
+  };
+  
   // Quantity controls
-  function incrementQty() {
+  window.incrementQty = function() {
     const input = document.getElementById('quantity');
     const current = parseInt(input.value) || 1;
     input.value = Math.min(current + 1, 99);
-  }
-
-  function decrementQty() {
+  };
+  
+  window.decrementQty = function() {
     const input = document.getElementById('quantity');
     const current = parseInt(input.value) || 1;
     input.value = Math.max(current - 1, 1);
-  }
-
+  };
+  
   // Add to cart
-  function addToCart() {
+  window.addToCart = function() {
     if (!selectedVariantId) {
       alert('Please select a brand and flavor');
       return;
@@ -339,10 +368,7 @@
       return response.json();
     })
     .then(data => {
-      // Success!
       console.log('Added to cart:', data);
-      
-      // Update cart count
       return fetch('/cart.js');
     })
     .then(r => r.json())
@@ -384,6 +410,10 @@
       btn.disabled = false;
       btn.textContent = `Add to Cart — ${fmt.format(selectedPrice)}`;
     });
-  }
+  };
+  
+  // Load products on page load
+  loadProducts();
+})();
 </script>
 
