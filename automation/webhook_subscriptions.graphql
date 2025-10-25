@@ -1,0 +1,138 @@
+# Shopify Webhook Subscriptions
+# Phase 4.1: Create webhook subscriptions for automation
+#
+# Replace WEBHOOK_BASE_URL with your actual webhook endpoint
+# Example: https://wtf-webhooks.your-subdomain.workers.dev/webhooks
+
+# 1. Products Create - Seed metafields for new SKUs
+mutation CreateProductsCreateWebhook {
+  webhookSubscriptionCreate(
+    topic: PRODUCTS_CREATE
+    webhookSubscription: {
+      format: JSON
+      callbackUrl: "WEBHOOK_BASE_URL/products-create"
+    }
+  ) {
+    webhookSubscription {
+      id
+      topic
+      callbackUrl
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+# 2. Products Update - Re-evaluate ingredient and bar-menu mapping
+mutation CreateProductsUpdateWebhook {
+  webhookSubscriptionCreate(
+    topic: PRODUCTS_UPDATE
+    webhookSubscription: {
+      format: JSON
+      callbackUrl: "WEBHOOK_BASE_URL/products-update"
+    }
+  ) {
+    webhookSubscription {
+      id
+      topic
+      callbackUrl
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+# 3. Metaobjects Create - Keep menu pages fresh
+mutation CreateMetaobjectsCreateWebhook {
+  webhookSubscriptionCreate(
+    topic: METAOBJECTS_CREATE
+    webhookSubscription: {
+      format: JSON
+      callbackUrl: "WEBHOOK_BASE_URL/metaobjects-create"
+    }
+  ) {
+    webhookSubscription {
+      id
+      topic
+      callbackUrl
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+# 4. Metaobjects Update - Keep menu pages fresh
+mutation CreateMetaobjectsUpdateWebhook {
+  webhookSubscriptionCreate(
+    topic: METAOBJECTS_UPDATE
+    webhookSubscription: {
+      format: JSON
+      callbackUrl: "WEBHOOK_BASE_URL/metaobjects-update"
+    }
+  ) {
+    webhookSubscription {
+      id
+      topic
+      callbackUrl
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+# 5. Collections Update - Re-index SEO content blocks
+mutation CreateCollectionsUpdateWebhook {
+  webhookSubscriptionCreate(
+    topic: COLLECTIONS_UPDATE
+    webhookSubscription: {
+      format: JSON
+      callbackUrl: "WEBHOOK_BASE_URL/collections-update"
+    }
+  ) {
+    webhookSubscription {
+      id
+      topic
+      callbackUrl
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+# List all webhook subscriptions
+query ListWebhookSubscriptions {
+  webhookSubscriptions(first: 50) {
+    edges {
+      node {
+        id
+        topic
+        callbackUrl
+        format
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+
+# Delete a webhook subscription (if needed)
+mutation DeleteWebhookSubscription($id: ID!) {
+  webhookSubscriptionDelete(id: $id) {
+    deletedWebhookSubscriptionId
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
