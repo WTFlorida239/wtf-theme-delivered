@@ -73,8 +73,19 @@
       .sr-only { position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
     </style>
 
+    {%- assign kratom_product = all_products['kratom-housemade'] -%}
     <script>
-      window.KRATOM_TEAS_VARIANT_ID = {{ page.metafields.custom.kratom_variant_id | default: settings.kratom_teas_variant_id | json }};
+      // Product data from Shopify
+      window.KRATOM_PRODUCT = {
+        id: {{ kratom_product.id | json }},
+        title: {{ kratom_product.title | json }},
+        handle: {{ kratom_product.handle | json }},
+        variants: {{ kratom_product.variants | json }},
+        price: {{ kratom_product.price | money_without_currency }},
+        available: {{ kratom_product.available | json }}
+      };
+      // Fallback variant ID for backwards compatibility
+      window.KRATOM_TEAS_VARIANT_ID = {{ kratom_product.selected_or_first_available_variant.id | json }};
     </script>
   <div class="header">WTF | Welcome To Florida</div>
     <div class="cart-status" id="cart-status" aria-live="polite">
@@ -98,10 +109,10 @@
         </div>
 
         <div class="product-details">
-          <h1 class="product-title">Kratom Teas</h1>
-          <div class="product-price" id="product-price">$9.00 - Medium • $15.00 - Large • $100.00 - Gallon</div>
+          <h1 class="product-title">{{ kratom_product.title | default: 'Kratom Teas' }}</h1>
+          <div class="product-price" id="product-price">${{ kratom_product.price | money_without_currency | default: '9.00' }}</div>
           <p class="product-description">
-            Premium kratom teas with your choice of strain, size, and extensive flavor options. Customize with sugar-free options, regular flavors, creamers, and ice preferences.
+            {{ kratom_product.description | default: 'Premium kratom teas with your choice of strain, size, and extensive flavor options. Customize with sugar-free options, regular flavors, creamers, and ice preferences.' }}
           </p>
 
           <!-- Size Selection (Variants) -->
