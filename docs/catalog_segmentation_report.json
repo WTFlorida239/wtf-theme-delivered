@@ -1,0 +1,2302 @@
+{
+  "timestamp": "2025-10-25T08:09:50.735157",
+  "phase": "Phase 2 - Catalog Segmentation",
+  "shop": "accounts-wtfswag.myshopify.com",
+  "total_products": 144,
+  "bar_products_count": 75,
+  "ecommerce_products_count": 69,
+  "ingredient_breakdown": {
+    "THC": 35,
+    "Kratom": 8,
+    "null": 19,
+    "Mushroom": 6,
+    "Caffeine": 1
+  },
+  "bar_products": [
+    {
+      "id": "gid://shopify/Product/8489816719538",
+      "title": "Cookies Airlines Peanut Butter Cookies 50mg - Cape Coral, FL",
+      "handle": "peanut-butter-cookies",
+      "product_type": "Edibles",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Artisan Made",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Florida Cannabis",
+        "Fresh vs Mass Produced",
+        "Local Hemp Edibles",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Real THC Gummies",
+        "Southwest Florida",
+        "SWFL",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10114"
+    },
+    {
+      "id": "gid://shopify/Product/8489816752306",
+      "title": "Barney's Botanicals Pineapple Delta 9 Syrup- 4oz",
+      "handle": "barneys-bontanicals-pineapple-delta-9-syrup-4oz",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10064"
+    },
+    {
+      "id": "gid://shopify/Product/8489816916146",
+      "title": "White Rabbit Mangoberry",
+      "handle": "white-rabbit-mangoberry",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "Drinks",
+        "energy",
+        "kratom",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10043"
+    },
+    {
+      "id": "gid://shopify/Product/8489817047218",
+      "title": "Torch Blue Razz Lemonade",
+      "handle": "torch-blue-razz-lemonade",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "d9",
+        "Delta 9",
+        "delta9",
+        "experienced users only",
+        "THC",
+        "zero alcohol",
+        "zero sugar"
+      ],
+      "sku": "10040"
+    },
+    {
+      "id": "gid://shopify/Product/8489817145522",
+      "title": "San Pellegrino",
+      "handle": "san-pellegrino",
+      "product_type": "Drinks",
+      "tags": [
+        "bottle",
+        "water"
+      ],
+      "sku": "10036"
+    },
+    {
+      "id": "gid://shopify/Product/8489817211058",
+      "title": "White Rabbit Root Beer 16oz",
+      "handle": "white-rabbit-root-beer-sample-10oz",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "energy",
+        "kratom",
+        "nitro",
+        "on tap",
+        "rootbeer",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10241"
+    },
+    {
+      "id": "gid://shopify/Product/8489817440434",
+      "title": "Mitra 9 Draft Pours",
+      "handle": "mitra-9-raspberry-lime",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "kava",
+        "kratom",
+        "THC"
+      ],
+      "sku": "10022"
+    },
+    {
+      "id": "gid://shopify/Product/8489817473202",
+      "title": "Citrus Fade - 4Pack",
+      "handle": "citrus-fade-4pack",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10074"
+    },
+    {
+      "id": "gid://shopify/Product/8489817604274",
+      "title": "Barney's Botanicals Blue Razz Delta 9 Syrup- 4oz",
+      "handle": "barneys-bontanicals-blue-razz-delta-9-syrup-4oz",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10058"
+    },
+    {
+      "id": "gid://shopify/Product/8489817702578",
+      "title": "Hemp Doctor - Pina Colada Single",
+      "handle": "hemp-doctor-pina-colada-single",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10077"
+    },
+    {
+      "id": "gid://shopify/Product/8489817866418",
+      "title": "Barney's Botanicals Blueberry Cheesecake Delta 9 Syrup- 4oz",
+      "handle": "barneys-bontanicals-blueberry-cheesecake-delta-9-syrup-4oz",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10059"
+    },
+    {
+      "id": "gid://shopify/Product/8489817899186",
+      "title": "White Rabbit Root Beer Can",
+      "handle": "white-rabbit-root-beer-can",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "Drinks",
+        "energy",
+        "kratom",
+        "root beer",
+        "rootbeer",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10046"
+    },
+    {
+      "id": "gid://shopify/Product/8489818128562",
+      "title": "FL Freeze Slushi - Cape Coral, FL",
+      "handle": "house-cocktails-slushi",
+      "product_type": "Drinks",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Fresh Daily Kava",
+        "Fresh vs Mass Produced",
+        "Happy Hour Special",
+        "House Brewed Kratom",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Southwest Florida",
+        "SWFL",
+        "Traditional Brewing",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10028"
+    },
+    {
+      "id": "gid://shopify/Product/8489818194098",
+      "title": "Coke Zero - Cape Coral, FL",
+      "handle": "coke-zero",
+      "product_type": "Drinks",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Fresh Daily Kava",
+        "Fresh vs Mass Produced",
+        "Happy Hour Special",
+        "House Brewed Kratom",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Southwest Florida",
+        "SWFL",
+        "Traditional Brewing",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10037"
+    },
+    {
+      "id": "gid://shopify/Product/8489818259634",
+      "title": "White Rabbit Watermelon",
+      "handle": "white-rabbit-watermelon",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "Edibles",
+        "energy",
+        "kratom",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10048"
+    },
+    {
+      "id": "gid://shopify/Product/8489818292402",
+      "title": "WTF FLIGHTS",
+      "handle": "wtf-flights",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10023"
+    },
+    {
+      "id": "gid://shopify/Product/8489818390706",
+      "title": "Imba Sour Blue Razz Big Chill Energy",
+      "handle": "imba-sour-blue-razz-big-chill-energy-clone",
+      "product_type": "Drinks",
+      "tags": [
+        "energy",
+        "Refreshing"
+      ],
+      "sku": "10031"
+    },
+    {
+      "id": "gid://shopify/Product/8489818456242",
+      "title": "Torch Raspberry Lemonade",
+      "handle": "torch-raspberry-lemonade",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "Delta 9",
+        "Rasberry Lemonade",
+        "THC",
+        "torch"
+      ],
+      "sku": "10041"
+    },
+    {
+      "id": "gid://shopify/Product/8489818489010",
+      "title": "Mitra Tangerine Kratom",
+      "handle": "mitra-tangerine-kratom",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10094"
+    },
+    {
+      "id": "gid://shopify/Product/8489818521778",
+      "title": "Mitra 9 Rasberry Lime Drafts",
+      "handle": "mitra-9-rasberry-lime",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10021"
+    },
+    {
+      "id": "gid://shopify/Product/8489818554546",
+      "title": "Better Now Kratom Drink",
+      "handle": "better-now-kratom-drink",
+      "product_type": "Product",
+      "tags": [
+        "better",
+        "drink",
+        "kratom",
+        "now"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8489818652850",
+      "title": "Barney's Botanicals Tropical Punch Delta 9 Syrup- 4oz (Clone)7",
+      "handle": "barneys-bontanicals-tropical-punch-delta-9-syrup-4oz-clone",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10067"
+    },
+    {
+      "id": "gid://shopify/Product/8489818751154",
+      "title": "White Rabbit Root Beer Draft",
+      "handle": "white-rabbit-root-beer-draft",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Drinks",
+        "Edibles",
+        "energy",
+        "kratom",
+        "THC",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10024"
+    },
+    {
+      "id": "gid://shopify/Product/8489818849458",
+      "title": "Imba Pineapple Big Chill Energy",
+      "handle": "imba-pineapple-big-chill-energy",
+      "product_type": "Drinks",
+      "tags": [
+        "energy",
+        "zero alcohol"
+      ],
+      "sku": "10030"
+    },
+    {
+      "id": "gid://shopify/Product/8489818882226",
+      "title": "White Rabbit Passionfruit",
+      "handle": "white-rabbit-passionfruit",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Drinks",
+        "Edibles",
+        "energy",
+        "kratom",
+        "THC",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10044"
+    },
+    {
+      "id": "gid://shopify/Product/8489818914994",
+      "title": "White Rabbit Raspberry Lemonade",
+      "handle": "white-rabbit-raspberry-lemonade",
+      "product_type": "Drinks",
+      "tags": [
+        "Delta 9",
+        "Drinks",
+        "Edibles",
+        "energy",
+        "kratom",
+        "THC",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10045"
+    },
+    {
+      "id": "gid://shopify/Product/8489819242674",
+      "title": "Cookie Airlines Strawberry Cheesecake Cookies 50mg - Cape Coral, FL",
+      "handle": "strawberry-cheesecake-cookies",
+      "product_type": "Edibles",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Artisan Made",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Florida Cannabis",
+        "Fresh vs Mass Produced",
+        "Local Hemp Edibles",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Real THC Gummies",
+        "Southwest Florida",
+        "SWFL",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10116"
+    },
+    {
+      "id": "gid://shopify/Product/8489819308210",
+      "title": "White Rabbit Cherry",
+      "handle": "white-rabbit-cherry",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "energy",
+        "kratom",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10042"
+    },
+    {
+      "id": "gid://shopify/Product/8489819472050",
+      "title": "White Rabbit Rootbeer Keg",
+      "handle": "white-rabbit-root-beer-keg",
+      "product_type": "",
+      "tags": [
+        "Drinks",
+        "energy",
+        "kratom",
+        "on tap",
+        "rootbeer",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10242"
+    },
+    {
+      "id": "gid://shopify/Product/8489819504818",
+      "title": "Blitzd Blue Razz Lemonade",
+      "handle": "blitzd-blue-razz-lemonade",
+      "product_type": "Drinks",
+      "tags": [
+        "101mg",
+        "blitzd",
+        "d9",
+        "Delta 9",
+        "delta9",
+        "Drinks",
+        "Edibles",
+        "feelgood",
+        "Giggle Juice",
+        "lemonade",
+        "Refreshing",
+        "relaxation",
+        "smooth",
+        "THC"
+      ],
+      "sku": "10070"
+    },
+    {
+      "id": "gid://shopify/Product/8489819537586",
+      "title": "Sprite",
+      "handle": "sprite",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "coke products",
+        "sprite"
+      ],
+      "sku": "10039"
+    },
+    {
+      "id": "gid://shopify/Product/8489819603122",
+      "title": "Cookie Airlines Triple Chocolate Cookies 50mg - Cape Coral, FL",
+      "handle": "triple-chocolate-cookies",
+      "product_type": "Edibles",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Artisan Made",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Florida Cannabis",
+        "Fresh vs Mass Produced",
+        "Local Hemp Edibles",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Real THC Gummies",
+        "Southwest Florida",
+        "SWFL",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10117"
+    },
+    {
+      "id": "gid://shopify/Product/8489819668658",
+      "title": "Diet Coke - Cape Coral, FL",
+      "handle": "diet-coke",
+      "product_type": "Drinks",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Fresh Daily Kava",
+        "Fresh vs Mass Produced",
+        "Happy Hour Special",
+        "House Brewed Kratom",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Southwest Florida",
+        "SWFL",
+        "Traditional Brewing",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10038"
+    },
+    {
+      "id": "gid://shopify/Product/8489819766962",
+      "title": "Rapture Kratom Bombsicle",
+      "handle": "rapture-kratom-bombsicle",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "kratom"
+      ],
+      "sku": "10033"
+    },
+    {
+      "id": "gid://shopify/Product/8489819799730",
+      "title": "Chocolate Chip Cookies 50mg - Cape Coral, FL",
+      "handle": "chocolate-chip-cookies",
+      "product_type": "Edibles",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Artisan Made",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Florida Cannabis",
+        "Fresh vs Mass Produced",
+        "Local Hemp Edibles",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Real THC Gummies",
+        "Southwest Florida",
+        "SWFL",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10112"
+    },
+    {
+      "id": "gid://shopify/Product/8489819832498",
+      "title": "Barney's Botanicals Blue Razz Delta 9 Syrup",
+      "handle": "barneys-bontanicals-blue-razz-delta-9-syrup",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10057"
+    },
+    {
+      "id": "gid://shopify/Product/8489819865266",
+      "title": "L.I.T. (Long Island Ice Tea)",
+      "handle": "lit-long-island-ice-tea",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "Delta 9",
+        "Edibles",
+        "L.I.T.",
+        "THC"
+      ],
+      "sku": "10010"
+    },
+    {
+      "id": "gid://shopify/Product/8489819930802",
+      "title": "Hemp Doctor Drink Mix - Peach Tea",
+      "handle": "hemp-doctor-drink-mix-peach-tea",
+      "product_type": "Edibles",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10078"
+    },
+    {
+      "id": "gid://shopify/Product/8489820029106",
+      "title": "Barney's Botanicals Pineapple Delta 9 Syrup",
+      "handle": "barneys-bontanicals-pineapple-delta-9-syrup",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10063"
+    },
+    {
+      "id": "gid://shopify/Product/8489820094642",
+      "title": "White Rabbit Sweet Peach Kratom",
+      "handle": "white-rabbit-sweet-peach-kratom",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "energy",
+        "kratom",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10047"
+    },
+    {
+      "id": "gid://shopify/Product/8489820225714",
+      "title": "Hemp Doctor Drink Mix -Raspberry Lemonade",
+      "handle": "hemp-doctor-drink-mix-raspberry-lemonade",
+      "product_type": "Edibles",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10079"
+    },
+    {
+      "id": "gid://shopify/Product/8489820324018",
+      "title": "Cookie Airlines Purple Velvet Cookies 50mg - Cape Coral, FL - Cape Coral, FL",
+      "handle": "purple-velvet-cookies",
+      "product_type": "Edibles",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Artisan Made",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Florida Cannabis",
+        "Fresh vs Mass Produced",
+        "Local Hemp Edibles",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Real THC Gummies",
+        "Southwest Florida",
+        "SWFL",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10115"
+    },
+    {
+      "id": "gid://shopify/Product/8502967926962",
+      "title": "WTF | Welcome To Florida Pint Glass - 16oz",
+      "handle": "wtf-welcome-to-florida-pint-glass-16oz",
+      "product_type": "Mug",
+      "tags": [
+        "Barware for Parties",
+        "Beach Party Glass",
+        "Colorful Glass Cup",
+        "Flamingo Decor",
+        "Florida Pint Glass",
+        "Gift for Her",
+        "Gift for Him",
+        "Home Bar Accessory",
+        "Outdoor Gathering",
+        "Summer Vibes Gift",
+        "Tropical Drinkware",
+        "Unique Kitchenware",
+        "Vacation Souvenir"
+      ],
+      "sku": "28578164309470195866"
+    },
+    {
+      "id": "gid://shopify/Product/8514666528946",
+      "title": "Barney's Botanicals Pink Lemonade Delta 9 Syrup",
+      "handle": "barneys-bontanicals-pink-lemonade-delta-9-syrup",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "infusedsyrup",
+        "shotsize",
+        "syrup",
+        "THC",
+        "Tropical Vibes",
+        "yum"
+      ],
+      "sku": "10065"
+    },
+    {
+      "id": "gid://shopify/Product/8514667020466",
+      "title": "Barney's Botanicals Tropical Delta 9 Syrup - Cape Coral, FL",
+      "handle": "barneys-bontanicals-tropical-delta-9-syrup",
+      "product_type": "Edibles",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Artisan Made",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Florida Cannabis",
+        "Fresh vs Mass Produced",
+        "Local Hemp Edibles",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Real THC Gummies",
+        "Southwest Florida",
+        "SWFL",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10066"
+    },
+    {
+      "id": "gid://shopify/Product/8530512674994",
+      "title": "Botanical Brewing Company",
+      "handle": "botanical-brewing-company",
+      "product_type": "Drinks",
+      "tags": [
+        "botanical brewing",
+        "Cape Coral",
+        "Delta 9",
+        "Drinks",
+        "kava",
+        "kratom",
+        "yum"
+      ],
+      "sku": "10422"
+    },
+    {
+      "id": "gid://shopify/Product/8530567856306",
+      "title": "Mitra Canned Beverages",
+      "handle": "mitra-canned-beverages",
+      "product_type": "Drinks",
+      "tags": [
+        "kava",
+        "kratom",
+        "Mitra",
+        "Mitra9"
+      ],
+      "sku": "10405"
+    },
+    {
+      "id": "gid://shopify/Product/8530638864562",
+      "title": "Veed Edibles",
+      "handle": "veed-edibles",
+      "product_type": "Edibles",
+      "tags": [
+        "Cake Bites",
+        "Candy",
+        "delicious",
+        "delta9",
+        "Edibles",
+        "gummies",
+        "High",
+        "THC",
+        "Veed",
+        "yum"
+      ],
+      "sku": "10471"
+    },
+    {
+      "id": "gid://shopify/Product/8530654986418",
+      "title": "Barney's Syrups",
+      "handle": "barneys-syrups",
+      "product_type": "Edibles",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "Infused",
+        "packet",
+        "shotsize",
+        "syrup",
+        "Syrups",
+        "THC",
+        "tsacomplaint",
+        "yum"
+      ],
+      "sku": "10481"
+    },
+    {
+      "id": "gid://shopify/Product/8532246757554",
+      "title": "White Rabbit",
+      "handle": "white-rabbit",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "energy",
+        "kratom",
+        "Natural Energy",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "sku": "10452"
+    },
+    {
+      "id": "gid://shopify/Product/8532268417202",
+      "title": "Mitra 9 Kava & Kratom Extract Shot Blue Razz",
+      "handle": "mitra-9-kava-kratom-extract-shot-blue-razz",
+      "product_type": "Drinks",
+      "tags": [
+        "kava",
+        "kratom",
+        "Mitra9",
+        "shotsize"
+      ],
+      "sku": "10389"
+    },
+    {
+      "id": "gid://shopify/Product/8532336443570",
+      "title": "Tea Time Draft Pours",
+      "handle": "tea-time-draft-pours",
+      "product_type": "",
+      "tags": [
+        "draft",
+        "icecold",
+        "kratom",
+        "Tea Time",
+        "TeaTime",
+        "yum"
+      ],
+      "sku": "10502"
+    },
+    {
+      "id": "gid://shopify/Product/8532336509106",
+      "title": "Tea Time Kratom Canned Beverages",
+      "handle": "tea-time-blue-raspberry",
+      "product_type": "Drinks",
+      "tags": [
+        "BlueRazz",
+        "delicious",
+        "kratom",
+        "TeaTime",
+        "yum"
+      ],
+      "sku": "10399"
+    },
+    {
+      "id": "gid://shopify/Product/8533807431858",
+      "title": "Botanical Brewing Drafts",
+      "handle": "botanical-brewing-lemon-pouncake-draft",
+      "product_type": "Drinks",
+      "tags": [
+        "botanical brewing",
+        "capecoral",
+        "delta9",
+        "draft"
+      ],
+      "sku": "10309"
+    },
+    {
+      "id": "gid://shopify/Product/8533817426098",
+      "title": "Brez",
+      "handle": "brez",
+      "product_type": "Drinks",
+      "tags": [
+        "Brez",
+        "Drinks",
+        "Infused",
+        "LionMaine",
+        "Mushrooms"
+      ],
+      "sku": "10532"
+    },
+    {
+      "id": "gid://shopify/Product/8533817753778",
+      "title": "Five Flowers Lemonade Draft",
+      "handle": "five-flowers-lemonade-draft",
+      "product_type": "Product",
+      "tags": [
+        "draft",
+        "five",
+        "flowers",
+        "lemonade"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8533817852082",
+      "title": "Housemade Kratom Tea \u2013 $5 Happy Hour (8 AM \u2013 2 PM)",
+      "handle": "housemade-kratom-special",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "House Brewed Kratom",
+        "House Made",
+        "housemade",
+        "icecold",
+        "kratom",
+        "local pickup"
+      ],
+      "sku": "10377"
+    },
+    {
+      "id": "gid://shopify/Product/8533817950386",
+      "title": "Housemade Kratom Tea | Fresh Brewed Botanical Drink \u2013 WTF | Welcome To Florida",
+      "handle": "kratom-housemade",
+      "product_type": "Drinks",
+      "tags": [
+        "Drinks",
+        "House Brewed Kratom",
+        "House Made",
+        "housemade",
+        "kratom",
+        "local pickup",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10350"
+    },
+    {
+      "id": "gid://shopify/Product/8533818409138",
+      "title": "Rapture Kratom Drinks",
+      "handle": "rapture-kratom-drinks",
+      "product_type": "Drinks",
+      "tags": [
+        "delicious",
+        "Drinks",
+        "kratom",
+        "rapture",
+        "Rapture Brand"
+      ],
+      "sku": "10442"
+    },
+    {
+      "id": "gid://shopify/Product/8533818507442",
+      "title": "Uncle Skunks Craft Soda \u2013 100 mg \u03949 THC / Hemp Derived \u2013 12 oz Can",
+      "handle": "uncle-skunks-thc-sodas",
+      "product_type": "Drinks",
+      "tags": [
+        "can",
+        "Infused Soda",
+        "THC",
+        "UncleSkunks"
+      ],
+      "sku": "10536"
+    },
+    {
+      "id": "gid://shopify/Product/8542479286450",
+      "title": "Crank Cannabis Beverages",
+      "handle": "crank-cannabis-beverages",
+      "product_type": "Product",
+      "tags": [
+        "beverages",
+        "cannabis",
+        "crank"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8577741848754",
+      "title": "Flow State Elixir Kratom + Kava Shots",
+      "handle": "flow-state-elixir-kratom-kava-shots",
+      "product_type": "Drinks",
+      "tags": [
+        "FlowState",
+        "Kratom&Kava"
+      ],
+      "sku": "10636"
+    },
+    {
+      "id": "gid://shopify/Product/8588358516914",
+      "title": "WTF Kratom Tea",
+      "handle": "wtf-test-kratom-tea-small",
+      "product_type": "Kratom Tea",
+      "tags": [
+        "Drinks",
+        "House Brewed Kratom",
+        "House Made",
+        "kratom",
+        "pickup",
+        "small",
+        "test"
+      ],
+      "sku": "WTF-KRATOM-TEA"
+    },
+    {
+      "id": "gid://shopify/Product/8599324557490",
+      "title": "Custom Kratom Tea",
+      "handle": "custom-kratom-tea",
+      "product_type": "Product",
+      "tags": [
+        "custom",
+        "kratom",
+        "tea"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8599325212850",
+      "title": "Custom Kava Drink",
+      "handle": "custom-kava-drink",
+      "product_type": "Product",
+      "tags": [
+        "custom",
+        "drink",
+        "kava"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8602001014962",
+      "title": "Mitra 9 Go Packs",
+      "handle": "mitra-9-go-packs",
+      "product_type": "Drinks",
+      "tags": [
+        "kratom",
+        "Mitra",
+        "Mitra9"
+      ],
+      "sku": "10606"
+    },
+    {
+      "id": "gid://shopify/Product/8608446972082",
+      "title": "Housemade THC Drinks",
+      "handle": "wtf-thc-beverages-low-dose-infused-drinks",
+      "product_type": "Drinks",
+      "tags": [
+        "d9",
+        "Delta 9",
+        "Drinks",
+        "THC"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8610084061362",
+      "title": "THC Shots",
+      "handle": "thc-shots",
+      "product_type": "THC",
+      "tags": [],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619951816882",
+      "title": "Botanical Brewing Cans",
+      "handle": "botanical-brewing-cans",
+      "product_type": "Product",
+      "tags": [
+        "botanical",
+        "brewing",
+        "cans"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619951947954",
+      "title": "Delta-9 Shot",
+      "handle": "delta-9-shot",
+      "product_type": "Product",
+      "tags": [
+        "9",
+        "delta",
+        "delta-9",
+        "shot"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952111794",
+      "title": "Lumenade Cans",
+      "handle": "lumenade-thc-cans",
+      "product_type": "Product",
+      "tags": [
+        "cans",
+        "lumenade"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952341170",
+      "title": "Tea Time Kratom Cans",
+      "handle": "tea-time-kratom-cans",
+      "product_type": "Product",
+      "tags": [
+        "cans",
+        "kratom",
+        "tea",
+        "time"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952636082",
+      "title": "White Rabbit Kratom Cans",
+      "handle": "white-rabbit-kratom-cans",
+      "product_type": "Product",
+      "tags": [
+        "cans",
+        "kratom",
+        "rabbit",
+        "white"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8624578232498",
+      "title": "Tortuga Botanical Cans \u2013 Kratom, Kava, D9 & Adaptogenic Coffee",
+      "handle": "tortuga-canned-beverages",
+      "product_type": "Drinks",
+      "tags": [
+        "Cape Coral",
+        "d9",
+        "kava",
+        "kratom"
+      ],
+      "sku": "10715"
+    },
+    {
+      "id": "gid://shopify/Product/8624578265266",
+      "title": "Tortuga on Tap Kratom & D9 Drinks",
+      "handle": "tortuga-on-tap",
+      "product_type": "",
+      "tags": [],
+      "sku": "10721"
+    }
+  ],
+  "ecommerce_products": [
+    {
+      "id": "gid://shopify/Product/8489816850610",
+      "title": "Veed Vanilla Syrup",
+      "handle": "vanilla-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "infusedsyrup",
+        "syrup",
+        "THC",
+        "water soluble THC"
+      ],
+      "sku": "10111"
+    },
+    {
+      "id": "gid://shopify/Product/8489816883378",
+      "title": "Only Fire Blue Raspberry",
+      "handle": "only-fire-blue-raspberry",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "experienced users only",
+        "strong",
+        "THC"
+      ],
+      "sku": "10121"
+    },
+    {
+      "id": "gid://shopify/Product/8489816981682",
+      "title": "Barney's 12mg THC Gummies - 10 Pack | Premium Alternative Products in Cape Coral",
+      "handle": "barneys-12mg-pack-of-10-light-blue",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "Edibles",
+        "gummies",
+        "THC",
+        "yum"
+      ],
+      "sku": "10053"
+    },
+    {
+      "id": "gid://shopify/Product/8489817243826",
+      "title": "Veed Strawberry Syrup",
+      "handle": "strawberry-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10110"
+    },
+    {
+      "id": "gid://shopify/Product/8489817309362",
+      "title": "WTF Yearly Florida Man Membership",
+      "handle": "wtf-yearly-florida-man-membership",
+      "product_type": "Membership",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10120"
+    },
+    {
+      "id": "gid://shopify/Product/8489817374898",
+      "title": "Barney's Chocolate Chip 100mg",
+      "handle": "barneys-chocolate-chip-100mg",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9",
+        "Edibles",
+        "infusedbrownies",
+        "infusedcereal",
+        "THC",
+        "yum"
+      ],
+      "sku": "10068"
+    },
+    {
+      "id": "gid://shopify/Product/8489817505970",
+      "title": "Veed Hazelnut Syrup",
+      "handle": "hazelnut-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "infusedsyrup",
+        "syrup",
+        "THC"
+      ],
+      "sku": "10107"
+    },
+    {
+      "id": "gid://shopify/Product/8489817637042",
+      "title": "Lifted Lollies - Mango",
+      "handle": "mango",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10083"
+    },
+    {
+      "id": "gid://shopify/Product/8489817669810",
+      "title": "Lifted Lollies - Grape",
+      "handle": "grape",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10082"
+    },
+    {
+      "id": "gid://shopify/Product/8489817964722",
+      "title": "Crispy Blunts Cookies & Cream",
+      "handle": "crispy-blunts-cookies-cream",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "cookies&cream",
+        "cookiesandcream",
+        "crispyblunts",
+        "d9",
+        "delicious",
+        "Delta 9",
+        "Edibles",
+        "THC",
+        "yum"
+      ],
+      "sku": "10118"
+    },
+    {
+      "id": "gid://shopify/Product/8489817997490",
+      "title": "Gift Card - Cape Coral, FL",
+      "handle": "gift-card",
+      "product_type": "Gift Card",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Fresh Daily Kava",
+        "Fresh vs Mass Produced",
+        "Happy Hour Special",
+        "House Brewed Kratom",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Southwest Florida",
+        "SWFL",
+        "Traditional Brewing",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10076"
+    },
+    {
+      "id": "gid://shopify/Product/8489818030258",
+      "title": "Green Apple Syrup",
+      "handle": "green-apple-syrup",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "apple",
+        "green",
+        "syrup"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8489818063026",
+      "title": "Lifted Lollies Sour Apple",
+      "handle": "sour-apple",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10085"
+    },
+    {
+      "id": "gid://shopify/Product/8489818226866",
+      "title": "Veed Coffee Syrup",
+      "handle": "coffee-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "infusedsyrup",
+        "syrup",
+        "THC"
+      ],
+      "sku": "10104"
+    },
+    {
+      "id": "gid://shopify/Product/8489818980530",
+      "title": "Veed Peach Mango Syrup",
+      "handle": "peach-mango-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "experienced users only",
+        "THC"
+      ],
+      "sku": "10108"
+    },
+    {
+      "id": "gid://shopify/Product/8489819013298",
+      "title": "Blueberry Syrup",
+      "handle": "blueberry-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10103"
+    },
+    {
+      "id": "gid://shopify/Product/8489819111602",
+      "title": "Barney's Botanicals 12mg Delta 9 Gummies - Premium 30 Count THC Edibles for Relaxation",
+      "handle": "barneys-12mg-30-count-bottle",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "Edibles",
+        "gummies",
+        "THC",
+        "yum"
+      ],
+      "sku": "10052"
+    },
+    {
+      "id": "gid://shopify/Product/8489819275442",
+      "title": "Veed Grape Soda Syrup",
+      "handle": "grape-soda-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "infusedsyrup",
+        "syrup",
+        "THC",
+        "veed",
+        "water soluble THC"
+      ],
+      "sku": "10105"
+    },
+    {
+      "id": "gid://shopify/Product/8489819406514",
+      "title": "Free Provele 15mg Gummies, Pack of 12. Apple",
+      "handle": "free-provele-15mg-gummies-pack-of-12-apple",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10095"
+    },
+    {
+      "id": "gid://shopify/Product/8489819701426",
+      "title": "Veed Pumpkin Spice Syrup",
+      "handle": "pumpkin-spice-syrup",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "delta9syrup",
+        "Edibles",
+        "syrup",
+        "THC",
+        "water soluble THC"
+      ],
+      "sku": "10109"
+    },
+    {
+      "id": "gid://shopify/Product/8489819963570",
+      "title": "Hemp Doctor Freeze Packs - 9 Packs",
+      "handle": "hemp-doctor-freeze-packs-9-packs",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10080"
+    },
+    {
+      "id": "gid://shopify/Product/8489820061874",
+      "title": "Drippy Citrus Fade Single",
+      "handle": "drippy-citrus-fade-single",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "citrus",
+        "drippy",
+        "fade",
+        "single"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8489820127410",
+      "title": "Barney's Botanicals Fruity Bites Cereal Bars",
+      "handle": "barneys-bontanicals-fruity-bites-cereal-bars",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9",
+        "Edibles",
+        "infusedbrownies",
+        "infusedcereal",
+        "THC",
+        "yum"
+      ],
+      "sku": "10061"
+    },
+    {
+      "id": "gid://shopify/Product/8489820160178",
+      "title": "Barney's Botanicals Cinnamon Toast Cereal Bars",
+      "handle": "barneys-bontanicals-cinnamon-toast-cereal-bars",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "d9",
+        "Delta 9",
+        "delta9",
+        "Edibles",
+        "infusedbrownies",
+        "infusedcereal",
+        "THC",
+        "yum"
+      ],
+      "sku": "10060"
+    },
+    {
+      "id": "gid://shopify/Product/8489820291250",
+      "title": "WTF Are You Thinkin' Gold - Cape Coral, FL",
+      "handle": "wtf-are-you-thinkin-gold",
+      "product_type": "Membership",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "Alternative to Kava Culture",
+        "Authentic Florida",
+        "Authentic vs Corporate",
+        "Better than BBCO",
+        "Cape Coral",
+        "Farm Bill Compliant",
+        "Fresh Daily Kava",
+        "Fresh vs Mass Produced",
+        "Happy Hour Special",
+        "House Brewed Kratom",
+        "Local vs Chain",
+        "Real Florida Kava",
+        "Real Kava Experience",
+        "Southwest Florida",
+        "SWFL",
+        "Traditional Brewing",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10119"
+    },
+    {
+      "id": "gid://shopify/Product/8489820389554",
+      "title": "Brownie Bites Bag",
+      "handle": "brownie-bites-bag",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10098"
+    },
+    {
+      "id": "gid://shopify/Product/8514672132274",
+      "title": "Cookie Airlines Chocolate Chip Cookies - 250mg",
+      "handle": "cookie-airlines-chocolate-chip-cookies-250mg",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "cookieairlines",
+        "Cookies",
+        "d9",
+        "delta9",
+        "infusedcookies",
+        "THC",
+        "yum"
+      ],
+      "sku": "10295"
+    },
+    {
+      "id": "gid://shopify/Product/8514672165042",
+      "title": "Cookie Airlines Triple Chocolate Cookies 250mg",
+      "handle": "cookie-airlines-triple-chocolate-cookies-250mg",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Cookies",
+        "delta9",
+        "Edibles",
+        "THC",
+        "yum"
+      ],
+      "sku": "10296"
+    },
+    {
+      "id": "gid://shopify/Product/8514689335474",
+      "title": "Zombi 200MG Dark Chocolate Bar",
+      "handle": "zombi-200mg-dark-chocolate-bar",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "chocolate",
+        "Edibles",
+        "THC"
+      ],
+      "sku": "10282"
+    },
+    {
+      "id": "gid://shopify/Product/8530489573554",
+      "title": "Blitzd Lemonades",
+      "handle": "blitzd-lemonades",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "blitzd",
+        "lemonades"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8530567200946",
+      "title": "Lifted Lollies",
+      "handle": "lifted-lollies",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Edibles",
+        "hemp",
+        "Infused Lollies",
+        "Lifted Lollies",
+        "THC",
+        "yum"
+      ],
+      "sku": "10430"
+    },
+    {
+      "id": "gid://shopify/Product/8530627657906",
+      "title": "Veed Syrups",
+      "handle": "veed-syrups",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "delta9",
+        "delta9syrup",
+        "Edibles",
+        "High",
+        "infusedsyrup",
+        "THC",
+        "Veed",
+        "Wake&Bake",
+        "yum"
+      ],
+      "sku": "10461"
+    },
+    {
+      "id": "gid://shopify/Product/8532267204786",
+      "title": "Good Vibes THC",
+      "handle": "good-vibes-thc",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [
+        "delta9",
+        "Infused",
+        "THC",
+        "THCMOCKTAILS",
+        "Yums"
+      ],
+      "sku": "10491"
+    },
+    {
+      "id": "gid://shopify/Product/8532268023986",
+      "title": "Koozies",
+      "handle": "koozies",
+      "product_type": "Merch",
+      "detected_ingredient": null,
+      "tags": [
+        "koozie"
+      ],
+      "sku": "10258"
+    },
+    {
+      "id": "gid://shopify/Product/8532268220594",
+      "title": "Mellow Fellow",
+      "handle": "mellow-fellow-thch-headband-sativa",
+      "product_type": "Vapes",
+      "detected_ingredient": "THC",
+      "tags": [
+        "headband",
+        "mellowfellow",
+        "sativa",
+        "THC",
+        "thch",
+        "vape"
+      ],
+      "sku": "10337"
+    },
+    {
+      "id": "gid://shopify/Product/8532268351666",
+      "title": "Mellow Fellow THCp Banana Pie Sativa",
+      "handle": "mellow-fellow-thcp-banana-pie-sativa",
+      "product_type": "Vapes",
+      "detected_ingredient": "THC",
+      "tags": [
+        "mellowfellow",
+        "THC",
+        "thcp",
+        "vape"
+      ],
+      "sku": "10338"
+    },
+    {
+      "id": "gid://shopify/Product/8532336607410",
+      "title": "Torch",
+      "handle": "torch",
+      "product_type": "",
+      "detected_ingredient": "THC",
+      "tags": [
+        "d9",
+        "delta9",
+        "experienced users only",
+        "THC",
+        "torch",
+        "Torch Brand",
+        "zero alcohol",
+        "zero sugar"
+      ],
+      "sku": "10449"
+    },
+    {
+      "id": "gid://shopify/Product/8532417773746",
+      "title": "Cookie Airlines",
+      "handle": "cookie-airlines",
+      "product_type": "Edibles",
+      "detected_ingredient": null,
+      "tags": [
+        "cookie airlines",
+        "cookieairlines",
+        "Cookies",
+        "Infused",
+        "infusedcookies"
+      ],
+      "sku": "10512"
+    },
+    {
+      "id": "gid://shopify/Product/8532452212914",
+      "title": "Barney's Edibles",
+      "handle": "barneys-edibles",
+      "product_type": "Edibles",
+      "detected_ingredient": null,
+      "tags": [
+        "barneys",
+        "barneysbotanical",
+        "cerealbars",
+        "delicious",
+        "Edibles",
+        "Infused",
+        "wtf",
+        "WTF Welcome To Florida",
+        "yum"
+      ],
+      "sku": "10523"
+    },
+    {
+      "id": "gid://shopify/Product/8533817491634",
+      "title": "Chronic Harvest Lemonades",
+      "handle": "chronic-harvest-lemonades",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "chronic",
+        "harvest",
+        "lemonades"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8533818278066",
+      "title": "Moocah",
+      "handle": "moocah",
+      "product_type": "Edibles",
+      "detected_ingredient": "Mushroom",
+      "tags": [
+        "Edibles",
+        "moocah",
+        "Mushrooms",
+        "Shrooms"
+      ],
+      "sku": "10436"
+    },
+    {
+      "id": "gid://shopify/Product/8533818376370",
+      "title": "OnlyFire Gummies",
+      "handle": "onlyfire-gummies",
+      "product_type": "Edibles",
+      "detected_ingredient": null,
+      "tags": [
+        "gummies",
+        "OnlyFire"
+      ],
+      "sku": "10439"
+    },
+    {
+      "id": "gid://shopify/Product/8533818540210",
+      "title": "Viva La Hemp 2gm Pre-Rolls",
+      "handle": "viva-la-hemp-2gm-pre-rolls",
+      "product_type": "Pre-Rolls",
+      "detected_ingredient": "THC",
+      "tags": [
+        "hybrid",
+        "indica",
+        "sativa",
+        "THC",
+        "vivalahemp"
+      ],
+      "sku": "10392"
+    },
+    {
+      "id": "gid://shopify/Product/8533818638514",
+      "title": "WTF Tote",
+      "handle": "wtf-tote",
+      "product_type": "Merch",
+      "detected_ingredient": null,
+      "tags": [
+        "beachbag",
+        "Merch",
+        "tote",
+        "wtf"
+      ],
+      "sku": "10299"
+    },
+    {
+      "id": "gid://shopify/Product/8533818769586",
+      "title": "WTF Shirt",
+      "handle": "wtf-shirt",
+      "product_type": "Merch",
+      "detected_ingredient": null,
+      "tags": [
+        "Merch",
+        "shirt",
+        "wtf"
+      ],
+      "sku": "10301"
+    },
+    {
+      "id": "gid://shopify/Product/8538519634098",
+      "title": "Silly Farms Edibles",
+      "handle": "silly-farms-edibles",
+      "product_type": "Edibles",
+      "detected_ingredient": null,
+      "tags": [],
+      "sku": "10495"
+    },
+    {
+      "id": "gid://shopify/Product/8542531813554",
+      "title": "WTF Cups",
+      "handle": "wtf-cups",
+      "product_type": "Merch",
+      "detected_ingredient": null,
+      "tags": [
+        "Cups",
+        "Merch",
+        "wtf",
+        "WTF Welcome To Florida"
+      ],
+      "sku": "10562"
+    },
+    {
+      "id": "gid://shopify/Product/8577760559282",
+      "title": "WTF Blue Dreams Tea - Kratom & Blue Lotus Blend",
+      "handle": "wtf-blue-dreams-tea-kratom-blue-lotus-blend",
+      "product_type": "Tea Blend",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "blue lotus",
+        "Cape Coral",
+        "dreams",
+        "kratom",
+        "local pickup",
+        "relaxation",
+        "tea",
+        "WTF"
+      ],
+      "sku": "WTF-BLUE-DREAMS-1OZ"
+    },
+    {
+      "id": "gid://shopify/Product/8577760624818",
+      "title": "WTF Love Potion Tea - Kratom & Damiana Blend",
+      "handle": "wtf-love-potion-tea-kratom-damiana-blend",
+      "product_type": "Tea Blend",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "adult use",
+        "aphrodisiac",
+        "Cape Coral",
+        "confidence",
+        "damiana",
+        "kratom",
+        "local pickup",
+        "mood",
+        "tea",
+        "WTF"
+      ],
+      "sku": "WTF-LOVE-POTION-1OZ"
+    },
+    {
+      "id": "gid://shopify/Product/8578326134962",
+      "title": "Silly Dots",
+      "handle": "silly-dots",
+      "product_type": "Edibles",
+      "detected_ingredient": "Mushroom",
+      "tags": [
+        "Mushrooms",
+        "SillyDots"
+      ],
+      "sku": "10619"
+    },
+    {
+      "id": "gid://shopify/Product/8589620773042",
+      "title": "Hemp Living THC Snak Pak",
+      "handle": "hemp-living-thc-snak-pak",
+      "product_type": "Edibles",
+      "detected_ingredient": "THC",
+      "tags": [],
+      "sku": "10645"
+    },
+    {
+      "id": "gid://shopify/Product/8589671760050",
+      "title": "Tre House Mushrooms",
+      "handle": "tre-house-magic-mushroom-bar",
+      "product_type": "",
+      "detected_ingredient": "Mushroom",
+      "tags": [],
+      "sku": "10569"
+    },
+    {
+      "id": "gid://shopify/Product/8589683228850",
+      "title": "Hemp Living Pre-Rolls & Flower",
+      "handle": "hemp-living-pre-rolls-flower",
+      "product_type": "Pre-Rolls",
+      "detected_ingredient": "THC",
+      "tags": [],
+      "sku": "10652"
+    },
+    {
+      "id": "gid://shopify/Product/8601997017266",
+      "title": "Muffins Jelly Hole Blunts",
+      "handle": "muffins-jelly-hole-blunts",
+      "product_type": "Pre-Rolls",
+      "detected_ingredient": null,
+      "tags": [
+        "Blunts",
+        "JellyHole",
+        "Muffins",
+        "Pre-Rolled"
+      ],
+      "sku": "10642"
+    },
+    {
+      "id": "gid://shopify/Product/8619951849650",
+      "title": "Cookie Airlines Strawberry Cheesecake Cookies 50mg",
+      "handle": "cookie-airlines-strawberry-cheesecake-50mg",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "50mg",
+        "airlines",
+        "cheesecake",
+        "cookie",
+        "cookies",
+        "strawberry"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619951882418",
+      "title": "Cookie Airlines Triple Chocolate Cookies 50mg",
+      "handle": "cookie-airlines-triple-chocolate-50mg",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "50mg",
+        "airlines",
+        "chocolate",
+        "cookie",
+        "cookies",
+        "triple"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619951980722",
+      "title": "Kratom Tea \u2013 Green Vein Kratom Tea \u2013 16 oz or Gallon | WTF SWFL Pickup & Online Order",
+      "handle": "kratom-tea-green",
+      "product_type": "Product",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "(green)",
+        "energy",
+        "kratom",
+        "local pickup",
+        "tea"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952013490",
+      "title": "Kratom Tea \u2013 Red Vein Kratom Tea \u2013 16 oz or Gallon | WTF SWFL Pickup & Online Order",
+      "handle": "kratom-tea-red",
+      "product_type": "Product",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "kratom",
+        "red",
+        "tea"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952046258",
+      "title": "Kratom Tea \u2013 White Vein Kratom Tea \u2013 16 oz or Gallon | WTF SWFL Pickup & Online Order",
+      "handle": "kratom-tea-white",
+      "product_type": "Product",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "(white)",
+        "kratom",
+        "tea"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952079026",
+      "title": "Kratom Tea \u2013 Yellow Vein Kratom Tea \u2013 16 oz or Gallon | WTF SWFL Pickup & Online Order",
+      "handle": "kratom-tea-yellow",
+      "product_type": "Product",
+      "detected_ingredient": "Kratom",
+      "tags": [
+        "House Brewed Kratom",
+        "House Made",
+        "kratom",
+        "tea",
+        "WTF Welcome To Florida",
+        "yellow",
+        "zero alcohol"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952144562",
+      "title": "Silly Farms Buttercup Mushroom Chocolate Bar",
+      "handle": "silly-farms-buttercup",
+      "product_type": "Product",
+      "detected_ingredient": "Mushroom",
+      "tags": [
+        "bar",
+        "buttercup",
+        "chocolate",
+        "farms",
+        "mushroom",
+        "silly"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952210098",
+      "title": "Silly Farms Chocolate Bars",
+      "handle": "silly-farms-chocolate-bars",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "bars",
+        "chocolate",
+        "farms",
+        "silly"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952242866",
+      "title": "Silly Farms Cinnamagic Mushroom Chocolate Bar",
+      "handle": "silly-farms-cinnamagic",
+      "product_type": "Product",
+      "detected_ingredient": "Mushroom",
+      "tags": [
+        "bar",
+        "chocolate",
+        "cinnamagic",
+        "farms",
+        "mushroom",
+        "silly"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952308402",
+      "title": "Silly Farms Milk Chocolate Mushroom Bar",
+      "handle": "silly-farms-milk-chocolate",
+      "product_type": "Product",
+      "detected_ingredient": "Mushroom",
+      "tags": [
+        "bar",
+        "chocolate",
+        "farms",
+        "milk",
+        "mushroom",
+        "silly"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952406706",
+      "title": "Veed Coffee Syrup",
+      "handle": "veed-coffee-syrup",
+      "product_type": "Product",
+      "detected_ingredient": "Caffeine",
+      "tags": [
+        "coffee",
+        "syrup",
+        "veed"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952439474",
+      "title": "Veed Hazelnut Syrup",
+      "handle": "veed-hazelnut-syrup",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "hazelnut",
+        "syrup",
+        "veed"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952505010",
+      "title": "Veed Pumpkin Spice Syrup",
+      "handle": "veed-pumpkin-spice-syrup",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "pumpkin",
+        "spice",
+        "syrup",
+        "veed"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952537778",
+      "title": "Veed Strawberry Syrup",
+      "handle": "veed-strawberry-syrup",
+      "product_type": "Product",
+      "detected_ingredient": null,
+      "tags": [
+        "strawberry",
+        "syrup",
+        "veed"
+      ],
+      "sku": null
+    },
+    {
+      "id": "gid://shopify/Product/8619952603314",
+      "title": "Veed Vanilla Syrup",
+      "handle": "veed-vanilla-syrup",
+      "product_type": "Product",
+      "detected_ingredient": "THC",
+      "tags": [
+        "Delta 9",
+        "syrup",
+        "THC",
+        "vanilla",
+        "veed"
+      ],
+      "sku": null
+    }
+  ]
+}

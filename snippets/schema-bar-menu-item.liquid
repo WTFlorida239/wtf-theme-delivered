@@ -1,0 +1,65 @@
+{% comment %}
+  Schema - Bar Menu Item
+  Generates OfferCatalog schema for bar menu items
+  
+  Usage:
+  {% render 'schema-bar-menu-item', product: product %}
+{% endcomment %}
+
+{%- liquid
+  assign bar_menu_ref = product.metafields.bar.menu_reference
+-%}
+
+{%- if bar_menu_ref -%}
+{%- liquid
+  assign menu_label = bar_menu_ref.menu_label | default: product.title
+  assign card_type = bar_menu_ref.card_type | default: "draft"
+  assign size_oz = bar_menu_ref.size_oz | default: 16
+  assign price_display = bar_menu_ref.price_display | default: product.price
+  assign keg_status = bar_menu_ref.keg_status
+  assign seasonal_flag = bar_menu_ref.seasonal_flag
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MenuItem",
+  "name": {{ menu_label | json }},
+  "description": {{ product.description | strip_html | truncate: 200 | json }},
+  "offers": {
+    "@type": "Offer",
+    "price": {{ product.price | divided_by: 100.0 | json }},
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "availability": {%- if product.available -%}"https://schema.org/InStock"{%- else -%}"https://schema.org/OutOfStock"{%- endif -%},
+    "validFrom": {{ "now" | date: "%Y-%m-%dT%H:%M:%S%z" | json }}
+  },
+  "nutrition": {
+    "@type": "NutritionInformation",
+    "servingSize": "{{ size_oz }} oz"
+  },
+  "suitableForDiet": "https://schema.org/VeganDiet",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "Serving Type",
+      "value": {{ card_type | capitalize | json }}
+    }
+    {%- if keg_status -%}
+    ,{
+      "@type": "PropertyValue",
+      "name": "Keg Status",
+      "value": {{ keg_status | capitalize | json }}
+    }
+    {%- endif -%}
+    {%- if seasonal_flag -%}
+    ,{
+      "@type": "PropertyValue",
+      "name": "Seasonal",
+      "value": "true"
+    }
+    {%- endif -%}
+  ]
+}
+</script>
+{%- endif -%}
+

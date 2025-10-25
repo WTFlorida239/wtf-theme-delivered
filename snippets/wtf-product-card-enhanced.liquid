@@ -1,0 +1,217 @@
+{% render 'wtf-flavor-data' %}
+
+{%- comment -%}
+Enhanced WTF Product Card with Metafield Integration
+Props:
+- mode: "custom" | "browse" | "bar_menu" (default: "custom")
+- product_handle: handle (custom mode)
+- product: product object (direct)
+- product_type: "kratom" | "kava" | "delta9" (custom)
+- title, image, button_label
+- fixed_price
+- subtitle_1, subtitle_2 (optional, for the two tidy lines under title)
+- link_url, description (browse mode)
+- show_ingredient_badge: true/false (default: true)
+- show_bar_menu_details: true/false (default: true)
+{%- endcomment -%}
+
+{% assign mode = mode | default: 'custom' %}
+{% assign show_ingredient_badge = show_ingredient_badge | default: true %}
+{% assign show_bar_menu_details = show_bar_menu_details | default: true %}
+
+{%- liquid
+  if product
+    assign card_product = product
+  elsif product_handle
+    assign card_product = all_products[product_handle]
+  endif
+  
+  if card_product
+    assign active_ingredient = card_product.metafields.inventory.active_ingredient
+    assign bar_menu_ref = card_product.metafields.bar.menu_reference
+  endif
+-%}
+
+<style>
+.wtf-ingredient-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 8px 0;
+}
+.wtf-ingredient-thc { background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%); color: #fff; }
+.wtf-ingredient-kratom { background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); color: #fff; }
+.wtf-ingredient-kava { background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%); color: #fff; }
+.wtf-ingredient-mushroom { background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%); color: #fff; }
+.wtf-ingredient-cbd { background: linear-gradient(135deg, #00897b 0%, #26a69a 100%); color: #fff; }
+.wtf-ingredient-caffeine { background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%); color: #fff; }
+
+.wtf-bar-menu-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.wtf-bar-menu-tag {
+  padding: 3px 10px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  color: #666;
+  font-weight: 600;
+}
+.wtf-keg-status-full { background: #e8f5e9; color: #2e7d32; }
+.wtf-keg-status-half { background: #fff3e0; color: #ef6c00; }
+.wtf-keg-status-empty { background: #ffebee; color: #c62828; }
+.wtf-seasonal-tag { background: #e3f2fd; color: #1565c0; }
+</style>
+
+{% if mode == 'browse' %}
+  <div class="wtf-product-card">
+    <div class="wtf-product-image">
+      {% if image %}
+        <img src="{{ image }}" alt="{{ title }}" width="320" height="320">
+      {% endif %}
+    </div>
+    
+    {%- if show_ingredient_badge and active_ingredient -%}
+      <span class="wtf-ingredient-badge wtf-ingredient-{{ active_ingredient | downcase }}">
+        {{ active_ingredient }}
+      </span>
+    {%- endif -%}
+    
+    <h3>{{ title }}</h3>
+    {% if description %}<p class="wtf-subtle">{{ description }}</p>{% endif %}
+    <a class="wtf-order-btn" href="{{ link_url | default: '#' }}">
+      {{ button_label | default: 'Browse' }}
+    </a>
+  </div>
+
+{% elsif mode == 'bar_menu' and card_product and bar_menu_ref %}
+  {%- liquid
+    assign menu_label = bar_menu_ref.menu_label | default: card_product.title
+    assign card_type = bar_menu_ref.card_type | default: "draft"
+    assign size_oz = bar_menu_ref.size_oz | default: 16
+    assign keg_status = bar_menu_ref.keg_status
+    assign seasonal_flag = bar_menu_ref.seasonal_flag
+    assign menu_image = bar_menu_ref.image_override
+  -%}
+  
+  <div class="wtf-product-card wtf-bar-menu-card">
+    <div class="wtf-product-image">
+      {% if menu_image %}
+        {{ menu_image | image_url: width: 600 | image_tag: alt: menu_label, loading: 'lazy' }}
+      {% elsif card_product.featured_image %}
+        <img src="{{ card_product.featured_image | image_url: width: 600 }}" alt="{{ menu_label }}" width="320" height="320">
+      {% endif %}
+    </div>
+
+    {%- if show_ingredient_badge and active_ingredient -%}
+      <span class="wtf-ingredient-badge wtf-ingredient-{{ active_ingredient | downcase }}">
+        {{ active_ingredient }}
+      </span>
+    {%- endif -%}
+
+    <h3>{{ menu_label }}</h3>
+    
+    {%- if show_bar_menu_details -%}
+      <div class="wtf-bar-menu-meta">
+        <span class="wtf-bar-menu-tag">{{ card_type | capitalize }}</span>
+        <span class="wtf-bar-menu-tag">{{ size_oz }} oz</span>
+        {%- if keg_status -%}
+          <span class="wtf-bar-menu-tag wtf-keg-status-{{ keg_status }}">
+            Keg: {{ keg_status | capitalize }}
+          </span>
+        {%- endif -%}
+        {%- if seasonal_flag -%}
+          <span class="wtf-bar-menu-tag wtf-seasonal-tag">🍂 Seasonal</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="wtf-card__price">
+      <span class="wtf-price">${{ card_product.price | divided_by: 100.0 | round: 2 }}</span>
+    </div>
+
+    <a class="wtf-order-btn" href="{{ card_product.url }}">
+      {{ button_label | default: "View Details" }}
+    </a>
+    
+    {%- comment -%} Inject schema markup {%- endcomment -%}
+    {% render 'schema-bar-menu-item', product: card_product %}
+  </div>
+
+{% else %}
+  {% if card_product == nil %}
+    <div class="wtf-product-card">Missing product{% if product_handle %}: {{ product_handle }}{% endif %}</div>
+  {% else %}
+    <div class="wtf-product-card">
+      <div class="wtf-product-image">
+        {% if image %}
+          <img src="{{ image }}" alt="{{ title | default: card_product.title }}" width="320" height="320">
+        {% elsif card_product.featured_image %}
+          <img src="{{ card_product.featured_image | image_url: width: 600 }}" alt="{{ title | default: card_product.title }}" width="320" height="320">
+        {% endif %}
+      </div>
+
+      {%- if show_ingredient_badge and active_ingredient -%}
+        <span class="wtf-ingredient-badge wtf-ingredient-{{ active_ingredient | downcase }}">
+          {{ active_ingredient }}
+        </span>
+      {%- endif -%}
+
+      <h3>{{ title | default: card_product.title }}</h3>
+
+      {%- if subtitle_1 %}<p class="wtf-subtle">{{ subtitle_1 }}</p>{% endif -%}
+      {%- if subtitle_2 %}<p class="wtf-subtle">{{ subtitle_2 }}</p>{% endif -%}
+
+      <div class="wtf-options">
+        {%- if product_type == 'kratom' -%}
+          <select class="wtf-select" data-opt="strain" aria-label="Strain">
+            {% for s in KRATOM_STRAINS %}
+              <option value="{{ s | strip | downcase }}">{{ s | strip }}</option>
+            {% endfor %}
+          </select>
+        {%- endif -%}
+
+        <select class="wtf-select" data-opt="flavor" aria-label="Flavor">
+          {% for f in SHARED_FLAVORS %}
+            {% assign label = f | strip %}
+            <option value="{{ label | downcase | replace: ' ', '-' }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+
+        {%- if product_type == 'kava' -%}
+          <select class="wtf-select" data-opt="creamer" aria-label="Creamer">
+            {% for c in KAVA_CREAMERS %}
+              {% assign label = c | strip %}
+              <option value="{{ label | downcase | replace: ' ', '-' }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        {%- endif -%}
+
+        <input class="wtf-qty" type="number" min="1" value="1" aria-label="Quantity" />
+      </div>
+
+      <div class="wtf-card__price"><span class="wtf-price"
+        data-base-price="{% if fixed_price %}{{ fixed_price }}{% else %}{% if product_type == 'kratom' %}{{ KRATOM_BASE_PRICE }}{% elsif product_type == 'kava' %}{{ KAVA_BASE_PRICE }}{% else %}{{ DELTA9_BASE_PRICE }}{% endif %}{% endif %}">
+        $0.00
+      </span></div>
+
+      <button class="wtf-order-btn"
+              data-add-to-cart
+              data-product-id="{{ card_product.id }}"
+              data-variant-id="{{ card_product.variants.first.id }}">
+        {{ button_label | default: "Customize Order" }}
+      </button>
+      
+      {%- comment -%} Inject schema markup {%- endcomment -%}
+      {% render 'schema-ingredient', product: card_product %}
+    </div>
+  {% endif %}
+{% endif %}
+

@@ -1,0 +1,69 @@
+{% comment %}
+  Schema - Ingredient Intelligence Integration
+  Injects active_ingredient metafield data into Product schema
+  
+  Usage:
+  {% render 'schema-ingredient', product: product %}
+{% endcomment %}
+
+{%- liquid
+  assign active_ingredient = product.metafields.inventory.active_ingredient
+  assign ingredient_profile = product.metafields.inventory.ingredient_profile
+-%}
+
+{%- if active_ingredient -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncate: 300 | json }},
+  "sku": {{ product.selected_or_first_available_variant.sku | json }},
+  "brand": {
+    "@type": "Brand",
+    "name": "WTF | Welcome To Florida"
+  },
+  "category": {{ active_ingredient | json }},
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "Active Ingredient",
+      "value": {{ active_ingredient | json }}
+    }
+    {%- if ingredient_profile -%}
+    ,{
+      "@type": "PropertyValue",
+      "name": "Strength",
+      "value": {{ ingredient_profile.strength | default: "standard" | json }}
+    }
+    {%- if ingredient_profile.origin -%}
+    ,{
+      "@type": "PropertyValue",
+      "name": "Origin",
+      "value": {{ ingredient_profile.origin | json }}
+    }
+    {%- endif -%}
+    {%- if ingredient_profile.format -%}
+    ,{
+      "@type": "PropertyValue",
+      "name": "Format",
+      "value": {{ ingredient_profile.format | json }}
+    }
+    {%- endif -%}
+    {%- endif -%}
+  ],
+  "offers": {
+    "@type": "Offer",
+    "url": {{ request.origin | append: product.url | json }},
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "price": {{ product.selected_or_first_available_variant.price | divided_by: 100.0 | json }},
+    "availability": {%- if product.available -%}"https://schema.org/InStock"{%- else -%}"https://schema.org/OutOfStock"{%- endif -%},
+    "seller": {
+      "@type": "Organization",
+      "name": "WTF | Welcome To Florida"
+    }
+  }
+}
+</script>
+{%- endif -%}
+
