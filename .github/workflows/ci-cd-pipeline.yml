@@ -15,6 +15,7 @@ on:
       - "package-lock.json"
       - ".github/workflows/wtf-theme-ci.yml"
   pull_request:
+    types: [opened, synchronize, reopened]
     branches: [ main ]
     paths:
       - "**/*.liquid"
@@ -27,19 +28,24 @@ on:
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/wtf-theme-ci.yml"
+  pull_request_target:
+    types: [closed]
   workflow_dispatch:
 
 concurrency:
-  group: wtf-theme-${{ github.ref }}
+  group: wtf-theme-${{ github.workflow }}-${{ github.ref || github.event.pull_request.head.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
+  actions: read
+  security-events: write
 
 env:
   SHOPIFY_STORE: wtfswag.myshopify.com
-  # SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }} # (only needed if you add deploys later)
+  THEME_NAME_PREFIX: "WTF Preview"
+  NODE_VERSION: '20'
 
 jobs:
   changes:
@@ -78,22 +84,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1) Shopify Theme Check (official; no CLI install)
+      # 0) Footer-section sanity lint (prevents "footer is not a valid section type")
+      - name: Footer section sanity check
+        id: footercheck
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if grep -n "{% section 'footer' %}" -R layout/theme.liquid >/dev/null 2>&1; then
+            if [[ ! -f sections/footer.liquid && ! -f sections/footer-group.liquid ]]; then
+              echo "❌ layout/theme.liquid includes {% section 'footer' %} but no sections/footer*.liquid exists."
+              exit 1
+            fi
+          fi
+          echo "✅ Footer section sanity OK"
+
+      # 1) Shopify Theme Check (+ SARIF)
       - name: Theme Check
-        id: themecheck
         uses: shopify/theme-check-action@v2
         with:
           theme_root: '.'
           base: main
-          token: ${{ secrets.GITHUB_TOKEN }}   # ✅ correct token context
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2) Node only if package.json exists
+      - name: Upload Theme Check (SARIF)
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ./theme-check.sarif
+          category: theme-check
+
+      # 2) Node (if package.json)
       - uses: actions/setup-node@v4
         if: hashFiles('package.json') != ''
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: npm ci (if package.json)
         if: hashFiles('package.json') != ''
         run: npm ci
@@ -107,17 +132,7 @@ jobs:
           else
             echo "⏭️ No conflicts:scan script; skipping"
           fi
-
-      - name: competitors:audit (if script exists)
-        if: hashFiles('package.json') != ''
-        run: |
-          if npm run | grep -qE '(^|\s)competitors:audit(\s|:)'; then
-            npm run competitors:audit
-          else
-            echo "⏭️ No competitors:audit script; skipping"
-          fi
-
-      - name: order-readiness-check (if file exists)
+      - name: order-readiness-check (if exists)
         run: |
           if [ -f scripts/order-readiness-check.js ]; then
             node scripts/order-readiness-check.js
@@ -125,79 +140,18 @@ jobs:
             echo "⏭️ scripts/order-readiness-check.js not found; skipping"
           fi
 
-      # 4) OS 2.0–aware file checks
+      # 4) OS 2.0 file checks
       - name: Validate theme structure
         id: files
         shell: bash
         run: |
           set -Eeuo pipefail
-          echo "Validating required theme files…"
-
-          required=(
-            "layout/theme.liquid"
-            "config/settings_schema.json"
-            "sections/main-product.liquid"
-            "templates/product.json"
-          )
-
+          required=( "layout/theme.liquid" "config/settings_schema.json" "sections/main-product.liquid" "templates/product.json" )
           for f in "${required[@]}"; do
-            if [[ ! -f "$f" ]]; then
-              echo "❌ Missing required file: $f"
-              exit 1
-            else
-              echo "✅ $f"
-            fi
+            [[ -f "$f" ]] && echo "✅ $f" || { echo "❌ Missing: $f"; exit 1; }
           done
-
-          # Cart can be JSON (preferred) or Liquid
-          if [[ -f "templates/cart.json" || -f "templates/cart.liquid" ]]; then
-            echo "✅ Cart template present"
-          else
-            echo "❌ Missing cart template (templates/cart.json preferred or templates/cart.liquid)"
-            exit 1
-          fi
-
-          # Warn if no obvious JSON-LD path for product
-          if grep -R -E "schema-product|application/json[^>]*ld\+json" sections/ snippets/ 2>/dev/null; then
-            echo "✅ Product schema reference detected"
-          else
-            echo "⚠️ No obvious Product JSON-LD found in sections/ or snippets/"
-          fi
-
-      # 5) Summaries (job + PR safe-guarded)
-      - name: Write step summary
-        if: always()
-        shell: bash
-        run: |
-          {
-            echo "## WTF Theme – Validation Summary"
-            echo ""
-            echo "- Theme Check: **${{ steps.themecheck.outcome }}**"
-            echo "- Structure check: **${{ steps.files.outcome }}**"
-            echo ""
-            echo "_Ensure Product JSON-LD renders on product pages for SEO rich results._"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Comment summary on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const body = [
-              '### ✅ WTF Theme – Validation Summary',
-              '',
-              `- Theme Check: **${{ steps.themecheck.outcome }}**`,
-              `- Structure check: **${{ steps.files.outcome }}**`,
-              '',
-              '_Ensure Product JSON-LD renders on product pages for SEO rich results._'
-            ].join('\n');
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body
-            });
+          [[ -f "templates/cart.json" || -f "templates/cart.liquid" ]] || { echo "❌ Missing cart template"; exit 1; }
+          grep -R -E "schema-product|application/json[^>]*ld\\+json" sections/ snippets/ >/dev/null 2>&1 && echo "✅ JSON-LD present" || echo "⚠️ JSON-LD not detected"
 
       - name: Upload validation artifacts
         if: always()
@@ -210,6 +164,83 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
 
+  preview-deploy:
+    name: Deploy Preview Theme (PR only)
+    runs-on: ubuntu-latest
+    needs: validate
+    if: >
+      github.event_name == 'pull_request' &&
+      needs.validate.result == 'success' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (needs.changes.outputs.theme == 'true' || needs.changes.outputs.node == 'true')
+    env:
+      SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Shopify CLI
+        run: npm i -g @shopify/cli @shopify/theme
+
+      - name: Create/Update preview theme
+        id: push
+        run: |
+          set -Eeuo pipefail
+          THEME_NAME="${THEME_NAME_PREFIX} • PR #${{ github.event.number }} • ${{ github.sha::0:7 }}"
+          echo "Pushing preview theme: $THEME_NAME"
+          shopify theme push \
+            --store "$SHOPIFY_STORE" \
+            --theme "$THEME_NAME" \
+            --unpublished \
+            --json > push.json
+          cat push.json
+          THEME_ID=$(jq -r '.theme.id' push.json)
+          PREVIEW_URL="https://${SHOPIFY_STORE}?preview_theme_id=${THEME_ID}"
+          echo "theme_id=$THEME_ID" >> $GITHUB_OUTPUT
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const url = `${{ steps.push.outputs.preview_url }}`;
+            const id  = `${{ steps.push.outputs.theme_id }}`;
+            const body = [
+              '🚀 **Preview theme deployed**',
+              '',
+              `- Theme ID: \`${id}\``,
+              `- Preview: ${url}`,
+              '',
+              '_This will be replaced/updated on new commits to this PR._'
+            ].join('\n');
+            github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body });
+
+  preview-cleanup:
+    name: Cleanup Preview Theme (on PR close)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
+    env:
+      SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Shopify CLI
+        run: npm i -g @shopify/cli @shopify/theme
+      - name: Delete preview theme(s) for this PR
+        run: |
+          set -Eeuo pipefail
+          # list unpublished previews with this PR number in name and delete
+          shopify theme list --store "$SHOPIFY_STORE" --json > list.json
+          jq -r '.themes[] | select(.name | test("WTF Preview.*PR #${{ github.event.number }}")) | .id' list.json | while read -r id; do
+            echo "Deleting preview theme $id"
+            shopify theme delete --store "$SHOPIFY_STORE" --theme-id "$id" -f
+          done
+
   security-scan:
     name: Security & Hygiene
     runs-on: ubuntu-latest
@@ -221,32 +252,14 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          echo "🔎 Scanning for secrets…"
           FOUND=0
-
           if grep -R --line-number -E 'shpat_[0-9a-zA-Z]+' . --exclude-dir=.git --exclude=*.ya?ml || true; then
-            echo "❌ Potential Shopify token found in repo"
-            FOUND=1
-          fi
-
-          echo "🔎 Checking unsafe Liquid patterns (informational)…"
-          PATTERNS=(
-            '\|\s*raw'
-            'assign.*request\.'
-            'assign.*params\.'
-          )
+            echo "❌ Potential Shopify token found"; FOUND=1; fi
+          PATTERNS=('\|\s*raw' 'assign.*request\.' 'assign.*params\.')
           for p in "${PATTERNS[@]}"; do
-            if grep -R -n -E "$p" --include='*.liquid' . 2>/dev/null; then
-              echo "⚠️ Possible unsafe Liquid pattern: $p"
-            fi
+            grep -R -n -E "$p" --include='*.liquid' . 2>/dev/null && echo "⚠️ Possible unsafe Liquid: $p" || true
           done
-
-          echo "🔎 Executable bits on non-scripts (informational)…"
-          find . -type f -perm /111 -not -path "./.git/*" -not -name "*.sh" -print | sed 's/^/⚠️ Exec file: /' || true
-
-          if [[ $FOUND -ne 0 ]]; then
-            exit 1
-          fi
+          if [[ $FOUND -ne 0 ]]; then exit 1; fi
           echo "✅ Security scan complete"
 
   lighthouse:
@@ -258,19 +271,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
       - name: Install Lighthouse CI
         run: npm i -g @lhci/cli
       - name: Run Lighthouse (placeholder)
         continue-on-error: true
         run: |
-          set -euo pipefail
           mkdir -p lighthouse-results
-          echo '{
-            "home": {"performance": 0, "accessibility": 0, "bestPractices": 0, "seo": 0},
-            "product": {"performance": 0, "accessibility": 0, "bestPractices": 0, "seo": 0}
-          }' > lighthouse-results/placeholder.json
-          echo "ℹ️ Configure real URLs later; storing placeholder results."
+          echo '{"home":{"performance":0,"accessibility":0,"bestPractices":0,"seo":0}}' > lighthouse-results/placeholder.json
       - name: Upload Lighthouse artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -288,21 +296,15 @@ jobs:
         shell: bash
         run: |
           echo "# CI Summary"
-          echo ""
-          echo "Changes gate:"
-          echo " - theme: ${{ needs.changes.outputs.theme }}"
-          echo " - node : ${{ needs.changes.outputs.node }}"
-          echo " - wf   : ${{ needs.changes.outputs.wf }}"
-          echo ""
+          echo " - theme changes: ${{ needs.changes.outputs.theme }}"
+          echo " - node  changes: ${{ needs.changes.outputs.node }}"
           echo "Validate:      ${{ needs.validate.result || 'skipped' }}"
           echo "Security-scan: ${{ needs.security-scan.result || 'skipped' }}"
           echo "Lighthouse:    ${{ needs.lighthouse.result || 'skipped' }}"
           if [ "${{ needs.validate.result }}" != "success" ] && [ "${{ needs.validate.result }}" != "skipped" ]; then
-            echo "🔴 Not ready — fix validation failures."
-            exit 1
+            echo "🔴 Not ready — fix validation failures."; exit 1;
           elif [ "${{ needs.security-scan.result }}" = "failure" ]; then
-            echo "🔴 Not ready — fix security failures."
-            exit 1
+            echo "🔴 Not ready — fix security failures."; exit 1;
           else
             echo "🟢 Looks good (or no relevant changes)."
           fi
