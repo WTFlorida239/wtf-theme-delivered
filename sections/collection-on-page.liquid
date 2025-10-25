@@ -1,0 +1,361 @@
+{% comment %}
+  Collection on Page Section
+  Renders a shoppable product grid from a collection
+  Supports variant-based flavor selection and line-item properties
+{% endcomment %}
+
+{%- assign collection_handle = section.settings.collection_handle | default: 'canned-drinks' -%}
+{%- assign collection = collections[collection_handle] -%}
+
+<style>
+  .collection-on-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .collection-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .collection-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #ff6600;
+    margin-bottom: 10px;
+  }
+  
+  .collection-description {
+    font-size: 18px;
+    color: #666;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+  }
+  
+  .product-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(255,102,0,0.2);
+  }
+  
+  .product-image {
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .product-vendor {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+  
+  .product-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  
+  .product-price {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ff6600;
+    margin-bottom: 15px;
+  }
+  
+  .flavor-selector {
+    margin-bottom: 15px;
+  }
+  
+  .flavor-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .flavor-select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  
+  .flavor-select:hover,
+  .flavor-select:focus {
+    border-color: #ff6600;
+    outline: none;
+  }
+  
+  .add-to-cart-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ff6600;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .add-to-cart-btn:hover {
+    background: #e55a00;
+    transform: translateY(-2px);
+  }
+  
+  .add-to-cart-btn:active {
+    transform: translateY(0);
+  }
+  
+  .add-to-cart-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .out-of-stock {
+    opacity: 0.6;
+  }
+  
+  .out-of-stock-badge {
+    background: #f44336;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  
+  @media (max-width: 768px) {
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .collection-title {
+      font-size: 28px;
+    }
+  }
+</style>
+
+<div class="collection-on-page">
+  <div class="collection-header">
+    <h1 class="collection-title">{{ collection.title | default: 'Canned Drinks' }}</h1>
+    {% if collection.description != blank %}
+      <p class="collection-description">{{ collection.description }}</p>
+    {% endif %}
+  </div>
+  
+  <div class="product-grid">
+    {% for product in collection.products %}
+      <div class="product-card {% unless product.available %}out-of-stock{% endunless %}" data-product-id="{{ product.id }}">
+        {% if product.featured_image %}
+          <img
+            src="{{ product.featured_image | image_url: width: 400 }}"
+            alt="{{ product.featured_image.alt | default: product.title }}"
+            class="product-image"
+            loading="lazy"
+            width="400"
+            height="250"
+          >
+        {% endif %}
+        
+        {% if product.vendor != blank %}
+          <div class="product-vendor">{{ product.vendor }}</div>
+        {% endif %}
+        
+        <h3 class="product-title">{{ product.title }}</h3>
+        
+        {% unless product.available %}
+          <span class="out-of-stock-badge">Out of Stock</span>
+        {% endunless %}
+        
+        <div class="product-price" data-product-price="{{ product.selected_or_first_available_variant.price | money_without_currency }}">
+          {{ product.selected_or_first_available_variant.price | money }}
+        </div>
+        
+        {% comment %} Flavor Selector - Variants or Properties {% endcomment %}
+        {% if product.variants.size > 1 %}
+          {% comment %} Multi-variant product - show dropdown {% endcomment %}
+          <div class="flavor-selector">
+            <label class="flavor-label" for="variant-{{ product.id }}">
+              {% if product.options.first.name contains 'Flavor' %}
+                Choose Flavor:
+              {% else %}
+                Choose {{ product.options.first.name }}:
+              {% endif %}
+            </label>
+            <select
+              class="flavor-select"
+              id="variant-{{ product.id }}"
+              data-product-id="{{ product.id }}"
+              onchange="updateVariantPrice(this)"
+            >
+              {% for variant in product.variants %}
+                <option
+                  value="{{ variant.id }}"
+                  data-price="{{ variant.price | money_without_currency }}"
+                  {% unless variant.available %}disabled{% endunless %}
+                >
+                  {{ variant.title }}
+                  {% unless variant.available %} (Sold Out){% endunless %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% else %}
+          {% comment %} Single variant - store variant ID in hidden input {% endcomment %}
+          <input type="hidden" class="variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+        {% endif %}
+        
+        <button
+          class="add-to-cart-btn"
+          data-product-id="{{ product.id }}"
+          data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+          onclick="addToCart(this)"
+          {% unless product.available %}disabled{% endunless %}
+        >
+          {% if product.available %}
+            Add to Cart
+          {% else %}
+            Out of Stock
+          {% endif %}
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  // Update price when variant changes
+  function updateVariantPrice(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const price = selectedOption.dataset.price;
+    const variantId = selectedOption.value;
+    const card = select.closest('.product-card');
+    const priceDisplay = card.querySelector('.product-price');
+    const addButton = card.querySelector('.add-to-cart-btn');
+    
+    // Update price display
+    priceDisplay.textContent = '$' + parseFloat(price).toFixed(2);
+    
+    // Update button variant ID
+    addButton.dataset.variantId = variantId;
+  }
+  
+  // Add to cart via AJAX
+  async function addToCart(button) {
+    const productId = button.dataset.productId;
+    const card = button.closest('.product-card');
+    const select = card.querySelector('.flavor-select');
+    const hiddenVariantInput = card.querySelector('.variant-id');
+    
+    // Get variant ID from select or hidden input
+    let variantId;
+    if (select) {
+      variantId = select.value;
+    } else if (hiddenVariantInput) {
+      variantId = hiddenVariantInput.value;
+    } else {
+      variantId = button.dataset.variantId;
+    }
+    
+    // Disable button during request
+    button.disabled = true;
+    button.textContent = 'Adding...';
+    
+    try {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: 1
+        })
+      });
+      
+      if (response.ok) {
+        // Success!
+        button.textContent = 'Added! ✓';
+        
+        // Update cart count
+        const cartResponse = await fetch('/cart.js');
+        const cart = await cartResponse.json();
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+          cartCount.textContent = cart.item_count;
+        }
+        
+        // Trigger cart drawer open if available
+        if (window.WTF_CART && typeof window.WTF_CART.open === 'function') {
+          window.WTF_CART.open();
+        }
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          button.disabled = false;
+          button.textContent = 'Add to Cart';
+        }, 2000);
+      } else {
+        throw new Error('Add to cart failed');
+      }
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      button.textContent = 'Error - Try Again';
+      button.disabled = false;
+    }
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Collection on Page",
+  "settings": [
+    {
+      "type": "text",
+      "id": "collection_handle",
+      "label": "Collection Handle",
+      "default": "canned-drinks",
+      "info": "The handle of the collection to display (e.g., 'canned-drinks', 'thc-drinks')"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection on Page"
+    }
+  ]
+}
+{% endschema %}
+

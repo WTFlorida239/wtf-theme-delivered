@@ -1,0 +1,1369 @@
+{
+  "timestamp": "2025-10-25T11:51:41.847232",
+  "total_products": 17,
+  "single_variant_count": 11,
+  "multi_variant_count": 6,
+  "uncle_skunks": {
+    "id": "gid://shopify/Product/8533818507442",
+    "title": "Uncle Skunks Craft Soda \u2013 100 mg \u03949 THC / Hemp Derived \u2013 12 oz Can",
+    "handle": "uncle-skunks-thc-sodas",
+    "vendor": "Uncle Skunks Soda",
+    "tags": [
+      "can",
+      "Infused Soda",
+      "THC",
+      "UncleSkunks"
+    ],
+    "status": "ACTIVE",
+    "options": [
+      {
+        "name": "Flavor",
+        "values": [
+          "Lemon Lime",
+          "Cola",
+          "Cherry Cola",
+          "Dr. Pepe",
+          "Orange",
+          "Grape",
+          "Root Beer",
+          "Bourbon Cream"
+        ]
+      }
+    ],
+    "variants": {
+      "nodes": [
+        {
+          "id": "gid://shopify/ProductVariant/45621387362482",
+          "title": "Lemon Lime",
+          "sku": "10536",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 4,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Lemon Lime"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387395250",
+          "title": "Cola",
+          "sku": "10537",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 3,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Cola"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387428018",
+          "title": "Cherry Cola",
+          "sku": "10538",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 2,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Cherry Cola"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387460786",
+          "title": "Dr. Pepe",
+          "sku": "10539",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 4,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Dr. Pepe"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387493554",
+          "title": "Orange",
+          "sku": "10540",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 3,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Orange"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387526322",
+          "title": "Grape",
+          "sku": "10541",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 2,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Grape"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387559090",
+          "title": "Root Beer",
+          "sku": "10542",
+          "price": "12.00",
+          "availableForSale": true,
+          "inventoryQuantity": 3,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Root Beer"
+            }
+          ]
+        },
+        {
+          "id": "gid://shopify/ProductVariant/45621387591858",
+          "title": "Bourbon Cream",
+          "sku": "10543",
+          "price": "12.00",
+          "availableForSale": false,
+          "inventoryQuantity": 0,
+          "selectedOptions": [
+            {
+              "name": "Flavor",
+              "value": "Bourbon Cream"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "products": [
+    {
+      "id": "gid://shopify/Product/8489816916146",
+      "title": "White Rabbit Mangoberry",
+      "handle": "white-rabbit-mangoberry",
+      "vendor": "White Rabbit",
+      "tags": [
+        "can",
+        "Drinks",
+        "energy",
+        "kratom",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45410059485362",
+            "title": "Default Title",
+            "sku": "10043",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 8,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8489817047218",
+      "title": "Torch Blue Razz Lemonade",
+      "handle": "torch-blue-razz-lemonade",
+      "vendor": "Torch",
+      "tags": [
+        "can",
+        "d9",
+        "Delta 9",
+        "delta9",
+        "experienced users only",
+        "THC",
+        "zero alcohol",
+        "zero sugar"
+      ],
+      "status": "DRAFT",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45410059649202",
+            "title": "Default Title",
+            "sku": "10040",
+            "price": "7.00",
+            "availableForSale": true,
+            "inventoryQuantity": 3,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8489817899186",
+      "title": "White Rabbit Root Beer Can",
+      "handle": "white-rabbit-root-beer-can",
+      "vendor": "White Rabbit",
+      "tags": [
+        "can",
+        "Drinks",
+        "energy",
+        "kratom",
+        "root beer",
+        "rootbeer",
+        "White Rabbit",
+        "yum",
+        "zero alcohol",
+        "zero calories",
+        "zero sugar"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45410061189298",
+            "title": "Default Title",
+            "sku": "10046",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 22,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8489818456242",
+      "title": "Torch Raspberry Lemonade",
+      "handle": "torch-raspberry-lemonade",
+      "vendor": "Torch",
+      "tags": [
+        "can",
+        "Delta 9",
+        "Rasberry Lemonade",
+        "THC",
+        "torch"
+      ],
+      "status": "DRAFT",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45410062074034",
+            "title": "Default Title",
+            "sku": "10041",
+            "price": "7.00",
+            "availableForSale": true,
+            "inventoryQuantity": 9,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8489819537586",
+      "title": "Sprite",
+      "handle": "sprite",
+      "vendor": "Sodas",
+      "tags": [
+        "can",
+        "coke products",
+        "sprite"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45410064695474",
+            "title": "Default Title",
+            "sku": "10039",
+            "price": "3.00",
+            "availableForSale": true,
+            "inventoryQuantity": 33,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8489819865266",
+      "title": "L.I.T. (Long Island Ice Tea)",
+      "handle": "lit-long-island-ice-tea",
+      "vendor": "D9 Cocktails",
+      "tags": [
+        "can",
+        "Delta 9",
+        "Edibles",
+        "L.I.T.",
+        "THC"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45410065318066",
+            "title": "Default Title",
+            "sku": "10010",
+            "price": "7.00",
+            "availableForSale": true,
+            "inventoryQuantity": 16,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8530567856306",
+      "title": "Mitra Canned Beverages",
+      "handle": "mitra-canned-beverages",
+      "vendor": "Mitra",
+      "tags": [
+        "kava",
+        "kratom",
+        "Mitra",
+        "Mitra9"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Flavor",
+          "values": [
+            "Tropical",
+            "Coconut Kava Lychee",
+            "Lemonade Kava",
+            "Orange Creamsicle Kava",
+            "Strawberry Watermelon Kava",
+            "Dragon Fruit",
+            "Watermelon",
+            "Root Beer",
+            "Tangerine",
+            "Cream Soda",
+            "Midnight Cola",
+            "Citrus Sun"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45614482423986",
+            "title": "Tropical",
+            "sku": "10405",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -5,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Tropical"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482456754",
+            "title": "Coconut Kava Lychee",
+            "sku": "10407",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Coconut Kava Lychee"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482489522",
+            "title": "Lemonade Kava",
+            "sku": "10408",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Lemonade Kava"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482522290",
+            "title": "Orange Creamsicle Kava",
+            "sku": "10409",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -4,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Orange Creamsicle Kava"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482555058",
+            "title": "Strawberry Watermelon Kava",
+            "sku": "10410",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Strawberry Watermelon Kava"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482587826",
+            "title": "Dragon Fruit",
+            "sku": "10411",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -17,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Dragon Fruit"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482620594",
+            "title": "Watermelon",
+            "sku": "10412",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Watermelon"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482653362",
+            "title": "Root Beer",
+            "sku": "10413",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -6,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Root Beer"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482686130",
+            "title": "Tangerine",
+            "sku": "10414",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -18,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Tangerine"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45614482718898",
+            "title": "Cream Soda",
+            "sku": "10415",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -18,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Cream Soda"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46419775226034",
+            "title": "Midnight Cola",
+            "sku": "10675",
+            "price": "6.00",
+            "availableForSale": true,
+            "inventoryQuantity": 1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Midnight Cola"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46602130227378",
+            "title": "Citrus Sun",
+            "sku": "10713",
+            "price": "6.00",
+            "availableForSale": false,
+            "inventoryQuantity": -4,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Citrus Sun"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8532336509106",
+      "title": "Tea Time Kratom Canned Beverages",
+      "handle": "tea-time-blue-raspberry",
+      "vendor": "Tea Time",
+      "tags": [
+        "BlueRazz",
+        "delicious",
+        "kratom",
+        "TeaTime",
+        "yum"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Flavor",
+          "values": [
+            "Pineapple Mango",
+            "Limeade",
+            "Watermelon Twist",
+            "Blue Razz",
+            "Citrus"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45618677481650",
+            "title": "Pineapple Mango",
+            "sku": "10399",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 8,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Pineapple Mango"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45618677514418",
+            "title": "Limeade",
+            "sku": "10400",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 16,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Limeade"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45618677547186",
+            "title": "Watermelon Twist",
+            "sku": "10401",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 9,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Watermelon Twist"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45618677579954",
+            "title": "Blue Razz",
+            "sku": "10402",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 9,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Blue Razz"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45618677612722",
+            "title": "Citrus",
+            "sku": "10403",
+            "price": "8.00",
+            "availableForSale": true,
+            "inventoryQuantity": 12,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Citrus"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8533818507442",
+      "title": "Uncle Skunks Craft Soda \u2013 100 mg \u03949 THC / Hemp Derived \u2013 12 oz Can",
+      "handle": "uncle-skunks-thc-sodas",
+      "vendor": "Uncle Skunks Soda",
+      "tags": [
+        "can",
+        "Infused Soda",
+        "THC",
+        "UncleSkunks"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Flavor",
+          "values": [
+            "Lemon Lime",
+            "Cola",
+            "Cherry Cola",
+            "Dr. Pepe",
+            "Orange",
+            "Grape",
+            "Root Beer",
+            "Bourbon Cream"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45621387362482",
+            "title": "Lemon Lime",
+            "sku": "10536",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 4,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Lemon Lime"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387395250",
+            "title": "Cola",
+            "sku": "10537",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 3,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Cola"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387428018",
+            "title": "Cherry Cola",
+            "sku": "10538",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 2,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Cherry Cola"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387460786",
+            "title": "Dr. Pepe",
+            "sku": "10539",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 4,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Dr. Pepe"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387493554",
+            "title": "Orange",
+            "sku": "10540",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 3,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Orange"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387526322",
+            "title": "Grape",
+            "sku": "10541",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 2,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Grape"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387559090",
+            "title": "Root Beer",
+            "sku": "10542",
+            "price": "12.00",
+            "availableForSale": true,
+            "inventoryQuantity": 3,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Root Beer"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621387591858",
+            "title": "Bourbon Cream",
+            "sku": "10543",
+            "price": "12.00",
+            "availableForSale": false,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Bourbon Cream"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8542479286450",
+      "title": "Crank Cannabis Beverages",
+      "handle": "crank-cannabis-beverages",
+      "vendor": "WTF | Welcome To Florida",
+      "tags": [
+        "beverages",
+        "cannabis",
+        "crank"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46592355172530",
+            "title": "Default Title",
+            "sku": null,
+            "price": "0.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8619951816882",
+      "title": "Botanical Brewing Cans",
+      "handle": "botanical-brewing-cans",
+      "vendor": "WTF | Welcome To Florida",
+      "tags": [
+        "botanical",
+        "brewing",
+        "cans"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46592354812082",
+            "title": "Default Title",
+            "sku": null,
+            "price": "0.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8619952111794",
+      "title": "Lumenade Cans",
+      "handle": "lumenade-thc-cans",
+      "vendor": "WTF | Welcome To Florida",
+      "tags": [
+        "cans",
+        "lumenade"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Flavor",
+          "values": [
+            "Strawberry Mint Lemonade",
+            "Lumenade Lemonade",
+            "Blueberry Lavender Lemonade"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46628537565362",
+            "title": "Strawberry Mint Lemonade",
+            "sku": null,
+            "price": "9.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Strawberry Mint Lemonade"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46628537598130",
+            "title": "Lumenade Lemonade",
+            "sku": null,
+            "price": "9.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Lumenade Lemonade"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46628537630898",
+            "title": "Blueberry Lavender Lemonade",
+            "sku": null,
+            "price": "9.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Blueberry Lavender Lemonade"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8619952341170",
+      "title": "Tea Time Kratom Cans",
+      "handle": "tea-time-kratom-cans",
+      "vendor": "WTF | Welcome To Florida",
+      "tags": [
+        "cans",
+        "kratom",
+        "tea",
+        "time"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46592358219954",
+            "title": "Default Title",
+            "sku": null,
+            "price": "0.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8619952636082",
+      "title": "White Rabbit Kratom Cans",
+      "handle": "white-rabbit-kratom-cans",
+      "vendor": "WTF | Welcome To Florida",
+      "tags": [
+        "cans",
+        "kratom",
+        "rabbit",
+        "white"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46592358547634",
+            "title": "Default Title",
+            "sku": null,
+            "price": "0.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8624578232498",
+      "title": "Tortuga Botanical Cans \u2013 Kratom, Kava, D9 & Adaptogenic Coffee",
+      "handle": "tortuga-canned-beverages",
+      "vendor": "Tortuga Beverages",
+      "tags": [
+        "Cape Coral",
+        "d9",
+        "kava",
+        "kratom"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Flavor",
+          "values": [
+            "Kava Vanilla",
+            "D9 Raspberry",
+            "Red Kratom Strawberry",
+            "Coffee Mushroom",
+            "Orange White Kratom"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46612316848306",
+            "title": "Kava Vanilla",
+            "sku": "10715",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Kava Vanilla"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46612316913842",
+            "title": "D9 Raspberry",
+            "sku": "10717",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "D9 Raspberry"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46612316946610",
+            "title": "Red Kratom Strawberry",
+            "sku": "10718",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Red Kratom Strawberry"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46612316979378",
+            "title": "Coffee Mushroom",
+            "sku": "10719",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Coffee Mushroom"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46612317175986",
+            "title": "Orange White Kratom",
+            "sku": "10723",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Orange White Kratom"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8533817491634",
+      "title": "Chronic Harvest Lemonades",
+      "handle": "chronic-harvest-lemonades",
+      "vendor": "WTF | Welcome To Florida",
+      "tags": [
+        "chronic",
+        "harvest",
+        "lemonades"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/46592355008690",
+            "title": "Default Title",
+            "sku": null,
+            "price": "0.00",
+            "availableForSale": true,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "gid://shopify/Product/8533818409138",
+      "title": "Rapture Kratom Drinks",
+      "handle": "rapture-kratom-drinks",
+      "vendor": "Rapture",
+      "tags": [
+        "delicious",
+        "Drinks",
+        "kratom",
+        "rapture",
+        "Rapture Brand"
+      ],
+      "status": "ACTIVE",
+      "options": [
+        {
+          "name": "Flavor",
+          "values": [
+            "Blueberry",
+            "Bombsicle",
+            "Miami Vibe",
+            "Peach Mango",
+            "Sour Watermelon",
+            "Blackberry Lemonade",
+            "Orange Ice Dream",
+            "Blueberry Slush 125mg",
+            "Cherry Float 125mg"
+          ]
+        }
+      ],
+      "variants": {
+        "nodes": [
+          {
+            "id": "gid://shopify/ProductVariant/45621385527474",
+            "title": "Blueberry",
+            "sku": "10442",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Blueberry"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621385560242",
+            "title": "Bombsicle",
+            "sku": "10444",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Bombsicle"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621385593010",
+            "title": "Miami Vibe",
+            "sku": "10445",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": -2,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Miami Vibe"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621385625778",
+            "title": "Peach Mango",
+            "sku": "10446",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Peach Mango"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45621385658546",
+            "title": "Sour Watermelon",
+            "sku": "10447",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Sour Watermelon"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45858316452018",
+            "title": "Blackberry Lemonade",
+            "sku": "10604",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": 0,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Blackberry Lemonade"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/45858316484786",
+            "title": "Orange Ice Dream",
+            "sku": "10605",
+            "price": "8.00",
+            "availableForSale": false,
+            "inventoryQuantity": -3,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Orange Ice Dream"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46612626702514",
+            "title": "Blueberry Slush 125mg",
+            "sku": "10725",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Blueberry Slush 125mg"
+              }
+            ]
+          },
+          {
+            "id": "gid://shopify/ProductVariant/46612626735282",
+            "title": "Cherry Float 125mg",
+            "sku": "10726",
+            "price": "10.00",
+            "availableForSale": false,
+            "inventoryQuantity": -1,
+            "selectedOptions": [
+              {
+                "name": "Flavor",
+                "value": "Cherry Float 125mg"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
