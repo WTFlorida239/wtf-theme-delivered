@@ -1,0 +1,37 @@
+{%- comment -%}
+  Schema.org Article markup for pages with SEO metafields
+  Automatically injects JSON-LD schema for pages with seo.title metafield
+{%- endcomment -%}
+
+{%- if template.name == 'page' and page.metafields.seo.title -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ shop.url }}{{ page.url }}"
+  },
+  "headline": "{{ page.metafields.seo.title | escape }}",
+  "description": "{{ page.metafields.seo.description | escape }}",
+  {%- if page.image -%}
+  "image": "{{ page.image | image_url: width: 1200 }}",
+  {%- endif -%}
+  "author": {
+    "@type": "Organization",
+    "name": "{{ shop.name | escape }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ shop.name | escape }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ 'logo.png' | asset_url }}"
+    }
+  },
+  "datePublished": "{{ page.created_at | date: '%Y-%m-%d' }}",
+  "dateModified": "{{ page.updated_at | date: '%Y-%m-%d' }}"
+}
+</script>
+{%- endif -%}
+

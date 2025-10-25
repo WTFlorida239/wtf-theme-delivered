@@ -1,0 +1,55 @@
+{%- comment -%}
+  Schema.org LocalBusiness markup
+  Provides structured data for WTF | Welcome To Florida physical location
+{%- endcomment -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "{{ shop.name | escape }}",
+  "image": "{{ 'logo.png' | asset_url }}",
+  "@id": "{{ shop.url }}",
+  "url": "{{ shop.url }}",
+  "telephone": "{{ shop.phone | default: '+1-239-205-6435' }}",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ settings.store_address_1 | default: '1234 Cape Coral Pkwy E' }}",
+    "addressLocality": "{{ settings.store_city | default: 'Cape Coral' }}",
+    "addressRegion": "{{ settings.store_state | default: 'FL' }}",
+    "postalCode": "{{ settings.store_zip | default: '33904' }}",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 26.5628,
+    "longitude": -81.9495
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "10:00",
+      "closes": "22:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Friday", "Saturday"],
+      "opens": "10:00",
+      "closes": "23:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "10:00",
+      "closes": "22:00"
+    }
+  ],
+  "sameAs": [
+    "https://www.facebook.com/wtfflorida",
+    "https://www.instagram.com/wtf.florida/"
+  ]
+}
+</script>
+
