@@ -1,0 +1,86 @@
+{%- comment -%}
+  Breadcrumb Schema (schema.org/BreadcrumbList)
+  
+  Generates breadcrumb structured data for navigation
+  Supports: Product pages, Collection pages, Blog posts, Regular pages
+  
+  Usage: {% render 'schema-breadcrumb' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign breadcrumb_items = '' | split: ''
+  assign position = 1
+  
+  # Always start with Home
+  assign home_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"Home","item":"' | append: shop.url | append: '"}'
+  assign breadcrumb_items = breadcrumb_items | push: home_item
+  assign position = position | plus: 1
+-%}
+
+{%- if template.name == 'product' and product -%}
+  {%- comment -%} Product page breadcrumb {%- endcomment -%}
+  {%- if collection -%}
+    {%- liquid
+      assign collection_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: collection.title | append: '","item":"' | append: shop.url | append: collection.url | append: '"}'
+      assign breadcrumb_items = breadcrumb_items | push: collection_item
+      assign position = position | plus: 1
+    -%}
+  {%- elsif product.collections.size > 0 -%}
+    {%- liquid
+      assign first_collection = product.collections.first
+      assign collection_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: first_collection.title | append: '","item":"' | append: shop.url | append: first_collection.url | append: '"}'
+      assign breadcrumb_items = breadcrumb_items | push: collection_item
+      assign position = position | plus: 1
+    -%}
+  {%- endif -%}
+  {%- liquid
+    assign product_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: product.title | append: '","item":"' | append: shop.url | append: product.url | append: '"}'
+    assign breadcrumb_items = breadcrumb_items | push: product_item
+  -%}
+
+{%- elsif template.name == 'collection' and collection -%}
+  {%- comment -%} Collection page breadcrumb {%- endcomment -%}
+  {%- liquid
+    assign collection_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: collection.title | append: '","item":"' | append: shop.url | append: collection.url | append: '"}'
+    assign breadcrumb_items = breadcrumb_items | push: collection_item
+  -%}
+
+{%- elsif template.name == 'article' and article -%}
+  {%- comment -%} Blog post breadcrumb {%- endcomment -%}
+  {%- liquid
+    assign blog_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: blog.title | append: '","item":"' | append: shop.url | append: blog.url | append: '"}'
+    assign breadcrumb_items = breadcrumb_items | push: blog_item
+    assign position = position | plus: 1
+    
+    assign article_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: article.title | append: '","item":"' | append: shop.url | append: article.url | append: '"}'
+    assign breadcrumb_items = breadcrumb_items | push: article_item
+  -%}
+
+{%- elsif template.name == 'page' and page -%}
+  {%- comment -%} Regular page breadcrumb {%- endcomment -%}
+  {%- liquid
+    assign page_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: page.title | append: '","item":"' | append: shop.url | append: page.url | append: '"}'
+    assign breadcrumb_items = breadcrumb_items | push: page_item
+  -%}
+
+{%- elsif template.name == 'blog' and blog -%}
+  {%- comment -%} Blog index breadcrumb {%- endcomment -%}
+  {%- liquid
+    assign blog_item = '{"@type":"ListItem","position":' | append: position | append: ',"name":"' | append: blog.title | append: '","item":"' | append: shop.url | append: blog.url | append: '"}'
+    assign breadcrumb_items = breadcrumb_items | push: blog_item
+  -%}
+
+{%- endif -%}
+
+{%- if breadcrumb_items.size > 1 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {{ breadcrumb_items | join: ',' }}
+  ]
+}
+</script>
+{%- endif -%}
+

@@ -167,8 +167,11 @@
     <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
 
     {%- comment -%} Schema.org Structured Data {%- endcomment -%}
+    {% render 'schema-breadcrumb' %}
     {% render 'schema-page-article' %}
     {% render 'schema-local-business' %}
+    {% render 'schema-product' %}
+    {% render 'schema-product-faq' %}
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">

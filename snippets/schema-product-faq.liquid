@@ -1,0 +1,146 @@
+{%- comment -%}
+  Product FAQ Schema (schema.org/FAQPage)
+  
+  Generates FAQ structured data for product pages
+  Auto-generates common FAQs based on product type
+  
+  Usage: {% render 'schema-product-faq', product: product %}
+{%- endcomment -%}
+
+{%- if template.name == 'product' and product -%}
+
+{%- liquid
+  # Determine product category based on tags, type, or collections
+  assign is_thc = false
+  assign is_kava = false
+  assign is_kratom = false
+  
+  if product.tags contains 'THC' or product.type contains 'THC' or product.title contains 'THC'
+    assign is_thc = true
+  elsif product.tags contains 'Kava' or product.type contains 'Kava' or product.title contains 'Kava'
+    assign is_kava = true
+  elsif product.tags contains 'Kratom' or product.type contains 'Kratom' or product.title contains 'Kratom'
+    assign is_kratom = true
+  endif
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- if is_thc -%}
+    {
+      "@type": "Question",
+      "name": "Is this THC product legal in Florida?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, this product contains hemp-derived Delta-9 THC which is legal in Florida for adults 21 and over under the 2018 Farm Bill. All our THC products contain less than 0.3% THC by dry weight and are compliant with federal and state regulations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much THC is in this product?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The THC content is clearly labeled on each product. Our THC beverages typically contain 5-10mg of hemp-derived Delta-9 THC per serving. Always start with a low dose and wait at least 60-90 minutes before consuming more."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will this product make me fail a drug test?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, consuming products containing THC may result in a positive drug test. If you are subject to drug testing, we recommend avoiding THC products."
+      }
+    }
+    {%- elsif is_kava -%}
+    {
+      "@type": "Question",
+      "name": "What is kava and what are its traditional uses?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kava is a traditional beverage made from the root of the Piper methysticum plant, native to the South Pacific islands. It has been used for centuries in cultural ceremonies and social gatherings. Kava is known for its unique flavor profile and is enjoyed as a social beverage in kava bars across the United States."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is kava safe to consume?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When sourced from reputable suppliers and consumed responsibly, kava has a long history of traditional use. At WTF | Welcome To Florida, we source only premium, lab-tested kava from trusted suppliers. As with any botanical product, we recommend consulting with a healthcare professional before use, especially if you have liver concerns or are taking medications."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How should I consume kava?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kava can be enjoyed as a traditional brewed beverage or in modern ready-to-drink formats. Start with a small serving to assess your tolerance. Kava is best enjoyed on an empty stomach or with light food. Avoid mixing kava with alcohol or other substances."
+      }
+    }
+    {%- elsif is_kratom -%}
+    {
+      "@type": "Question",
+      "name": "What is kratom?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kratom (Mitragyna speciosa) is a tropical tree native to Southeast Asia. The leaves have been used traditionally in countries like Thailand and Malaysia for centuries. Kratom is available in various strains (red, white, green) and can be consumed as tea or powder."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is kratom legal in Cape Coral, Florida?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, kratom is legal to buy, sell, and possess in Cape Coral and throughout the state of Florida for adults 21 and over. At WTF | Welcome To Florida, we comply with all local and federal regulations and only sell to customers 21+."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the difference between kratom strains?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kratom strains are typically categorized by vein color: Red Vein (associated with relaxation), White Vein (associated with energy), and Green Vein (a balanced middle ground). The differences come from the maturity of the leaves and the drying process. Each strain offers a unique profile and traditional use case."
+      }
+    }
+    {%- else -%}
+    {
+      "@type": "Question",
+      "name": "What makes this product special?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ product.title }} is carefully selected for quality and sourced from trusted suppliers. At WTF | Welcome To Florida, we prioritize product safety, quality testing, and customer satisfaction. All our products are available both in-store at our Cape Coral location and online for delivery."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I use this product?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Please refer to the product description and label for specific usage instructions. If you have questions, our knowledgeable staff at our Cape Coral kava bar are always happy to help guide you. You can also contact us via our website or visit us in person."
+      }
+    }
+    {%- endif -%}
+    ,
+    {
+      "@type": "Question",
+      "name": "Can I buy this product online?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! {{ product.title }} is available for purchase online at wtfswag.com with delivery available throughout Florida. You can also visit our physical location at 1520 SE 46th Ln, Unit B, Cape Coral, FL 33904 to purchase in person."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is your return policy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We want you to be completely satisfied with your purchase. If you have any issues with your order, please contact us within 30 days of purchase. Due to the nature of our products, we cannot accept returns of opened items, but we're happy to work with you to resolve any concerns."
+      }
+    }
+  ]
+}
+</script>
+{%- endif -%}
+
