@@ -1,0 +1,233 @@
+{
+  "home_visit_about": [
+    {
+      "handle": "contact",
+      "title": "Visit WTF"
+    },
+    {
+      "handle": "about-us",
+      "title": "About Us"
+    },
+    {
+      "handle": "our-story",
+      "title": "Our Story"
+    },
+    {
+      "handle": "home",
+      "title": "Home"
+    },
+    {
+      "handle": "about-cape-coral-kava-bar",
+      "title": "About WTF | Welcome To Florida - Cape Coral Kava Bar"
+    },
+    {
+      "handle": "visit-cape-coral-kava-bar",
+      "title": "Visit Our Cape Coral Kava Bar Today | WTF Welcome To Florida"
+    },
+    {
+      "handle": "about-wtf-welcome-to-florida",
+      "title": "About WTF | Welcome To Florida"
+    },
+    {
+      "handle": "homepage",
+      "title": "WTF | Welcome To Florida - Cape Coral's Premier Kava Bar & Wellness Destination"
+    },
+    {
+      "handle": "take-home-items",
+      "title": "Take Home Items"
+    }
+  ],
+  "kava_bar_near_me": [
+    {
+      "handle": "kava-bar-cape-coral-fl",
+      "title": "Kava Bar Cape Coral FL - Premium Kava & Kratom | WTF Florida"
+    },
+    {
+      "handle": "cape-coral-kava-bar",
+      "title": "Cape Coral Kava Bar | WTF Welcome To Florida | Premium Kava & Kratom"
+    },
+    {
+      "handle": "southwest-florida-kava-bar",
+      "title": "Southwest Florida Kava Bar | Fort Myers & Cape Coral | WTF Welcome To Florida"
+    },
+    {
+      "handle": "kava-bars-near-me",
+      "title": "Kava Bars Near Me | Cape Coral & Southwest Florida | WTF Welcome To Florida"
+    },
+    {
+      "handle": "wtf-is-a-kava-bar-florida-guide",
+      "title": "WTF is a Kava Bar? Florida's Ultimate Guide to Kava, Kratom, & THC Drinks"
+    }
+  ],
+  "education_hubs": [
+    {
+      "handle": "natural-wellness-guide",
+      "title": "Natural Wellness Guide | Kava, Kratom & Hemp Education"
+    },
+    {
+      "handle": "education",
+      "title": "Education"
+    }
+  ],
+  "product_collection_landers": [],
+  "blog_guides": [
+    {
+      "handle": "wtfs-infused-drinks",
+      "title": "WTF's Infused Drinks"
+    },
+    {
+      "handle": "blog",
+      "title": "WTF Blog"
+    },
+    {
+      "handle": "what-is-kava-beginners-guide",
+      "title": "What is Kava? A Beginner's Guide to the South Pacific's Relaxation Root"
+    },
+    {
+      "handle": "what-is-kratom-florida-botanical",
+      "title": "What is Kratom? Exploring Florida's Favorite Brewed Botanical"
+    },
+    {
+      "handle": "kava-vs-kratom-comparison",
+      "title": "Kava vs Kratom: How These Two Botanicals Compare"
+    },
+    {
+      "handle": "alcohol-free-date-ideas-cape-coral",
+      "title": "5 Alcohol-Free Date Ideas in Cape Coral"
+    },
+    {
+      "handle": "thc-drinks-near-me",
+      "title": "THC Drinks Near Me: The Florida Guide to Elevated, Alcohol-Free Vibes"
+    }
+  ],
+  "social_landers": [
+    {
+      "handle": "wtf-landing-facebook",
+      "title": "wtf-landing-facebook"
+    },
+    {
+      "handle": "wtf-landing-tiktok",
+      "title": "wtf-landing-tiktok"
+    },
+    {
+      "handle": "wtf-landing-snapchat",
+      "title": "wtf-landing-google"
+    },
+    {
+      "handle": "wtf-landing-snapchat-1",
+      "title": "wtf-landing-snapchat"
+    },
+    {
+      "handle": "wtf-landing-youtube",
+      "title": "wtf-landing-youtube"
+    }
+  ],
+  "operational": [
+    {
+      "handle": "data-sharing-opt-out",
+      "title": "Your privacy choices"
+    },
+    {
+      "handle": "wtf-landing",
+      "title": "landing-page"
+    },
+    {
+      "handle": "order-online-cape-coral-pickup",
+      "title": "Order Online for Cape Coral Pickup | WTF Welcome To Florida"
+    },
+    {
+      "handle": "site-map",
+      "title": "Site Map | WTF Welcome To Florida | Find Everything"
+    },
+    {
+      "handle": "mobile-ordering",
+      "title": "Mobile Ordering"
+    },
+    {
+      "handle": "admin-dashboard",
+      "title": "Admin Dashboard"
+    },
+    {
+      "handle": "cart-test",
+      "title": "Cart Test"
+    }
+  ],
+  "uncategorized": [
+    {
+      "handle": "wtf-infusion-lounge",
+      "title": "Explore Our Functional Beverages"
+    },
+    {
+      "handle": "cape-coral-events",
+      "title": "Cape Coral Events - Live Music & Paint Nights | WTF Florida"
+    },
+    {
+      "handle": "wtf-experience-cape-coral",
+      "title": "The WTF Experience | Cape Coral's Premier Kava & Wellness Destination"
+    },
+    {
+      "handle": "facebook-landing",
+      "title": "Facebook Landing - WTF Welcome To Florida"
+    },
+    {
+      "handle": "snapchat-landing",
+      "title": "Snapchat Landing - WTF Welcome To Florida"
+    },
+    {
+      "handle": "tiktok-landing",
+      "title": "TikTok Landing - WTF Welcome To Florida"
+    },
+    {
+      "handle": "youtube-landing",
+      "title": "YouTube Landing - WTF Welcome To Florida"
+    },
+    {
+      "handle": "google-landing",
+      "title": "Google Landing - WTF Welcome To Florida"
+    },
+    {
+      "handle": "drink-menu",
+      "title": "Drink-In Menu"
+    },
+    {
+      "handle": "drinks",
+      "title": "Drinks"
+    },
+    {
+      "handle": "dry-goods",
+      "title": "Dry Goods"
+    },
+    {
+      "handle": "faq",
+      "title": "FAQ"
+    },
+    {
+      "handle": "kratom-teas",
+      "title": "Kratom Teas"
+    },
+    {
+      "handle": "kava-drinks",
+      "title": "Kava Drinks"
+    },
+    {
+      "handle": "thc-drinks",
+      "title": "THC Drinks"
+    },
+    {
+      "handle": "draft-pours",
+      "title": "Draft Pours"
+    },
+    {
+      "handle": "thc-shots",
+      "title": "THC Shots"
+    },
+    {
+      "handle": "canned-drinks",
+      "title": "Canned Drinks"
+    },
+    {
+      "handle": "fun-stuff",
+      "title": "Fun Stuff"
+    }
+  ]
+}

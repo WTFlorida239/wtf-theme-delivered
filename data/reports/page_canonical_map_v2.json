@@ -1,0 +1,352 @@
+{
+  "home": {
+    "canonical": {
+      "id": "gid://shopify/Page/112710811826",
+      "handle": "homepage",
+      "title": "WTF | Welcome To Florida - Cape Coral's Premier Kava Bar & Wellness Destination",
+      "bodySummary": "WTF | Welcome To Florida Cape Coral's Most Unique Kava & Wellness Destination What The Florida is this amazing place?! We're your neighborhood kava...",
+      "body": "\n        <!-- Hero Section -->\n        <div style=\"background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%); padding: 60px 20px; text-align: center; color: white; margin-bottom: 0;\">\n            <h1 style=\"font-size: 4em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);\">\n                WTF | Welcome To Florida\n            </h1>\n            <h2 style=\"font-size: 2.2em; margin-bottom: 30px; font-weight: 300;\">\n                Cape Coral's Most Unique Kava &amp; Wellness Destination\n            </h2>\n            <p style=\"font-size: 1.4em; line-height: 1.6; margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;\">\n                What The Florida is this amazing place?! We're your neighborhood kava bar serving premium kava, kratom, \n                hemp products, and good vibes in the heart of Cape Coral. Come discover why we're Southwest Florida's favorite!\n            </p>\n            <div style=\"margin-top: 40px;\">\n                <a href=\"/collections/all\" style=\"background: rgba(255,255,255,0.9); color: #333; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; display: inline-block; margin: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;\">\n                    \ud83d\udecd\ufe0f Shop All Products\n                </a>\n                <a href=\"tel:239-955-0314\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; display: inline-block; margin: 10px; border: 2px solid white;\">\n                    \ud83d\udcde Call (239) 955-0314\n                </a>\n                <a href=\"https://maps.google.com/?q=1520+SE+46th+Ln+Unit+B+Cape+Coral+FL+33904\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; display: inline-block; margin: 10px; border: 2px solid white;\">\n                    \ud83d\uddfa\ufe0f Visit Us Today\n                </a>\n            </div>\n        </div>\n        \n        <!-- What Makes Us Special -->\n        <div style=\"background: #f8f9fa; padding: 60px 20px;\">\n            <div style=\"max-width: 1200px; margin: 0 auto;\">\n                <h2 style=\"text-align: center; font-size: 3em; color: #333; margin-bottom: 20px;\">\n                    What The Florida Makes Us Special?\n                </h2>\n                <p style=\"text-align: center; font-size: 1.3em; color: #666; margin-bottom: 50px; max-width: 800px; margin-left: auto; margin-right: auto;\">\n                    We're not your typical corporate kava chain. We're Cape Coral natives serving our community with authentic Florida hospitality and premium products.\n                </p>\n                \n                <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 50px;\">\n                    \n                    <!-- Local Expertise -->\n                    <div style=\"background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: transform 0.3s;\">\n                        <div style=\"font-size: 4em; margin-bottom: 20px;\">\ud83c\udfe0</div>\n                        <h3 style=\"color: #ff6b6b; font-size: 1.8em; margin-bottom: 20px;\">Cape Coral Born &amp; Raised</h3>\n                        <p style=\"color: #666; line-height: 1.8; font-size: 1.1em;\">\n                            We're not some corporate chain - we're your neighbors! Born and raised in Cape Coral, \n                            we understand our community and serve it with authentic Florida pride.\n                        </p>\n                    </div>\n                    \n                    <!-- Quality Products -->\n                    <div style=\"background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: transform 0.3s;\">\n                        <div style=\"font-size: 4em; margin-bottom: 20px;\">\ud83e\uddea</div>\n                        <h3 style=\"color: #4ecdc4; font-size: 1.8em; margin-bottom: 20px;\">Lab-Tested Quality</h3>\n                        <p style=\"color: #666; line-height: 1.8; font-size: 1.1em;\">\n                            Every single product is third-party lab tested for purity, potency, and safety. \n                            From kava to kratom to hemp - we never compromise on quality.\n                        </p>\n                    </div>\n                    \n                    <!-- Unique Selection -->\n                    <div style=\"background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: transform 0.3s;\">\n                        <div style=\"font-size: 4em; margin-bottom: 20px;\">\ud83c\udf3f</div>\n                        <h3 style=\"color: #45b7d1; font-size: 1.8em; margin-bottom: 20px;\">Diverse Selection</h3>\n                        <p style=\"color: #666; line-height: 1.8; font-size: 1.1em;\">\n                            More than just kava! We offer kratom, hemp products, specialty tea blends, \n                            beverages, and unique items you won't find anywhere else in Southwest Florida.\n                        </p>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        <!-- Featured Products Showcase -->\n        <div style=\"background: white; padding: 60px 20px;\">\n            <div style=\"max-width: 1200px; margin: 0 auto;\">\n                <h2 style=\"text-align: center; font-size: 3em; color: #333; margin-bottom: 20px;\">\n                    Featured Products\n                </h2>\n                <p style=\"text-align: center; font-size: 1.3em; color: #666; margin-bottom: 50px;\">\n                    Check out some of our most popular items - perfect for first-time visitors and seasoned customers alike!\n                </p>\n                \n                <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px;\">\n                    \n                    <!-- Kava Products -->\n                    <div style=\"background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); padding: 30px; border-radius: 15px; color: white; text-align: center;\">\n                        <h3 style=\"font-size: 1.8em; margin-bottom: 15px;\">\ud83e\udd65 Premium Kava</h3>\n                        <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                            Traditional Pacific Island relaxation. Perfect for unwinding, socializing, and finding your calm.\n                        </p>\n                        <a href=\"/collections/kava-products\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; border: 2px solid white;\">\n                            Shop Kava \u2192\n                        </a>\n                    </div>\n                    \n                    <!-- Kratom Products -->\n                    <div style=\"background: linear-gradient(135deg, #96ceb4 0%, #ffecd2 100%); padding: 30px; border-radius: 15px; color: #333; text-align: center;\">\n                        <h3 style=\"font-size: 1.8em; margin-bottom: 15px; color: #2d5a2d;\">\ud83c\udf43 Quality Kratom</h3>\n                        <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                            Energy, focus, and mood enhancement. Including our popular White Rabbit and Tea Time brands.\n                        </p>\n                        <a href=\"/collections/kratom-products\" style=\"background: #2d5a2d; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold;\">\n                            Shop Kratom \u2192\n                        </a>\n                    </div>\n                    \n                    <!-- Hemp Products -->\n                    <div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white; text-align: center;\">\n                        <h3 style=\"font-size: 1.8em; margin-bottom: 15px;\">\ud83c\udf3f Hemp &amp; THC</h3>\n                        <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                            Federally legal Delta-9 THC products. Veed syrups, Barney's edibles, and more!\n                        </p>\n                        <a href=\"/collections/hemp-thc-products\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; border: 2px solid white;\">\n                            Shop Hemp \u2192\n                        </a>\n                    </div>\n                    \n                    <!-- New Tea Blends -->\n                    <div style=\"background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 30px; border-radius: 15px; color: #333; text-align: center;\">\n                        <h3 style=\"font-size: 1.8em; margin-bottom: 15px; color: #c92a2a;\">\ud83c\udf75 WTF Tea Blends</h3>\n                        <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                            NEW! Blue Dreams Tea and Love Potion Tea - unique kratom blends you won't find anywhere else!\n                        </p>\n                        <a href=\"/products/wtf-blue-dreams-tea-kratom-blue-lotus-blend\" style=\"background: #c92a2a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold;\">\n                            Try Our Blends \u2192\n                        </a>\n                    </div>\n                </div>\n                \n                <div style=\"text-align: center; margin-top: 40px;\">\n                    <a href=\"/collections/all\" style=\"background: #ff6b6b; color: white; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.3em; box-shadow: 0 4px 15px rgba(255,107,107,0.3);\">\n                        \ud83d\udecd\ufe0f Shop All Products\n                    </a>\n                </div>\n            </div>\n        </div>\n        \n        <!-- Visit Our Location -->\n        <div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 20px; color: white;\">\n            <div style=\"max-width: 1000px; margin: 0 auto; text-align: center;\">\n                <h2 style=\"font-size: 3em; margin-bottom: 20px;\">\n                    Visit Cape Coral's Premier Kava Bar\n                </h2>\n                <p style=\"font-size: 1.4em; line-height: 1.6; margin-bottom: 40px;\">\n                    Come experience the WTF difference in person! Relax, socialize, work remotely, or just hang out. \n                    We're more than a store - we're your neighborhood gathering place.\n                </p>\n                \n                <div style=\"background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; margin-bottom: 40px;\">\n                    <h3 style=\"font-size: 2em; margin-bottom: 20px;\">\ud83c\udfea Our Cape Coral Location</h3>\n                    <p style=\"font-size: 1.3em; margin-bottom: 15px;\">\n                        <strong>1520 SE 46th Ln. Unit B, Cape Coral, FL 33904</strong>\n                    </p>\n                    <p style=\"font-size: 1.2em; margin-bottom: 20px;\">\n                        <strong>Hours:</strong><br>\n                        Monday - Friday: 12:00 PM - 10:00 PM<br>\n                        Saturday - Sunday: 12:00 PM - 11:00 PM\n                    </p>\n                    <p style=\"font-size: 1.2em;\">\n                        <strong>Phone:</strong> (239) 955-0314<br>\n                        <strong>Email:</strong> info@wtfswag.com\n                    </p>\n                </div>\n                \n                <div>\n                    <a href=\"tel:239-955-0314\" style=\"background: rgba(255,255,255,0.9); color: #333; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; display: inline-block; margin: 10px;\">\n                        \ud83d\udcde Call Now\n                    </a>\n                    <a href=\"https://maps.google.com/?q=1520+SE+46th+Ln+Unit+B+Cape+Coral+FL+33904\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; display: inline-block; margin: 10px; border: 2px solid white;\">\n                        \ud83d\uddfa\ufe0f Get Directions\n                    </a>\n                    <a href=\"/pages/cape-coral-kava-bar\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 18px 35px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; display: inline-block; margin: 10px; border: 2px solid white;\">\n                        \ud83d\udccd Learn More\n                    </a>\n                </div>\n            </div>\n        </div>\n        \n        <!-- Why Choose WTF -->\n        <div style=\"background: #f8f9fa; padding: 60px 20px;\">\n            <div style=\"max-width: 1200px; margin: 0 auto;\">\n                <h2 style=\"text-align: center; font-size: 3em; color: #333; margin-bottom: 50px;\">\n                    Why Cape Coral Chooses WTF\n                </h2>\n                \n                <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;\">\n                    <div style=\"text-align: center; padding: 30px;\">\n                        <div style=\"font-size: 3em; margin-bottom: 20px;\">\ud83e\udd1d</div>\n                        <h3 style=\"color: #ff6b6b; margin-bottom: 15px;\">Real Relationships</h3>\n                        <p style=\"color: #666; line-height: 1.6;\">We know our customers by name, not order number. Come be part of our Florida family!</p>\n                    </div>\n                    \n                    <div style=\"text-align: center; padding: 30px;\">\n                        <div style=\"font-size: 3em; margin-bottom: 20px;\">\ud83d\udcda</div>\n                        <h3 style=\"color: #4ecdc4; margin-bottom: 15px;\">Expert Guidance</h3>\n                        <p style=\"color: #666; line-height: 1.6;\">New to kava or kratom? Our knowledgeable staff educates and guides you to the perfect experience.</p>\n                    </div>\n                    \n                    <div style=\"text-align: center; padding: 30px;\">\n                        <div style=\"font-size: 3em; margin-bottom: 20px;\">\ud83c\udfc6</div>\n                        <h3 style=\"color: #45b7d1; margin-bottom: 15px;\">Community First</h3>\n                        <p style=\"color: #666; line-height: 1.6;\">We support local causes and give back to the Cape Coral community that supports us.</p>\n                    </div>\n                    \n                    <div style=\"text-align: center; padding: 30px;\">\n                        <div style=\"font-size: 3em; margin-bottom: 20px;\">\u26a1</div>\n                        <h3 style=\"color: #96ceb4; margin-bottom: 15px;\">Convenient Options</h3>\n                        <p style=\"color: #666; line-height: 1.6;\">Shop online for pickup, visit us in-store, or call ahead. We make it easy to get what you need.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        <!-- Call to Action -->\n        <div style=\"background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); padding: 60px 20px; text-align: center; color: white;\">\n            <h2 style=\"font-size: 3em; margin-bottom: 20px;\">\n                Ready to Experience WTF?\n            </h2>\n            <p style=\"font-size: 1.4em; line-height: 1.6; margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;\">\n                Whether you're a kava veteran or completely new to natural wellness, we're here to help you discover \n                what makes Cape Coral's favorite kava bar so special. Come see what the Florida fuss is all about!\n            </p>\n            \n            <div>\n                <a href=\"/collections/all\" style=\"background: rgba(255,255,255,0.9); color: #333; padding: 20px 40px; text-decoration: none; border-radius: 35px; font-weight: bold; font-size: 1.3em; display: inline-block; margin: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);\">\n                    \ud83d\udecd\ufe0f Start Shopping\n                </a>\n                <a href=\"tel:239-955-0314\" style=\"background: rgba(255,255,255,0.2); color: white; padding: 20px 40px; text-decoration: none; border-radius: 35px; font-weight: bold; font-size: 1.3em; display: inline-block; margin: 15px; border: 3px solid white;\">\n                    \ud83d\udcde Call Us Now\n                </a>\n            </div>\n        </div>\n        \n        <!-- Local SEO Schema -->\n        <script type=\"application/ld+json\">\n        {\n            \"@context\": \"https://schema.org\",\n            \"@type\": \"LocalBusiness\",\n            \"@id\": \"https://wtfswag.com/#business\",\n            \"name\": \"WTF | Welcome To Florida\",\n            \"alternateName\": [\"Cape Coral Kava Bar\", \"WTF Kava Bar\"],\n            \"description\": \"Cape Coral's premier kava bar serving premium kava, kratom, and hemp products with local pickup and expert guidance. Your neighborhood destination for natural wellness.\",\n            \"url\": \"https://wtfswag.com\",\n            \"telephone\": \"+12399550314\",\n            \"email\": \"info@wtfswag.com\",\n            \"address\": {\n                \"@type\": \"PostalAddress\",\n                \"streetAddress\": \"1520 SE 46th Ln Unit B\",\n                \"addressLocality\": \"Cape Coral\",\n                \"addressRegion\": \"FL\",\n                \"postalCode\": \"33904\",\n                \"addressCountry\": \"US\"\n            },\n            \"geo\": {\n                \"@type\": \"GeoCoordinates\",\n                \"latitude\": \"26.5629\",\n                \"longitude\": \"-81.9495\"\n            },\n            \"openingHours\": [\n                \"Mo-Fr 12:00-22:00\",\n                \"Sa-Su 12:00-23:00\"\n            ],\n            \"servesCuisine\": [\"Kava\", \"Kratom\", \"Hemp Products\", \"Herbal Teas\"],\n            \"priceRange\": \"$\",\n            \"paymentAccepted\": [\"Cash\", \"Credit Card\", \"Debit Card\"],\n            \"currenciesAccepted\": \"USD\",\n            \"areaServed\": [\n                \"Cape Coral\",\n                \"Fort Myers\", \n                \"Southwest Florida\",\n                \"Lee County\"\n            ],\n            \"sameAs\": [\n                \"https://www.facebook.com/p/WTF-Welcome-to-Florida-61566655386481/\",\n                \"https://www.instagram.com/wtfswagbrand/\"\n            ]\n        }\n        </script>\n        ",
+      "updatedAt": "2025-08-21T17:52:50Z",
+      "createdAt": "2025-08-21T17:52:50Z",
+      "isPublished": true
+    },
+    "canonical_handle": "homepage",
+    "canonical_url": "/pages/homepage",
+    "redirects": [
+      {
+        "from_handle": "home",
+        "from_path": "/pages/home",
+        "to_path": "/",
+        "page_id": "gid://shopify/Page/108871745714"
+      },
+      {
+        "from_handle": "about-us",
+        "from_path": "/pages/about-us",
+        "to_path": "/",
+        "page_id": "gid://shopify/Page/108040454322"
+      },
+      {
+        "from_handle": "our-story",
+        "from_path": "/pages/our-story",
+        "to_path": "/",
+        "page_id": "gid://shopify/Page/108871581874"
+      },
+      {
+        "from_handle": "about-cape-coral-kava-bar",
+        "from_path": "/pages/about-cape-coral-kava-bar",
+        "to_path": "/",
+        "page_id": "gid://shopify/Page/112706158770"
+      },
+      {
+        "from_handle": "wtf-experience-cape-coral",
+        "from_path": "/pages/wtf-experience-cape-coral",
+        "to_path": "/",
+        "page_id": "gid://shopify/Page/112708026546"
+      }
+    ]
+  },
+  "about": {
+    "canonical": {
+      "id": "gid://shopify/Page/112707961010",
+      "handle": "about-wtf-welcome-to-florida",
+      "title": "About WTF | Welcome To Florida",
+      "bodySummary": "Welcome To Florida Cape Coral's Most Unique Kava & Hemp Destination OUR MISSION ELEVATED EXPERIENCES We serve the finest all-natural kava, premium ...",
+      "body": "\n        <div style=\"text-align: center; margin-bottom: 40px;\">\n            <h1 style=\"color: #ff6b6b; font-size: 3em; margin-bottom: 20px;\">Welcome To Florida</h1>\n            <h2 style=\"color: #4ecdc4; font-size: 1.8em;\">Cape Coral's Most Unique Kava &amp; Hemp Destination</h2>\n        </div>\n        \n        <div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 15px; color: white; margin-bottom: 40px;\">\n            <h2 style=\"text-align: center; margin-bottom: 30px;\">OUR MISSION</h2>\n            <h3 style=\"text-align: center; font-size: 2.5em; margin-bottom: 20px;\">ELEVATED EXPERIENCES</h3>\n            <p style=\"text-align: center; font-size: 1.2em; line-height: 1.6;\">\n                We serve the finest all-natural kava, premium kratom, and Farm Bill compliant hemp products. \n                Hand-crafted with the highest quality ingredients and lab-tested for your peace of mind.\n            </p>\n            <p style=\"text-align: center; font-size: 1.2em; line-height: 1.6; margin-top: 20px;\">\n                We <strong>WELCOME</strong> everyone to celebrate life, share stories, and discover new experiences.\n                Whether you're here for a moment or a lifetime, you're part of our Florida family.\n            </p>\n        </div>\n        \n        <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin: 40px 0;\">\n            <div style=\"text-align: center; padding: 30px; background: #f8f9fa; border-radius: 10px;\">\n                <h3 style=\"color: #ff6b6b; margin-bottom: 15px;\">\ud83c\udf34 FLORIDA CRAFTED</h3>\n                <p>Born and raised in Cape Coral, serving Southwest Florida with pride and authenticity.</p>\n            </div>\n            <div style=\"text-align: center; padding: 30px; background: #f8f9fa; border-radius: 10px;\">\n                <h3 style=\"color: #4ecdc4; margin-bottom: 15px;\">\ud83e\uddea LAB TESTED</h3>\n                <p>Every product is third-party tested for purity, potency, and safety. Quality you can trust.</p>\n            </div>\n            <div style=\"text-align: center; padding: 30px; background: #f8f9fa; border-radius: 10px;\">\n                <h3 style=\"color: #45b7d1; margin-bottom: 15px;\">\ud83e\udd1d COMMUNITY FIRST</h3>\n                <p>More than a business - we're your neighbors, supporting local causes and building connections.</p>\n            </div>\n            <div style=\"text-align: center; padding: 30px; background: #f8f9fa; border-radius: 10px;\">\n                <h3 style=\"color: #96ceb4; margin-bottom: 15px;\">\ud83d\udcda EDUCATION FOCUSED</h3>\n                <p>We believe in informed choices. Our team educates and guides you to the perfect experience.</p>\n            </div>\n        </div>\n        \n        <div style=\"background: #fff3cd; padding: 30px; border-radius: 10px; border-left: 5px solid #ffc107; margin: 40px 0;\">\n            <h3 style=\"color: #856404;\">What Makes WTF Different?</h3>\n            <ul style=\"color: #856404; font-size: 1.1em; line-height: 1.8;\">\n                <li>\n<strong>Diverse Selection:</strong> Kava, kratom, hemp, edibles, and beverages all in one place</li>\n                <li>\n<strong>Local Expertise:</strong> Cape Coral natives who understand our community</li>\n                <li>\n<strong>Hybrid Experience:</strong> Shop online, pick up in-store, or hang out and enjoy</li>\n                <li>\n<strong>Real Relationships:</strong> We know our customers by name, not just order number</li>\n                <li>\n<strong>Florida Authentic:</strong> No corporate chains - just genuine Florida hospitality</li>\n            </ul>\n        </div>\n        \n        <div style=\"text-align: center; margin: 40px 0;\">\n            <h3 style=\"color: #333; margin-bottom: 20px;\">Visit Our Cape Coral Location</h3>\n            <p style=\"font-size: 1.2em; color: #666; margin-bottom: 20px;\">\n                <strong>1520 SE 46th Ln. Unit B, Cape Coral, FL 33904</strong>\n            </p>\n            <p style=\"font-size: 1.1em; color: #666; margin-bottom: 20px;\">\n                Monday - Friday: 12:00 PM - 10:00 PM<br>\n                Saturday - Sunday: 12:00 PM - 11:00 PM\n            </p>\n            <a href=\"tel:239-955-0314\" style=\"background: #ff6b6b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                \ud83d\udcde Call (239) 955-0314\n            </a>\n            <a href=\"https://maps.google.com/?q=1520+SE+46th+Ln+Unit+B+Cape+Coral+FL+33904\" style=\"background: #4ecdc4; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                \ud83d\uddfa\ufe0f Get Directions\n            </a>\n        </div>\n        \n                    <div style=\"background: #e8f5e8; padding: 30px; border-radius: 15px; margin: 40px 0; text-align: center;\">\n                        <h3 style=\"color: #28a745; margin-bottom: 20px;\">\ud83c\udfea Visit Our Cape Coral Location</h3>\n                        <p style=\"font-size: 1.2em; color: #155724; margin-bottom: 15px;\">\n                            <strong>WTF | Welcome To Florida</strong><br>\n                            Cape Coral's Premier Kava Bar\n                        </p>\n                        <p style=\"color: #155724; margin-bottom: 20px;\">\n                            <strong>1520 SE 46th Ln. Unit B, Cape Coral, FL 33904</strong><br>\n                            Phone: (239) 955-0314 | Email: info@wtfswag.com\n                        </p>\n                        <p style=\"color: #155724; margin-bottom: 20px;\">\n                            <strong>Hours:</strong><br>\n                            Monday - Friday: 12:00 PM - 10:00 PM<br>\n                            Saturday - Sunday: 12:00 PM - 11:00 PM\n                        </p>\n                        <div>\n                            <a href=\"tel:239-955-0314\" style=\"background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; display: inline-block; margin: 5px;\">\n                                \ud83d\udcde Call Now\n                            </a>\n                            <a href=\"https://maps.google.com/?q=1520+SE+46th+Ln+Unit+B+Cape+Coral+FL+33904\" style=\"background: #17a2b8; color: white; padding: 12px 25px; text-decoration: none; border-radius: 20px; font-weight: bold; display: inline-block; margin: 5px;\">\n                                \ud83d\uddfa\ufe0f Directions\n                            </a>\n                        </div>\n                    </div>\n                    ",
+      "updatedAt": "2025-08-21T17:06:01Z",
+      "createdAt": "2025-08-21T16:37:41Z",
+      "isPublished": true
+    },
+    "canonical_handle": "about-wtf-welcome-to-florida",
+    "canonical_url": "/pages/about-wtf-welcome-to-florida",
+    "redirects": []
+  },
+  "kava_bar_hub": {
+    "canonical": {
+      "id": "gid://shopify/Page/112708747442",
+      "handle": "kava-bars-near-me",
+      "title": "Kava Bars Near Me | Cape Coral & Southwest Florida | WTF Welcome To Florida",
+      "bodySummary": "Searching \"Kava Bars Near Me\"? You Found Southwest Florida's Best! WTF | Welcome To Florida is your local answer to \"where can I find kava bars nea...",
+      "body": "\n            <div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 15px; color: white; margin-bottom: 40px; text-align: center;\">\n                <h1 style=\"font-size: 3em; margin-bottom: 20px;\">Searching \"Kava Bars Near Me\"?</h1>\n                <h2 style=\"font-size: 1.8em; margin-bottom: 20px;\">You Found Southwest Florida's Best!</h2>\n                <p style=\"font-size: 1.3em; line-height: 1.6;\">\n                    WTF | Welcome To Florida is your local answer to \"where can I find kava bars near me?\" \n                    Located in Cape Coral, we serve all of Southwest Florida with premium kava, kratom, and natural wellness products.\n                </p>\n            </div>\n            \n            <div style=\"background: #f8f9fa; padding: 30px; border-radius: 15px; margin: 40px 0;\">\n                <h3 style=\"color: #333; text-align: center; margin-bottom: 30px;\">\ud83d\udccd Your Local Kava Bar Location</h3>\n                <div style=\"text-align: center; margin-bottom: 30px;\">\n                    <h4 style=\"color: #ff6b6b; font-size: 1.5em;\">WTF | Welcome To Florida</h4>\n                    <p style=\"font-size: 1.2em; margin: 10px 0;\"><strong>1520 SE 46th Ln. Unit B, Cape Coral, FL 33904</strong></p>\n                    <p style=\"font-size: 1.1em; color: #666;\">\n                        Monday - Friday: 12:00 PM - 10:00 PM<br>\n                        Saturday - Sunday: 12:00 PM - 11:00 PM\n                    </p>\n                </div>\n                <div style=\"text-align: center;\">\n                    <a href=\"tel:239-955-0314\" style=\"background: #ff6b6b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                        \ud83d\udcde Call Now\n                    </a>\n                    <a href=\"https://maps.google.com/?q=1520+SE+46th+Ln+Unit+B+Cape+Coral+FL+33904\" style=\"background: #4ecdc4; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                        \ud83d\uddfa\ufe0f Get Directions\n                    </a>\n                </div>\n            </div>\n            \n            <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0;\">\n                <div style=\"background: #e3f2fd; padding: 30px; border-radius: 15px;\">\n                    <h3 style=\"color: #1976d2; margin-bottom: 20px;\">\ud83d\udd0d Why Choose Our Kava Bar?</h3>\n                    <ul style=\"line-height: 1.8; color: #555;\">\n                        <li>\n<strong>Locally Owned:</strong> Cape Coral natives serving our community</li>\n                        <li>\n<strong>Premium Quality:</strong> Lab-tested kava, kratom, and hemp products</li>\n                        <li>\n<strong>Expert Staff:</strong> Knowledgeable guidance for all experience levels</li>\n                        <li>\n<strong>Diverse Selection:</strong> More than just kava - kratom, hemp, teas, and more</li>\n                        <li>\n<strong>Convenient Hours:</strong> Open daily with flexible pickup options</li>\n                    </ul>\n                </div>\n                \n                <div style=\"background: #f3e5f5; padding: 30px; border-radius: 15px;\">\n                    <h3 style=\"color: #7b1fa2; margin-bottom: 20px;\">\ud83c\udf3f What We Offer</h3>\n                    <ul style=\"line-height: 1.8; color: #555;\">\n                        <li>\n<strong>Traditional Kava:</strong> Pacific Island relaxation and social enhancement</li>\n                        <li>\n<strong>Premium Kratom:</strong> Energy, focus, and mood enhancement</li>\n                        <li>\n<strong>Hemp Products:</strong> Legal Delta-9 THC edibles and beverages</li>\n                        <li>\n<strong>Specialty Blends:</strong> Unique teas like Blue Dreams and Love Potion</li>\n                        <li>\n<strong>Beverages:</strong> Syrups, sodas, and refreshing drinks</li>\n                    </ul>\n                </div>\n            </div>\n            \n            <div style=\"background: #fff3cd; padding: 30px; border-radius: 15px; border-left: 5px solid #ffc107; margin: 40px 0;\">\n                <h3 style=\"color: #856404; margin-bottom: 20px;\">\ud83c\udfc6 Southwest Florida's Favorite Kava Destination</h3>\n                <p style=\"color: #856404; font-size: 1.1em; line-height: 1.6;\">\n                    When locals search \"kava bars near me,\" they choose WTF | Welcome To Florida because we're more than just a kava bar - \n                    we're a community gathering place where quality meets authenticity. Unlike corporate chains, we know our customers by name \n                    and provide personalized recommendations based on your preferences and experience level.\n                </p>\n            </div>\n            \n            <div style=\"text-align: center; margin: 40px 0;\">\n                <h3 style=\"color: #333; margin-bottom: 20px;\">Ready to Visit Your Local Kava Bar?</h3>\n                <p style=\"font-size: 1.1em; color: #666; margin-bottom: 30px;\">\n                    Stop searching \"kava bars near me\" - you found us! Visit today or browse our products online.\n                </p>\n                <a href=\"/collections/all\" style=\"background: #ff6b6b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                    \ud83d\udecd\ufe0f Shop Products\n                </a>\n                <a href=\"/pages/cape-coral-kava-bar\" style=\"background: #4ecdc4; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                    \ud83d\udccd Learn More\n                </a>\n            </div>\n            ",
+      "updatedAt": "2025-08-21T17:05:57Z",
+      "createdAt": "2025-08-21T17:05:57Z",
+      "isPublished": true
+    },
+    "canonical_handle": "kava-bars-near-me",
+    "canonical_url": "/pages/kava-bars-near-me",
+    "redirects": [
+      {
+        "from_handle": "cape-coral-kava-bar",
+        "from_path": "/pages/cape-coral-kava-bar",
+        "to_path": "/pages/kava-bars-near-me",
+        "page_id": "gid://shopify/Page/112708681906"
+      },
+      {
+        "from_handle": "southwest-florida-kava-bar",
+        "from_path": "/pages/southwest-florida-kava-bar",
+        "to_path": "/pages/kava-bars-near-me",
+        "page_id": "gid://shopify/Page/112708714674"
+      },
+      {
+        "from_handle": "kava-bar-cape-coral-fl",
+        "from_path": "/pages/kava-bar-cape-coral-fl",
+        "to_path": "/pages/kava-bars-near-me",
+        "page_id": "gid://shopify/Page/112706224306"
+      },
+      {
+        "from_handle": "wtf-is-a-kava-bar-florida-guide",
+        "from_path": "/pages/wtf-is-a-kava-bar-florida-guide",
+        "to_path": "/pages/kava-bars-near-me",
+        "page_id": "gid://shopify/Page/113187618994"
+      }
+    ]
+  },
+  "education_hub": {
+    "canonical": {
+      "id": "gid://shopify/Page/112707993778",
+      "handle": "natural-wellness-guide",
+      "title": "Natural Wellness Guide | Kava, Kratom & Hemp Education",
+      "bodySummary": "Your Guide to Natural Wellness Discover the benefits of kava, kratom, and hemp products with expert guidance from Cape Coral's trusted source. \ud83e\udd65 KA...",
+      "body": "\n        <div style=\"text-align: center; margin-bottom: 40px;\">\n            <h1 style=\"color: #ff6b6b; font-size: 3em;\">Your Guide to Natural Wellness</h1>\n            <p style=\"font-size: 1.3em; color: #666; margin-top: 20px;\">\n                Discover the benefits of kava, kratom, and hemp products with expert guidance from Cape Coral's trusted source.\n            </p>\n        </div>\n        \n        <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0;\">\n            \n            <!-- Kava Section -->\n            <div style=\"background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); padding: 30px; border-radius: 15px; color: white;\">\n                <h2 style=\"text-align: center; margin-bottom: 20px;\">\ud83e\udd65 KAVA</h2>\n                <h3 style=\"text-align: center; margin-bottom: 20px;\">CALM + SOCIAL</h3>\n                <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                    Traditional Pacific Island beverage known for its relaxing properties. Perfect for unwinding after work or socializing with friends.\n                </p>\n                <ul style=\"line-height: 1.8;\">\n                    <li>Natural muscle relaxation</li>\n                    <li>Stress relief without impairment</li>\n                    <li>Social enhancement</li>\n                    <li>Non-addictive alternative</li>\n                </ul>\n                <p style=\"margin-top: 20px; font-style: italic;\">\n                    \"Try our kava flights to discover your favorite variety!\"\n                </p>\n            </div>\n            \n            <!-- Kratom Section -->\n            <div style=\"background: linear-gradient(135deg, #96ceb4 0%, #ffecd2 100%); padding: 30px; border-radius: 15px; color: #333;\">\n                <h2 style=\"text-align: center; margin-bottom: 20px;\">\ud83c\udf43 KRATOM</h2>\n                <h3 style=\"text-align: center; margin-bottom: 20px;\">ENERGY + FOCUS</h3>\n                <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                    Southeast Asian botanical with energizing and mood-enhancing properties. Popular among professionals and active individuals.\n                </p>\n                <ul style=\"line-height: 1.8;\">\n                    <li>\n<strong>White Strains:</strong> Energy &amp; Focus</li>\n                    <li>\n<strong>Green Strains:</strong> Balanced Effects</li>\n                    <li>\n<strong>Red Strains:</strong> Relaxation &amp; Calm</li>\n                    <li>Lab-tested for purity</li>\n                </ul>\n                <p style=\"margin-top: 20px; font-style: italic;\">\n                    \"Our White Rabbit and Tea Time products are customer favorites!\"\n                </p>\n            </div>\n            \n            <!-- Hemp Section -->\n            <div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white;\">\n                <h2 style=\"text-align: center; margin-bottom: 20px;\">\ud83c\udf3f HEMP &amp; THC</h2>\n                <h3 style=\"text-align: center; margin-bottom: 20px;\">RELAX + ENJOY</h3>\n                <p style=\"line-height: 1.6; margin-bottom: 20px;\">\n                    Farm Bill compliant Delta-9 THC products including edibles, beverages, and syrups. All legal and lab-tested.\n                </p>\n                <ul style=\"line-height: 1.8;\">\n                    <li>Federally legal Delta-9 THC</li>\n                    <li>Precise dosing for consistency</li>\n                    <li>Variety of flavors and formats</li>\n                    <li>Third-party lab tested</li>\n                </ul>\n                <p style=\"margin-top: 20px; font-style: italic;\">\n                    \"Start low, go slow - our staff will guide your experience!\"\n                </p>\n            </div>\n        </div>\n        \n        <div style=\"background: #f8f9fa; padding: 40px; border-radius: 15px; margin: 40px 0;\">\n            <h2 style=\"text-align: center; color: #333; margin-bottom: 30px;\">Why Choose WTF for Your Wellness Journey?</h2>\n            <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;\">\n                <div style=\"text-align: center;\">\n                    <h4 style=\"color: #ff6b6b;\">\ud83e\uddea Quality Assurance</h4>\n                    <p>Every product is third-party lab tested for purity, potency, and safety.</p>\n                </div>\n                <div style=\"text-align: center;\">\n                    <h4 style=\"color: #4ecdc4;\">\ud83d\udc68\u200d\ud83c\udfeb Expert Guidance</h4>\n                    <p>Our knowledgeable staff helps you find the perfect product for your needs.</p>\n                </div>\n                <div style=\"text-align: center;\">\n                    <h4 style=\"color: #45b7d1;\">\ud83c\udfea Local Convenience</h4>\n                    <p>Cape Coral location with online ordering and same-day pickup available.</p>\n                </div>\n                <div style=\"text-align: center;\">\n                    <h4 style=\"color: #96ceb4;\">\ud83e\udd1d Community Trust</h4>\n                    <p>Locally owned and operated, supporting our Southwest Florida community.</p>\n                </div>\n            </div>\n        </div>\n        \n        <div style=\"text-align: center; background: #fff3cd; padding: 30px; border-radius: 10px; margin: 40px 0;\">\n            <h3 style=\"color: #856404; margin-bottom: 20px;\">Ready to Start Your Wellness Journey?</h3>\n            <p style=\"color: #856404; font-size: 1.1em; margin-bottom: 20px;\">\n                Visit us in Cape Coral for personalized guidance and premium products.\n            </p>\n            <a href=\"/collections/all\" style=\"background: #ff6b6b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                \ud83d\udecd\ufe0f Shop All Products\n            </a>\n            <a href=\"tel:239-955-0314\" style=\"background: #4ecdc4; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px;\">\n                \ud83d\udcde Call for Guidance\n            </a>\n        </div>\n        ",
+      "updatedAt": "2025-08-21T16:37:42Z",
+      "createdAt": "2025-08-21T16:37:42Z",
+      "isPublished": true
+    },
+    "canonical_handle": "natural-wellness-guide",
+    "canonical_url": "/pages/natural-wellness-guide",
+    "redirects": [
+      {
+        "from_handle": "education",
+        "from_path": "/pages/education",
+        "to_path": "/pages/natural-wellness-guide",
+        "page_id": "gid://shopify/Page/113124409522"
+      }
+    ]
+  },
+  "product_collections": {
+    "canonical": null,
+    "canonical_handle": "collections",
+    "canonical_url": "/collections",
+    "redirects": [
+      {
+        "from_handle": "kava-drinks",
+        "from_path": "/pages/kava-drinks",
+        "to_path": "/collections/kava-drinks",
+        "page_id": "gid://shopify/Page/113479483570"
+      },
+      {
+        "from_handle": "thc-drinks",
+        "from_path": "/pages/thc-drinks",
+        "to_path": "/collections/thc-drinks",
+        "page_id": "gid://shopify/Page/113479516338"
+      },
+      {
+        "from_handle": "thc-shots",
+        "from_path": "/pages/thc-shots",
+        "to_path": "/collections/thc-shots",
+        "page_id": "gid://shopify/Page/113479581874"
+      },
+      {
+        "from_handle": "kratom-teas",
+        "from_path": "/pages/kratom-teas",
+        "to_path": "/collections/kratom-teas",
+        "page_id": "gid://shopify/Page/113479188658"
+      },
+      {
+        "from_handle": "canned-drinks",
+        "from_path": "/pages/canned-drinks",
+        "to_path": "/collections/canned-drinks",
+        "page_id": "gid://shopify/Page/113479614642"
+      },
+      {
+        "from_handle": "draft-pours",
+        "from_path": "/pages/draft-pours",
+        "to_path": "/collections/draft-pours",
+        "page_id": "gid://shopify/Page/113479549106"
+      },
+      {
+        "from_handle": "take-home-items",
+        "from_path": "/pages/take-home-items",
+        "to_path": "/collections/take-home-items",
+        "page_id": "gid://shopify/Page/113479680178"
+      },
+      {
+        "from_handle": "fun-stuff",
+        "from_path": "/pages/fun-stuff",
+        "to_path": "/collections/fun-stuff",
+        "page_id": "gid://shopify/Page/113479647410"
+      },
+      {
+        "from_handle": "dry-goods",
+        "from_path": "/pages/dry-goods",
+        "to_path": "/collections/dry-goods",
+        "page_id": "gid://shopify/Page/113124376754"
+      },
+      {
+        "from_handle": "drinks",
+        "from_path": "/pages/drinks",
+        "to_path": "/collections/all",
+        "page_id": "gid://shopify/Page/113124343986"
+      }
+    ]
+  },
+  "social_landers": {
+    "keep": [
+      {
+        "handle": "tiktok-landing",
+        "title": "TikTok Landing - WTF Welcome To Florida",
+        "id": "gid://shopify/Page/112741875890"
+      },
+      {
+        "handle": "facebook-landing",
+        "title": "Facebook Landing - WTF Welcome To Florida",
+        "id": "gid://shopify/Page/112741154994"
+      },
+      {
+        "handle": "google-landing",
+        "title": "Google Landing - WTF Welcome To Florida",
+        "id": "gid://shopify/Page/112741941426"
+      },
+      {
+        "handle": "youtube-landing",
+        "title": "YouTube Landing - WTF Welcome To Florida",
+        "id": "gid://shopify/Page/112741908658"
+      },
+      {
+        "handle": "snapchat-landing",
+        "title": "Snapchat Landing - WTF Welcome To Florida",
+        "id": "gid://shopify/Page/112741843122"
+      }
+    ],
+    "archive_old": [
+      {
+        "handle": "wtf-landing-tiktok",
+        "id": "gid://shopify/Page/109029195954"
+      },
+      {
+        "handle": "wtf-landing-facebook",
+        "id": "gid://shopify/Page/109029163186"
+      },
+      {
+        "handle": "wtf-landing-youtube",
+        "id": "gid://shopify/Page/109029294258"
+      },
+      {
+        "handle": "wtf-landing-snapchat",
+        "id": "gid://shopify/Page/109029228722"
+      },
+      {
+        "handle": "wtf-landing-snapchat-1",
+        "id": "gid://shopify/Page/109029261490"
+      }
+    ]
+  },
+  "archive_only": [
+    {
+      "handle": "cart-test",
+      "title": "Cart Test",
+      "id": "gid://shopify/Page/113514152114"
+    },
+    {
+      "handle": "wtf-landing",
+      "title": "landing-page",
+      "id": "gid://shopify/Page/109028704434"
+    },
+    {
+      "handle": "admin-dashboard",
+      "title": "Admin Dashboard",
+      "id": "gid://shopify/Page/113124442290"
+    },
+    {
+      "handle": "wtf-infusion-lounge",
+      "title": "Explore Our Functional Beverages",
+      "id": "gid://shopify/Page/110013939890"
+    },
+    {
+      "handle": "drink-menu",
+      "title": "Drink-In Menu",
+      "id": "gid://shopify/Page/113039114418"
+    },
+    {
+      "handle": "mobile-ordering",
+      "title": "Mobile Ordering",
+      "id": "gid://shopify/Page/113123197106"
+    },
+    {
+      "handle": "blog",
+      "title": "WTF Blog",
+      "id": "gid://shopify/Page/114291671218"
+    },
+    {
+      "handle": "wtfs-infused-drinks",
+      "title": "WTF's Infused Drinks",
+      "id": "gid://shopify/Page/108095242418"
+    }
+  ],
+  "keep_separate": [
+    {
+      "handle": "homepage",
+      "title": "WTF | Welcome To Florida - Cape Coral's Premier Kava Bar & Wellness Destination",
+      "id": "gid://shopify/Page/112710811826"
+    },
+    {
+      "handle": "visit-cape-coral-kava-bar",
+      "title": "Visit Our Cape Coral Kava Bar Today | WTF Welcome To Florida",
+      "id": "gid://shopify/Page/112706814130"
+    },
+    {
+      "handle": "order-online-cape-coral-pickup",
+      "title": "Order Online for Cape Coral Pickup | WTF Welcome To Florida",
+      "id": "gid://shopify/Page/112706846898"
+    },
+    {
+      "handle": "kava-bars-near-me",
+      "title": "Kava Bars Near Me | Cape Coral & Southwest Florida | WTF Welcome To Florida",
+      "id": "gid://shopify/Page/112708747442"
+    },
+    {
+      "handle": "natural-wellness-guide",
+      "title": "Natural Wellness Guide | Kava, Kratom & Hemp Education",
+      "id": "gid://shopify/Page/112707993778"
+    },
+    {
+      "handle": "thc-drinks-near-me",
+      "title": "THC Drinks Near Me: The Florida Guide to Elevated, Alcohol-Free Vibes",
+      "id": "gid://shopify/Page/115101139122"
+    },
+    {
+      "handle": "alcohol-free-date-ideas-cape-coral",
+      "title": "5 Alcohol-Free Date Ideas in Cape Coral",
+      "id": "gid://shopify/Page/114291802290"
+    },
+    {
+      "handle": "kava-vs-kratom-comparison",
+      "title": "Kava vs Kratom: How These Two Botanicals Compare",
+      "id": "gid://shopify/Page/114291769522"
+    },
+    {
+      "handle": "what-is-kava-beginners-guide",
+      "title": "What is Kava? A Beginner's Guide to the South Pacific's Relaxation Root",
+      "id": "gid://shopify/Page/114291703986"
+    },
+    {
+      "handle": "what-is-kratom-florida-botanical",
+      "title": "What is Kratom? Exploring Florida's Favorite Brewed Botanical",
+      "id": "gid://shopify/Page/114291736754"
+    },
+    {
+      "handle": "site-map",
+      "title": "Site Map | WTF Welcome To Florida | Find Everything",
+      "id": "gid://shopify/Page/112708944050"
+    },
+    {
+      "handle": "data-sharing-opt-out",
+      "title": "Your privacy choices",
+      "id": "gid://shopify/Page/101784846514"
+    },
+    {
+      "handle": "faq",
+      "title": "FAQ",
+      "id": "gid://shopify/Page/113181687986"
+    }
+  ]
+}

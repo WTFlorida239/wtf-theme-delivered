@@ -1,0 +1,68 @@
+{
+  "execution_date": "2025-10-25T10:14:30.656683",
+  "pages_optimized": 18,
+  "seo_updates": 0,
+  "content_updates": 18,
+  "errors": [
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/112710811826",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/112706814130",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/112706846898",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/112708747442",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/112707993778",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/115101139122",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/114291802290",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/114291769522",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/114291703986",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/114291736754",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/112708944050",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    },
+    {
+      "type": "seo",
+      "page_id": "gid://shopify/Page/113181687986",
+      "error": "[{'message': 'Variable $ownerId is declared by SetPageSEO but not used', 'locations': [{'line': 2, 'column': 5}], 'path': ['mutation SetPageSEO'], 'extensions': {'code': 'variableNotUsed', 'variableName': 'ownerId'}}]"
+    }
+  ]
+}

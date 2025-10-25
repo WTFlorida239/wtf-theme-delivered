@@ -1,0 +1,129 @@
+{
+  "execution_date": "2025-10-25T10:09:55.755914",
+  "redirects_created": 0,
+  "redirects_failed": 20,
+  "pages_archived": 33,
+  "pages_archive_failed": 0,
+  "errors": [
+    {
+      "type": "redirect",
+      "from": "/pages/home",
+      "to": "/",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/about-us",
+      "to": "/",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/our-story",
+      "to": "/",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/about-cape-coral-kava-bar",
+      "to": "/",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/wtf-experience-cape-coral",
+      "to": "/",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/cape-coral-kava-bar",
+      "to": "/pages/kava-bars-near-me",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/southwest-florida-kava-bar",
+      "to": "/pages/kava-bars-near-me",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/kava-bar-cape-coral-fl",
+      "to": "/pages/kava-bars-near-me",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/wtf-is-a-kava-bar-florida-guide",
+      "to": "/pages/kava-bars-near-me",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/education",
+      "to": "/pages/natural-wellness-guide",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/kava-drinks",
+      "to": "/collections/kava-drinks",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/thc-drinks",
+      "to": "/collections/thc-drinks",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/thc-shots",
+      "to": "/collections/thc-shots",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/kratom-teas",
+      "to": "/collections/kratom-teas",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/canned-drinks",
+      "to": "/collections/canned-drinks",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/draft-pours",
+      "to": "/collections/draft-pours",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/take-home-items",
+      "to": "/collections/take-home-items",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/fun-stuff",
+      "to": "/collections/fun-stuff",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/dry-goods",
+      "to": "/collections/dry-goods",
+      "error": "HTTP 401"
+    },
+    {
+      "type": "redirect",
+      "from": "/pages/drinks",
+      "to": "/collections/all",
+      "error": "HTTP 401"
+    }
+  ]
+}
