@@ -5,25 +5,23 @@
   - Emits optional local citation snippet for local SEO coverage
 {%- endcomment -%}
 
-{%- liquid
-  assign heading = section.settings.heading | default: shop.name
-  assign description = section.settings.description
-  assign background_color = section.settings.background_color | default: settings.color_background | default: '#0f172a'
-  assign text_color = section.settings.text_color | default: '#f8f8f8'
-  assign heading_color = section.settings.heading_color | default: settings.color_text | default: '#ffffff'
-  assign link_color = section.settings.link_color | default: settings.color_primary | default: '#ff6600'
-  assign show_payment_icons = section.settings.show_payment_icons
-  assign show_local_citations = section.settings.show_local_citations
-  assign bottom_menu = section.settings.bottom_menu
-  assign contact_address = section.settings.address
-  assign contact_phone = section.settings.phone | default: settings.store_phone | default: shop.phone
-  assign contact_email = section.settings.email | default: settings.store_email | default: shop.customer_email | default: shop.email
-  assign hours_fallback = section.settings.hours | default: 'Daily 8am–10pm'
-  assign hours_metafield = null
-  if shop.metafields.wtf != blank and shop.metafields.wtf.hours and shop.metafields.wtf.hours.value != blank
-    assign hours_metafield = shop.metafields.wtf.hours.value
-  endif
-{%- endliquid -%}
+{%- assign heading = section.settings.heading | default: shop.name -%}
+{%- assign description = section.settings.description -%}
+{%- assign background_color = section.settings.background_color | default: settings.color_background | default: '#0f172a' -%}
+{%- assign text_color = section.settings.text_color | default: '#f8f8f8' -%}
+{%- assign heading_color = section.settings.heading_color | default: settings.color_text | default: '#ffffff' -%}
+{%- assign link_color = section.settings.link_color | default: settings.color_primary | default: '#ff6600' -%}
+{%- assign show_payment_icons = section.settings.show_payment_icons -%}
+{%- assign show_local_citations = section.settings.show_local_citations -%}
+{%- assign bottom_menu = section.settings.bottom_menu -%}
+{%- assign contact_address = section.settings.address -%}
+{%- assign contact_phone = section.settings.phone | default: settings.store_phone | default: shop.phone -%}
+{%- assign contact_email = section.settings.email | default: settings.store_email | default: shop.customer_email | default: shop.email -%}
+{%- assign hours_fallback = section.settings.hours | default: 'Daily 8am–10pm' -%}
+{%- assign hours_metafield = null -%}
+{%- if shop.metafields.wtf != blank and shop.metafields.wtf.hours and shop.metafields.wtf.hours.value != blank -%}
+  {%- assign hours_metafield = shop.metafields.wtf.hours.value -%}
+{%- endif -%}
 
 <footer
   id="Footer-{{ section.id }}"
@@ -100,16 +98,17 @@
                       <address class="footer__text footer__text--address">{{ block_address | newline_to_br }}</address>
                     {%- endif -%}
                     {%- if block_phone != blank -%}
-                      {%- liquid
-                        assign phone_href = block_phone | replace: '(', '' | replace: ')', '' | replace: ' ', '' | replace: '-', '' | replace: '.', ''
-                        if phone_href == ''
-                          assign phone_href = ''
-                        elsif phone_href | slice: 0, 1 == '+'
-                          assign phone_href = phone_href
-                        else
-                          assign phone_href = phone_href | prepend: '+1'
-                        endif
-                      -%}
+                      {%- assign phone_href = block_phone | replace: '(', '' | replace: ')', '' | replace: ' ', '' | replace: '-', '' | replace: '.', '' -%}
+                      {%- if phone_href == '' -%}
+                        {%- assign phone_href = '' -%}
+                      {%- else -%}
+                        {%- assign first_char = phone_href | slice: 0, 1 -%}
+                        {%- if first_char == '+' -%}
+                          {%- assign phone_href = phone_href -%}
+                        {%- else -%}
+                          {%- assign phone_href = phone_href | prepend: '+1' -%}
+                        {%- endif -%}
+                      {%- endif -%}
                       <p class="footer__text footer__text--phone">
                         <a href="tel:{{ phone_href }}">{{ block_phone }}</a>
                       </p>
@@ -543,8 +542,7 @@
     {
       "type": "text",
       "id": "copyright_text",
-      "label": "Custom copyright text",
-      "default": ""
+      "label": "Custom copyright text"
     }
   ],
   "blocks": [

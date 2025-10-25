@@ -1,24 +1,24 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-product",
-      "settings": {
-        "color_scheme": "background-1",
-        "media_size": "large",
-        "media_position": "left",
-        "gallery_layout": "stacked",
-        "enable_sticky_info": true,
-        "image_zoom": "lightbox",
-        "mobile_thumbnails": "hide",
-        "hide_variants": true,
-        "enable_video_looping": false
-      },
       "blocks": {
         "title": {
-          "type": "title"
+          "type": "title",
+          "settings": {}
         },
         "price": {
-          "type": "price"
+          "type": "price",
+          "settings": {}
         },
         "variant_picker": {
           "type": "variant_picker",
@@ -27,17 +27,18 @@
           }
         },
         "quantity": {
-          "type": "quantity_selector"
+          "type": "quantity_selector",
+          "settings": {}
         },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": true,
-            "show_gift_card_recipient": true
+            "show_dynamic_checkout": true
           }
         },
         "description": {
-          "type": "description"
+          "type": "description",
+          "settings": {}
         },
         "share": {
           "type": "share",
@@ -54,7 +55,11 @@
         "buy_buttons",
         "description",
         "share"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "background-1",
+        "media_size": "large"
+      }
     },
     "upsell": {
       "type": "product-upsell-grid",
@@ -62,12 +67,7 @@
         "heading": "Perfect pairings",
         "subheading": "Customers also love these house specials.",
         "button_label": "View product"
-      },
-      "blocks": {
-      },
-      "block_order": [
-
-      ]
+      }
     },
     "recommendations": {
       "type": "product-recommendations",
