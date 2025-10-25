@@ -183,7 +183,10 @@
       {{ content_for_layout }}
     </main>
 
-    {% section 'footer' %}
+    {%- comment -%}
+    Footer is now managed via JSON templates (OS 2.0 best practice)
+    See templates/*.json for footer section configuration
+    {%- endcomment -%}
 
     {%- comment %} Cart Drawer {%- endcomment -%}
     {%- render 'wtf-cart-drawer' -%}

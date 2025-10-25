@@ -1,8 +1,7 @@
 {
-  "name": "Cart",
   "sections": {
-    "wtf-cart": {
-      "type": "wtf-cart",
+    "main": {
+      "type": "main-page",
       "settings": {}
     },
     "footer": {
@@ -11,7 +10,8 @@
     }
   },
   "order": [
-    "wtf-cart",
+    "main",
     "footer"
   ]
 }
+

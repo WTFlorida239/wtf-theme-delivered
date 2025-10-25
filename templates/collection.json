@@ -18,10 +18,15 @@
         "add_label": "Quick add",
         "empty_state": "More products are steeping. Check back soon!"
       }
+    },
+    "footer": {
+      "type": "footer",
+      "settings": {}
     }
   },
   "order": [
     "hero",
-    "products"
+    "products",
+    "footer"
   ]
 }

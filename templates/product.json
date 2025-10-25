@@ -76,11 +76,16 @@
         "products_to_show": 4,
         "show_vendor": false
       }
+    },
+    "footer": {
+      "type": "footer",
+      "settings": {}
     }
   },
   "order": [
     "main",
     "upsell",
-    "recommendations"
+    "recommendations",
+    "footer"
   ]
 }
