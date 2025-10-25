@@ -220,6 +220,10 @@
         "button_label": "Curious? Start Here!",
         "button_link": "shopify://blogs/news/kratom-in-southwest-florida-what-you-should-know"
       }
+    },
+    "footer": {
+      "type": "footer",
+      "settings": {}
     }
   },
   "order": [
@@ -227,6 +231,7 @@
     "categories",
     "quick_order",
     "visit",
-    "footer_blurb"
+    "footer_blurb",
+    "footer"
   ]
 }

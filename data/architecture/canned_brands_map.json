@@ -1,0 +1,127 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2025-10-25",
+  "description": "Normalized brand mapping for canned drinks page. Filters deprecated products and remaps WTF vendor products to correct brands.",
+  
+  "excludedProducts": [
+    {
+      "title": "White Rabbit Kratom Cans",
+      "reason": "Duplicate - covered by White Rabbit brand",
+      "vendor": "WTF | Welcome To Florida",
+      "price": "$0.00"
+    },
+    {
+      "title": "Tea Time Kratom Cans",
+      "reason": "Duplicate - covered by Tea Time brand",
+      "vendor": "WTF | Welcome To Florida",
+      "price": "$0.00"
+    },
+    {
+      "title": "Botanical Brewing Cans",
+      "reason": "Deprecated - no longer carried",
+      "vendor": "WTF | Welcome To Florida",
+      "price": "$0.00"
+    }
+  ],
+  
+  "vendorRemapping": {
+    "WTF | Welcome To Florida": {
+      "Crank Cannabis Beverages": {
+        "mappedBrand": "Crank Cannabis Beverages",
+        "reason": "Should be standalone brand, not under WTF vendor"
+      },
+      "Lumenade Cans": {
+        "mappedBrand": "Lumenade",
+        "reason": "Lumenade is a brand with multiple flavor variants",
+        "variants": [
+          "Strawberry Mint Lemonade",
+          "Lumenade Lemonade",
+          "Blueberry Lavender Lemonade"
+        ]
+      }
+    }
+  },
+  
+  "normalizedBrands": [
+    {
+      "brand": "Crank Cannabis Beverages",
+      "originalVendor": "WTF | Welcome To Florida",
+      "productCount": 1,
+      "priceRange": "$TBD"
+    },
+    {
+      "brand": "D9 Cocktails",
+      "originalVendor": "D9 Cocktails",
+      "productCount": 1,
+      "priceRange": "$7.00"
+    },
+    {
+      "brand": "Lumenade",
+      "originalVendor": "WTF | Welcome To Florida",
+      "productCount": 1,
+      "variantCount": 3,
+      "priceRange": "$9.00"
+    },
+    {
+      "brand": "Mitra",
+      "originalVendor": "Mitra",
+      "productCount": 1,
+      "variantCount": 12,
+      "priceRange": "$6.00"
+    },
+    {
+      "brand": "Sodas",
+      "originalVendor": "Sodas",
+      "productCount": 1,
+      "priceRange": "$3.00"
+    },
+    {
+      "brand": "Tea Time",
+      "originalVendor": "Tea Time",
+      "productCount": 1,
+      "variantCount": 5,
+      "priceRange": "$8.00"
+    },
+    {
+      "brand": "Tortuga Beverages",
+      "originalVendor": "Tortuga Beverages",
+      "productCount": 1,
+      "variantCount": 5,
+      "priceRange": "$10.00"
+    },
+    {
+      "brand": "Uncle Skunks Soda",
+      "originalVendor": "Uncle Skunks Soda",
+      "productCount": 1,
+      "variantCount": 8,
+      "priceRange": "$12.00"
+    },
+    {
+      "brand": "White Rabbit",
+      "originalVendor": "White Rabbit",
+      "productCount": 2,
+      "products": [
+        "White Rabbit Root Beer Can",
+        "White Rabbit Mangoberry"
+      ],
+      "priceRange": "$8.00"
+    }
+  ],
+  
+  "implementationNotes": [
+    "Brand normalization happens in JavaScript on page load",
+    "Products are fetched from Storefront API and filtered client-side",
+    "Excluded products are skipped during brand grouping",
+    "WTF vendor products are remapped based on product title",
+    "Zero-price products are automatically filtered out",
+    "Brands with no valid products are removed from display"
+  ],
+  
+  "lightspeedSyncNotes": [
+    "Vendor names in Shopify are NOT modified to preserve Lightspeed sync",
+    "All SKUs and variant IDs remain unchanged",
+    "Remapping happens only in the front-end template logic",
+    "No new products or variants are created"
+  ]
+}
+
