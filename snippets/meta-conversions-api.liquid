@@ -1,0 +1,182 @@
+{%- comment -%}
+  Meta Conversions API Integration
+  
+  This snippet provides server-side event tracking to complement the Meta Pixel.
+  The Conversions API helps improve attribution and overcome browser tracking limitations.
+  
+  Usage: {% render 'meta-conversions-api' %}
+  
+  Note: This requires server-side implementation via Shopify webhooks or app proxy.
+  The client-side code here prepares data for server-side transmission.
+{%- endcomment -%}
+
+{%- if settings.facebook_pixel_id != blank -%}
+<script>
+(function() {
+  'use strict';
+  
+  // Meta Conversions API Helper
+  window.WTFMetaConversionsAPI = {
+    // Generate event ID for deduplication between Pixel and CAPI
+    generateEventId: function() {
+      return 'wtf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    },
+    
+    // Prepare event data for server-side transmission
+    prepareEventData: function(eventName, eventData = {}) {
+      const eventId = this.generateEventId();
+      
+      // Collect user data for advanced matching
+      const userData = {
+        client_ip_address: null, // Server will capture this
+        client_user_agent: navigator.userAgent,
+        fbp: this.getFbp(), // Facebook browser ID
+        fbc: this.getFbc(), // Facebook click ID
+      };
+      
+      // Add customer data if available
+      if (window.WTF_ENV?.customerEmail) {
+        userData.em = window.WTF_ENV.customerEmail; // Will be hashed server-side
+      }
+      
+      if (window.WTF_ENV?.customerId) {
+        userData.external_id = window.WTF_ENV.customerId.toString();
+      }
+      
+      // Prepare custom data
+      const customData = {
+        currency: eventData.currency || 'USD',
+        value: eventData.value || 0,
+      };
+      
+      if (eventData.content_ids) {
+        customData.content_ids = eventData.content_ids;
+      }
+      
+      if (eventData.content_type) {
+        customData.content_type = eventData.content_type;
+      }
+      
+      if (eventData.contents) {
+        customData.contents = eventData.contents;
+      }
+      
+      return {
+        event_name: eventName,
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: eventId,
+        event_source_url: window.location.href,
+        action_source: 'website',
+        user_data: userData,
+        custom_data: customData
+      };
+    },
+    
+    // Get Facebook browser ID (_fbp cookie)
+    getFbp: function() {
+      const match = document.cookie.match(/_fbp=([^;]+)/);
+      return match ? match[1] : null;
+    },
+    
+    // Get Facebook click ID (_fbc cookie)
+    getFbc: function() {
+      const match = document.cookie.match(/_fbc=([^;]+)/);
+      return match ? match[1] : null;
+    },
+    
+    // Send event to server-side endpoint
+    sendToServer: function(eventData) {
+      const endpoint = '{{ settings.integration_proxy_base_path | default: "/apps/wtf" }}/meta-capi';
+      
+      // Send via beacon for reliability (works even on page unload)
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+        navigator.sendBeacon(endpoint, blob);
+      } else {
+        // Fallback to fetch
+        fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(eventData),
+          keepalive: true
+        }).catch(err => {
+          if (window.WTFConfig?.get?.('development.enableConsoleLogging')) {
+            console.warn('[WTF] Meta CAPI send failed:', err);
+          }
+        });
+      }
+    },
+    
+    // Track event via both Pixel and CAPI
+    trackEvent: function(eventName, eventData = {}) {
+      const preparedData = this.prepareEventData(eventName, eventData);
+      
+      // Send to Pixel with event_id for deduplication
+      if (typeof fbq !== 'undefined') {
+        fbq('track', eventName, eventData, { eventID: preparedData.event_id });
+      }
+      
+      // Send to server for CAPI
+      this.sendToServer(preparedData);
+      
+      if (window.WTFConfig?.get?.('development.enableConsoleLogging')) {
+        console.log('[WTF] Meta CAPI event:', eventName, preparedData);
+      }
+    }
+  };
+  
+  // Auto-track PageView on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      window.WTFMetaConversionsAPI.trackEvent('PageView', {
+        content_name: document.title,
+        content_category: '{{ template.name }}'
+      });
+    });
+  } else {
+    window.WTFMetaConversionsAPI.trackEvent('PageView', {
+      content_name: document.title,
+      content_category: '{{ template.name }}'
+    });
+  }
+  
+  // Listen for cart events
+  document.addEventListener('wtf:cart:add', function(e) {
+    if (e.detail && e.detail.items) {
+      const item = e.detail.items[0];
+      window.WTFMetaConversionsAPI.trackEvent('AddToCart', {
+        content_ids: [item.item_id],
+        content_type: 'product',
+        value: e.detail.value || 0,
+        currency: e.detail.currency || 'USD',
+        contents: [{
+          id: item.item_id,
+          quantity: item.quantity || 1
+        }]
+      });
+    }
+  });
+  
+  // Track purchases on order confirmation page
+  {%- if template.name == 'customers/order' and order -%}
+  window.WTFMetaConversionsAPI.trackEvent('Purchase', {
+    content_ids: [{% for line_item in order.line_items %}'{{ line_item.product_id }}'{% unless forloop.last %},{% endunless %}{% endfor %}],
+    content_type: 'product',
+    value: {{ order.total_price | money_without_currency }},
+    currency: '{{ order.currency }}',
+    num_items: {{ order.line_items.size }},
+    contents: [
+      {%- for line_item in order.line_items -%}
+      {
+        id: '{{ line_item.product_id }}',
+        quantity: {{ line_item.quantity }},
+        item_price: {{ line_item.price | money_without_currency }}
+      }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  });
+  {%- endif -%}
+  
+})();
+</script>
+{%- endif -%}

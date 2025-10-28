@@ -439,13 +439,43 @@
 <meta name="geo.position" content="{{ lat }};{{ lng }}">
 <meta name="ICBM" content="{{ lat }}, {{ lng }}">
 
-{%- comment %} Open Graph {%- endcomment -%}
+{%- comment %} Open Graph + Facebook Social Graph Optimization {%- endcomment -%}
 <meta property="og:site_name" content="{{ shop.name }}">
 <meta property="og:title" content="{{ page_title }}">
 <meta property="og:description" content="{{ meta_desc | escape }}">
 <meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:type" content="{% if template.name contains 'product' %}product{% elsif template.name contains 'article' %}article{% else %}website{% endif %}">
 <meta property="og:locale" content="{{ og_locale_value }}">
+
+{%- comment %} Facebook App ID for social graph integration {%- endcomment -%}
+{%- if settings.facebook_app_id != blank -%}
+  <meta property="fb:app_id" content="{{ settings.facebook_app_id }}">
+{%- endif -%}
+
+{%- comment %} Facebook Domain Verification {%- endcomment -%}
+{%- if settings.facebook_domain_verification != blank -%}
+  <meta name="facebook-domain-verification" content="{{ settings.facebook_domain_verification }}">
+{%- endif -%}
+
+{%- comment %} Enhanced metadata for audio-triggered ads and social discovery {%- endcomment -%}
+<meta property="og:see_also" content="{{ shop.url }}">
+{%- if shop.metafields.social.facebook != blank -%}
+  <meta property="og:see_also" content="{{ shop.metafields.social.facebook }}">
+{%- endif -%}
+{%- if shop.metafields.social.instagram != blank -%}
+  <meta property="og:see_also" content="{{ shop.metafields.social.instagram }}">
+{%- endif -%}
+
+{%- comment %} Business/Place metadata for location-based discovery {%- endcomment -%}
+{%- if template.name == 'index' or template.name == 'page' -%}
+  <meta property="place:location:latitude" content="26.5629">
+  <meta property="place:location:longitude" content="-81.9495">
+  <meta property="business:contact_data:street_address" content="1520 SE 46th Ln">
+  <meta property="business:contact_data:locality" content="Cape Coral">
+  <meta property="business:contact_data:region" content="FL">
+  <meta property="business:contact_data:postal_code" content="33904">
+  <meta property="business:contact_data:country_name" content="United States">
+{%- endif -%}
 {%- if shop.published_locales and shop.published_locales.size > 1 -%}
   {%- for locale in shop.published_locales -%}
     {%- assign locale_option = locale.iso_code | replace: '_', '-' | downcase -%}

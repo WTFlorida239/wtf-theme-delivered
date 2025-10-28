@@ -669,6 +669,18 @@
       },
       {
         "type": "text",
+        "id": "facebook_app_id",
+        "label": "Facebook App ID",
+        "info": "Required for Facebook SDK and social graph integration. Get from developers.facebook.com"
+      },
+      {
+        "type": "text",
+        "id": "facebook_domain_verification",
+        "label": "Facebook Domain Verification Code",
+        "info": "Get from Facebook Business Manager > Brand Safety > Domains"
+      },
+      {
+        "type": "text",
         "id": "tiktok_pixel_id",
         "label": "TikTok Pixel ID"
       },

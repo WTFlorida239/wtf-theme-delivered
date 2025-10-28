@@ -175,6 +175,33 @@
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+    {%- comment %} Facebook SDK for Social Graph Integration {%- endcomment -%}
+    {%- if settings.facebook_app_id != blank -%}
+      <div id="fb-root"></div>
+      <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId      : '{{ settings.facebook_app_id }}',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v18.0'
+          });
+          FB.AppEvents.logPageView();
+          
+          // Dispatch custom event when FB SDK is ready
+          document.dispatchEvent(new CustomEvent('fb:sdk:ready'));
+        };
+
+        (function(d, s, id){
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) {return;}
+          js = d.createElement(s); js.id = id;
+          js.src = "https://connect.facebook.net/en_US/sdk.js";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+      </script>
+    {%- endif -%}
+
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">{{ 'accessibility.skip_to_text' | t }}</a>
 
     <div id="shopify-section-header">{% section 'header' %}</div>
@@ -262,6 +289,9 @@
 
     {%- comment %} Analytics / pixels (kept as your snippet) {%- endcomment -%}
     {%- render 'wtf-analytics' -%}
+    
+    {%- comment %} Meta Conversions API for enhanced tracking {%- endcomment -%}
+    {%- render 'meta-conversions-api' -%}
 
     {%- comment -%}
       ===========================
