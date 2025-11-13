@@ -27,11 +27,22 @@
   launcher?.addEventListener('click', show);
   closeBtn?.addEventListener('click', hide);
 
-  // FIRST LOAD
+  // FIRST LOAD - Show launcher only, no auto-popup
   window.addEventListener('load', () => {
     root.classList.remove('kava-hidden');
-    addMsg("Hey! I’m your Virtual Kavatender. Want calm, focus, or euphoria? Tell me what you’re in the mood for.");
+    // Welcome message will show when user clicks launcher
   });
+
+  // Show welcome message on first open
+  let firstOpen = true;
+  const originalShow = show;
+  show = function() {
+    originalShow();
+    if (firstOpen) {
+      addMsg("Hey! I'm your Virtual Kavatender. Want calm, focus, or euphoria? Tell me what you're in the mood for.");
+      firstOpen = false;
+    }
+  };
 
   // STREAM via SSE
   async function streamChat(userText) {
