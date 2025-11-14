@@ -8,7 +8,8 @@
   - Loads wtf-header.css and wtf-header.js (assets)
 {% endcomment %}
 
-{{ 'wtf-header.css' | asset_url | stylesheet_tag }}
+<link rel="preload" href="{{ 'wtf-header.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript>{{ 'wtf-header.css' | asset_url | stylesheet_tag }}</noscript>
 
 <header class="site-header" role="banner" data-section-id="{{ section.id }}">
   <nav class="skip-links" aria-label="Skip links">

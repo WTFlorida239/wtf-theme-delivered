@@ -22,13 +22,15 @@
 
     {{ content_for_header }}
 
-    {%- comment %} Google Fonts {%- endcomment %}
+    {%- comment %} Google Fonts - Deferred for performance {%- endcomment %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 
-    {%- comment %} Main CSS {%- endcomment %}
-    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {%- comment %} Main CSS - Deferred for performance {%- endcomment %}
+    <link rel="preload" href="{{ 'base.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>{{ 'base.css' | asset_url | stylesheet_tag }}</noscript>
 
     {%- comment %} WTF ENV + Config bootstrap (inline so later scripts can read immediately) {%- endcomment %}
     <script>
@@ -175,30 +177,37 @@
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
-    {%- comment %} Facebook SDK for Social Graph Integration {%- endcomment -%}
+    {%- comment %} Facebook SDK for Social Graph Integration - Deferred for performance {%- endcomment -%}
     {%- if settings.facebook_app_id != blank -%}
       <div id="fb-root"></div>
       <script>
-        window.fbAsyncInit = function() {
-          FB.init({
-            appId      : '{{ settings.facebook_app_id }}',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v18.0'
-          });
-          FB.AppEvents.logPageView();
-          
-          // Dispatch custom event when FB SDK is ready
-          document.dispatchEvent(new CustomEvent('fb:sdk:ready'));
-        };
+        // Defer Facebook SDK loading until after page load
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            window.fbAsyncInit = function() {
+              FB.init({
+                appId      : '{{ settings.facebook_app_id }}',
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v18.0'
+              });
+              FB.AppEvents.logPageView();
+              
+              // Dispatch custom event when FB SDK is ready
+              document.dispatchEvent(new CustomEvent('fb:sdk:ready'));
+            };
 
-        (function(d, s, id){
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) {return;}
-          js = d.createElement(s); js.id = id;
-          js.src = "https://connect.facebook.net/en_US/sdk.js";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+            (function(d, s, id){
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) {return;}
+              js = d.createElement(s); js.id = id;
+              js.src = "https://connect.facebook.net/en_US/sdk.js";
+              js.async = true;
+              js.defer = true;
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+          }, 2000); // Delay FB SDK by 2 seconds
+        });
       </script>
     {%- endif -%}
 
