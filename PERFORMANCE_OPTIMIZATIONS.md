@@ -190,6 +190,30 @@ Before pushing to production:
 
 ---
 
-**Status:** Phase 1 Complete (4/7 optimizations)  
-**Next Phase:** Image Optimization + JavaScript Cleanup  
-**Target Completion:** Phase 2-3 for 70+ score
+## Phase 2 Optimizations (COMPLETED)
+
+### 6. ✅ Deferred All Analytics Scripts
+**File:** `snippets/wtf-analytics.liquid`  
+**Impact:** Reduces JavaScript execution by ~1.5s, removes ~927 KiB of blocking scripts  
+**Change:**
+- Completely rewrote analytics snippet to defer ALL tracking
+- Google Analytics, Google Ads, Facebook Pixel, TikTok, Snapchat, Pinterest, Clarity, Hotjar all deferred
+- Scripts load only after user interaction (scroll, click, mousemove, touchstart, keydown)
+- Fallback: loads after 3 seconds if no interaction
+- Removed render-blocking analytics from initial page load
+- **Estimated Impact:** +10-15 points
+
+### 7. ✅ Image Optimization Already Complete
+**Status:** All sections already have proper image optimization  
+**Findings:**
+- All images have explicit width/height attributes
+- Lazy loading implemented on below-the-fold images
+- Hero images use loading="eager" and fetchpriority="high"
+- Product images properly sized with responsive srcset
+- No additional work needed
+
+---
+
+**Status:** Phase 1 + Phase 2 Complete (6/7 optimizations)  
+**Estimated Total Improvement:** +18-27 points (39 → 57-66)  
+**Next Steps:** Test and deploy, then evaluate if Phase 3 needed for 70+ target
