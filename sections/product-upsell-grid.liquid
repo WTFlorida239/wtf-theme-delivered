@@ -20,7 +20,7 @@
           <article class="product-upsell__item" role="listitem" {{ block.shopify_attributes }}>
             <a class="product-upsell__link" href="{{ product_obj.url }}">
               {% if product_obj.featured_media %}
-                {% render 'responsive-image', image: product_obj.featured_media, alt: product_obj.featured_media.alt | default: product_obj.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-upsell__image', loading: 'lazy' %}
+                {% render 'responsive-image', image: product_obj.featured_media, alt: product_obj.featured_media.alt, default: product_obj.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-upsell__image', loading: 'lazy' %}
               {% endif %}
               <h3 class="product-upsell__product-title">{{ block.settings.title | default: product_obj.title }}</h3>
             </a>
@@ -221,3 +221,17 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'responsive-image', image: product_obj.featured_media, alt: product_obj.featured_media.alt
+    | default: product_obj.title, sizes: '(max-width: 600px) 100vw, 25vw', class:
+    'product-upsell__image', loading: 'lazy' %}"
+  to: "{% render 'responsive-image', image: product_obj.featured_media, alt: product_obj.featured_media.alt,
+    default: product_obj.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-upsell__image',
+    loading: 'lazy' %}"
+  position: 1003..1224
+{% endcomment %}

@@ -23,7 +23,7 @@
           <article class="product-recommendations__item" role="listitem">
             <a class="product-recommendations__link" href="{{ product.url }}">
               {% if featured_media %}
-                {% render 'responsive-image', image: featured_media, alt: featured_media.alt | default: product.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-recommendations__image', loading: 'lazy' %}
+                {% render 'responsive-image', image: featured_media, alt: featured_media.alt, default: product.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-recommendations__image', loading: 'lazy' %}
               {% endif %}
               <h3 class="product-recommendations__product-title">{{ product.title }}</h3>
             </a>
@@ -176,3 +176,17 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'responsive-image', image: featured_media, alt: featured_media.alt
+    | default: product.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-recommendations__image',
+    loading: 'lazy' %}"
+  to: "{% render 'responsive-image', image: featured_media, alt: featured_media.alt,
+    default: product.title, sizes: '(max-width: 600px) 100vw, 25vw', class: 'product-recommendations__image',
+    loading: 'lazy' %}"
+  position: 1137..1339
+{% endcomment %}

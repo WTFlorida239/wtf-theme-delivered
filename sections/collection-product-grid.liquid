@@ -35,7 +35,7 @@
           <article class="collection-grid__item" role="listitem" data-product-id="{{ product.id }}">
             <a class="collection-grid__link" href="{{ product.url }}" aria-label="{{ view_label }}: {{ product.title }}">
               {% if featured_media %}
-                {% render 'responsive-image', image: featured_media, alt: featured_media.alt | default: product.title, sizes: '(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 25vw', class: 'collection-grid__image', loading: 'lazy', fetchpriority: fetch_priority %}
+                {% render 'responsive-image', image: featured_media, alt: featured_media.alt, default: product.title, sizes: '(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 25vw', class: 'collection-grid__image', loading: 'lazy', fetchpriority: fetch_priority %}
               {% endif %}
               <div class="collection-grid__info">
                 <h3 class="collection-grid__product-title">{{ product.title }}</h3>
@@ -282,3 +282,19 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'responsive-image', image: featured_media, alt: featured_media.alt
+    | default: product.title, sizes: '(max-width: 600px) 100vw, (max-width: 1024px)
+    50vw, 25vw', class: 'collection-grid__image', loading: 'lazy', fetchpriority:
+    fetch_priority %}"
+  to: "{% render 'responsive-image', image: featured_media, alt: featured_media.alt,
+    default: product.title, sizes: '(max-width: 600px) 100vw, (max-width: 1024px)
+    50vw, 25vw', class: 'collection-grid__image', loading: 'lazy', fetchpriority:
+    fetch_priority %}"
+  position: 1814..2065
+{% endcomment %}

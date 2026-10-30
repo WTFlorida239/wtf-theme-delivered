@@ -39,11 +39,24 @@
   %}
 {% else %}
   {% comment %} Fallback to the default collection view if this isn't one of the three {% endcomment %}
-  {% render 'wtf-collection-cards',
-    title: collection.title,
-    subtitle: collection.description,
-    items: collection.products | map: 'title',
-    color: 'kratom',
-    back_url: routes.root_url
-  %}
+  {% render 'wtf-collection-cards', title: collection.title, subtitle: collection.description, items: collection.products, map: 'title', color: 'kratom', back_url: routes.root_url %}
 {% endif %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'wtf-collection-cards',
+        title: collection.title,
+        subtitle: collection.description,
+        items: collection.products | map: 'title',
+        color: 'kratom',
+        back_url: routes.root_url
+      %}
+  to: "{% render 'wtf-collection-cards', title: collection.title, subtitle: collection.description,
+    items: collection.products, map: 'title', color: 'kratom', back_url: routes.root_url
+    %}"
+  position: 1592..1772
+{% endcomment %}

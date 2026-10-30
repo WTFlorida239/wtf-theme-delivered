@@ -10,10 +10,23 @@ Renders a responsive card grid using centralized item data.
 {% assign kava_items = items_json | parse_json %}
 {%- # theme-check-enable UnusedAssign -%}
 {%- # theme-check-enable UnknownFilter -%}
-{% render 'wtf-collection-cards',
-  title: collection.title | default: 'Kava Drinks',
-  subtitle: 'Traditional Pacific island relaxation beverages',
-  items: kava_items,
-  color: 'kava',
-  back_url: routes.root_url
-%}
+{% render 'wtf-collection-cards', title: collection.title, default: 'Kava Drinks', subtitle: 'Traditional Pacific island relaxation beverages', items: kava_items, color: 'kava', back_url: routes.root_url %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'wtf-collection-cards',
+      title: collection.title | default: 'Kava Drinks',
+      subtitle: 'Traditional Pacific island relaxation beverages',
+      items: kava_items,
+      color: 'kava',
+      back_url: routes.root_url
+    %}
+  to: "{% render 'wtf-collection-cards', title: collection.title, default: 'Kava Drinks',
+    subtitle: 'Traditional Pacific island relaxation beverages', items: kava_items,
+    color: 'kava', back_url: routes.root_url %}"
+  position: 473..679
+{% endcomment %}

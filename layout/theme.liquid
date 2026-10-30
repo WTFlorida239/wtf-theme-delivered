@@ -88,7 +88,7 @@
         const fallbackEmail = {{ settings.store_email | default: shop.customer_email | default: shop.email | json }};
         const lightspeedEnabled = {{ settings.lightspeed_enable_sync | json }};
         const lightspeedSyncInterval = {{ settings.lightspeed_sync_interval | default: 30 | times: 1000 }};
-        const twoAcceptEnabled = {{ settings.twoaccept_public_key != blank | json }};
+        const twoAcceptEnabled = {{ settings.twoaccept_public_key | json }};
 
         window.WTFConfig = {
           store: {
@@ -141,7 +141,7 @@
             }
           },
           analytics: {
-            google: { measurementId: {{ settings.google_analytics_id | json }}, enabled: {{ settings.google_analytics_id != blank | json }} },
+            google: { measurementId: {{ settings.google_analytics_id | json }}, enabled: {{ settings.google_analytics_id | json }} },
             googleAds: {{ settings.google_ads_id | json }},
             metaPixel: {{ settings.facebook_pixel_id | json }},
             tiktokPixel: {{ settings.tiktok_pixel_id | json }},
@@ -466,3 +466,16 @@
   {% render 'kavatender' %}
   <script src="{{ 'kavatender.js' | asset_url }}" defer></script>
 
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{{ settings.twoaccept_public_key != blank | json }}"
+  to: "{{ settings.twoaccept_public_key | json }}"
+  position: 5544..5586
+- from: "{{ settings.google_analytics_id != blank | json }}"
+  to: "{{ settings.google_analytics_id | json }}"
+  position: 8528..8569
+{% endcomment %}

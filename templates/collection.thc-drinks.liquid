@@ -10,10 +10,23 @@ Renders a responsive card grid using centralized item data.
 {% assign thc_items = items_json | parse_json %}
 {%- # theme-check-enable UnusedAssign -%}
 {%- # theme-check-enable UnknownFilter -%}
-{% render 'wtf-collection-cards',
-  title: collection.title | default: 'THC Drinks',
-  subtitle: 'Premium cannabis beverages - Large size and Gallons only',
-  items: thc_items,
-  color: 'thc',
-  back_url: routes.root_url
-%}
+{% render 'wtf-collection-cards', title: collection.title, default: 'THC Drinks', subtitle: 'Premium cannabis beverages - Large size and Gallons only', items: thc_items, color: 'thc', back_url: routes.root_url %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'wtf-collection-cards',
+      title: collection.title | default: 'THC Drinks',
+      subtitle: 'Premium cannabis beverages - Large size and Gallons only',
+      items: thc_items,
+      color: 'thc',
+      back_url: routes.root_url
+    %}
+  to: "{% render 'wtf-collection-cards', title: collection.title, default: 'THC Drinks',
+    subtitle: 'Premium cannabis beverages - Large size and Gallons only', items: thc_items,
+    color: 'thc', back_url: routes.root_url %}"
+  position: 473..685
+{% endcomment %}

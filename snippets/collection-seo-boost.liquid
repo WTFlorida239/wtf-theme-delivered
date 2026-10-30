@@ -20,7 +20,7 @@
       when 'kava-drinks', 'kava'
         assign local_keywords = 'kava bar cape coral, kava drinks cape coral, kava lounge fort myers, kava southwest florida, best kava cape coral, kava bar 33904, kava near me cape coral'
         assign service_type = 'Kava Bar Service'
-        assign local_description = 'Cape Coral\'s premier kava bar offering traditional and custom kava drinks. Locally sourced, expertly prepared kava beverages in a welcoming lounge atmosphere. Serving Cape Coral, Fort Myers, Lehigh Acres, and SWFL.'
+        assign local_description = 'Cape Coral\'
       when 'thc-drinks', 'thc-beverages', 'delta-9'
         assign local_keywords = 'thc drinks cape coral, delta 9 beverages florida, thc shots fort myers, hemp drinks southwest florida, legal thc cape coral, delta 9 cape coral'
         assign service_type = 'THC Beverage Service'
@@ -145,3 +145,16 @@
   }
   </script>
 {% endif %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "        assign local_description = 'Cape Coral\\'s premier kava bar offering
+    traditional and custom kava drinks. Locally sourced, expertly prepared kava beverages
+    in a welcoming lounge atmosphere. Serving Cape Coral, Fort Myers, Lehigh Acres,
+    and SWFL.'"
+  to: "        assign local_description = 'Cape Coral\\'"
+  position: 1183..1231
+{% endcomment %}

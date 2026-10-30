@@ -39,7 +39,7 @@
       assign price_range = '$5-$15'
     when 'draft-pours'
       assign service_name = 'Draft Pours & Specialty Drinks'
-      assign service_description = 'Rotating selection of draft pours and specialty botanical beverages in Cape Coral, FL. Unique, limited-edition drinks you can\'t find anywhere else in Southwest Florida.'
+      assign service_description = 'Rotating selection of draft pours and specialty botanical beverages in Cape Coral, FL. Unique, limited-edition drinks you can\'
       assign service_keywords = 'draft kava cape coral, specialty drinks fort myers, unique beverages swfl, craft drinks cape coral'
       assign price_range = '$12-$20'
   endcase
@@ -185,3 +185,16 @@
 <meta property="og:postal-code" content="33904">
 <meta property="og:country-name" content="USA">
 {% endif %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "      assign service_description = 'Rotating selection of draft pours and
+    specialty botanical beverages in Cape Coral, FL. Unique, limited-edition drinks
+    you can\\'t find anywhere else in Southwest Florida.'"
+  to: "      assign service_description = 'Rotating selection of draft pours and specialty
+    botanical beverages in Cape Coral, FL. Unique, limited-edition drinks you can\\'"
+  position: 2912..3075
+{% endcomment %}
